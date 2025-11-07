@@ -15,20 +15,32 @@ from dateutil import parser as date_parser
 
 class TournamentFilter:
     """Filters for tournament search"""
-    
+
     # European countries (list of common European country names and codes)
+    # Note: Russia excluded per user request
     EUROPEAN_COUNTRIES = {
-        'albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia', 
-        'bulgaria', 'croatia', 'cyprus', 'czech', 'denmark', 'estonia', 
-        'finland', 'france', 'germany', 'greece', 'hungary', 'iceland', 
-        'ireland', 'italy', 'kosovo', 'latvia', 'liechtenstein', 'lithuania', 
-        'luxembourg', 'malta', 'moldova', 'monaco', 'montenegro', 'netherlands', 
-        'north macedonia', 'norway', 'poland', 'portugal', 'romania', 'russia', 
-        'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 
-        'switzerland', 'ukraine', 'united kingdom', 'england', 'scotland', 
+        'albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia',
+        'bulgaria', 'croatia', 'cyprus', 'czech', 'denmark', 'estonia',
+        'finland', 'france', 'germany', 'greece', 'hungary', 'iceland',
+        'ireland', 'italy', 'kosovo', 'latvia', 'liechtenstein', 'lithuania',
+        'luxembourg', 'malta', 'moldova', 'monaco', 'montenegro', 'netherlands',
+        'north macedonia', 'norway', 'poland', 'portugal', 'romania',
+        'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden',
+        'switzerland', 'ukraine', 'united kingdom', 'england', 'scotland',
         'wales', 'northern ireland', 'gbr', 'ger', 'fra', 'esp', 'ita', 'ned'
     }
-    
+
+    # Non-European countries to explicitly exclude
+    NON_EUROPEAN_COUNTRIES = {
+        'russia', 'moscow', 'petersburg', 'malaysia', 'uae', 'dubai', 'qatar',
+        'saudi', 'china', 'india', 'indonesia', 'singapore', 'thailand',
+        'vietnam', 'philippines', 'japan', 'korea', 'australia', 'new zealand',
+        'usa', 'canada', 'mexico', 'brazil', 'argentina', 'chile', 'peru',
+        'colombia', 'egypt', 'morocco', 'tunisia', 'algeria', 'south africa',
+        'israel', 'jordan', 'lebanon', 'iran', 'iraq', 'turkey', 'kazakhstan',
+        'uzbekistan'
+    }
+
     # Mediterranean seaside countries/regions
     MEDITERRANEAN_SEASIDE = {
         'spain', 'france', 'italy', 'greece', 'croatia', 'malta', 'cyprus',
@@ -43,8 +55,14 @@ class TournamentFilter:
         self.end_date = self.start_date + timedelta(days=90)  # 3 months
     
     def is_european(self, location: str) -> bool:
-        """Check if tournament is in Europe"""
+        """Check if tournament is in Europe (excluding Russia and non-European countries)"""
         location_lower = location.lower()
+
+        # First check if it's explicitly non-European
+        if any(country in location_lower for country in self.NON_EUROPEAN_COUNTRIES):
+            return False
+
+        # Then check if it matches European countries
         return any(country in location_lower for country in self.EUROPEAN_COUNTRIES)
     
     def is_mediterranean_seaside(self, location: str) -> bool:
