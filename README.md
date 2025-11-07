@@ -1,5 +1,7 @@
 # medtourney
 
+[![Update Tournament Data Daily](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml)
+
 Advanced chess tournament search tool for chess-results.com with powerful filtering capabilities.
 
 ## 🌐 Web Tool
@@ -56,22 +58,36 @@ rfbrowser init
 3. Click "Search Tournaments"
 4. Browse the results and click on tournaments for more details
 
-### Data Scraper (Update Tournament Data)
+### Data Scraper (Manual Updates)
 
 The scraper uses Robot Framework with Browser Library to automate chess-results.com and download real tournament data.
 
-**Quick Start:**
+**Note:** The scraper runs **automatically every day** via GitHub Actions. Manual running is optional.
+
+**Quick Start (Local):**
 ```bash
 python3 run_scraper.py
 ```
 
+**Manual Trigger (GitHub Actions):**
+1. Go to [Actions tab](https://github.com/kobolcs/medtourney/actions)
+2. Select "Update Tournament Data Daily" workflow
+3. Click "Run workflow" button
+4. Select branch (main)
+5. Click "Run workflow"
+
 **What it does:**
 1. Opens https://s1.chess-results.com/TurnierSuche.aspx?lan=1
-2. Fills in the search form (current date to 3 months ahead)
+2. Fills in the search form (current date to 3 months ahead) - **dynamic dates**
 3. Downloads up to 2000 tournament results as Excel file
 4. Processes the Excel file using custom Python keywords
 5. Filters for European tournaments only (Russia excluded)
 6. Exports results to `tournaments_data.json`
+
+**Monitoring:**
+- Check workflow status: [GitHub Actions](https://github.com/kobolcs/medtourney/actions)
+- View logs: Click on any workflow run for detailed logs
+- On failure: Robot Framework logs are uploaded as artifacts
 
 **Advanced Usage:**
 
@@ -192,13 +208,38 @@ URL: https://chess-results.com/tournament2
 
 ## How It Works
 
-### Complete Workflow
+### 🤖 Automated Daily Updates (GitHub Actions)
 
-1. **Run Data Scraper Locally** (when you want fresh data):
+The tournament data is **automatically updated daily** via GitHub Actions:
+
+**Daily at 00:00 UTC:**
+1. GitHub Actions workflow triggers
+2. Runs Robot Framework scraper in CI environment
+3. Scrapes chess-results.com with **dynamic date range** (today → 3 months ahead)
+4. Downloads up to 2000 tournaments
+5. Filters for European tournaments (Russia excluded)
+6. Updates `tournaments_data.json`
+7. Auto-commits and pushes to main branch
+8. GitHub Pages deploys the new data automatically
+
+**Status:** [![Workflow Status](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml)
+
+**Benefits:**
+- ✅ Always up-to-date tournament data
+- ✅ Dynamic date range (always "tomorrow to 3 months from now")
+- ✅ Fully automated - no manual intervention needed
+- ✅ Version controlled - every update is tracked in Git history
+- ✅ Can be manually triggered from GitHub Actions UI
+
+### Manual Workflow (Optional)
+
+You can also run the scraper manually anytime:
+
+1. **Run Data Scraper Locally**:
    ```bash
    python3 run_scraper.py
    ```
-   This generates/updates `tournaments_data.json` with latest tournament data from chess-results.com
+   This generates/updates `tournaments_data.json` with latest tournament data
 
 2. **Commit and Push to GitHub**:
    ```bash
