@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>European Chess Tournament Finder - chess-results.com</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏆 European Chess Tournament Finder</h1>
+            <p class="subtitle">Search for chess tournaments on chess-results.com with advanced filtering</p>
+        </header>
+
+        <div class="filters-card">
+            <h2>Search Filters</h2>
+
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="openOnly" checked>
+                        <span class="checkbox-label">Open Category Only</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="excludeYouth" checked>
+                        <span class="checkbox-label">Exclude Youth-Only Tournaments</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="mediterraneanOnly">
+                        <span class="checkbox-label">Mediterranean Seaside Only</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="seniorCategory">
+                        <span class="checkbox-label">S50+ (Senior) Category</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="date-range">
+                <div class="date-input">
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="date-input">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate">
+                </div>
+            </div>
+
+            <div class="search-options">
+                <div class="country-select">
+                    <label for="countryFilter">Filter by Country:</label>
+                    <select id="countryFilter">
+                        <option value="">All European Countries</option>
+                        <option value="ESP">Spain</option>
+                        <option value="FRA">France</option>
+                        <option value="ITA">Italy</option>
+                        <option value="GER">Germany</option>
+                        <option value="GRE">Greece</option>
+                        <option value="CRO">Croatia</option>
+                        <option value="HUN">Hungary</option>
+                        <option value="POL">Poland</option>
+                        <option value="CZE">Czech Republic</option>
+                        <option value="AUT">Austria</option>
+                        <option value="NED">Netherlands</option>
+                        <option value="BEL">Belgium</option>
+                        <option value="SUI">Switzerland</option>
+                        <option value="POR">Portugal</option>
+                        <option value="SRB">Serbia</option>
+                        <option value="ROU">Romania</option>
+                        <option value="UKR">Ukraine</option>
+                        <option value="RUS">Russia</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="searchBtn" class="search-button">
+                <span>🔍 Search Tournaments</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Fetching tournaments from chess-results.com...</p>
+        </div>
+
+        <div id="error" class="error-message" style="display: none;"></div>
+
+        <div id="results" class="results-container" style="display: none;">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <span id="resultsCount" class="results-count"></span>
+            </div>
+            <div id="tournamentList" class="tournament-list"></div>
+        </div>
+
+        <footer>
+            <p>Data source: <a href="https://chess-results.com" target="_blank">chess-results.com</a></p>
+            <p class="note">Note: This tool scrapes public data from chess-results.com. Please respect their terms of service.</p>
+            <p class="github-link">
+                <a href="https://github.com/kobolcs/medtourney" target="_blank">
+                    View on GitHub
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
