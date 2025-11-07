@@ -2,6 +2,12 @@
 
 Advanced chess tournament search tool for chess-results.com with powerful filtering capabilities.
 
+## 🌐 Web Tool
+
+**Use the live web tool here:** [https://kobolcs.github.io/medtourney/](https://kobolcs.github.io/medtourney/)
+
+The web-based version provides an intuitive interface to search and filter chess tournaments directly in your browser. No installation required!
+
 ## Overview
 
 This tool helps you search for European chess tournaments in the next 3 months with advanced filtering options. Unlike the basic search on chess-results.com, this tool allows you to:
@@ -10,9 +16,20 @@ This tool helps you search for European chess tournaments in the next 3 months w
 - Exclude **youth-only** tournaments (ensuring not all players are below 18)
 - Filter for **S50+ (Senior)** category tournaments
 - Filter for **Mediterranean seaside** locations
+- Filter by specific **European countries**
 - Combine multiple filters for precise searches
 
+Available in two versions:
+- **Web Tool**: User-friendly browser interface (recommended)
+- **Command-Line Tool**: Python script for terminal use
+
 ## Installation
+
+### Using the Web Tool (Recommended)
+
+Simply visit [https://kobolcs.github.io/medtourney/](https://kobolcs.github.io/medtourney/) - no installation needed!
+
+### Using the Command-Line Tool
 
 1. Clone the repository:
 ```bash
@@ -26,6 +43,15 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+
+### Web Tool
+
+1. Visit [https://kobolcs.github.io/medtourney/](https://kobolcs.github.io/medtourney/)
+2. Set your desired filters (date range, categories, locations)
+3. Click "Search Tournaments"
+4. Browse the results and click on tournaments for more details
+
+### Command-Line Tool
 
 ### Basic Search
 
@@ -134,13 +160,22 @@ URL: https://chess-results.com/tournament2
 
 ## Technical Details
 
+### Web Tool
+- **Technologies:** HTML5, CSS3, Vanilla JavaScript
+- **Hosting:** GitHub Pages
+- **Data Source:** chess-results.com (via CORS proxies)
+- **Features:** Responsive design, real-time filtering, no backend required
+
+### Command-Line Tool
 - **Language:** Python 3.12+
 - **Dependencies:** requests, beautifulsoup4, python-dateutil
 - **Architecture:** Modular design with separate filter and search classes
 
-## Note
+## How It Works
 
-This tool currently uses sample data for demonstration purposes. In a production environment, it would integrate with the chess-results.com website to fetch real tournament data. The filtering logic and user interface are fully functional and ready for integration with live data sources.
+The web tool attempts to fetch live tournament data from chess-results.com using CORS proxy services. If the fetch is unsuccessful (due to network issues or CORS restrictions), it falls back to a comprehensive set of demo tournaments that demonstrate all filtering capabilities.
+
+The demo data includes realistic European tournaments with various categories, locations, and dates, allowing you to fully explore the tool's filtering features.
 
 ## Contributing
 
