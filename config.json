@@ -1,0 +1,278 @@
+{
+  "europeanCountries": [
+    "albania",
+    "andorra",
+    "austria",
+    "belarus",
+    "belgium",
+    "bosnia",
+    "bulgaria",
+    "croatia",
+    "cyprus",
+    "czech",
+    "denmark",
+    "estonia",
+    "finland",
+    "france",
+    "germany",
+    "greece",
+    "hungary",
+    "iceland",
+    "ireland",
+    "italy",
+    "kosovo",
+    "latvia",
+    "liechtenstein",
+    "lithuania",
+    "luxembourg",
+    "malta",
+    "moldova",
+    "monaco",
+    "montenegro",
+    "netherlands",
+    "north macedonia",
+    "norway",
+    "poland",
+    "portugal",
+    "romania",
+    "san marino",
+    "serbia",
+    "slovakia",
+    "slovenia",
+    "spain",
+    "sweden",
+    "switzerland",
+    "ukraine",
+    "united kingdom",
+    "england",
+    "scotland",
+    "wales",
+    "northern ireland",
+    "gbr",
+    "ger",
+    "fra",
+    "esp",
+    "ita",
+    "ned",
+    "aut",
+    "cze",
+    "hun",
+    "pol",
+    "cro",
+    "gre",
+    "srb",
+    "rou",
+    "ukr",
+    "svk",
+    "slo",
+    "den",
+    "nor",
+    "swe",
+    "fin",
+    "bel",
+    "sui",
+    "por"
+  ],
+  "nonEuropeanCountries": [
+    "russia",
+    "moscow",
+    "petersburg",
+    "malaysia",
+    "uae",
+    "dubai",
+    "qatar",
+    "saudi",
+    "china",
+    "india",
+    "indonesia",
+    "singapore",
+    "thailand",
+    "vietnam",
+    "philippines",
+    "japan",
+    "korea",
+    "australia",
+    "new zealand",
+    "usa",
+    "canada",
+    "mexico",
+    "brazil",
+    "argentina",
+    "chile",
+    "peru",
+    "colombia",
+    "egypt",
+    "morocco",
+    "tunisia",
+    "algeria",
+    "south africa",
+    "israel",
+    "jordan",
+    "lebanon",
+    "iran",
+    "iraq",
+    "turkey",
+    "kazakhstan",
+    "uzbekistan",
+    "rus",
+    "mas",
+    "tur"
+  ],
+  "mediterraneanLocations": [
+    "barcelona",
+    "valencia",
+    "alicante",
+    "malaga",
+    "marbella",
+    "nice",
+    "cannes",
+    "monaco",
+    "marseille",
+    "montpellier",
+    "genoa",
+    "genova",
+    "naples",
+    "napoli",
+    "sicily",
+    "sicilia",
+    "rome",
+    "roma",
+    "athens",
+    "thessaloniki",
+    "split",
+    "dubrovnik",
+    "rijeka",
+    "malta",
+    "valletta",
+    "sliema",
+    "limassol",
+    "larnaca",
+    "cyprus"
+  ],
+  "countryCodes": {
+    "ESP": {
+      "name": "Spain",
+      "keywords": ["spain", "españa", "esp"]
+    },
+    "FRA": {
+      "name": "France",
+      "keywords": ["france", "francia", "fra"]
+    },
+    "ITA": {
+      "name": "Italy",
+      "keywords": ["italy", "italia", "ita"]
+    },
+    "GER": {
+      "name": "Germany",
+      "keywords": ["germany", "deutschland", "ger", "deu"]
+    },
+    "GRE": {
+      "name": "Greece",
+      "keywords": ["greece", "grecia", "gre", "grc"]
+    },
+    "CRO": {
+      "name": "Croatia",
+      "keywords": ["croatia", "hrvatska", "cro", "hrv"]
+    },
+    "POR": {
+      "name": "Portugal",
+      "keywords": ["portugal", "por", "prt"]
+    },
+    "NED": {
+      "name": "Netherlands",
+      "keywords": ["netherlands", "holland", "ned", "nld"]
+    },
+    "SUI": {
+      "name": "Switzerland",
+      "keywords": ["switzerland", "schweiz", "sui", "che"]
+    },
+    "AUT": {
+      "name": "Austria",
+      "keywords": ["austria", "osterreich", "aut"]
+    },
+    "BEL": {
+      "name": "Belgium",
+      "keywords": ["belgium", "belgique", "bel"]
+    },
+    "CZE": {
+      "name": "Czech Republic",
+      "keywords": ["czech", "czechia", "cze"]
+    },
+    "HUN": {
+      "name": "Hungary",
+      "keywords": ["hungary", "magyarorszag", "hun"]
+    },
+    "POL": {
+      "name": "Poland",
+      "keywords": ["poland", "polska", "pol"]
+    },
+    "SRB": {
+      "name": "Serbia",
+      "keywords": ["serbia", "srbija", "srb"]
+    },
+    "ROU": {
+      "name": "Romania",
+      "keywords": ["romania", "rou", "rom"]
+    },
+    "UKR": {
+      "name": "Ukraine",
+      "keywords": ["ukraine", "ukr"]
+    },
+    "SVK": {
+      "name": "Slovakia",
+      "keywords": ["slovakia", "svk"]
+    },
+    "SLO": {
+      "name": "Slovenia",
+      "keywords": ["slovenia", "slo", "svn"]
+    },
+    "DEN": {
+      "name": "Denmark",
+      "keywords": ["denmark", "danmark", "den", "dnk"]
+    },
+    "NOR": {
+      "name": "Norway",
+      "keywords": ["norway", "norge", "nor"]
+    },
+    "SWE": {
+      "name": "Sweden",
+      "keywords": ["sweden", "sverige", "swe"]
+    },
+    "FIN": {
+      "name": "Finland",
+      "keywords": ["finland", "suomi", "fin"]
+    },
+    "MLT": {
+      "name": "Malta",
+      "keywords": ["malta", "mlt"]
+    },
+    "CYP": {
+      "name": "Cyprus",
+      "keywords": ["cyprus", "cyp"]
+    },
+    "MON": {
+      "name": "Monaco",
+      "keywords": ["monaco", "mon", "mco"]
+    },
+    "ALB": {
+      "name": "Albania",
+      "keywords": ["albania", "alb"]
+    },
+    "AND": {
+      "name": "Andorra",
+      "keywords": ["andorra", "and"]
+    },
+    "BLR": {
+      "name": "Belarus",
+      "keywords": ["belarus", "blr"]
+    },
+    "BIH": {
+      "name": "Bosnia and Herzegovina",
+      "keywords": ["bosnia", "bih"]
+    },
+    "GBR": {
+      "name": "United Kingdom",
+      "keywords": ["united kingdom", "england", "scotland", "wales", "uk", "gbr"]
+    }
+  }
+}

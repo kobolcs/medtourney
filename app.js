@@ -11,7 +11,68 @@ class TournamentFinder {
 
         this.currentProxyIndex = 0;
 
-        // European countries mapping - STRICT list (Russia excluded per user request)
+        // Will be loaded from config.json
+        this.europeanCountries = null;
+        this.nonEuropeanCountries = null;
+        this.mediterraneanLocations = null;
+        this.countryCodes = null;
+
+        // Initialize after loading config
+        this.initAsync();
+    }
+
+    async initAsync() {
+        // Load configuration
+        await this.loadConfig();
+
+        // Set default dates (today to 3 months from now)
+        const today = new Date();
+        const threeMonthsLater = new Date(today);
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+
+        document.getElementById('startDate').valueAsDate = today;
+        document.getElementById('endDate').valueAsDate = threeMonthsLater;
+
+        // Attach event listeners
+        document.getElementById('searchBtn').addEventListener('click', () => this.searchTournaments());
+    }
+
+    async loadConfig() {
+        try {
+            const response = await fetch('./config.json', {
+                cache: 'no-cache',
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to load config: ${response.status}`);
+            }
+
+            const config = await response.json();
+
+            // Store lists directly
+            this.nonEuropeanCountries = config.nonEuropeanCountries;
+            this.mediterraneanLocations = config.mediterraneanLocations;
+
+            // Convert countryCodes to the format used by the app
+            this.europeanCountries = {};
+            this.countryCodes = config.countryCodes;
+
+            for (const [code, data] of Object.entries(config.countryCodes)) {
+                this.europeanCountries[code] = data.keywords;
+            }
+
+            console.log(`Loaded config: ${Object.keys(this.europeanCountries).length} countries, ` +
+                       `${this.nonEuropeanCountries.length} non-European countries, ` +
+                       `${this.mediterraneanLocations.length} Mediterranean locations`);
+        } catch (error) {
+            console.error('Error loading config.json, using fallback defaults:', error);
+            this.loadDefaultConfig();
+        }
+    }
+
+    loadDefaultConfig() {
+        // Fallback configuration if config.json fails to load
         this.europeanCountries = {
             'ESP': ['spain', 'españa', 'esp'],
             'FRA': ['france', 'francia', 'fra'],
@@ -59,7 +120,6 @@ class TournamentFinder {
             'LIE': ['liechtenstein', 'lie']
         };
 
-        // Non-European countries to explicitly exclude
         this.nonEuropeanCountries = [
             'malaysia', 'uae', 'dubai', 'qatar', 'saudi', 'china', 'india',
             'indonesia', 'singapore', 'thailand', 'vietnam', 'philippines',
@@ -70,7 +130,6 @@ class TournamentFinder {
             'russia', 'moscow', 'petersburg', 'kazakhstan', 'uzbekistan'
         ];
 
-        // Mediterranean locations
         this.mediterraneanLocations = [
             'barcelona', 'valencia', 'alicante', 'malaga', 'marbella',
             'nice', 'cannes', 'monaco', 'marseille', 'montpellier',
@@ -78,24 +137,8 @@ class TournamentFinder {
             'athens', 'αθήνα', 'thessaloniki', 'θεσσαλονίκη',
             'split', 'dubrovnik', 'rijeka',
             'malta', 'valletta', 'sliema',
-            'limassol', 'larnaca', 'cyprus',
-            'antalya', 'izmir'
+            'limassol', 'larnaca', 'cyprus'
         ];
-
-        this.init();
-    }
-
-    init() {
-        // Set default dates (today to 3 months from now)
-        const today = new Date();
-        const threeMonthsLater = new Date(today);
-        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-
-        document.getElementById('startDate').valueAsDate = today;
-        document.getElementById('endDate').valueAsDate = threeMonthsLater;
-
-        // Attach event listeners
-        document.getElementById('searchBtn').addEventListener('click', () => this.searchTournaments());
     }
 
     async searchTournaments() {

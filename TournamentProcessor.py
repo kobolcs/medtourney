@@ -6,7 +6,7 @@ import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 import openpyxl
 from robot.api.deco import keyword
 
@@ -14,45 +14,82 @@ from robot.api.deco import keyword
 class TournamentProcessor:
     """Library for processing chess tournament Excel files"""
 
-    # European countries (Russia excluded per user request)
-    EUROPEAN_COUNTRIES = {
-        'albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia',
-        'bulgaria', 'croatia', 'cyprus', 'czech', 'denmark', 'estonia',
-        'finland', 'france', 'germany', 'greece', 'hungary', 'iceland',
-        'ireland', 'italy', 'kosovo', 'latvia', 'liechtenstein', 'lithuania',
-        'luxembourg', 'malta', 'moldova', 'monaco', 'montenegro', 'netherlands',
-        'north macedonia', 'norway', 'poland', 'portugal', 'romania',
-        'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden',
-        'switzerland', 'ukraine', 'united kingdom', 'england', 'scotland',
-        'wales', 'northern ireland', 'gbr', 'ger', 'fra', 'esp', 'ita', 'ned',
-        'aut', 'cze', 'hun', 'pol', 'cro', 'gre', 'srb', 'rou', 'ukr',
-        'svk', 'slo', 'den', 'nor', 'swe', 'fin', 'bel', 'ned', 'sui', 'por'
-    }
-
-    # Non-European countries to explicitly exclude
-    NON_EUROPEAN_COUNTRIES = {
-        'russia', 'moscow', 'petersburg', 'malaysia', 'uae', 'dubai', 'qatar',
-        'saudi', 'china', 'india', 'indonesia', 'singapore', 'thailand',
-        'vietnam', 'philippines', 'japan', 'korea', 'australia', 'new zealand',
-        'usa', 'canada', 'mexico', 'brazil', 'argentina', 'chile', 'peru',
-        'colombia', 'egypt', 'morocco', 'tunisia', 'algeria', 'south africa',
-        'israel', 'jordan', 'lebanon', 'iran', 'iraq', 'turkey', 'kazakhstan',
-        'uzbekistan', 'rus', 'mas', 'tur'
-    }
-
-    # Mediterranean locations
-    MEDITERRANEAN_LOCATIONS = {
-        'barcelona', 'valencia', 'alicante', 'malaga', 'marbella',
-        'nice', 'cannes', 'monaco', 'marseille', 'montpellier',
-        'genoa', 'genova', 'naples', 'napoli', 'sicily', 'sicilia', 'rome', 'roma',
-        'athens', 'thessaloniki', 'split', 'dubrovnik', 'rijeka',
-        'malta', 'valletta', 'sliema', 'limassol', 'larnaca', 'cyprus'
+    # Precompiled regex patterns for performance
+    REGEX_PATTERNS = {
+        'date_yyyymmdd': re.compile(r'^(\d{8})$'),
+        'date_ddmmyyyy_dot': re.compile(r'(\d{1,2})\.(\d{1,2})\.(\d{4})'),
+        'date_yyyymmdd_dash': re.compile(r'(\d{4})-(\d{1,2})-(\d{1,2})'),
+        'date_ddmmyyyy_slash': re.compile(r'(\d{1,2})/(\d{1,2})/(\d{4})'),
+        'open': re.compile(r'\bopen\b', re.IGNORECASE),
+        's50': re.compile(r'\bs50\+|s50|senior|veteran|50\+', re.IGNORECASE),
+        'youth': re.compile(r'\bu\d+|youth|junior|u18|under', re.IGNORECASE),
+        'women': re.compile(r'\bwomen|ladies|female', re.IGNORECASE),
+        'blitz': re.compile(r'\bblitz\b', re.IGNORECASE),
+        'rapid': re.compile(r'\brapid\b', re.IGNORECASE),
+        'classical': re.compile(r'\bclassic|classical|standard\b', re.IGNORECASE),
     }
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
     def __init__(self):
         self.tournaments = []
+        # Load configuration from config.json
+        self._load_config()
+
+    def _load_config(self):
+        """Load country and location data from config.json"""
+        config_path = Path(__file__).parent / 'config.json'
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+
+            # Convert lists to sets for O(1) lookup performance
+            self.european_countries: Set[str] = set(config['europeanCountries'])
+            self.non_european_countries: Set[str] = set(config['nonEuropeanCountries'])
+            self.mediterranean_locations: Set[str] = set(config['mediterraneanLocations'])
+
+            print(f"Loaded config: {len(self.european_countries)} European countries, "
+                  f"{len(self.non_european_countries)} non-European countries, "
+                  f"{len(self.mediterranean_locations)} Mediterranean locations")
+        except FileNotFoundError:
+            print(f"Warning: config.json not found at {config_path}, using defaults")
+            # Fallback to hardcoded sets if config file missing
+            self._load_default_config()
+        except json.JSONDecodeError as e:
+            print(f"Error parsing config.json: {e}, using defaults")
+            self._load_default_config()
+
+    def _load_default_config(self):
+        """Fallback configuration if config.json is missing"""
+        self.european_countries = {
+            'albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia',
+            'bulgaria', 'croatia', 'cyprus', 'czech', 'denmark', 'estonia',
+            'finland', 'france', 'germany', 'greece', 'hungary', 'iceland',
+            'ireland', 'italy', 'kosovo', 'latvia', 'liechtenstein', 'lithuania',
+            'luxembourg', 'malta', 'moldova', 'monaco', 'montenegro', 'netherlands',
+            'north macedonia', 'norway', 'poland', 'portugal', 'romania',
+            'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden',
+            'switzerland', 'ukraine', 'united kingdom', 'england', 'scotland',
+            'wales', 'northern ireland', 'gbr', 'ger', 'fra', 'esp', 'ita', 'ned',
+            'aut', 'cze', 'hun', 'pol', 'cro', 'gre', 'srb', 'rou', 'ukr',
+            'svk', 'slo', 'den', 'nor', 'swe', 'fin', 'bel', 'sui', 'por'
+        }
+        self.non_european_countries = {
+            'russia', 'moscow', 'petersburg', 'malaysia', 'uae', 'dubai', 'qatar',
+            'saudi', 'china', 'india', 'indonesia', 'singapore', 'thailand',
+            'vietnam', 'philippines', 'japan', 'korea', 'australia', 'new zealand',
+            'usa', 'canada', 'mexico', 'brazil', 'argentina', 'chile', 'peru',
+            'colombia', 'egypt', 'morocco', 'tunisia', 'algeria', 'south africa',
+            'israel', 'jordan', 'lebanon', 'iran', 'iraq', 'turkey', 'kazakhstan',
+            'uzbekistan', 'rus', 'mas', 'tur'
+        }
+        self.mediterranean_locations = {
+            'barcelona', 'valencia', 'alicante', 'malaga', 'marbella',
+            'nice', 'cannes', 'monaco', 'marseille', 'montpellier',
+            'genoa', 'genova', 'naples', 'napoli', 'sicily', 'sicilia', 'rome', 'roma',
+            'athens', 'thessaloniki', 'split', 'dubrovnik', 'rijeka',
+            'malta', 'valletta', 'sliema', 'limassol', 'larnaca', 'cyprus'
+        }
 
     @keyword("Load And Filter Tournaments")
     def load_and_filter_tournaments(self, excel_file: str) -> List[Dict[str, Any]]:
@@ -88,6 +125,9 @@ class TournamentProcessor:
 
             tournaments = []
 
+            # Calculate tomorrow once (not in loop) - PERFORMANCE FIX
+            tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+
             # Process each row
             for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
                 try:
@@ -105,7 +145,6 @@ class TournamentProcessor:
                     parsed_date = self._parse_date(date_value)
 
                     # Filter: only tournaments starting tomorrow or later (not today or past)
-                    tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
                     if parsed_date < tomorrow:
                         continue  # Skip tournaments that already started or start today
 
@@ -197,7 +236,7 @@ class TournamentProcessor:
 
             # Mediterranean filter
             if mediterranean_only:
-                if not any(place in location_lower for place in self.MEDITERRANEAN_LOCATIONS):
+                if not any(place in location_lower for place in self.mediterranean_locations):
                     continue
 
             # Senior filter
@@ -229,57 +268,72 @@ class TournamentProcessor:
         # Try to parse string
         date_str = str(date_value).strip()
 
-        # Try various date patterns
-        patterns = [
-            (r'^(\d{8})$', 'YYYYMMDD'),                       # 20251128 (chess-results.com format)
-            (r'(\d{1,2})\.(\d{1,2})\.(\d{4})', 'DD.MM.YYYY'),  # DD.MM.YYYY
-            (r'(\d{4})-(\d{1,2})-(\d{1,2})', 'YYYY-MM-DD'),    # YYYY-MM-DD
-            (r'(\d{1,2})/(\d{1,2})/(\d{4})', 'DD/MM/YYYY'),    # DD/MM/YYYY
-        ]
+        # Try YYYYMMDD format (chess-results.com format: 20251128)
+        match = self.REGEX_PATTERNS['date_yyyymmdd'].search(date_str)
+        if match:
+            try:
+                year = int(date_str[0:4])
+                month = int(date_str[4:6])
+                day = int(date_str[6:8])
+                return datetime(year, month, day)
+            except (ValueError, IndexError) as e:
+                print(f"Failed to parse YYYYMMDD date '{date_str}': {e}")
 
-        for pattern, date_type in patterns:
-            match = re.search(pattern, date_str)
-            if match:
-                try:
-                    if date_type == 'YYYYMMDD':
-                        # Parse 20251128 -> 2025-11-28
-                        year = int(date_str[0:4])
-                        month = int(date_str[4:6])
-                        day = int(date_str[6:8])
-                        return datetime(year, month, day)
-                    elif date_type == 'DD.MM.YYYY' or date_type == 'DD/MM/YYYY':
-                        return datetime(int(match[3]), int(match[2]), int(match[1]))
-                    else:  # YYYY-MM-DD
-                        return datetime(int(match[1]), int(match[2]), int(match[3]))
-                except:
-                    continue
+        # Try DD.MM.YYYY format
+        match = self.REGEX_PATTERNS['date_ddmmyyyy_dot'].search(date_str)
+        if match:
+            try:
+                return datetime(int(match[3]), int(match[2]), int(match[1]))
+            except (ValueError, IndexError) as e:
+                print(f"Failed to parse DD.MM.YYYY date '{date_str}': {e}")
 
+        # Try YYYY-MM-DD format
+        match = self.REGEX_PATTERNS['date_yyyymmdd_dash'].search(date_str)
+        if match:
+            try:
+                return datetime(int(match[1]), int(match[2]), int(match[3]))
+            except (ValueError, IndexError) as e:
+                print(f"Failed to parse YYYY-MM-DD date '{date_str}': {e}")
+
+        # Try DD/MM/YYYY format
+        match = self.REGEX_PATTERNS['date_ddmmyyyy_slash'].search(date_str)
+        if match:
+            try:
+                return datetime(int(match[3]), int(match[2]), int(match[1]))
+            except (ValueError, IndexError) as e:
+                print(f"Failed to parse DD/MM/YYYY date '{date_str}': {e}")
+
+        # Default to today if no pattern matched
+        print(f"Warning: Could not parse date '{date_str}', defaulting to today")
         return datetime.now()
 
     def _extract_category(self, text: str) -> str:
-        """Extract tournament category from text"""
+        """Extract tournament category from text - uses precompiled patterns"""
         categories = []
-        text_lower = text.lower()
 
-        # Tournament type
-        if re.search(r'\bopen\b', text_lower):
+        # Tournament type - use precompiled patterns
+        if self.REGEX_PATTERNS['open'].search(text):
             categories.append('Open')
-        if re.search(r'\bs50\+|s50|senior|veteran|50\+', text_lower):
+        if self.REGEX_PATTERNS['s50'].search(text):
             categories.append('S50+')
-        if re.search(r'\bu\d+|youth|junior|u18|under', text_lower):
+        if self.REGEX_PATTERNS['youth'].search(text):
             categories.append('Youth')
-        if re.search(r'\bwomen|ladies|female', text_lower):
+        if self.REGEX_PATTERNS['women'].search(text):
             categories.append('Women')
 
-        # Time control (important for filtering)
-        if re.search(r'\bblitz\b', text_lower):
+        # Time control (important for filtering) - use precompiled patterns
+        if self.REGEX_PATTERNS['blitz'].search(text):
             categories.append('Blitz')
-        elif re.search(r'\brapid\b', text_lower):
+        elif self.REGEX_PATTERNS['rapid'].search(text):
             categories.append('Rapid')
-        elif re.search(r'\bclassic|classical|standard\b', text_lower):
+        elif self.REGEX_PATTERNS['classical'].search(text):
             categories.append('Classical')
         # If no time control specified, assume Classical
-        elif not any(tc in text_lower for tc in ['blitz', 'rapid', 'classical', 'classic', 'standard']):
+        elif not any(pattern.search(text) for pattern in [
+            self.REGEX_PATTERNS['blitz'],
+            self.REGEX_PATTERNS['rapid'],
+            self.REGEX_PATTERNS['classical']
+        ]):
             categories.append('Classical')
 
         return ', '.join(categories) if categories else 'Open, Classical'
@@ -289,8 +343,8 @@ class TournamentProcessor:
         location_lower = location.lower()
 
         # First check if it's explicitly non-European
-        if any(country in location_lower for country in self.NON_EUROPEAN_COUNTRIES):
+        if any(country in location_lower for country in self.non_european_countries):
             return False
 
         # Then check if it matches European countries
-        return any(country in location_lower for country in self.EUROPEAN_COUNTRIES)
+        return any(country in location_lower for country in self.european_countries)
