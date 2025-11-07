@@ -116,7 +116,11 @@
 
         <footer>
             <p>Data source: <a href="https://chess-results.com" target="_blank">chess-results.com</a></p>
-            <p class="note">Note: This tool scrapes public data from chess-results.com. Please respect their terms of service.</p>
+            <p class="note">
+                Tournament data is fetched from the repository's <code>tournaments_data.json</code> file.<br>
+                To update data: Run the Robot Framework scraper locally, then commit and push the updated JSON file.<br>
+                See <a href="https://github.com/kobolcs/medtourney#data-scraper-update-tournament-data" target="_blank" style="color: white; text-decoration: underline;">README</a> for instructions.
+            </p>
             <p class="github-link">
                 <a href="https://github.com/kobolcs/medtourney" target="_blank">
                     View on GitHub

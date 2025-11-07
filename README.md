@@ -192,8 +192,38 @@ URL: https://chess-results.com/tournament2
 
 ## How It Works
 
+### Complete Workflow
+
+1. **Run Data Scraper Locally** (when you want fresh data):
+   ```bash
+   python3 run_scraper.py
+   ```
+   This generates/updates `tournaments_data.json` with latest tournament data from chess-results.com
+
+2. **Commit and Push to GitHub**:
+   ```bash
+   git add tournaments_data.json
+   git commit -m "Update tournament data"
+   git push
+   ```
+
+3. **GitHub Pages Serves the JSON**:
+   - `tournaments_data.json` is now available at `https://kobolcs.github.io/medtourney/tournaments_data.json`
+   - No server or database needed - just static file hosting
+
+4. **Web App Loads the Data**:
+   - Users visit the web app
+   - App fetches `tournaments_data.json` from the repo
+   - Applies client-side filters
+   - Shows results instantly
+
+**Result**: Tournament data is version-controlled, automatically deployed, and requires no backend server!
+
 ### Web Tool
-The web tool attempts to fetch live tournament data from chess-results.com using CORS proxy services. If the fetch is unsuccessful, it can load data from a local `tournaments_data.json` file.
+The web tool loads tournament data with this priority:
+1. **First**: Tries to load `tournaments_data.json` from the repository (GitHub Pages)
+2. **Fallback**: Attempts to fetch from chess-results.com via CORS proxies (may fail due to restrictions)
+3. **Best Practice**: Keep `tournaments_data.json` updated by running the scraper regularly
 
 ### Data Scraper
 The scraper uses Robot Framework to:
