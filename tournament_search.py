@@ -103,7 +103,13 @@ class TournamentSearcher:
             filter_senior: Only show tournaments with S50+ category
         
         Returns:
-            List of tournament dictionaries
+            List of tournament dictionaries, where each dictionary contains:
+                - name (str): Tournament name
+                - location (str): Tournament location (city, country)
+                - date (datetime): Tournament start date
+                - category (str): Tournament category (e.g., "Open", "Open, S50+")
+                - description (str): Tournament description
+                - url (str): URL to tournament on chess-results.com
         """
         tournaments = []
         
