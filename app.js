@@ -50,9 +50,9 @@ class TournamentFinder {
 
             const config = await response.json();
 
-            // Store lists directly
-            this.nonEuropeanCountries = config.nonEuropeanCountries;
-            this.mediterraneanLocations = config.mediterraneanLocations;
+            // Convert to Sets for O(1) lookup performance
+            this.nonEuropeanCountries = new Set(config.nonEuropeanCountries);
+            this.mediterraneanLocations = new Set(config.mediterraneanLocations);
 
             // Convert countryCodes to the format used by the app
             this.europeanCountries = {};
@@ -63,8 +63,8 @@ class TournamentFinder {
             }
 
             console.log(`Loaded config: ${Object.keys(this.europeanCountries).length} countries, ` +
-                       `${this.nonEuropeanCountries.length} non-European countries, ` +
-                       `${this.mediterraneanLocations.length} Mediterranean locations`);
+                       `${this.nonEuropeanCountries.size} non-European countries, ` +
+                       `${this.mediterraneanLocations.size} Mediterranean locations`);
         } catch (error) {
             console.error('Error loading config.json, using fallback defaults:', error);
             this.loadDefaultConfig();
@@ -120,7 +120,7 @@ class TournamentFinder {
             'LIE': ['liechtenstein', 'lie']
         };
 
-        this.nonEuropeanCountries = [
+        this.nonEuropeanCountries = new Set([
             'malaysia', 'uae', 'dubai', 'qatar', 'saudi', 'china', 'india',
             'indonesia', 'singapore', 'thailand', 'vietnam', 'philippines',
             'japan', 'korea', 'australia', 'new zealand', 'usa', 'canada',
@@ -128,9 +128,9 @@ class TournamentFinder {
             'egypt', 'morocco', 'tunisia', 'algeria', 'south africa',
             'israel', 'jordan', 'lebanon', 'iran', 'iraq', 'turkey',
             'russia', 'moscow', 'petersburg', 'kazakhstan', 'uzbekistan'
-        ];
+        ]);
 
-        this.mediterraneanLocations = [
+        this.mediterraneanLocations = new Set([
             'barcelona', 'valencia', 'alicante', 'malaga', 'marbella',
             'nice', 'cannes', 'monaco', 'marseille', 'montpellier',
             'genoa', 'genova', 'naples', 'napoli', 'sicily', 'sicilia', 'rome', 'roma',
@@ -138,7 +138,7 @@ class TournamentFinder {
             'split', 'dubrovnik', 'rijeka',
             'malta', 'valletta', 'sliema',
             'limassol', 'larnaca', 'cyprus'
-        ];
+        ]);
     }
 
     async searchTournaments() {
@@ -599,9 +599,13 @@ class TournamentFinder {
 
     isMediterranean(location) {
         const locationLower = location.toLowerCase();
-        return this.mediterraneanLocations.some(place =>
-            locationLower.includes(place.toLowerCase())
-        );
+        // Use Set for O(1) lookup - iterate and check includes
+        for (const place of this.mediterraneanLocations) {
+            if (locationLower.includes(place)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     hasSeniorCategory(category) {
@@ -635,10 +639,13 @@ class TournamentFinder {
     isNonEuropean(location) {
         const locationLower = location.toLowerCase();
 
-        // Explicitly check for non-European countries
-        return this.nonEuropeanCountries.some(country =>
-            locationLower.includes(country.toLowerCase())
-        );
+        // Explicitly check for non-European countries using Set
+        for (const country of this.nonEuropeanCountries) {
+            if (locationLower.includes(country)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     displayResults(tournaments) {
@@ -691,9 +698,18 @@ class TournamentFinder {
     }
 
     escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text || '';
-        return div.innerHTML;
+        // Use regex for efficient HTML escaping without DOM creation
+        if (!text) return '';
+
+        const htmlEscapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+
+        return String(text).replace(/[&<>"']/g, char => htmlEscapeMap[char]);
     }
 }
 
