@@ -427,6 +427,9 @@ class TournamentFinder {
             excludeYouth: document.getElementById('excludeYouth').checked,
             mediterraneanOnly: document.getElementById('mediterraneanOnly').checked,
             seniorCategory: document.getElementById('seniorCategory').checked,
+            classicalTime: document.getElementById('classicalTime').checked,
+            rapidTime: document.getElementById('rapidTime').checked,
+            blitzTime: document.getElementById('blitzTime').checked,
             startDate: document.getElementById('startDate').valueAsDate,
             endDate: document.getElementById('endDate').valueAsDate,
             countryFilter: document.getElementById('countryFilter').value
@@ -440,6 +443,21 @@ class TournamentFinder {
 
             // Explicitly exclude non-European countries
             if (this.isNonEuropean(tournament.location)) {
+                return false;
+            }
+
+            // Time control filter
+            const categoryLower = tournament.category.toLowerCase();
+            const hasBlitz = /\bblitz\b/i.test(categoryLower);
+            const hasRapid = /\brapid\b/i.test(categoryLower);
+            const hasClassical = /\bclassical|classic|standard\b/i.test(categoryLower) || (!hasBlitz && !hasRapid);
+
+            const timeControlMatches =
+                (filters.blitzTime && hasBlitz) ||
+                (filters.rapidTime && hasRapid) ||
+                (filters.classicalTime && hasClassical);
+
+            if (!timeControlMatches) {
                 return false;
             }
 

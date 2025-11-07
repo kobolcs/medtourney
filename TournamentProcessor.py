@@ -4,7 +4,7 @@ Custom Robot Framework Library for processing chess tournament data
 
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Dict, Any
 import openpyxl
@@ -102,7 +102,12 @@ class TournamentProcessor:
                         continue
 
                     # Parse date
-                    date_str = self._parse_date(date_value)
+                    parsed_date = self._parse_date(date_value)
+
+                    # Filter: only tournaments starting tomorrow or later (not today or past)
+                    tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+                    if parsed_date < tomorrow:
+                        continue  # Skip tournaments that already started or start today
 
                     # Extract category
                     category = self._extract_category(name + " " + location)
@@ -115,7 +120,7 @@ class TournamentProcessor:
                     tournament = {
                         'name': name,
                         'location': location,
-                        'date': date_str,
+                        'date': parsed_date.strftime('%Y-%m-%d'),  # Convert to string for JSON
                         'category': category,
                         'url': url,
                         'description': name
@@ -212,44 +217,51 @@ class TournamentProcessor:
                     return idx
         return None
 
-    def _parse_date(self, date_value) -> str:
-        """Parse date from various formats"""
+    def _parse_date(self, date_value):
+        """Parse date from various formats and return datetime object"""
         if date_value is None:
-            return datetime.now().strftime('%Y-%m-%d')
+            return datetime.now()
 
         # If already a datetime object
         if isinstance(date_value, datetime):
-            return date_value.strftime('%Y-%m-%d')
+            return date_value
 
         # Try to parse string
         date_str = str(date_value).strip()
 
         # Try various date patterns
         patterns = [
-            (r'(\d{1,2})\.(\d{1,2})\.(\d{4})', '%d.%m.%Y'),  # DD.MM.YYYY
-            (r'(\d{4})-(\d{1,2})-(\d{1,2})', '%Y-%m-%d'),    # YYYY-MM-DD
-            (r'(\d{1,2})/(\d{1,2})/(\d{4})', '%d/%m/%Y'),    # DD/MM/YYYY
+            (r'^(\d{8})$', 'YYYYMMDD'),                       # 20251128 (chess-results.com format)
+            (r'(\d{1,2})\.(\d{1,2})\.(\d{4})', 'DD.MM.YYYY'),  # DD.MM.YYYY
+            (r'(\d{4})-(\d{1,2})-(\d{1,2})', 'YYYY-MM-DD'),    # YYYY-MM-DD
+            (r'(\d{1,2})/(\d{1,2})/(\d{4})', 'DD/MM/YYYY'),    # DD/MM/YYYY
         ]
 
-        for pattern, date_format in patterns:
+        for pattern, date_type in patterns:
             match = re.search(pattern, date_str)
             if match:
                 try:
-                    if pattern == patterns[0] or pattern == patterns[2]:  # DD.MM.YYYY or DD/MM/YYYY
-                        dt = datetime(int(match[3]), int(match[2]), int(match[1]))
+                    if date_type == 'YYYYMMDD':
+                        # Parse 20251128 -> 2025-11-28
+                        year = int(date_str[0:4])
+                        month = int(date_str[4:6])
+                        day = int(date_str[6:8])
+                        return datetime(year, month, day)
+                    elif date_type == 'DD.MM.YYYY' or date_type == 'DD/MM/YYYY':
+                        return datetime(int(match[3]), int(match[2]), int(match[1]))
                     else:  # YYYY-MM-DD
-                        dt = datetime(int(match[1]), int(match[2]), int(match[3]))
-                    return dt.strftime('%Y-%m-%d')
+                        return datetime(int(match[1]), int(match[2]), int(match[3]))
                 except:
                     continue
 
-        return datetime.now().strftime('%Y-%m-%d')
+        return datetime.now()
 
     def _extract_category(self, text: str) -> str:
         """Extract tournament category from text"""
         categories = []
         text_lower = text.lower()
 
+        # Tournament type
         if re.search(r'\bopen\b', text_lower):
             categories.append('Open')
         if re.search(r'\bs50\+|s50|senior|veteran|50\+', text_lower):
@@ -258,12 +270,19 @@ class TournamentProcessor:
             categories.append('Youth')
         if re.search(r'\bwomen|ladies|female', text_lower):
             categories.append('Women')
-        if re.search(r'\bblitz', text_lower):
-            categories.append('Blitz')
-        if re.search(r'\brapid', text_lower):
-            categories.append('Rapid')
 
-        return ', '.join(categories) if categories else 'Open'
+        # Time control (important for filtering)
+        if re.search(r'\bblitz\b', text_lower):
+            categories.append('Blitz')
+        elif re.search(r'\brapid\b', text_lower):
+            categories.append('Rapid')
+        elif re.search(r'\bclassic|classical|standard\b', text_lower):
+            categories.append('Classical')
+        # If no time control specified, assume Classical
+        elif not any(tc in text_lower for tc in ['blitz', 'rapid', 'classical', 'classic', 'standard']):
+            categories.append('Classical')
+
+        return ', '.join(categories) if categories else 'Open, Classical'
 
     def _is_european(self, location: str) -> bool:
         """Check if location is in Europe (excluding Russia)"""
