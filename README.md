@@ -1,5 +1,7 @@
 # medtourney
 
+[![Update Tournament Data Daily](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml)
+
 Advanced chess tournament search tool for chess-results.com with powerful filtering capabilities.
 
 ## 🌐 Web Tool
@@ -21,7 +23,7 @@ This tool helps you search for European chess tournaments in the next 3 months w
 
 Available in two versions:
 - **Web Tool**: User-friendly browser interface (recommended)
-- **Command-Line Tool**: Python script for terminal use
+- **Data Scraper**: Robot Framework script to fetch fresh tournament data
 
 ## Installation
 
@@ -29,7 +31,7 @@ Available in two versions:
 
 Simply visit [https://kobolcs.github.io/medtourney/](https://kobolcs.github.io/medtourney/) - no installation needed!
 
-### Using the Command-Line Tool
+### Using the Data Scraper (For Updating Tournament Data)
 
 1. Clone the repository:
 ```bash
@@ -42,6 +44,11 @@ cd medtourney
 pip install -r requirements.txt
 ```
 
+3. Initialize Robot Framework Browser:
+```bash
+rfbrowser init
+```
+
 ## Usage
 
 ### Web Tool
@@ -51,49 +58,72 @@ pip install -r requirements.txt
 3. Click "Search Tournaments"
 4. Browse the results and click on tournaments for more details
 
-### Command-Line Tool
+### Data Scraper (Manual Updates)
 
-### Basic Search
+The scraper uses Robot Framework with Browser Library to automate chess-results.com and download real tournament data.
 
-Search for European open tournaments in the next 3 months (excluding youth-only):
+**Note:** The scraper runs **automatically every day** via GitHub Actions. Manual running is optional.
 
+**Quick Start (Local):**
 ```bash
-python3 tournament_search.py
+python3 run_scraper.py
 ```
 
-### Advanced Filtering
+**Manual Trigger (GitHub Actions):**
+1. Go to [Actions tab](https://github.com/kobolcs/medtourney/actions)
+2. Select "Update Tournament Data Daily" workflow
+3. Click "Run workflow" button
+4. Select branch (main)
+5. Click "Run workflow"
 
-**Filter for Mediterranean seaside tournaments:**
+**What it does:**
+1. Opens https://s1.chess-results.com/TurnierSuche.aspx?lan=1
+2. Fills in the search form (current date to 3 months ahead) - **dynamic dates**
+3. Downloads up to 2000 tournament results as Excel file
+4. Processes the Excel file using custom Python keywords
+5. Filters for European tournaments only (Russia excluded)
+6. Exports results to `tournaments_data.json`
+
+**Monitoring:**
+- Check workflow status: [GitHub Actions](https://github.com/kobolcs/medtourney/actions)
+- View logs: Click on any workflow run for detailed logs
+- On failure: Robot Framework logs are uploaded as artifacts
+
+**Advanced Usage:**
+
+Run the Robot Framework test directly:
 ```bash
-python3 tournament_search.py --mediterranean
+robot scrape_tournaments.robot
 ```
 
-**Filter for tournaments with S50+ category:**
+View detailed logs:
 ```bash
-python3 tournament_search.py --senior
+# Results will be in robot_results/ directory
+# Open robot_results/log.html in a browser for detailed execution log
 ```
 
-**Combine filters (Mediterranean seaside with S50+ category):**
-```bash
-python3 tournament_search.py --mediterranean --senior
+**Manual Filtering:**
+
+You can also use the custom Python keywords directly:
+```python
+from TournamentProcessor import TournamentProcessor
+
+processor = TournamentProcessor()
+
+# Load and filter tournaments
+tournaments = processor.load_and_filter_tournaments('downloads/tournaments.xlsx')
+
+# Apply additional filters
+filtered = processor.filter_tournaments_by_criteria(
+    tournaments,
+    open_only=True,
+    mediterranean_only=True,
+    senior_only=True
+)
+
+# Export to JSON
+processor.export_to_json(filtered, 'my_tournaments.json')
 ```
-
-**Include youth-only tournaments:**
-```bash
-python3 tournament_search.py --include-youth
-```
-
-**Include closed/invitation tournaments:**
-```bash
-python3 tournament_search.py --allow-closed
-```
-
-### Command-Line Options
-
-- `--mediterranean` - Only show tournaments in Mediterranean seaside locations (Spain, France, Italy, Greece, Croatia, Malta, Cyprus, etc.)
-- `--senior` - Only show tournaments with S50+ or veteran categories
-- `--include-youth` - Include youth-only tournaments (default: excluded)
-- `--allow-closed` - Include closed/invitation tournaments (default: open only)
 
 ## Features
 
@@ -163,19 +193,96 @@ URL: https://chess-results.com/tournament2
 ### Web Tool
 - **Technologies:** HTML5, CSS3, Vanilla JavaScript
 - **Hosting:** GitHub Pages
-- **Data Source:** chess-results.com (via CORS proxies)
+- **Data Source:** chess-results.com (via CORS proxies or local data file)
 - **Features:** Responsive design, real-time filtering, no backend required
 
-### Command-Line Tool
-- **Language:** Python 3.12+
-- **Dependencies:** requests, beautifulsoup4, python-dateutil
-- **Architecture:** Modular design with separate filter and search classes
+### Data Scraper
+- **Framework:** Robot Framework with Browser Library
+- **Language:** Python 3.8+
+- **Dependencies:** robotframework, robotframework-browser, openpyxl, python-dateutil
+- **Architecture:**
+  - Robot Framework test suite for browser automation
+  - Custom Python keyword library for Excel processing
+  - Modular filtering with European country detection
+  - Automatic exclusion of non-European countries (Russia, Asia, Americas, etc.)
 
 ## How It Works
 
-The web tool attempts to fetch live tournament data from chess-results.com using CORS proxy services. If the fetch is unsuccessful (due to network issues or CORS restrictions), it falls back to a comprehensive set of demo tournaments that demonstrate all filtering capabilities.
+### 🤖 Automated Daily Updates (GitHub Actions)
 
-The demo data includes realistic European tournaments with various categories, locations, and dates, allowing you to fully explore the tool's filtering features.
+The tournament data is **automatically updated daily** via GitHub Actions:
+
+**Daily at 00:00 UTC:**
+1. GitHub Actions workflow triggers
+2. Runs Robot Framework scraper in CI environment
+3. Scrapes chess-results.com with **dynamic date range** (today → 3 months ahead)
+4. Downloads up to 2000 tournaments
+5. Filters for European tournaments (Russia excluded)
+6. Updates `tournaments_data.json`
+7. Auto-commits and pushes to main branch
+8. GitHub Pages deploys the new data automatically
+
+**Status:** [![Workflow Status](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml)
+
+**Benefits:**
+- ✅ Always up-to-date tournament data
+- ✅ Dynamic date range (always "tomorrow to 3 months from now")
+- ✅ Fully automated - no manual intervention needed
+- ✅ Version controlled - every update is tracked in Git history
+- ✅ Can be manually triggered from GitHub Actions UI
+
+### Manual Workflow (Optional)
+
+You can also run the scraper manually anytime:
+
+1. **Run Data Scraper Locally**:
+   ```bash
+   python3 run_scraper.py
+   ```
+   This generates/updates `tournaments_data.json` with latest tournament data
+
+2. **Commit and Push to GitHub**:
+   ```bash
+   git add tournaments_data.json
+   git commit -m "Update tournament data"
+   git push
+   ```
+
+3. **GitHub Pages Serves the JSON**:
+   - `tournaments_data.json` is now available at `https://kobolcs.github.io/medtourney/tournaments_data.json`
+   - No server or database needed - just static file hosting
+
+4. **Web App Loads the Data**:
+   - Users visit the web app
+   - App fetches `tournaments_data.json` from the repo
+   - Applies client-side filters
+   - Shows results instantly
+
+**Result**: Tournament data is version-controlled, automatically deployed, and requires no backend server!
+
+### Web Tool
+The web tool loads tournament data with this priority:
+1. **First**: Tries to load `tournaments_data.json` from the repository (GitHub Pages)
+2. **Fallback**: Attempts to fetch from chess-results.com via CORS proxies (may fail due to restrictions)
+3. **Best Practice**: Keep `tournaments_data.json` updated by running the scraper regularly
+
+### Data Scraper
+The scraper uses Robot Framework to:
+1. **Automate Browser**: Opens chess-results.com search page using Browser Library (Playwright-based)
+2. **Fill Form**: Automatically fills date range (today + 3 months) and sets result limit to 2000
+3. **Download Excel**: Clicks the Excel download button and saves the file
+4. **Process Data**: Uses custom Python keywords to:
+   - Parse Excel file with openpyxl
+   - Extract tournament name, location, date, category, URL
+   - Filter for European countries only (strict checking)
+   - Exclude non-European countries (Malaysia, UAE, Russia, etc.)
+   - Export to JSON format
+
+The custom Python keyword library (`TournamentProcessor.py`) provides reusable functions for:
+- Loading and parsing Excel tournament data
+- Filtering by geography, category, and date
+- Exporting to JSON format
+- Can be used standalone or within Robot Framework
 
 ## Contributing
 

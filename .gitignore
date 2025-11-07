@@ -37,6 +37,13 @@ env/
 .coverage
 htmlcov/
 
+# Robot Framework
+robot_results/
+*.xml
+output.xml
+log.html
+report.html
+
 # OS
 .DS_Store
 Thumbs.db

@@ -11,7 +11,68 @@ class TournamentFinder {
 
         this.currentProxyIndex = 0;
 
-        // European countries mapping - STRICT list (Russia excluded per user request)
+        // Will be loaded from config.json
+        this.europeanCountries = null;
+        this.nonEuropeanCountries = null;
+        this.mediterraneanLocations = null;
+        this.countryCodes = null;
+
+        // Initialize after loading config
+        this.initAsync();
+    }
+
+    async initAsync() {
+        // Load configuration
+        await this.loadConfig();
+
+        // Set default dates (today to 3 months from now)
+        const today = new Date();
+        const threeMonthsLater = new Date(today);
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+
+        document.getElementById('startDate').valueAsDate = today;
+        document.getElementById('endDate').valueAsDate = threeMonthsLater;
+
+        // Attach event listeners
+        document.getElementById('searchBtn').addEventListener('click', () => this.searchTournaments());
+    }
+
+    async loadConfig() {
+        try {
+            const response = await fetch('./config.json', {
+                cache: 'no-cache',
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to load config: ${response.status}`);
+            }
+
+            const config = await response.json();
+
+            // Convert to Sets for O(1) lookup performance
+            this.nonEuropeanCountries = new Set(config.nonEuropeanCountries);
+            this.mediterraneanLocations = new Set(config.mediterraneanLocations);
+
+            // Convert countryCodes to the format used by the app
+            this.europeanCountries = {};
+            this.countryCodes = config.countryCodes;
+
+            for (const [code, data] of Object.entries(config.countryCodes)) {
+                this.europeanCountries[code] = data.keywords;
+            }
+
+            console.log(`Loaded config: ${Object.keys(this.europeanCountries).length} countries, ` +
+                       `${this.nonEuropeanCountries.size} non-European countries, ` +
+                       `${this.mediterraneanLocations.size} Mediterranean locations`);
+        } catch (error) {
+            console.error('Error loading config.json, using fallback defaults:', error);
+            this.loadDefaultConfig();
+        }
+    }
+
+    loadDefaultConfig() {
+        // Fallback configuration if config.json fails to load
         this.europeanCountries = {
             'ESP': ['spain', 'españa', 'esp'],
             'FRA': ['france', 'francia', 'fra'],
@@ -59,8 +120,7 @@ class TournamentFinder {
             'LIE': ['liechtenstein', 'lie']
         };
 
-        // Non-European countries to explicitly exclude
-        this.nonEuropeanCountries = [
+        this.nonEuropeanCountries = new Set([
             'malaysia', 'uae', 'dubai', 'qatar', 'saudi', 'china', 'india',
             'indonesia', 'singapore', 'thailand', 'vietnam', 'philippines',
             'japan', 'korea', 'australia', 'new zealand', 'usa', 'canada',
@@ -68,34 +128,17 @@ class TournamentFinder {
             'egypt', 'morocco', 'tunisia', 'algeria', 'south africa',
             'israel', 'jordan', 'lebanon', 'iran', 'iraq', 'turkey',
             'russia', 'moscow', 'petersburg', 'kazakhstan', 'uzbekistan'
-        ];
+        ]);
 
-        // Mediterranean locations
-        this.mediterraneanLocations = [
+        this.mediterraneanLocations = new Set([
             'barcelona', 'valencia', 'alicante', 'malaga', 'marbella',
             'nice', 'cannes', 'monaco', 'marseille', 'montpellier',
             'genoa', 'genova', 'naples', 'napoli', 'sicily', 'sicilia', 'rome', 'roma',
             'athens', 'αθήνα', 'thessaloniki', 'θεσσαλονίκη',
             'split', 'dubrovnik', 'rijeka',
             'malta', 'valletta', 'sliema',
-            'limassol', 'larnaca', 'cyprus',
-            'antalya', 'izmir'
-        ];
-
-        this.init();
-    }
-
-    init() {
-        // Set default dates (today to 3 months from now)
-        const today = new Date();
-        const threeMonthsLater = new Date(today);
-        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-
-        document.getElementById('startDate').valueAsDate = today;
-        document.getElementById('endDate').valueAsDate = threeMonthsLater;
-
-        // Attach event listeners
-        document.getElementById('searchBtn').addEventListener('click', () => this.searchTournaments());
+            'limassol', 'larnaca', 'cyprus'
+        ]);
     }
 
     async searchTournaments() {
@@ -103,6 +146,12 @@ class TournamentFinder {
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
         const results = document.getElementById('results');
+
+        // Validate required DOM elements exist
+        if (!searchBtn || !loading || !error || !results) {
+            console.error('Required DOM elements not found');
+            return;
+        }
 
         // Show loading, hide results
         searchBtn.disabled = true;
@@ -135,9 +184,34 @@ class TournamentFinder {
     }
 
     async fetchTournaments() {
-        console.log('Fetching tournaments from chess-results.com...');
+        // Strategy 1: Try to load from local JSON file (generated by Robot Framework scraper)
+        try {
+            console.log('Loading tournaments from local data file...');
+            const response = await fetch('./tournaments_data.json', {
+                cache: 'no-cache',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
 
-        // Try multiple pages on chess-results.com
+            if (response.ok) {
+                const tournaments = await response.json();
+                if (Array.isArray(tournaments) && tournaments.length > 0) {
+                    console.log(`✓ Loaded ${tournaments.length} tournaments from local data file`);
+                    // Convert date strings to Date objects
+                    return tournaments.map(t => ({
+                        ...t,
+                        date: new Date(t.date)
+                    }));
+                }
+            }
+        } catch (err) {
+            console.warn('Could not load local data file:', err.message);
+        }
+
+        // Strategy 2: Try to fetch from chess-results.com via CORS proxies
+        console.log('Attempting to fetch from chess-results.com...');
+
         const urls = [
             'https://chess-results.com/',
             'https://chess-results.com/tnr_cal.aspx',
@@ -149,16 +223,17 @@ class TournamentFinder {
                 const tournaments = this.parseTournaments(html);
 
                 if (tournaments.length > 0) {
-                    console.log(`Successfully parsed ${tournaments.length} tournaments from ${url}`);
+                    console.log(`✓ Parsed ${tournaments.length} tournaments from ${url}`);
                     return tournaments;
                 }
             } catch (err) {
-                console.warn(`Failed to fetch from ${url}:`, err);
+                console.warn(`Failed to fetch from ${url}:`, err.message);
             }
         }
 
-        console.warn('Could not fetch real data, using fallback');
-        throw new Error('Unable to fetch live data from chess-results.com');
+        // No data available from any source
+        console.error('Could not fetch tournament data from any source');
+        throw new Error('Unable to fetch tournament data. Please try again later or run the data scraper to update tournaments_data.json');
     }
 
     async fetchWithProxy(url) {
@@ -396,17 +471,61 @@ class TournamentFinder {
     }
 
     filterTournaments(tournaments) {
+        // Validate input
+        if (!Array.isArray(tournaments)) {
+            console.error('filterTournaments: expected array, got', typeof tournaments);
+            return [];
+        }
+
+        // Validate and get filter elements
+        const filterElements = {
+            openOnly: document.getElementById('openOnly'),
+            excludeYouth: document.getElementById('excludeYouth'),
+            mediterraneanOnly: document.getElementById('mediterraneanOnly'),
+            seniorCategory: document.getElementById('seniorCategory'),
+            classicalTime: document.getElementById('classicalTime'),
+            rapidTime: document.getElementById('rapidTime'),
+            blitzTime: document.getElementById('blitzTime'),
+            startDate: document.getElementById('startDate'),
+            endDate: document.getElementById('endDate'),
+            countryFilter: document.getElementById('countryFilter')
+        };
+
+        // Check if any required elements are missing
+        const missingElements = Object.entries(filterElements)
+            .filter(([name, el]) => !el)
+            .map(([name]) => name);
+
+        if (missingElements.length > 0) {
+            console.error('Missing filter elements:', missingElements);
+            return tournaments;  // Return unfiltered if controls missing
+        }
+
         const filters = {
-            openOnly: document.getElementById('openOnly').checked,
-            excludeYouth: document.getElementById('excludeYouth').checked,
-            mediterraneanOnly: document.getElementById('mediterraneanOnly').checked,
-            seniorCategory: document.getElementById('seniorCategory').checked,
-            startDate: document.getElementById('startDate').valueAsDate,
-            endDate: document.getElementById('endDate').valueAsDate,
-            countryFilter: document.getElementById('countryFilter').value
+            openOnly: filterElements.openOnly.checked,
+            excludeYouth: filterElements.excludeYouth.checked,
+            mediterraneanOnly: filterElements.mediterraneanOnly.checked,
+            seniorCategory: filterElements.seniorCategory.checked,
+            classicalTime: filterElements.classicalTime.checked,
+            rapidTime: filterElements.rapidTime.checked,
+            blitzTime: filterElements.blitzTime.checked,
+            startDate: filterElements.startDate.valueAsDate,
+            endDate: filterElements.endDate.valueAsDate,
+            countryFilter: filterElements.countryFilter.value
         };
 
         return tournaments.filter(tournament => {
+            // Validate tournament structure
+            if (!tournament || typeof tournament !== 'object') {
+                console.warn('Invalid tournament object:', tournament);
+                return false;
+            }
+
+            // Ensure required fields exist
+            if (!tournament.location || !tournament.category) {
+                console.warn('Tournament missing required fields:', tournament);
+                return false;
+            }
             // European filter (always applied) - STRICT CHECK
             if (!this.isEuropean(tournament.location)) {
                 return false;
@@ -414,6 +533,21 @@ class TournamentFinder {
 
             // Explicitly exclude non-European countries
             if (this.isNonEuropean(tournament.location)) {
+                return false;
+            }
+
+            // Time control filter
+            const categoryLower = tournament.category.toLowerCase();
+            const hasBlitz = /\bblitz\b/i.test(categoryLower);
+            const hasRapid = /\brapid\b/i.test(categoryLower);
+            const hasClassical = /\bclassical|classic|standard\b/i.test(categoryLower) || (!hasBlitz && !hasRapid);
+
+            const timeControlMatches =
+                (filters.blitzTime && hasBlitz) ||
+                (filters.rapidTime && hasRapid) ||
+                (filters.classicalTime && hasClassical);
+
+            if (!timeControlMatches) {
                 return false;
             }
 
@@ -465,9 +599,13 @@ class TournamentFinder {
 
     isMediterranean(location) {
         const locationLower = location.toLowerCase();
-        return this.mediterraneanLocations.some(place =>
-            locationLower.includes(place.toLowerCase())
-        );
+        // Use Set for O(1) lookup - iterate and check includes
+        for (const place of this.mediterraneanLocations) {
+            if (locationLower.includes(place)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     hasSeniorCategory(category) {
@@ -501,10 +639,13 @@ class TournamentFinder {
     isNonEuropean(location) {
         const locationLower = location.toLowerCase();
 
-        // Explicitly check for non-European countries
-        return this.nonEuropeanCountries.some(country =>
-            locationLower.includes(country.toLowerCase())
-        );
+        // Explicitly check for non-European countries using Set
+        for (const country of this.nonEuropeanCountries) {
+            if (locationLower.includes(country)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     displayResults(tournaments) {
@@ -557,9 +698,18 @@ class TournamentFinder {
     }
 
     escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text || '';
-        return div.innerHTML;
+        // Use regex for efficient HTML escaping without DOM creation
+        if (!text) return '';
+
+        const htmlEscapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+
+        return String(text).replace(/[&<>"']/g, char => htmlEscapeMap[char]);
     }
 }
 

@@ -46,6 +46,30 @@
                 </div>
             </div>
 
+            <h3 class="filter-section-title">Time Control</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="classicalTime" checked>
+                        <span class="checkbox-label">Classical/Standard</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="rapidTime" checked>
+                        <span class="checkbox-label">Rapid</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="blitzTime" checked>
+                        <span class="checkbox-label">Blitz</span>
+                    </label>
+                </div>
+            </div>
+
             <div class="date-range">
                 <div class="date-input">
                     <label for="startDate">Start Date:</label>
@@ -116,7 +140,11 @@
 
         <footer>
             <p>Data source: <a href="https://chess-results.com" target="_blank">chess-results.com</a></p>
-            <p class="note">Note: This tool scrapes public data from chess-results.com. Please respect their terms of service.</p>
+            <p class="note">
+                Tournament data is fetched from the repository's <code>tournaments_data.json</code> file.<br>
+                To update data: Run the Robot Framework scraper locally, then commit and push the updated JSON file.<br>
+                See <a href="https://github.com/kobolcs/medtourney#data-scraper-update-tournament-data" target="_blank" style="color: white; text-decoration: underline;">README</a> for instructions.
+            </p>
             <p class="github-link">
                 <a href="https://github.com/kobolcs/medtourney" target="_blank">
                     View on GitHub
