@@ -191,11 +191,40 @@ class TournamentProcessor:
             output_file: Path to output JSON file
         """
         try:
+            # Validate tournament data structure
+            if not isinstance(tournaments, list):
+                raise ValueError(f"Expected list of tournaments, got {type(tournaments)}")
+
+            # Validate each tournament has required fields
+            required_fields = {'name', 'location', 'date', 'category', 'url'}
+            valid_tournaments = []
+
+            for idx, tournament in enumerate(tournaments):
+                if not isinstance(tournament, dict):
+                    print(f"Warning: Tournament at index {idx} is not a dict, skipping")
+                    continue
+
+                missing_fields = required_fields - set(tournament.keys())
+                if missing_fields:
+                    print(f"Warning: Tournament at index {idx} missing fields {missing_fields}, skipping")
+                    continue
+
+                valid_tournaments.append(tournament)
+
+            print(f"Validated {len(valid_tournaments)} tournaments (skipped {len(tournaments) - len(valid_tournaments)})")
+
+            # Export validated tournaments
             with open(output_file, 'w', encoding='utf-8') as f:
-                json.dump(tournaments, f, indent=2, ensure_ascii=False)
-            print(f"Exported {len(tournaments)} tournaments to {output_file}")
+                json.dump(valid_tournaments, f, indent=2, ensure_ascii=False)
+            print(f"Exported {len(valid_tournaments)} tournaments to {output_file}")
+        except (IOError, OSError) as e:
+            print(f"Error writing to file {output_file}: {e}")
+            raise
+        except ValueError as e:
+            print(f"Validation error: {e}")
+            raise
         except Exception as e:
-            print(f"Error exporting to JSON: {e}")
+            print(f"Unexpected error exporting to JSON: {e}")
             raise
 
     @keyword("Filter Tournaments By Criteria")

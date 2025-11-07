@@ -147,6 +147,12 @@ class TournamentFinder {
         const error = document.getElementById('error');
         const results = document.getElementById('results');
 
+        // Validate required DOM elements exist
+        if (!searchBtn || !loading || !error || !results) {
+            console.error('Required DOM elements not found');
+            return;
+        }
+
         // Show loading, hide results
         searchBtn.disabled = true;
         loading.style.display = 'block';
@@ -465,20 +471,61 @@ class TournamentFinder {
     }
 
     filterTournaments(tournaments) {
+        // Validate input
+        if (!Array.isArray(tournaments)) {
+            console.error('filterTournaments: expected array, got', typeof tournaments);
+            return [];
+        }
+
+        // Validate and get filter elements
+        const filterElements = {
+            openOnly: document.getElementById('openOnly'),
+            excludeYouth: document.getElementById('excludeYouth'),
+            mediterraneanOnly: document.getElementById('mediterraneanOnly'),
+            seniorCategory: document.getElementById('seniorCategory'),
+            classicalTime: document.getElementById('classicalTime'),
+            rapidTime: document.getElementById('rapidTime'),
+            blitzTime: document.getElementById('blitzTime'),
+            startDate: document.getElementById('startDate'),
+            endDate: document.getElementById('endDate'),
+            countryFilter: document.getElementById('countryFilter')
+        };
+
+        // Check if any required elements are missing
+        const missingElements = Object.entries(filterElements)
+            .filter(([name, el]) => !el)
+            .map(([name]) => name);
+
+        if (missingElements.length > 0) {
+            console.error('Missing filter elements:', missingElements);
+            return tournaments;  // Return unfiltered if controls missing
+        }
+
         const filters = {
-            openOnly: document.getElementById('openOnly').checked,
-            excludeYouth: document.getElementById('excludeYouth').checked,
-            mediterraneanOnly: document.getElementById('mediterraneanOnly').checked,
-            seniorCategory: document.getElementById('seniorCategory').checked,
-            classicalTime: document.getElementById('classicalTime').checked,
-            rapidTime: document.getElementById('rapidTime').checked,
-            blitzTime: document.getElementById('blitzTime').checked,
-            startDate: document.getElementById('startDate').valueAsDate,
-            endDate: document.getElementById('endDate').valueAsDate,
-            countryFilter: document.getElementById('countryFilter').value
+            openOnly: filterElements.openOnly.checked,
+            excludeYouth: filterElements.excludeYouth.checked,
+            mediterraneanOnly: filterElements.mediterraneanOnly.checked,
+            seniorCategory: filterElements.seniorCategory.checked,
+            classicalTime: filterElements.classicalTime.checked,
+            rapidTime: filterElements.rapidTime.checked,
+            blitzTime: filterElements.blitzTime.checked,
+            startDate: filterElements.startDate.valueAsDate,
+            endDate: filterElements.endDate.valueAsDate,
+            countryFilter: filterElements.countryFilter.value
         };
 
         return tournaments.filter(tournament => {
+            // Validate tournament structure
+            if (!tournament || typeof tournament !== 'object') {
+                console.warn('Invalid tournament object:', tournament);
+                return false;
+            }
+
+            // Ensure required fields exist
+            if (!tournament.location || !tournament.category) {
+                console.warn('Tournament missing required fields:', tournament);
+                return false;
+            }
             // European filter (always applied) - STRICT CHECK
             if (!this.isEuropean(tournament.location)) {
                 return false;
