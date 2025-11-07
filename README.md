@@ -21,7 +21,7 @@ This tool helps you search for European chess tournaments in the next 3 months w
 
 Available in two versions:
 - **Web Tool**: User-friendly browser interface (recommended)
-- **Command-Line Tool**: Python script for terminal use
+- **Data Scraper**: Robot Framework script to fetch fresh tournament data
 
 ## Installation
 
@@ -29,7 +29,7 @@ Available in two versions:
 
 Simply visit [https://kobolcs.github.io/medtourney/](https://kobolcs.github.io/medtourney/) - no installation needed!
 
-### Using the Command-Line Tool
+### Using the Data Scraper (For Updating Tournament Data)
 
 1. Clone the repository:
 ```bash
@@ -42,6 +42,11 @@ cd medtourney
 pip install -r requirements.txt
 ```
 
+3. Initialize Robot Framework Browser:
+```bash
+rfbrowser init
+```
+
 ## Usage
 
 ### Web Tool
@@ -51,49 +56,58 @@ pip install -r requirements.txt
 3. Click "Search Tournaments"
 4. Browse the results and click on tournaments for more details
 
-### Command-Line Tool
+### Data Scraper (Update Tournament Data)
 
-### Basic Search
+The scraper uses Robot Framework with Browser Library to automate chess-results.com and download real tournament data.
 
-Search for European open tournaments in the next 3 months (excluding youth-only):
-
+**Quick Start:**
 ```bash
-python3 tournament_search.py
+python3 run_scraper.py
 ```
 
-### Advanced Filtering
+**What it does:**
+1. Opens https://s1.chess-results.com/TurnierSuche.aspx?lan=1
+2. Fills in the search form (current date to 3 months ahead)
+3. Downloads up to 2000 tournament results as Excel file
+4. Processes the Excel file using custom Python keywords
+5. Filters for European tournaments only (Russia excluded)
+6. Exports results to `tournaments_data.json`
 
-**Filter for Mediterranean seaside tournaments:**
+**Advanced Usage:**
+
+Run the Robot Framework test directly:
 ```bash
-python3 tournament_search.py --mediterranean
+robot scrape_tournaments.robot
 ```
 
-**Filter for tournaments with S50+ category:**
+View detailed logs:
 ```bash
-python3 tournament_search.py --senior
+# Results will be in robot_results/ directory
+# Open robot_results/log.html in a browser for detailed execution log
 ```
 
-**Combine filters (Mediterranean seaside with S50+ category):**
-```bash
-python3 tournament_search.py --mediterranean --senior
+**Manual Filtering:**
+
+You can also use the custom Python keywords directly:
+```python
+from TournamentProcessor import TournamentProcessor
+
+processor = TournamentProcessor()
+
+# Load and filter tournaments
+tournaments = processor.load_and_filter_tournaments('downloads/tournaments.xlsx')
+
+# Apply additional filters
+filtered = processor.filter_tournaments_by_criteria(
+    tournaments,
+    open_only=True,
+    mediterranean_only=True,
+    senior_only=True
+)
+
+# Export to JSON
+processor.export_to_json(filtered, 'my_tournaments.json')
 ```
-
-**Include youth-only tournaments:**
-```bash
-python3 tournament_search.py --include-youth
-```
-
-**Include closed/invitation tournaments:**
-```bash
-python3 tournament_search.py --allow-closed
-```
-
-### Command-Line Options
-
-- `--mediterranean` - Only show tournaments in Mediterranean seaside locations (Spain, France, Italy, Greece, Croatia, Malta, Cyprus, etc.)
-- `--senior` - Only show tournaments with S50+ or veteran categories
-- `--include-youth` - Include youth-only tournaments (default: excluded)
-- `--allow-closed` - Include closed/invitation tournaments (default: open only)
 
 ## Features
 
@@ -163,19 +177,41 @@ URL: https://chess-results.com/tournament2
 ### Web Tool
 - **Technologies:** HTML5, CSS3, Vanilla JavaScript
 - **Hosting:** GitHub Pages
-- **Data Source:** chess-results.com (via CORS proxies)
+- **Data Source:** chess-results.com (via CORS proxies or local data file)
 - **Features:** Responsive design, real-time filtering, no backend required
 
-### Command-Line Tool
-- **Language:** Python 3.12+
-- **Dependencies:** requests, beautifulsoup4, python-dateutil
-- **Architecture:** Modular design with separate filter and search classes
+### Data Scraper
+- **Framework:** Robot Framework with Browser Library
+- **Language:** Python 3.8+
+- **Dependencies:** robotframework, robotframework-browser, openpyxl, python-dateutil
+- **Architecture:**
+  - Robot Framework test suite for browser automation
+  - Custom Python keyword library for Excel processing
+  - Modular filtering with European country detection
+  - Automatic exclusion of non-European countries (Russia, Asia, Americas, etc.)
 
 ## How It Works
 
-The web tool attempts to fetch live tournament data from chess-results.com using CORS proxy services. If the fetch is unsuccessful (due to network issues or CORS restrictions), it falls back to a comprehensive set of demo tournaments that demonstrate all filtering capabilities.
+### Web Tool
+The web tool attempts to fetch live tournament data from chess-results.com using CORS proxy services. If the fetch is unsuccessful, it can load data from a local `tournaments_data.json` file.
 
-The demo data includes realistic European tournaments with various categories, locations, and dates, allowing you to fully explore the tool's filtering features.
+### Data Scraper
+The scraper uses Robot Framework to:
+1. **Automate Browser**: Opens chess-results.com search page using Browser Library (Playwright-based)
+2. **Fill Form**: Automatically fills date range (today + 3 months) and sets result limit to 2000
+3. **Download Excel**: Clicks the Excel download button and saves the file
+4. **Process Data**: Uses custom Python keywords to:
+   - Parse Excel file with openpyxl
+   - Extract tournament name, location, date, category, URL
+   - Filter for European countries only (strict checking)
+   - Exclude non-European countries (Malaysia, UAE, Russia, etc.)
+   - Export to JSON format
+
+The custom Python keyword library (`TournamentProcessor.py`) provides reusable functions for:
+- Loading and parsing Excel tournament data
+- Filtering by geography, category, and date
+- Exporting to JSON format
+- Can be used standalone or within Robot Framework
 
 ## Contributing
 
