@@ -35,7 +35,7 @@ Setup Browser And Download Directory
 Navigate To Search Page
     [Documentation]    Navigate to the tournament search page
     Go To    ${SEARCH_URL}
-    Wait For Load State    networkidle
+    Wait For Load State    domcontentloaded    timeout=30s
     Log    Navigated to search page
 
 Fill Search Form
@@ -88,7 +88,7 @@ Process Downloaded Excel
     ${tournaments}=    Load And Filter Tournaments    ${DOWNLOADED_FILE}
     ${count}=    Get Length    ${tournaments}
     Log    Processed ${count} tournaments
-    [Return]    ${tournaments}
+    RETURN    ${tournaments}
 
 Export Tournaments To JSON
     [Documentation]    Export processed tournaments to JSON
