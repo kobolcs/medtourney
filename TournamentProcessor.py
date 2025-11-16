@@ -50,7 +50,18 @@ class TournamentProcessor:
         'date_ddmmyyyy_slash': re.compile(r'(\d{1,2})/(\d{1,2})/(\d{4})'),
         'open': re.compile(r'\bopen\b', re.IGNORECASE),
         's50': re.compile(r'\bs50\+|s50|senior|veteran|50\+', re.IGNORECASE),
-        'youth': re.compile(r'\bu\d+|youth|junior|u18|under', re.IGNORECASE),
+        # International youth keywords: English, Polish, Czech, Slovak, Hungarian, German, French, Spanish, Italian
+        'youth': re.compile(
+            r'\bu\d+|youth|junior|u18|under|'  # English
+            r'żiak|młodzie[żz]|juniorzy|juniorów|'  # Polish (żiak, młodzież, juniorzy, juniorów)
+            r'ml[áa]de[žz]|'  # Czech/Slovak (mládež)
+            r'ifjúság|junior|'  # Hungarian
+            r'jugend|'  # German
+            r'jeune|junior|'  # French
+            r'juvenil|joven|'  # Spanish
+            r'giovani|giovanile',  # Italian
+            re.IGNORECASE
+        ),
         'women': re.compile(r'\bwomen|ladies|female', re.IGNORECASE),
         'blitz': re.compile(r'\bblitz\b', re.IGNORECASE),
         'rapid': re.compile(r'\brapid\b', re.IGNORECASE),
