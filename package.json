@@ -1,0 +1,21 @@
+{
+  "name": "medtourney",
+  "version": "1.0.0",
+  "description": "Mediterranean Chess Tournament Finder",
+  "scripts": {
+    "test:js": "node tests/javascript/test_app.spec.js",
+    "test:python": "python3 -m pytest tests/python -v --override-ini='addopts='",
+    "test:meta": "python3 -m pytest tests/python/test_scraper_meta.py -v --override-ini='addopts='",
+    "test:parity": "python3 -m pytest tests/python/test_frontend_backend_parity.py -v --override-ini='addopts='",
+    "test:all": "npm run test:js && npm run test:python",
+    "test": "npm run test:all"
+  },
+  "keywords": [
+    "chess",
+    "tournaments",
+    "mediterranean"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {}
+}
