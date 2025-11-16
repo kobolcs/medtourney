@@ -380,8 +380,9 @@ class TournamentProcessor:
                 if not any(place in location_lower for place in self.mediterranean_locations):
                     continue
 
-            # Senior filter
-            if senior_only and 's50' not in category_lower and 'senior' not in category_lower:
+            # Senior filter - use regex pattern for robust matching of all variations
+            # (s50+, s50, senior, veteran, 50+)
+            if senior_only and not self.REGEX_PATTERNS['s50'].search(category_lower):
                 continue
 
             filtered.append(tournament)

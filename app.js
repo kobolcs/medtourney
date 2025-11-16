@@ -132,12 +132,22 @@ class TournamentFinder {
 
         this.mediterraneanLocations = new Set([
             'barcelona', 'valencia', 'alicante', 'malaga', 'marbella',
+            'benidorm', 'torrevieja', 'almeria', 'murcia', 'cartagena',
+            'palma', 'mallorca', 'ibiza', 'menorca', 'tarragona', 'castellon',
             'nice', 'cannes', 'monaco', 'marseille', 'montpellier',
-            'genoa', 'genova', 'naples', 'napoli', 'sicily', 'sicilia', 'rome', 'roma',
+            'toulon', 'antibes', 'perpignan',
+            'genoa', 'genova', 'naples', 'napoli', 'sicily', 'sicilia',
+            'palermo', 'catania', 'messina', 'syracuse', 'siracusa',
+            'rome', 'roma', 'bari', 'brindisi', 'ancona', 'pescara',
+            'rimini', 'livorno', 'la spezia', 'sardinia', 'sardegna',
+            'cagliari', 'sassari',
             'athens', 'αθήνα', 'thessaloniki', 'θεσσαλονίκη',
-            'split', 'dubrovnik', 'rijeka',
+            'patras', 'heraklion', 'chania', 'rhodes', 'corfu', 'crete',
+            'split', 'dubrovnik', 'rijeka', 'zadar', 'sibenik', 'pula',
+            'kotor', 'budva', 'tivat', 'bar',
+            'durres', 'vlore', 'saranda',
             'malta', 'valletta', 'sliema',
-            'limassol', 'larnaca', 'cyprus'
+            'limassol', 'larnaca', 'paphos', 'cyprus'
         ]);
     }
 
@@ -381,15 +391,18 @@ class TournamentFinder {
     extractLocation(text) {
         // Try to find country code (3-letter uppercase)
         const countryCodeMatch = text.match(/\b([A-Z]{3})\b/);
+        let countryCode = null;
+
         if (countryCodeMatch) {
             const code = countryCodeMatch[1];
             if (this.isEuropeanCountryCode(code)) {
+                countryCode = code;
                 // Try to find city before country code
                 const cityMatch = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*[,\-]?\s*([A-Z]{3})/);
                 if (cityMatch) {
                     return `${cityMatch[1]}, ${code}`;
                 }
-                return code;
+                // Don't return early - try other patterns to find city
             }
         }
 
@@ -401,8 +414,15 @@ class TournamentFinder {
 
         // Try to find just a city name
         const cityMatch = text.match(/\b([A-Z][a-z]{3,}(?:\s+[A-Z][a-z]+)*)\b/);
-        if (cityMatch) {
+        if (cityMatch && countryCode) {
+            // Found both city and country code
+            return `${cityMatch[1]}, ${countryCode}`;
+        } else if (cityMatch) {
+            // Found only city
             return cityMatch[1];
+        } else if (countryCode) {
+            // Found only country code - return it as fallback
+            return countryCode;
         }
 
         return 'Unknown';
