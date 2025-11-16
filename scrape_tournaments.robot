@@ -72,16 +72,17 @@ Download Tournament Data
     ${download_button}=    Get Element    button:has-text("Excel"), a:has-text("Excel"), input[value*="Excel"]
 
     # Click and wait for download
-    ${download_promise}=    Promise To Wait For Download    timeout=60s
+    ${download_promise}=    Promise To Wait For Download    saveAs=${DOWNLOAD_DIR}/TournamentSearch.xlsx
     Click    ${download_button}
-    ${file_path}=    Wait For    ${download_promise}
+    ${file_info}=    Wait For    ${download_promise}
 
-    Log    Downloaded file: ${file_path}
+    Log    Downloaded file info: ${file_info}
 
-    # Move file to our download directory
-    ${file_name}=    Get File Name    ${file_path}
-    Move File    ${file_path}    ${DOWNLOAD_DIR}/${file_name}
-    Set Suite Variable    ${DOWNLOADED_FILE}    ${DOWNLOAD_DIR}/${file_name}
+    # Extract the actual file path from the download result
+    ${downloaded_path}=    Set Variable    ${file_info}[saveAs]
+    Log    File saved to: ${downloaded_path}
+
+    Set Suite Variable    ${DOWNLOADED_FILE}    ${downloaded_path}
 
 Process Downloaded Excel
     [Documentation]    Process the downloaded Excel file with custom Python keyword
