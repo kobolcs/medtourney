@@ -1,29 +1,53 @@
-"""
-Unit tests for TournamentProcessor.py
-Tests date parsing, filtering, European detection, and JSON export
+"""Unit tests for TournamentProcessor.py.
+
+This module contains comprehensive unit tests for the TournamentProcessor class,
+covering date parsing, European location detection, tournament filtering,
+Excel file loading, and JSON export functionality.
+
+Typical usage example:
+
+    $ pytest tests/python/test_tournament_processor.py -v
 """
 
 import json
 import pytest
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any, Dict, List
 import tempfile
 import openpyxl
 from TournamentProcessor import TournamentProcessor
 
 
 class TestTournamentProcessor:
-    """Test suite for TournamentProcessor class"""
+    """Test suite for TournamentProcessor class.
+
+    Provides comprehensive testing of all TournamentProcessor methods including:
+    - Date parsing from multiple formats
+    - European location detection and filtering
+    - Tournament category extraction
+    - Excel file loading and processing
+    - JSON export with validation
+    - Configuration loading
+    """
 
     @pytest.fixture
-    def processor(self):
-        """Create a TournamentProcessor instance for testing"""
+    def processor(self) -> TournamentProcessor:
+        """Create a TournamentProcessor instance for testing.
+
+        Returns:
+            TournamentProcessor instance with loaded configuration.
+        """
         return TournamentProcessor()
 
     @pytest.fixture
-    def sample_tournaments(self):
-        """Sample tournament data for testing"""
-        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    def sample_tournaments(self) -> List[Dict[str, Any]]:
+        """Generate sample tournament data for testing.
+
+        Returns:
+            List of tournament dictionaries with varied categories and locations.
+        """
+        tomorrow: str = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
         return [
             {
                 'name': 'Barcelona Open 2025',
@@ -52,18 +76,29 @@ class TestTournamentProcessor:
         ]
 
     @pytest.fixture
-    def sample_excel_file(self, tmp_path):
-        """Create a sample Excel file for testing"""
-        wb = openpyxl.Workbook()
+    def sample_excel_file(self, tmp_path: Path) -> str:
+        """Create a sample Excel file for testing.
+
+        Creates an Excel file with tournament data including European tournaments,
+        non-European tournaments (Dubai, Moscow), and past tournaments for testing
+        the filtering logic.
+
+        Args:
+            tmp_path: Pytest fixture providing temporary directory path.
+
+        Returns:
+            String path to the created Excel file.
+        """
+        wb: openpyxl.Workbook = openpyxl.Workbook()
         ws = wb.active
 
         # Headers
         ws.append(['Name', 'Location', 'Date', 'URL'])
 
         # Sample data - dates in YYYYMMDD format (chess-results.com format)
-        tomorrow = datetime.now() + timedelta(days=1)
-        future_date = datetime.now() + timedelta(days=30)
-        past_date = datetime.now() - timedelta(days=1)
+        tomorrow: datetime = datetime.now() + timedelta(days=1)
+        future_date: datetime = datetime.now() + timedelta(days=30)
+        past_date: datetime = datetime.now() - timedelta(days=1)
 
         ws.append([
             'Barcelona Open 2025',
