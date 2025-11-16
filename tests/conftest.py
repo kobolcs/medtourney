@@ -1,33 +1,62 @@
-"""
-Pytest configuration and shared fixtures
+"""Pytest configuration and shared fixtures.
+
+This module provides pytest configuration, custom markers, and shared fixtures
+that are available to all test modules in the test suite.
+
+Custom markers:
+    unit: Unit tests (fast, isolated)
+    integration: Integration tests (may require external resources)
+    slow: Slow tests (may take minutes to complete)
+    timeout_test: Tests that validate timeout handling
+    performance: Performance tests
+    requires_browser: Tests that require Browser library installation
+    requires_network: Tests that require network access
+    ci_skip: Tests to skip in CI/CD environments
 """
 
 import pytest
 import sys
 from pathlib import Path
+from typing import Any, Dict, List
+from datetime import datetime, timedelta
 
 # Add project root to Python path so tests can import modules
-project_root = Path(__file__).parent.parent
+project_root: Path = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 
 @pytest.fixture(scope="session")
-def project_root_path():
-    """Return the project root directory path"""
+def project_root_path() -> Path:
+    """Return the project root directory path.
+
+    Returns:
+        Path object pointing to the project root directory.
+    """
     return Path(__file__).parent.parent
 
 
 @pytest.fixture(scope="session")
-def test_data_dir():
-    """Return the test data directory path"""
+def test_data_dir() -> Path:
+    """Return the test data directory path.
+
+    Returns:
+        Path object pointing to the test fixtures directory.
+    """
     return Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture
-def sample_tournament_data():
-    """Sample tournament data for testing"""
-    from datetime import datetime, timedelta
-    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+def sample_tournament_data() -> List[Dict[str, Any]]:
+    """Generate sample tournament data for testing.
+
+    Provides a list of sample tournaments with various categories and locations,
+    including European tournaments, non-European tournaments (Dubai, Moscow),
+    and tournaments with different categories (Open, S50+, Youth).
+
+    Returns:
+        List of tournament dictionaries with all required fields.
+    """
+    tomorrow: str = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     return [
         {

@@ -593,7 +593,9 @@ class TournamentFinder {
     }
 
     isYouthOnly(tournament) {
-        return /\byouth\b/i.test(tournament.category) &&
+        // International youth keywords matching backend TournamentProcessor
+        const youthPattern = /\bu\d+|youth|junior|u18|under|żiak|młodzie[żz]|juniorzy|juniorów|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile/i;
+        return youthPattern.test(tournament.category) &&
                !/\bopen\b/i.test(tournament.category);
     }
 
@@ -662,16 +664,145 @@ class TournamentFinder {
                 </p>
             `;
         } else {
+            // Sort tournaments by date
+            const sortedTournaments = tournaments.sort((a, b) => a.date - b.date);
+
+            // Pagination setup
+            this.currentPage = 1;
+            this.tournamentsPerPage = 20;
+            this.allTournaments = sortedTournaments;
+
             resultsCount.textContent = `${tournaments.length} tournament${tournaments.length !== 1 ? 's' : ''} found`;
 
-            tournamentList.innerHTML = tournaments
-                .sort((a, b) => a.date - b.date)
-                .map(tournament => this.createTournamentCard(tournament))
-                .join('');
+            this.renderPaginatedTournaments();
         }
 
         results.style.display = 'block';
         results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    renderPaginatedTournaments() {
+        const tournamentList = document.getElementById('tournamentList');
+        const totalPages = Math.ceil(this.allTournaments.length / this.tournamentsPerPage);
+        const startIndex = (this.currentPage - 1) * this.tournamentsPerPage;
+        const endIndex = startIndex + this.tournamentsPerPage;
+        const tournamentsToShow = this.allTournaments.slice(startIndex, endIndex);
+
+        // Render tournaments
+        const tournamentCards = tournamentsToShow
+            .map(tournament => this.createTournamentCard(tournament))
+            .join('');
+
+        // Render pagination controls
+        const paginationHTML = this.createPaginationControls(totalPages);
+
+        tournamentList.innerHTML = tournamentCards + paginationHTML;
+
+        // Attach event listeners to pagination buttons
+        this.attachPaginationListeners();
+    }
+
+    createPaginationControls(totalPages) {
+        if (totalPages <= 1) return '';
+
+        const startIndex = (this.currentPage - 1) * this.tournamentsPerPage + 1;
+        const endIndex = Math.min(this.currentPage * this.tournamentsPerPage, this.allTournaments.length);
+
+        let paginationHTML = `
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Showing ${startIndex}-${endIndex} of ${this.allTournaments.length} tournaments
+                </div>
+                <div class="pagination-controls">
+        `;
+
+        // Previous button
+        paginationHTML += `
+            <button class="pagination-btn" data-page="prev" ${this.currentPage === 1 ? 'disabled' : ''}>
+                ← Previous
+            </button>
+        `;
+
+        // Page numbers
+        const pageButtons = this.getPageButtons(totalPages);
+        for (const page of pageButtons) {
+            if (page === '...') {
+                paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+            } else {
+                paginationHTML += `
+                    <button class="pagination-btn ${page === this.currentPage ? 'active' : ''}"
+                            data-page="${page}">
+                        ${page}
+                    </button>
+                `;
+            }
+        }
+
+        // Next button
+        paginationHTML += `
+            <button class="pagination-btn" data-page="next" ${this.currentPage === totalPages ? 'disabled' : ''}>
+                Next →
+            </button>
+        `;
+
+        paginationHTML += `
+                </div>
+            </div>
+        `;
+
+        return paginationHTML;
+    }
+
+    getPageButtons(totalPages) {
+        const current = this.currentPage;
+        const pages = [];
+
+        if (totalPages <= 7) {
+            // Show all pages if 7 or fewer
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            // Always show first page
+            pages.push(1);
+
+            if (current > 3) {
+                pages.push('...');
+            }
+
+            // Show pages around current
+            for (let i = Math.max(2, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
+                pages.push(i);
+            }
+
+            if (current < totalPages - 2) {
+                pages.push('...');
+            }
+
+            // Always show last page
+            pages.push(totalPages);
+        }
+
+        return pages;
+    }
+
+    attachPaginationListeners() {
+        const paginationButtons = document.querySelectorAll('.pagination-btn');
+        paginationButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const page = e.target.dataset.page;
+                if (page === 'prev' && this.currentPage > 1) {
+                    this.currentPage--;
+                } else if (page === 'next' && this.currentPage < Math.ceil(this.allTournaments.length / this.tournamentsPerPage)) {
+                    this.currentPage++;
+                } else if (page !== 'prev' && page !== 'next') {
+                    this.currentPage = parseInt(page);
+                }
+                this.renderPaginatedTournaments();
+                // Scroll to top of results
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
     }
 
     createTournamentCard(tournament) {
