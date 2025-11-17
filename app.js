@@ -8,6 +8,7 @@ class TournamentFinder {
         this.currentPage = 1;
         this.tournamentsPerPage = 20;
         this.allTournaments = [];
+        this.filterCache = new Map();
         this.europeanCountries = {};
         this.nonEuropeanCountries = new Set();
         this.mediterraneanLocations = new Set();
@@ -43,7 +44,8 @@ class TournamentFinder {
             if (!response.ok) {
                 throw new Error(`Failed to load config: ${response.status}`);
             }
-            const config = await response.json();
+            const rawConfig = await response.json();
+            const config = this.validateConfig(rawConfig);
             this.nonEuropeanCountries = new Set(config.nonEuropeanCountries);
             this.mediterraneanLocations = new Set(config.mediterraneanLocations);
             this.europeanCountries = {};
@@ -134,6 +136,35 @@ class TournamentFinder {
             'malta', 'valletta', 'sliema',
             'limassol', 'larnaca', 'paphos', 'cyprus'
         ]);
+    }
+    validateConfig(data) {
+        if (!data || typeof data !== 'object') {
+            throw new Error('Invalid config structure: not an object');
+        }
+        const config = data;
+        if (!Array.isArray(config.europeanCountries)) {
+            throw new Error('Invalid config: europeanCountries must be an array');
+        }
+        if (!Array.isArray(config.nonEuropeanCountries)) {
+            throw new Error('Invalid config: nonEuropeanCountries must be an array');
+        }
+        if (!Array.isArray(config.mediterraneanLocations)) {
+            throw new Error('Invalid config: mediterraneanLocations must be an array');
+        }
+        if (!config.countryCodes || typeof config.countryCodes !== 'object') {
+            throw new Error('Invalid config: countryCodes must be an object');
+        }
+        const countryCodes = config.countryCodes;
+        for (const [code, value] of Object.entries(countryCodes)) {
+            if (!value || typeof value !== 'object') {
+                throw new Error(`Invalid countryCodes entry for ${code}`);
+            }
+            const countryData = value;
+            if (!Array.isArray(countryData.keywords)) {
+                throw new Error(`Invalid keywords for country ${code}`);
+            }
+        }
+        return config;
     }
     async searchTournaments() {
         const searchBtn = document.getElementById('searchBtn');
@@ -239,6 +270,9 @@ class TournamentFinder {
                     catch (e) {
                         html = data;
                     }
+                }
+                if (!html.includes('chess-results')) {
+                    throw new Error('Invalid response from proxy - possible content injection');
                 }
                 console.log(`Successfully fetched ${html.length} bytes via proxy ${i + 1}`);
                 return html;
@@ -439,7 +473,16 @@ class TournamentFinder {
             endDate: filterElements.endDate.valueAsDate,
             countryFilter: filterElements.countryFilter.value
         };
-        return tournaments.filter(tournament => {
+        if (filters.startDate && filters.endDate && filters.startDate > filters.endDate) {
+            this.showError('Start date must be before end date');
+            return tournaments;
+        }
+        const cacheKey = this.getFilterCacheKey(filters);
+        if (this.filterCache.has(cacheKey)) {
+            console.log('Using cached filter results');
+            return this.filterCache.get(cacheKey);
+        }
+        const filtered = tournaments.filter(tournament => {
             if (!tournament || typeof tournament !== 'object') {
                 console.warn('Invalid tournament object:', tournament);
                 return false;
@@ -495,6 +538,9 @@ class TournamentFinder {
             }
             return true;
         });
+        this.filterCache.set(cacheKey, filtered);
+        console.log(`Filtered ${filtered.length} tournaments (cached for future use)`);
+        return filtered;
     }
     isOpenCategory(category) {
         return /\bopen\b/i.test(category);
@@ -729,6 +775,30 @@ class TournamentFinder {
                 </a>
             </div>
         `;
+    }
+    getFilterCacheKey(filters) {
+        return JSON.stringify({
+            openOnly: filters.openOnly,
+            excludeYouth: filters.excludeYouth,
+            mediterraneanOnly: filters.mediterraneanOnly,
+            seniorCategory: filters.seniorCategory,
+            classicalTime: filters.classicalTime,
+            rapidTime: filters.rapidTime,
+            blitzTime: filters.blitzTime,
+            startDate: filters.startDate?.toISOString() || null,
+            endDate: filters.endDate?.toISOString() || null,
+            countryFilter: filters.countryFilter
+        });
+    }
+    showError(message) {
+        const error = document.getElementById('error');
+        if (error) {
+            error.textContent = message;
+            error.style.display = 'block';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 5000);
+        }
     }
     escapeHtml(text) {
         if (!text)

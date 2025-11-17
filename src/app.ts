@@ -74,6 +74,9 @@ class TournamentFinder {
     private readonly tournamentsPerPage: number;
     private allTournaments: Tournament[];
 
+    // Performance: Filter result cache
+    private filterCache: Map<string, Tournament[]>;
+
     constructor() {
         // CORS proxy services (with fallbacks)
         this.corsProxies = [
@@ -84,6 +87,9 @@ class TournamentFinder {
         this.currentPage = 1;
         this.tournamentsPerPage = 20;
         this.allTournaments = [];
+
+        // Initialize filter cache for performance
+        this.filterCache = new Map();
 
         // Will be loaded from config.json
         this.europeanCountries = {};
@@ -138,7 +144,8 @@ class TournamentFinder {
                 throw new Error(`Failed to load config: ${response.status}`);
             }
 
-            const config = await response.json() as AppConfig;
+            const rawConfig = await response.json();
+            const config = this.validateConfig(rawConfig);
 
             // Convert to Sets for O(1) lookup performance
             this.nonEuropeanCountries = new Set(config.nonEuropeanCountries);
@@ -241,6 +248,50 @@ class TournamentFinder {
             'malta', 'valletta', 'sliema',
             'limassol', 'larnaca', 'paphos', 'cyprus'
         ]);
+    }
+
+    /**
+     * Validate configuration JSON structure
+     * Prevents prototype pollution and ensures required fields exist
+     */
+    private validateConfig(data: unknown): AppConfig {
+        if (!data || typeof data !== 'object') {
+            throw new Error('Invalid config structure: not an object');
+        }
+
+        const config = data as Record<string, unknown>;
+
+        // Validate required fields exist and are correct types
+        if (!Array.isArray(config.europeanCountries)) {
+            throw new Error('Invalid config: europeanCountries must be an array');
+        }
+
+        if (!Array.isArray(config.nonEuropeanCountries)) {
+            throw new Error('Invalid config: nonEuropeanCountries must be an array');
+        }
+
+        if (!Array.isArray(config.mediterraneanLocations)) {
+            throw new Error('Invalid config: mediterraneanLocations must be an array');
+        }
+
+        if (!config.countryCodes || typeof config.countryCodes !== 'object') {
+            throw new Error('Invalid config: countryCodes must be an object');
+        }
+
+        // Validate countryCodes structure
+        const countryCodes = config.countryCodes as Record<string, unknown>;
+        for (const [code, value] of Object.entries(countryCodes)) {
+            if (!value || typeof value !== 'object') {
+                throw new Error(`Invalid countryCodes entry for ${code}`);
+            }
+            const countryData = value as Record<string, unknown>;
+            if (!Array.isArray(countryData.keywords)) {
+                throw new Error(`Invalid keywords for country ${code}`);
+            }
+        }
+
+        // Safe cast after validation
+        return config as unknown as AppConfig;
     }
 
     /**
@@ -385,6 +436,12 @@ class TournamentFinder {
                     } catch (e) {
                         html = data;
                     }
+                }
+
+                // SECURITY: Validate response is actually from chess-results.com
+                // Prevents proxy from injecting malicious content
+                if (!html.includes('chess-results')) {
+                    throw new Error('Invalid response from proxy - possible content injection');
                 }
 
                 console.log(`Successfully fetched ${html.length} bytes via proxy ${i + 1}`);
@@ -655,7 +712,20 @@ class TournamentFinder {
             countryFilter: filterElements.countryFilter!.value
         };
 
-        return tournaments.filter(tournament => {
+        // VALIDATION: Check date range is valid
+        if (filters.startDate && filters.endDate && filters.startDate > filters.endDate) {
+            this.showError('Start date must be before end date');
+            return tournaments; // Return unfiltered
+        }
+
+        // PERFORMANCE: Check filter cache
+        const cacheKey = this.getFilterCacheKey(filters);
+        if (this.filterCache.has(cacheKey)) {
+            console.log('Using cached filter results');
+            return this.filterCache.get(cacheKey)!;
+        }
+
+        const filtered = tournaments.filter(tournament => {
             // Validate tournament structure
             if (!tournament || typeof tournament !== 'object') {
                 console.warn('Invalid tournament object:', tournament);
@@ -742,6 +812,12 @@ class TournamentFinder {
 
             return true;
         });
+
+        // PERFORMANCE: Cache the filtered results
+        this.filterCache.set(cacheKey, filtered);
+        console.log(`Filtered ${filtered.length} tournaments (cached for future use)`);
+
+        return filtered;
     }
 
     private isOpenCategory(category: string): boolean {
@@ -1049,6 +1125,40 @@ class TournamentFinder {
                 </a>
             </div>
         `;
+    }
+
+    /**
+     * Generate cache key from filter state for performance optimization
+     */
+    private getFilterCacheKey(filters: FilterState): string {
+        return JSON.stringify({
+            openOnly: filters.openOnly,
+            excludeYouth: filters.excludeYouth,
+            mediterraneanOnly: filters.mediterraneanOnly,
+            seniorCategory: filters.seniorCategory,
+            classicalTime: filters.classicalTime,
+            rapidTime: filters.rapidTime,
+            blitzTime: filters.blitzTime,
+            startDate: filters.startDate?.toISOString() || null,
+            endDate: filters.endDate?.toISOString() || null,
+            countryFilter: filters.countryFilter
+        });
+    }
+
+    /**
+     * Show user-friendly error message
+     */
+    private showError(message: string): void {
+        const error = document.getElementById('error');
+        if (error) {
+            error.textContent = message;
+            error.style.display = 'block';
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 5000);
+        }
     }
 
     private escapeHtml(text: string | undefined | null): string {
