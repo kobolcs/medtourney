@@ -3,7 +3,7 @@
  * Fetches and displays tournaments from chess-results.com
  *
  * @author MedTourney Project
- * @version 2.0.0 (TypeScript)
+ * @version 2.1.0 (TypeScript - Improved Filtering)
  */
 
 /** Tournament data structure */
@@ -63,13 +63,11 @@ interface FilterElements {
  */
 class TournamentFinder {
     private readonly corsProxies: readonly string[];
-    private currentProxyIndex: number;
 
     // Configuration
     private europeanCountries: Record<string, string[]>;
     private nonEuropeanCountries: Set<string>;
     private mediterraneanLocations: Set<string>;
-    private countryCodes: Record<string, CountryData> | null;
 
     // Pagination state
     private currentPage: number;
@@ -83,7 +81,6 @@ class TournamentFinder {
             'https://corsproxy.io/?',
         ] as const;
 
-        this.currentProxyIndex = 0;
         this.currentPage = 1;
         this.tournamentsPerPage = 20;
         this.allTournaments = [];
@@ -92,7 +89,6 @@ class TournamentFinder {
         this.europeanCountries = {};
         this.nonEuropeanCountries = new Set();
         this.mediterraneanLocations = new Set();
-        this.countryCodes = null;
 
         // Initialize after loading config
         void this.initAsync();
@@ -150,7 +146,6 @@ class TournamentFinder {
 
             // Convert countryCodes to the format used by the app
             this.europeanCountries = {};
-            this.countryCodes = config.countryCodes;
 
             for (const [code, data] of Object.entries(config.countryCodes)) {
                 this.europeanCountries[code] = data.keywords;
@@ -383,7 +378,7 @@ class TournamentFinder {
 
                 // allorigins returns JSON with contents
                 let html = data;
-                if (proxy.includes('allorigins')) {
+                if (proxy && proxy.includes('allorigins')) {
                     try {
                         const json = JSON.parse(data) as { contents?: string };
                         html = json.contents || data;
@@ -448,7 +443,7 @@ class TournamentFinder {
 
                         // Look for country codes (3-letter, uppercase)
                         const countryMatch = cellText.match(/\b([A-Z]{3})\b/);
-                        if (countryMatch && this.isEuropeanCountryCode(countryMatch[1])) {
+                        if (countryMatch && countryMatch[1] && this.isEuropeanCountryCode(countryMatch[1])) {
                             location = cellText;
                         }
 
@@ -513,13 +508,13 @@ class TournamentFinder {
         const countryCodeMatch = text.match(/\b([A-Z]{3})\b/);
         let countryCode: string | null = null;
 
-        if (countryCodeMatch) {
+        if (countryCodeMatch && countryCodeMatch[1]) {
             const code = countryCodeMatch[1];
             if (this.isEuropeanCountryCode(code)) {
                 countryCode = code;
                 // Try to find city before country code
                 const cityMatch = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*[,\-]?\s*([A-Z]{3})/);
-                if (cityMatch) {
+                if (cityMatch && cityMatch[1]) {
                     return `${cityMatch[1]}, ${code}`;
                 }
             }
@@ -527,15 +522,15 @@ class TournamentFinder {
 
         // Try pattern: City, Country
         const cityCountryMatch = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
-        if (cityCountryMatch) {
+        if (cityCountryMatch && cityCountryMatch[1] && cityCountryMatch[2]) {
             return `${cityCountryMatch[1]}, ${cityCountryMatch[2]}`;
         }
 
         // Try to find just a city name
         const cityMatch = text.match(/\b([A-Z][a-z]{3,}(?:\s+[A-Z][a-z]+)*)\b/);
-        if (cityMatch && countryCode) {
+        if (cityMatch && cityMatch[1] && countryCode) {
             return `${cityMatch[1]}, ${countryCode}`;
-        } else if (cityMatch) {
+        } else if (cityMatch && cityMatch[1]) {
             return cityMatch[1];
         } else if (countryCode) {
             return countryCode;
@@ -557,18 +552,20 @@ class TournamentFinder {
 
         for (let i = 0; i < patterns.length; i++) {
             const pattern = patterns[i];
+            if (!pattern) continue;
+
             const match = text.match(pattern);
-            if (match) {
+            if (match && match.length >= 4 && match[1] && match[2] && match[3]) {
                 try {
                     if (i === 0 || i === 2) {
                         // DD.MM.YYYY or DD/MM/YYYY
-                        const date = new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1]));
+                        const date = new Date(parseInt(match[3], 10), parseInt(match[2], 10) - 1, parseInt(match[1], 10));
                         if (!isNaN(date.getTime())) {
                             return date;
                         }
                     } else if (i === 1) {
                         // YYYY-MM-DD
-                        const date = new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
+                        const date = new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10));
                         if (!isNaN(date.getTime())) {
                             return date;
                         }
@@ -709,8 +706,14 @@ class TournamentFinder {
                 return false;
             }
 
-            // Youth filter
+            // Youth filter - STRICT: exclude ANY youth/school tournaments
             if (filters.excludeYouth && this.isYouthOnly(tournament)) {
+                return false;
+            }
+
+            // Team tournament filter - ALWAYS exclude team tournaments
+            // Team tournaments are not suitable for combining with individual vacation
+            if (this.isTeamTournament(tournament)) {
                 return false;
             }
 
@@ -722,6 +725,14 @@ class TournamentFinder {
             // Senior category filter
             if (filters.seniorCategory && !this.hasSeniorCategory(tournament.category)) {
                 return false;
+            }
+
+            // ADDITIONAL CHECK: If senior filter is ON, extra validation
+            if (filters.seniorCategory) {
+                // Ensure it's not a youth tournament (double check)
+                if (this.isYouthOnly(tournament)) {
+                    return false;
+                }
             }
 
             // Country filter
@@ -737,11 +748,56 @@ class TournamentFinder {
         return /\bopen\b/i.test(category);
     }
 
+    /**
+     * Check if tournament is youth/school only or has youth restrictions
+     * IMPROVED: Now excludes ANY tournament with youth/school keywords
+     */
     private isYouthOnly(tournament: Tournament): boolean {
-        // International youth keywords matching backend TournamentProcessor
-        const youthPattern = /\bu\d+|youth|junior|u18|under|żiak|młodzie[żz]|juniorzy|juniorów|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile/i;
-        return youthPattern.test(tournament.category) &&
-               !/\bopen\b/i.test(tournament.category);
+        const name = tournament.name || '';
+        const category = tournament.category || '';
+        const description = tournament.description || '';
+        const fullText = `${name} ${category} ${description}`.toLowerCase();
+
+        // Youth keywords (international) - expanded list
+        const youthPattern = /\bu\d+|u-\d+|youth|junior|junioren|u18|u16|u14|u12|u10|u8|under|żiak|młodzie[żz]|juniorzy|juniorów|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile/i;
+
+        // School keywords (international)
+        const schoolPattern = /\bschool|schule|école|escuela|scuola|szkoł|škol/i;
+
+        // Age restricted patterns
+        const agePattern = /\b(under|u|bis)\s*(\d{1,2})\b/i;
+
+        // Check for youth/school indicators
+        if (youthPattern.test(fullText)) {
+            return true;
+        }
+        if (schoolPattern.test(fullText)) {
+            return true;
+        }
+        const ageMatch = fullText.match(agePattern);
+        if (ageMatch && ageMatch[2]) {
+            const age = parseInt(ageMatch[2], 10);
+            if (!isNaN(age) && age < 50) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if tournament is a team tournament
+     * Team tournaments are not suitable for individual vacation planning
+     */
+    private isTeamTournament(tournament: Tournament): boolean {
+        const name = tournament.name || '';
+        const category = tournament.category || '';
+        const fullText = `${name} ${category}`.toLowerCase();
+
+        // Team keywords (international)
+        const teamPattern = /\bteam|mannschaft|équipe|equipo|squadra|drużyn|družstv/i;
+
+        return teamPattern.test(fullText);
     }
 
     private isMediterranean(location: string): boolean {
@@ -754,8 +810,17 @@ class TournamentFinder {
         return false;
     }
 
+    /**
+     * Check if tournament has senior (50+) category
+     * IMPROVED: More comprehensive detection
+     */
     private hasSeniorCategory(category: string): boolean {
-        return /s50\+|s50|senior|veteran|50\+/i.test(category);
+        const categoryLower = category.toLowerCase();
+
+        // Senior/veteran keywords
+        const seniorPattern = /\bs50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50/i;
+
+        return seniorPattern.test(categoryLower);
     }
 
     private matchesCountry(location: string, countryCode: string): boolean {
@@ -964,16 +1029,22 @@ class TournamentFinder {
             day: 'numeric'
         });
 
+        const name = tournament.name || '';
+        const location = tournament.location || '';
+        const category = tournament.category || '';
+        const description = tournament.description || '';
+        const url = tournament.url || '';
+
         return `
             <div class="tournament-card" role="listitem">
                 <div class="tournament-header">
-                    <div class="tournament-name">${this.escapeHtml(tournament.name)}</div>
+                    <div class="tournament-name">${this.escapeHtml(name)}</div>
                     <div class="tournament-date"><time datetime="${tournament.date.toISOString()}">${dateStr}</time></div>
                 </div>
-                <div class="tournament-location">${this.escapeHtml(tournament.location)}</div>
-                <div class="tournament-category">${this.escapeHtml(tournament.category)}</div>
-                <div class="tournament-description">${this.escapeHtml(tournament.description)}</div>
-                <a href="${this.escapeHtml(tournament.url)}" target="_blank" class="tournament-link" rel="noopener noreferrer" aria-label="View ${this.escapeHtml(tournament.name)} details">
+                <div class="tournament-location">${this.escapeHtml(location)}</div>
+                <div class="tournament-category">${this.escapeHtml(category)}</div>
+                <div class="tournament-description">${this.escapeHtml(description)}</div>
+                <a href="${this.escapeHtml(url)}" target="_blank" class="tournament-link" rel="noopener noreferrer" aria-label="View ${this.escapeHtml(name)} details">
                     View Tournament Details →
                 </a>
             </div>

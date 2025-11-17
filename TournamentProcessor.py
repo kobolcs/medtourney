@@ -339,12 +339,15 @@ class TournamentProcessor:
         Applies multiple filters to tournament list including category filters
         (Open, Youth, Senior) and location filter (Mediterranean).
 
+        IMPROVED v2.1: Stricter filtering for youth, school, and team tournaments.
+        Now properly filters for adult/senior individual tournaments suitable for vacation.
+
         Args:
             tournaments: List of tournament dictionaries to filter.
             open_only: If True, only include Open category tournaments.
                 Default is True.
-            exclude_youth: If True, exclude youth-only tournaments (tournaments
-                with Youth category but not Open). Default is True.
+            exclude_youth: If True, exclude youth/school tournaments (ANY tournament
+                with youth, school, or age restriction keywords). Default is True.
             mediterranean_only: If True, only include Mediterranean seaside
                 locations. Default is False.
             senior_only: If True, only include S50+ tournaments. Default is False.
@@ -357,22 +360,29 @@ class TournamentProcessor:
             >>> filtered = processor.filter_tournaments_by_criteria(
             ...     tournaments,
             ...     open_only=True,
-            ...     mediterranean_only=True
+            ...     mediterranean_only=True,
+            ...     senior_only=True
             ... )
-            Filtered to 15 tournaments
+            Filtered to 15 senior tournaments in Mediterranean
         """
         filtered: List[Dict[str, Any]] = []
 
         for tournament in tournaments:
             category_lower: str = tournament['category'].lower()
             location_lower: str = tournament['location'].lower()
+            name_lower: str = tournament['name'].lower()
+            full_text: str = f"{name_lower} {category_lower}"
 
             # Open filter
             if open_only and 'open' not in category_lower:
                 continue
 
-            # Youth filter
-            if exclude_youth and 'youth' in category_lower and 'open' not in category_lower:
+            # IMPROVED Youth/School filter - STRICT: exclude ANY youth or school tournament
+            if exclude_youth and self._is_youth_or_school_tournament(full_text):
+                continue
+
+            # ALWAYS exclude team tournaments (not suitable for individual vacation)
+            if self._is_team_tournament(full_text):
                 continue
 
             # Mediterranean filter
@@ -381,14 +391,104 @@ class TournamentProcessor:
                     continue
 
             # Senior filter - use regex pattern for robust matching of all variations
-            # (s50+, s50, senior, veteran, 50+)
-            if senior_only and not self.REGEX_PATTERNS['s50'].search(category_lower):
-                continue
+            # (s50+, s50, senior, veteran, 50+, over 50, o50)
+            if senior_only:
+                if not self._has_senior_category(category_lower, name_lower):
+                    continue
+                # Double-check: ensure it's not a youth tournament
+                if self._is_youth_or_school_tournament(full_text):
+                    continue
 
             filtered.append(tournament)
 
         print(f"Filtered to {len(filtered)} tournaments")
         return filtered
+
+    def _is_youth_or_school_tournament(self, full_text: str) -> bool:
+        """Check if tournament is for youth/school/juniors.
+
+        IMPROVED: More comprehensive detection of youth and school tournaments.
+
+        Args:
+            full_text: Combined tournament name and category in lowercase.
+
+        Returns:
+            True if tournament is for youth/school/juniors, False otherwise.
+        """
+        # Youth keywords (international) - expanded
+        youth_pattern = re.compile(
+            r'\bu\d+|u-\d+|youth|junior|junioren|u18|u16|u14|u12|u10|u8|under|'
+            r'żiak|młodzie[żz]|juniorzy|juniorów|ml[áa]de[žz]|ifjúság|jugend|'
+            r'jeune|juvenil|joven|giovani|giovanile',
+            re.IGNORECASE
+        )
+
+        # School keywords (international)
+        school_pattern = re.compile(
+            r'\bschool|schule|école|escuela|scuola|szkoł|škol',
+            re.IGNORECASE
+        )
+
+        # Age restriction patterns (under/u/bis + number less than 50)
+        age_pattern = re.compile(r'\b(under|u|bis)\s*(\d{1,2})\b', re.IGNORECASE)
+
+        # Check for youth/school indicators
+        if youth_pattern.search(full_text):
+            return True
+        if school_pattern.search(full_text):
+            return True
+
+        # Check age restrictions
+        age_match = age_pattern.search(full_text)
+        if age_match:
+            try:
+                age = int(age_match.group(2))
+                if age < 50:
+                    return True
+            except ValueError:
+                pass
+
+        return False
+
+    def _is_team_tournament(self, full_text: str) -> bool:
+        """Check if tournament is a team tournament.
+
+        Team tournaments are not suitable for individual vacation planning.
+
+        Args:
+            full_text: Combined tournament name and category in lowercase.
+
+        Returns:
+            True if tournament is a team tournament, False otherwise.
+        """
+        # Team keywords (international)
+        team_pattern = re.compile(
+            r'\bteam|mannschaft|équipe|equipo|squadra|drużyn|družstv',
+            re.IGNORECASE
+        )
+
+        return bool(team_pattern.search(full_text))
+
+    def _has_senior_category(self, category: str, name: str) -> bool:
+        """Check if tournament has senior (50+) category.
+
+        IMPROVED: More comprehensive senior/veteran detection.
+
+        Args:
+            category: Tournament category in lowercase.
+            name: Tournament name in lowercase.
+
+        Returns:
+            True if tournament has senior category, False otherwise.
+        """
+        # Senior/veteran keywords (expanded)
+        senior_pattern = re.compile(
+            r'\bs50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|'
+            r'vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50',
+            re.IGNORECASE
+        )
+
+        return bool(senior_pattern.search(category) or senior_pattern.search(name))
 
     def _find_column(self, headers: List[str], possible_names: List[str]) -> Optional[int]:
         """Find column index by matching possible header names.
