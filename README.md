@@ -1,8 +1,12 @@
 # medtourney
 
 [![Update Tournament Data Daily](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/update-tournaments.yml)
+[![Run Tests](https://github.com/kobolcs/medtourney/actions/workflows/test.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/test.yml)
+[![Security Scanning](https://github.com/kobolcs/medtourney/actions/workflows/security.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/security.yml)
 
 Advanced chess tournament search tool for chess-results.com with powerful filtering capabilities.
+
+**Version 2.0** - Now with TypeScript, enhanced type safety, and comprehensive code quality tools!
 
 ## 🌐 Web Tool
 
@@ -47,6 +51,34 @@ pip install -r requirements.txt
 3. Initialize Robot Framework Browser:
 ```bash
 rfbrowser init
+```
+
+### For Development (TypeScript)
+
+If you want to contribute or modify the frontend code:
+
+1. Install Node.js dependencies:
+```bash
+npm install
+```
+
+2. Build TypeScript:
+```bash
+npm run build
+# or for development with watch mode
+npm run build:watch
+```
+
+3. Run linting and type checking:
+```bash
+npm run lint
+npm run type-check
+```
+
+4. Install pre-commit hooks (recommended):
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
 ```
 
 ## Usage
@@ -291,3 +323,41 @@ Feel free to submit issues or pull requests to improve the tool.
 ## License
 
 MIT License
+
+---
+
+## 🚀 Version 2.0 - What's New
+
+### TypeScript Migration
+- ✅ **Full TypeScript conversion** of frontend code
+- ✅ **Strict type checking** with comprehensive interfaces
+- ✅ **Better IDE support** with autocomplete and error detection
+- ✅ **Source maps** for easier debugging
+
+### Code Quality Improvements
+- ✅ **MyPy type checking** for Python code
+- ✅ **Ruff linting** - fast Python linter and formatter
+- ✅ **ESLint** for TypeScript/JavaScript
+- ✅ **Pre-commit hooks** to catch issues before commits
+
+### Security Enhancements
+- ✅ **Content Security Policy** headers
+- ✅ **Dependency scanning** (Python and NPM)
+- ✅ **CodeQL security analysis**
+- ✅ **XSS protection** with HTML escaping
+
+### Accessibility
+- ✅ **WCAG 2.1 AA compliance** improvements
+- ✅ **ARIA labels** for screen readers
+- ✅ **Semantic HTML5** roles
+- ✅ **Keyboard navigation** support
+
+### CI/CD Enhancements
+- ✅ **Type checking** in CI/CD pipeline
+- ✅ **Automated linting** on every push
+- ✅ **Security scans** daily
+- ✅ **Multi-stage testing** (type → lint → build → test)
+
+See [IMPROVEMENTS_REPORT.md](IMPROVEMENTS_REPORT.md) for detailed analysis and future roadmap.
+
+---
