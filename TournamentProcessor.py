@@ -148,7 +148,7 @@ class TournamentProcessor:
             'malta', 'valletta', 'sliema', 'limassol', 'larnaca', 'cyprus'
         }
 
-    @keyword("Load And Filter Tournaments")
+    @keyword("Load And Filter Tournaments")  # type: ignore[misc]
     def load_and_filter_tournaments(self, excel_file: str) -> List[Dict[str, Any]]:
         """Load tournaments from Excel file and filter for European tournaments.
 
@@ -263,7 +263,7 @@ class TournamentProcessor:
             print(f"Error loading Excel file: {e}")
             raise
 
-    @keyword("Export To JSON")
+    @keyword("Export To JSON")  # type: ignore[misc]
     def export_to_json(self, tournaments: List[Dict[str, Any]], output_file: str) -> None:
         """Export tournaments to JSON file.
 
@@ -298,7 +298,7 @@ class TournamentProcessor:
 
             for idx, tournament in enumerate(tournaments):
                 if not isinstance(tournament, dict):
-                    print(f"Warning: Tournament at index {idx} is not a dict, skipping")
+                    print(f"Warning: Tournament at index {idx} is not a dict, skipping")  # type: ignore[unreachable]
                     continue
 
                 missing_fields: Set[str] = required_fields - set(tournament.keys())
@@ -325,7 +325,7 @@ class TournamentProcessor:
             print(f"Unexpected error exporting to JSON: {e}")
             raise
 
-    @keyword("Filter Tournaments By Criteria")
+    @keyword("Filter Tournaments By Criteria")  # type: ignore[misc]
     def filter_tournaments_by_criteria(
         self,
         tournaments: List[Dict[str, Any]],
