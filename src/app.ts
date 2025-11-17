@@ -400,6 +400,74 @@ class TournamentFinder {
     }
 
     /**
+     * Validate that the response is legitimately from chess-results.com
+     * 
+     * Implements multi-layered validation to prevent content injection:
+     * 1. Checks for chess-results.com domain references
+     * 2. Verifies presence of tournament-specific HTML structure (links with 'tnr' parameter)
+     * 3. Validates HTML can be parsed and contains expected DOM structure
+     * 
+     * @param html - The HTML response to validate
+     * @returns true if response passes all validation checks
+     */
+    private validateChessResultsResponse(html: string): boolean {
+        try {
+            // Layer 1: Basic domain check (weak but fast)
+            if (!html.includes('chess-results')) {
+                console.warn('Validation failed: Missing chess-results domain reference');
+                return false;
+            }
+
+            // Layer 2: Parse HTML and validate DOM structure
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Check for parser errors
+            const parserError = doc.querySelector('parsererror');
+            if (parserError) {
+                console.warn('Validation failed: HTML parsing error');
+                return false;
+            }
+
+            // Layer 3: Verify chess-results.com specific structures
+            // Look for tournament links with 'tnr' parameter (chess-results.com specific)
+            const tnrLinks = doc.querySelectorAll<HTMLAnchorElement>('a[href*="tnr"]');
+            if (tnrLinks.length === 0) {
+                console.warn('Validation failed: No tournament links found');
+                return false;
+            }
+
+            // Layer 4: Verify at least some links reference chess-results.com domain
+            let hasChessResultsLinks = false;
+            tnrLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                if (href.includes('chess-results.com') || href.startsWith('/') || href.startsWith('tnr')) {
+                    hasChessResultsLinks = true;
+                }
+            });
+
+            if (!hasChessResultsLinks) {
+                console.warn('Validation failed: Tournament links do not reference chess-results.com');
+                return false;
+            }
+
+            // Layer 5: Basic HTML structure check - expect table structure for tournament listings
+            const tables = doc.querySelectorAll('table');
+            const rows = doc.querySelectorAll('tr');
+            if (tables.length === 0 && rows.length === 0) {
+                console.warn('Validation failed: Missing expected table structure');
+                return false;
+            }
+
+            console.log(`Response validation passed: Found ${tnrLinks.length} tournament links`);
+            return true;
+        } catch (error) {
+            console.error('Validation error:', error);
+            return false;
+        }
+    }
+
+    /**
      * Fetch URL through CORS proxy with fallbacks
      */
     private async fetchWithProxy(url: string): Promise<string> {
@@ -439,8 +507,8 @@ class TournamentFinder {
                 }
 
                 // SECURITY: Validate response is actually from chess-results.com
-                // Prevents proxy from injecting malicious content
-                if (!html.includes('chess-results')) {
+                // Multi-layered validation to prevent content injection attacks
+                if (!this.validateChessResultsResponse(html)) {
                     throw new Error('Invalid response from proxy - possible content injection');
                 }
 
