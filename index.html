@@ -10,6 +10,11 @@
 <body>
     <div class="container">
         <header role="banner">
+            <div class="header-controls">
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    🌙 Dark Mode
+                </button>
+            </div>
             <h1>🏆 European Chess Tournament Finder</h1>
             <p class="subtitle">Search for chess tournaments on chess-results.com with advanced filtering</p>
         </header>
@@ -138,8 +143,13 @@
 
         <div id="results" class="results-container" style="display: none;" role="region" aria-label="Tournament search results">
             <div class="results-header">
-                <h2>Search Results</h2>
-                <span id="resultsCount" class="results-count" role="status" aria-live="polite"></span>
+                <div class="results-title-group">
+                    <h2>Search Results</h2>
+                    <span id="resultsCount" class="results-count" role="status" aria-live="polite"></span>
+                </div>
+                <button id="exportBtn" class="export-button" aria-label="Export tournaments to CSV">
+                    📥 Export CSV
+                </button>
             </div>
             <div id="tournamentList" class="tournament-list" role="list"></div>
         </div>
