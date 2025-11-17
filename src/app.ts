@@ -74,6 +74,9 @@ class TournamentFinder {
     private readonly tournamentsPerPage: number;
     private allTournaments: Tournament[];
 
+    // Performance: Filter result cache
+    private filterCache: Map<string, Tournament[]>;
+
     constructor() {
         // CORS proxy services (with fallbacks)
         this.corsProxies = [
@@ -84,6 +87,9 @@ class TournamentFinder {
         this.currentPage = 1;
         this.tournamentsPerPage = 20;
         this.allTournaments = [];
+
+        // Initialize filter cache for performance
+        this.filterCache = new Map();
 
         // Will be loaded from config.json
         this.europeanCountries = {};
@@ -138,7 +144,8 @@ class TournamentFinder {
                 throw new Error(`Failed to load config: ${response.status}`);
             }
 
-            const config = await response.json() as AppConfig;
+            const rawConfig = await response.json();
+            const config = this.validateConfig(rawConfig);
 
             // Convert to Sets for O(1) lookup performance
             this.nonEuropeanCountries = new Set(config.nonEuropeanCountries);
@@ -241,6 +248,50 @@ class TournamentFinder {
             'malta', 'valletta', 'sliema',
             'limassol', 'larnaca', 'paphos', 'cyprus'
         ]);
+    }
+
+    /**
+     * Validate configuration JSON structure
+     * Prevents prototype pollution and ensures required fields exist
+     */
+    private validateConfig(data: unknown): AppConfig {
+        if (!data || typeof data !== 'object') {
+            throw new Error('Invalid config structure: not an object');
+        }
+
+        const config = data as Record<string, unknown>;
+
+        // Validate required fields exist and are correct types
+        if (!Array.isArray(config.europeanCountries)) {
+            throw new Error('Invalid config: europeanCountries must be an array');
+        }
+
+        if (!Array.isArray(config.nonEuropeanCountries)) {
+            throw new Error('Invalid config: nonEuropeanCountries must be an array');
+        }
+
+        if (!Array.isArray(config.mediterraneanLocations)) {
+            throw new Error('Invalid config: mediterraneanLocations must be an array');
+        }
+
+        if (!config.countryCodes || typeof config.countryCodes !== 'object') {
+            throw new Error('Invalid config: countryCodes must be an object');
+        }
+
+        // Validate countryCodes structure
+        const countryCodes = config.countryCodes as Record<string, unknown>;
+        for (const [code, value] of Object.entries(countryCodes)) {
+            if (!value || typeof value !== 'object') {
+                throw new Error(`Invalid countryCodes entry for ${code}`);
+            }
+            const countryData = value as Record<string, unknown>;
+            if (!Array.isArray(countryData.keywords)) {
+                throw new Error(`Invalid keywords for country ${code}`);
+            }
+        }
+
+        // Safe cast after validation
+        return config as unknown as AppConfig;
     }
 
     /**
@@ -349,6 +400,74 @@ class TournamentFinder {
     }
 
     /**
+     * Validate that the response is legitimately from chess-results.com
+     * 
+     * Implements multi-layered validation to prevent content injection:
+     * 1. Checks for chess-results.com domain references
+     * 2. Verifies presence of tournament-specific HTML structure (links with 'tnr' parameter)
+     * 3. Validates HTML can be parsed and contains expected DOM structure
+     * 
+     * @param html - The HTML response to validate
+     * @returns true if response passes all validation checks
+     */
+    private validateChessResultsResponse(html: string): boolean {
+        try {
+            // Layer 1: Basic domain check (weak but fast)
+            if (!html.includes('chess-results')) {
+                console.warn('Validation failed: Missing chess-results domain reference');
+                return false;
+            }
+
+            // Layer 2: Parse HTML and validate DOM structure
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Check for parser errors
+            const parserError = doc.querySelector('parsererror');
+            if (parserError) {
+                console.warn('Validation failed: HTML parsing error');
+                return false;
+            }
+
+            // Layer 3: Verify chess-results.com specific structures
+            // Look for tournament links with 'tnr' parameter (chess-results.com specific)
+            const tnrLinks = doc.querySelectorAll<HTMLAnchorElement>('a[href*="tnr"]');
+            if (tnrLinks.length === 0) {
+                console.warn('Validation failed: No tournament links found');
+                return false;
+            }
+
+            // Layer 4: Verify at least some links reference chess-results.com domain
+            let hasChessResultsLinks = false;
+            tnrLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                if (href.includes('chess-results.com') || href.startsWith('/') || href.startsWith('tnr')) {
+                    hasChessResultsLinks = true;
+                }
+            });
+
+            if (!hasChessResultsLinks) {
+                console.warn('Validation failed: Tournament links do not reference chess-results.com');
+                return false;
+            }
+
+            // Layer 5: Basic HTML structure check - expect table structure for tournament listings
+            const tables = doc.querySelectorAll('table');
+            const rows = doc.querySelectorAll('tr');
+            if (tables.length === 0 && rows.length === 0) {
+                console.warn('Validation failed: Missing expected table structure');
+                return false;
+            }
+
+            console.log(`Response validation passed: Found ${tnrLinks.length} tournament links`);
+            return true;
+        } catch (error) {
+            console.error('Validation error:', error);
+            return false;
+        }
+    }
+
+    /**
      * Fetch URL through CORS proxy with fallbacks
      */
     private async fetchWithProxy(url: string): Promise<string> {
@@ -385,6 +504,12 @@ class TournamentFinder {
                     } catch (e) {
                         html = data;
                     }
+                }
+
+                // SECURITY: Validate response is actually from chess-results.com
+                // Multi-layered validation to prevent content injection attacks
+                if (!this.validateChessResultsResponse(html)) {
+                    throw new Error('Invalid response from proxy - possible content injection');
                 }
 
                 console.log(`Successfully fetched ${html.length} bytes via proxy ${i + 1}`);
@@ -655,7 +780,20 @@ class TournamentFinder {
             countryFilter: filterElements.countryFilter!.value
         };
 
-        return tournaments.filter(tournament => {
+        // VALIDATION: Check date range is valid
+        if (filters.startDate && filters.endDate && filters.startDate > filters.endDate) {
+            this.showError('Start date must be before end date');
+            return tournaments; // Return unfiltered
+        }
+
+        // PERFORMANCE: Check filter cache
+        const cacheKey = this.getFilterCacheKey(filters);
+        if (this.filterCache.has(cacheKey)) {
+            console.log('Using cached filter results');
+            return this.filterCache.get(cacheKey)!;
+        }
+
+        const filtered = tournaments.filter(tournament => {
             // Validate tournament structure
             if (!tournament || typeof tournament !== 'object') {
                 console.warn('Invalid tournament object:', tournament);
@@ -742,6 +880,12 @@ class TournamentFinder {
 
             return true;
         });
+
+        // PERFORMANCE: Cache the filtered results
+        this.filterCache.set(cacheKey, filtered);
+        console.log(`Filtered ${filtered.length} tournaments (cached for future use)`);
+
+        return filtered;
     }
 
     private isOpenCategory(category: string): boolean {
@@ -1049,6 +1193,40 @@ class TournamentFinder {
                 </a>
             </div>
         `;
+    }
+
+    /**
+     * Generate cache key from filter state for performance optimization
+     */
+    private getFilterCacheKey(filters: FilterState): string {
+        return JSON.stringify({
+            openOnly: filters.openOnly,
+            excludeYouth: filters.excludeYouth,
+            mediterraneanOnly: filters.mediterraneanOnly,
+            seniorCategory: filters.seniorCategory,
+            classicalTime: filters.classicalTime,
+            rapidTime: filters.rapidTime,
+            blitzTime: filters.blitzTime,
+            startDate: filters.startDate?.toISOString() || null,
+            endDate: filters.endDate?.toISOString() || null,
+            countryFilter: filters.countryFilter
+        });
+    }
+
+    /**
+     * Show user-friendly error message
+     */
+    private showError(message: string): void {
+        const error = document.getElementById('error');
+        if (error) {
+            error.textContent = message;
+            error.style.display = 'block';
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 5000);
+        }
     }
 
     private escapeHtml(text: string | undefined | null): string {

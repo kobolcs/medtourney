@@ -110,8 +110,8 @@ class TestFrontendBackendParity:
 
     def test_senior_filter_consistency_frontend_backend(self, app_js_content: str):
         """Test that frontend hasSeniorCategory uses same regex as backend"""
-        # Find hasSeniorCategory in app.js
-        pattern = r'hasSeniorCategory\([^)]+\)\s*\{[^}]*return\s+(/[^/]+/[ig]*)'
+        # Find hasSeniorCategory in app.js - look for seniorPattern variable assignment
+        pattern = r'hasSeniorCategory\([^)]+\)\s*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)'
         match = re.search(pattern, app_js_content, re.DOTALL)
 
         assert match, "Could not find hasSeniorCategory regex in app.js"
