@@ -14,11 +14,12 @@ Custom markers:
     ci_skip: Tests to skip in CI/CD environments
 """
 
-import pytest
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
-from datetime import datetime, timedelta
+
+import pytest
 
 # Add project root to Python path so tests can import modules
 project_root: Path = Path(__file__).parent.parent
@@ -56,48 +57,48 @@ def sample_tournament_data() -> List[Dict[str, Any]]:
     Returns:
         List of tournament dictionaries with all required fields.
     """
-    tomorrow: str = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    tomorrow: str = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
 
     return [
         {
-            'name': 'Barcelona Open 2025',
-            'location': 'Barcelona, ESP',
-            'date': tomorrow,
-            'category': 'Open, Classical',
-            'url': 'https://chess-results.com/test1',
-            'description': 'Barcelona Open 2025'
+            "name": "Barcelona Open 2025",
+            "location": "Barcelona, ESP",
+            "date": tomorrow,
+            "category": "Open, Classical",
+            "url": "https://chess-results.com/test1",
+            "description": "Barcelona Open 2025"
         },
         {
-            'name': 'Athens Senior Championship',
-            'location': 'Athens, Greece',
-            'date': tomorrow,
-            'category': 'Open, S50+, Classical',
-            'url': 'https://chess-results.com/test2',
-            'description': 'Athens Senior Championship'
+            "name": "Athens Senior Championship",
+            "location": "Athens, Greece",
+            "date": tomorrow,
+            "category": "Open, S50+, Classical",
+            "url": "https://chess-results.com/test2",
+            "description": "Athens Senior Championship"
         },
         {
-            'name': 'Paris Youth U18',
-            'location': 'Paris, France',
-            'date': tomorrow,
-            'category': 'Youth',
-            'url': 'https://chess-results.com/test3',
-            'description': 'Paris Youth U18'
+            "name": "Paris Youth U18",
+            "location": "Paris, France",
+            "date": tomorrow,
+            "category": "Youth",
+            "url": "https://chess-results.com/test3",
+            "description": "Paris Youth U18"
         },
         {
-            'name': 'Dubai Open',
-            'location': 'Dubai, UAE',
-            'date': tomorrow,
-            'category': 'Open, Classical',
-            'url': 'https://chess-results.com/test4',
-            'description': 'Dubai Open'
+            "name": "Dubai Open",
+            "location": "Dubai, UAE",
+            "date": tomorrow,
+            "category": "Open, Classical",
+            "url": "https://chess-results.com/test4",
+            "description": "Dubai Open"
         },
         {
-            'name': 'Moscow Championship',
-            'location': 'Moscow, Russia',
-            'date': tomorrow,
-            'category': 'Open, Classical',
-            'url': 'https://chess-results.com/test5',
-            'description': 'Moscow Championship'
+            "name": "Moscow Championship",
+            "location": "Moscow, Russia",
+            "date": tomorrow,
+            "category": "Open, Classical",
+            "url": "https://chess-results.com/test5",
+            "description": "Moscow Championship"
         }
     ]
 

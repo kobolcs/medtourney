@@ -43,7 +43,7 @@ select = [
 
 # Ignore specific rules
 ignore = [
-    "E501",   # Line too long (handled by formatter)
+    "E501",    # Line too long (handled by formatter)
     "PLR0913", # Too many arguments
     "TRY003",  # Avoid specifying long messages outside exception class
 ]
@@ -68,8 +68,21 @@ exclude = [
 
 [lint.per-file-ignores]
 "tests/**/*.py" = [
-    "S101",   # Allow assert in tests
+    "S101",    # Allow assert in tests
     "PLR2004", # Allow magic values in tests
+    "SLF001",  # Allow private member access in tests
+    "DTZ005",  # Allow naive datetime.now() in tests
+    "DTZ007",  # Allow naive datetime.strptime() in tests
+    "DTZ001",  # Allow naive datetime() in tests
+]
+"tests/integration/**/*.py" = [
+    "ARG002",  # Allow unused arguments (pytest fixtures)
+    "PLC0415", # Allow local imports (performance testing)
+]
+"tests/python/test_scraper_meta.py" = [
+    "PT018",   # Allow combined assertions
+    "PLW2901", # Allow loop variable reassignment
+    "N802",    # Allow non-lowercase test names (saveAs)
 ]
 
 [lint.isort]
