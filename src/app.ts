@@ -43,6 +43,8 @@ interface FilterState {
     excludeYouth: boolean;
     mediterraneanOnly: boolean;
     seniorCategory: boolean;
+    womenOnly: boolean;
+    includeTeamTournaments: boolean;
     classicalTime: boolean;
     rapidTime: boolean;
     blitzTime: boolean;
@@ -57,6 +59,8 @@ interface FilterElements {
     excludeYouth: HTMLInputElement | null;
     mediterraneanOnly: HTMLInputElement | null;
     seniorCategory: HTMLInputElement | null;
+    womenOnly: HTMLInputElement | null;
+    includeTeamTournaments: HTMLInputElement | null;
     classicalTime: HTMLInputElement | null;
     rapidTime: HTMLInputElement | null;
     blitzTime: HTMLInputElement | null;
@@ -818,6 +822,8 @@ class TournamentFinder {
             excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
             mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
             seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+            womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
+            includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
             classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
             rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
             blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
@@ -841,6 +847,8 @@ class TournamentFinder {
             excludeYouth: filterElements.excludeYouth!.checked,
             mediterraneanOnly: filterElements.mediterraneanOnly!.checked,
             seniorCategory: filterElements.seniorCategory!.checked,
+            womenOnly: filterElements.womenOnly!.checked,
+            includeTeamTournaments: filterElements.includeTeamTournaments!.checked,
             classicalTime: filterElements.classicalTime!.checked,
             rapidTime: filterElements.rapidTime!.checked,
             blitzTime: filterElements.blitzTime!.checked,
@@ -918,9 +926,14 @@ class TournamentFinder {
                 return false;
             }
 
-            // Team tournament filter - ALWAYS exclude team tournaments
-            // Team tournaments are not suitable for combining with individual vacation
-            if (this.isTeamTournament(tournament)) {
+            // Women-only filter
+            if (filters.womenOnly && !this.hasWomenCategory(tournament.category)) {
+                return false;
+            }
+
+            // Team tournament filter - Exclude unless explicitly included
+            // Team tournaments are typically not suitable for individual vacation
+            if (!filters.includeTeamTournaments && this.isTeamTournament(tournament)) {
                 return false;
             }
 
@@ -1034,6 +1047,18 @@ class TournamentFinder {
         const seniorPattern = /\bs50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50/i;
 
         return seniorPattern.test(categoryLower);
+    }
+
+    /**
+     * Check if tournament has women's category
+     */
+    private hasWomenCategory(category: string): boolean {
+        const categoryLower = category.toLowerCase();
+
+        // Women's category keywords
+        const womenPattern = /\bwomen|ladies|female|frauen|dames|feminin|donne|kobiet/i;
+
+        return womenPattern.test(categoryLower);
     }
 
     private matchesCountry(location: string, countryCode: string): boolean {
