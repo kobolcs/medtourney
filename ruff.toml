@@ -46,18 +46,6 @@ ignore = [
     "E501",    # Line too long (handled by formatter)
     "PLR0913", # Too many arguments
     "TRY003",  # Avoid specifying long messages outside exception class
-    "PTH123",  # Use pathlib.Path.open() instead of builtin open()
-    "T201",    # Print statements (needed for logging)
-    "DTZ005",  # datetime.now() without timezone
-    "DTZ007",  # datetime.strptime() without timezone
-    "DTZ001",  # datetime() without tzinfo
-    "TRY300",  # Consider moving statement to else block
-    "TRY203",  # Remove exception handler that immediately re-raises
-    "TRY004",  # Prefer TypeError for invalid type
-    "TRY301",  # Abstract raise to inner function
-    "SIM102",  # Use single if statement (style preference)
-    "PLR2004", # Magic values (acceptable in context)
-    "PLR0911", # Too many return statements
 ]
 
 # Allow autofix for all enabled rules
@@ -83,13 +71,18 @@ exclude = [
     "S101",    # Allow assert in tests
     "PLR2004", # Allow magic values in tests
     "SLF001",  # Allow private member access in tests
-    "B017",    # Allow broad exception assertions in tests
-    "PT011",   # Allow broad pytest.raises() in tests
-    "ARG002",  # Allow unused arguments in tests (fixtures)
-    "PLC0415", # Allow local imports in tests (performance testing)
-    "PT018",   # Allow combined assertions in tests
-    "PLW2901", # Allow loop variable reassignment in tests
-    "N802",    # Allow non-lowercase function names (test context)
+    "DTZ005",  # Allow naive datetime.now() in tests
+    "DTZ007",  # Allow naive datetime.strptime() in tests
+    "DTZ001",  # Allow naive datetime() in tests
+]
+"tests/integration/**/*.py" = [
+    "ARG002",  # Allow unused arguments (pytest fixtures)
+    "PLC0415", # Allow local imports (performance testing)
+]
+"tests/python/test_scraper_meta.py" = [
+    "PT018",   # Allow combined assertions
+    "PLW2901", # Allow loop variable reassignment
+    "N802",    # Allow non-lowercase test names (saveAs)
 ]
 
 [lint.isort]

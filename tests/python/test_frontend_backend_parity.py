@@ -25,14 +25,14 @@ class TestFrontendBackendParity:
     def config_json(self) -> dict:
         """Load config.json."""
         config_path = Path(__file__).parent.parent.parent / "config.json"
-        with open(config_path, encoding="utf-8") as f:
+        with config_path.open(encoding="utf-8") as f:
             return json.load(f)
 
     @pytest.fixture
     def app_js_content(self) -> str:
         """Load app.js content."""
         app_js_path = Path(__file__).parent.parent.parent / "app.js"
-        with open(app_js_path, encoding="utf-8") as f:
+        with app_js_path.open(encoding="utf-8") as f:
             return f.read()
 
     def test_mediterranean_cities_in_config(self, config_json: dict, processor: TournamentProcessor):

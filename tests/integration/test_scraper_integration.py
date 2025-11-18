@@ -92,7 +92,7 @@ class TestScraperIntegration:
         assert expected_json_file.exists(), "tournaments_data.json was not created"
 
         # Validate JSON structure
-        with open(expected_json_file, encoding="utf-8") as f:
+        with expected_json_file.open(encoding="utf-8") as f:
             data = json.load(f)
 
         assert isinstance(data, list), "JSON should contain a list of tournaments"
@@ -118,7 +118,7 @@ class TestScraperIntegration:
         if not expected_json_file.exists():
             pytest.skip("tournaments_data.json doesn't exist yet")
 
-        with open(expected_json_file, encoding="utf-8") as f:
+        with expected_json_file.open(encoding="utf-8") as f:
             data = json.load(f)
 
         assert isinstance(data, list), "JSON should contain a list"
@@ -152,7 +152,7 @@ class TestScraperIntegration:
         if not expected_json_file.exists():
             pytest.skip("tournaments_data.json doesn't exist yet")
 
-        with open(expected_json_file, encoding="utf-8") as f:
+        with expected_json_file.open(encoding="utf-8") as f:
             data = json.load(f)
 
         # Non-European countries that should be excluded
@@ -176,7 +176,7 @@ class TestScraperIntegration:
         if not expected_json_file.exists():
             pytest.skip("tournaments_data.json doesn't exist yet")
 
-        with open(expected_json_file, encoding="utf-8") as f:
+        with expected_json_file.open(encoding="utf-8") as f:
             data = json.load(f)
 
         tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)

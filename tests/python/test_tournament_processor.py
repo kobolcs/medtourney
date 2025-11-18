@@ -10,7 +10,7 @@ Typical usage example:
 """
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -168,10 +168,12 @@ class TestTournamentProcessor:
         assert date.day == 28
 
     def test_parse_date_datetime_object(self, processor):
-        """Test passing a datetime object"""
+        """Test passing a datetime object - naive datetimes get UTC timezone added"""
         dt = datetime(2025, 11, 28)
         date = processor._parse_date(dt)
-        assert date == dt
+        # Naive datetime should get UTC timezone added
+        expected = datetime(2025, 11, 28, tzinfo=timezone.utc)
+        assert date == expected
 
     def test_parse_date_invalid(self, processor):
         """Test invalid date returns current date"""
@@ -604,7 +606,7 @@ class TestTournamentProcessor:
 
     def test_load_excel_missing_file(self, processor):
         """Test loading from non-existent file raises error"""
-        with pytest.raises(Exception):
+        with pytest.raises(FileNotFoundError):
             processor.load_and_filter_tournaments("/nonexistent/file.xlsx")
 
     def test_load_excel_validates_location(self, processor, sample_excel_file):
@@ -629,7 +631,7 @@ class TestTournamentProcessor:
         assert json_file.exists()
 
         # Verify content
-        with open(json_file, encoding="utf-8") as f:
+        with json_file.open(encoding="utf-8") as f:
             data = json.load(f)
 
         assert len(data) == len(sample_tournaments)
@@ -648,7 +650,7 @@ class TestTournamentProcessor:
         processor.export_to_json(invalid_tournaments, str(json_file))
 
         # Should only export valid tournament
-        with open(json_file, encoding="utf-8") as f:
+        with json_file.open(encoding="utf-8") as f:
             data = json.load(f)
 
         assert len(data) == 1
@@ -672,7 +674,7 @@ class TestTournamentProcessor:
         processor.export_to_json(unicode_tournaments, str(json_file))
 
         # Verify Unicode is preserved
-        with open(json_file, encoding="utf-8") as f:
+        with json_file.open(encoding="utf-8") as f:
             data = json.load(f)
 
         assert "España" in data[0]["name"]
@@ -705,7 +707,7 @@ class TestTournamentProcessor:
         json_file = tmp_path / "empty.json"
         processor.export_to_json([], str(json_file))
 
-        with open(json_file) as f:
+        with json_file.open() as f:
             data = json.load(f)
 
         assert data == []

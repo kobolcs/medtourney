@@ -15,10 +15,11 @@ Typical usage example:
 """
 
 import json
+import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Optional, Pattern, Set, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Pattern, Set, Tuple, Union
 
 import openpyxl
 from openpyxl.workbook.workbook import Workbook
@@ -69,9 +70,11 @@ class TournamentProcessor:
     }
 
     ROBOT_LIBRARY_SCOPE: ClassVar[str] = "GLOBAL"
+    MINIMUM_SENIOR_AGE: ClassVar[int] = 50  # Minimum age for senior tournaments
 
     def __init__(self) -> None:
         """Initialize the TournamentProcessor with empty tournament list."""
+        self.logger = logging.getLogger(__name__)
         self.tournaments: List[Dict[str, Any]] = []
         self.european_countries: Set[str] = set()
         self.non_european_countries: Set[str] = set()
@@ -91,7 +94,7 @@ class TournamentProcessor:
         """
         config_path: Path = Path(__file__).parent / "config.json"
         try:
-            with open(config_path, encoding="utf-8") as f:
+            with config_path.open(encoding="utf-8") as f:
                 config: Dict[str, List[str]] = json.load(f)
 
             # Convert lists to sets for O(1) lookup performance
@@ -172,85 +175,80 @@ class TournamentProcessor:
             >>> print(f"Found {len(tournaments)} tournaments")
             Found 42 tournaments
         """
+        # Load Excel file
+        workbook: Workbook = openpyxl.load_workbook(excel_file, data_only=True)
+        sheet: Worksheet = workbook.active
 
-        try:
-            # Load Excel file
-            workbook: Workbook = openpyxl.load_workbook(excel_file, data_only=True)
-            sheet: Worksheet = workbook.active
-
-            # Get headers from first row
-            headers: List[str] = []
-            for cell in sheet[1]:
-                if cell.value:
-                    headers.append(str(cell.value).strip().lower())
+        # Get headers from first row
+        headers: List[str] = []
+        for cell in sheet[1]:
+            if cell.value:
+                headers.append(str(cell.value).strip().lower())
 
 
-            # Find column indices
-            name_col: Optional[int] = self._find_column(headers, ["name", "tournament", "turnier"])
-            location_col: Optional[int] = self._find_column(headers, ["location", "place", "ort", "city", "country"])
-            date_col: Optional[int] = self._find_column(headers, ["date", "datum", "start", "begin"])
-            url_col: Optional[int] = self._find_column(headers, ["url", "link", "website"])
+        # Find column indices
+        name_col: Optional[int] = self._find_column(headers, ["name", "tournament", "turnier"])
+        location_col: Optional[int] = self._find_column(headers, ["location", "place", "ort", "city", "country"])
+        date_col: Optional[int] = self._find_column(headers, ["date", "datum", "start", "begin"])
+        url_col: Optional[int] = self._find_column(headers, ["url", "link", "website"])
 
-            tournaments: List[Dict[str, Any]] = []
+        tournaments: List[Dict[str, Any]] = []
 
-            # Calculate tomorrow once (not in loop) - PERFORMANCE FIX
-            tomorrow: datetime = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        # Calculate tomorrow once (not in loop) - PERFORMANCE FIX
+        tomorrow: datetime = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
-            # Process each row
-            for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                try:
-                    # Extract data
-                    name: str = (str(row[name_col]).strip()
-                               if name_col is not None and row[name_col]
-                               else f"Tournament {row_idx}")
-                    location: str = (str(row[location_col]).strip()
-                                   if location_col is not None and row[location_col]
-                                   else "Unknown")
-                    date_value: Any = row[date_col] if date_col is not None else None
-                    url: str = (str(row[url_col]).strip()
-                              if url_col is not None and row[url_col]
-                              else "https://chess-results.com")
+        # Process each row
+        for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            try:
+                # Extract data
+                name: str = (str(row[name_col]).strip()
+                           if name_col is not None and row[name_col]
+                           else f"Tournament {row_idx}")
+                location: str = (str(row[location_col]).strip()
+                               if location_col is not None and row[location_col]
+                               else "Unknown")
+                date_value: Any = row[date_col] if date_col is not None else None
+                url: str = (str(row[url_col]).strip()
+                          if url_col is not None and row[url_col]
+                          else "https://chess-results.com")
 
-                    # Skip empty rows
-                    if not name or name == "None":
-                        continue
-
-                    # Parse date
-                    parsed_date: datetime = self._parse_date(date_value)
-
-                    # Filter: only tournaments starting tomorrow or later (not today or past)
-                    if parsed_date < tomorrow:
-                        continue  # Skip tournaments that already started or start today
-
-                    # Extract category
-                    category: str = self._extract_category(name + " " + location)
-
-                    # Filter: only European tournaments
-                    if not self._is_european(location):
-                        continue
-
-                    # Build tournament dict
-                    tournament: Dict[str, Any] = {
-                        "name": name,
-                        "location": location,
-                        "date": parsed_date.strftime("%Y-%m-%d"),  # Convert to string for JSON
-                        "category": category,
-                        "url": url,
-                        "description": name
-                    }
-
-                    tournaments.append(tournament)
-
-                except Exception:
+                # Skip empty rows
+                if not name or name == "None":
                     continue
 
-            workbook.close()
+                # Parse date
+                parsed_date: datetime = self._parse_date(date_value)
 
-            self.tournaments = tournaments
-            return tournaments
+                # Filter: only tournaments starting tomorrow or later (not today or past)
+                if parsed_date < tomorrow:
+                    continue  # Skip tournaments that already started or start today
 
-        except Exception:
-            raise
+                # Extract category
+                category: str = self._extract_category(name + " " + location)
+
+                # Filter: only European tournaments
+                if not self._is_european(location):
+                    continue
+
+                # Build tournament dict
+                tournament: Dict[str, Any] = {
+                    "name": name,
+                    "location": location,
+                    "date": parsed_date.strftime("%Y-%m-%d"),  # Convert to string for JSON
+                    "category": category,
+                    "url": url,
+                    "description": name
+                }
+
+                tournaments.append(tournament)
+
+            except Exception:
+                continue
+
+        workbook.close()
+
+        self.tournaments = tournaments
+        return tournaments
 
     @keyword("Export To JSON")  # type: ignore[misc]
     def export_to_json(self, tournaments: Any, output_file: str) -> None:
@@ -276,37 +274,29 @@ class TournamentProcessor:
             >>> processor.export_to_json(tournaments, 'output.json')
             Exported 1 tournaments to output.json
         """
-        try:
-            # Validate tournament data structure
-            if not isinstance(tournaments, list):
-                msg = f"Expected list of tournaments, got {type(tournaments)}"
-                raise ValueError(msg)
+        # Validate tournament data structure
+        if not isinstance(tournaments, list):
+            msg = f"Expected list of tournaments, got {type(tournaments)}"
+            raise TypeError(msg)
 
-            # Validate each tournament has required fields
-            required_fields: Set[str] = {"name", "location", "date", "category", "url"}
-            valid_tournaments: List[Dict[str, Any]] = []
+        # Validate each tournament has required fields
+        required_fields: Set[str] = {"name", "location", "date", "category", "url"}
+        valid_tournaments: List[Dict[str, Any]] = []
 
-            for _idx, tournament in enumerate(tournaments):
-                if not isinstance(tournament, dict):
-                    continue
+        for _idx, tournament in enumerate(tournaments):
+            if not isinstance(tournament, dict):
+                continue
 
-                missing_fields: Set[str] = required_fields - set(tournament.keys())
-                if missing_fields:
-                    continue
+            missing_fields: Set[str] = required_fields - set(tournament.keys())
+            if missing_fields:
+                continue
 
-                valid_tournaments.append(tournament)
+            valid_tournaments.append(tournament)
 
-            len(tournaments) - len(valid_tournaments)
-
-            # Export validated tournaments
-            with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(valid_tournaments, f, indent=2, ensure_ascii=False)
-        except OSError:
-            raise
-        except ValueError:
-            raise
-        except Exception:
-            raise
+        # Export validated tournaments
+        output_path = Path(output_file)
+        with output_path.open("w", encoding="utf-8") as f:
+            json.dump(valid_tournaments, f, indent=2, ensure_ascii=False)
 
     @keyword("Filter Tournaments By Criteria")  # type: ignore[misc]
     def filter_tournaments_by_criteria(
@@ -369,9 +359,8 @@ class TournamentProcessor:
                 continue
 
             # Mediterranean filter
-            if mediterranean_only:
-                if not any(place in location_lower for place in self.mediterranean_locations):
-                    continue
+            if mediterranean_only and not any(place in location_lower for place in self.mediterranean_locations):
+                continue
 
             # Senior filter - use regex pattern for robust matching of all variations
             # (s50+, s50, senior, veteran, 50+, over 50, o50)
@@ -425,7 +414,7 @@ class TournamentProcessor:
         if age_match:
             try:
                 age = int(age_match.group(2))
-                if age < 50:
+                if age < self.MINIMUM_SENIOR_AGE:
                     return True
             except ValueError:
                 pass
@@ -520,52 +509,47 @@ class TournamentProcessor:
             datetime(2025, 11, 28, 0, 0)
         """
         if date_value is None:
-            return datetime.now()
+            return datetime.now(timezone.utc)
 
         # If already a datetime object
         if isinstance(date_value, datetime):
-            return date_value
+            # Ensure datetime is timezone-aware
+            return date_value if date_value.tzinfo else date_value.replace(tzinfo=timezone.utc)
 
         # Try to parse string
         date_str: str = str(date_value).strip()
 
-        # Try YYYYMMDD format (chess-results.com format: 20251128)
-        match = self.REGEX_PATTERNS["date_yyyymmdd"].search(date_str)
-        if match:
-            try:
-                year: int = int(date_str[0:4])
-                month: int = int(date_str[4:6])
-                day: int = int(date_str[6:8])
-                return datetime(year, month, day)
-            except (ValueError, IndexError):
-                pass
+        # Define date format parsers
+        parsers: List[Tuple[str, Callable[[Any, str], datetime]]] = [
+            # YYYYMMDD format (chess-results.com format: 20251128)
+            ("date_yyyymmdd", lambda _m, s: datetime(
+                int(s[0:4]), int(s[4:6]), int(s[6:8]), tzinfo=timezone.utc
+            )),
+            # DD.MM.YYYY format
+            ("date_ddmmyyyy_dot", lambda m, _s: datetime(
+                int(m[3]), int(m[2]), int(m[1]), tzinfo=timezone.utc
+            )),
+            # YYYY-MM-DD format
+            ("date_yyyymmdd_dash", lambda m, _s: datetime(
+                int(m[1]), int(m[2]), int(m[3]), tzinfo=timezone.utc
+            )),
+            # DD/MM/YYYY format
+            ("date_ddmmyyyy_slash", lambda m, _s: datetime(
+                int(m[3]), int(m[2]), int(m[1]), tzinfo=timezone.utc
+            )),
+        ]
 
-        # Try DD.MM.YYYY format
-        match = self.REGEX_PATTERNS["date_ddmmyyyy_dot"].search(date_str)
-        if match:
-            try:
-                return datetime(int(match[3]), int(match[2]), int(match[1]))
-            except (ValueError, IndexError):
-                pass
-
-        # Try YYYY-MM-DD format
-        match = self.REGEX_PATTERNS["date_yyyymmdd_dash"].search(date_str)
-        if match:
-            try:
-                return datetime(int(match[1]), int(match[2]), int(match[3]))
-            except (ValueError, IndexError):
-                pass
-
-        # Try DD/MM/YYYY format
-        match = self.REGEX_PATTERNS["date_ddmmyyyy_slash"].search(date_str)
-        if match:
-            try:
-                return datetime(int(match[3]), int(match[2]), int(match[1]))
-            except (ValueError, IndexError):
-                pass
+        # Try each parser
+        for pattern_name, parser in parsers:
+            match = self.REGEX_PATTERNS[pattern_name].search(date_str)
+            if match:
+                try:
+                    return parser(match, date_str)
+                except (ValueError, IndexError):
+                    continue
 
         # Default to today if no pattern matched
-        return datetime.now()
+        return datetime.now(timezone.utc)
 
     def _extract_category(self, text: str) -> str:
         """Extract tournament category from text using precompiled patterns.
