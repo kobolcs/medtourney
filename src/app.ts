@@ -3,7 +3,7 @@
  * Fetches and displays tournaments from chess-results.com
  *
  * @author MedTourney Project
- * @version 2.3.0 (Phase 2 - Filter Persistence, Calendar Export)
+ * @version 2.4.0 (v3.1 - Dark Mode, Sorting, CSV Export, Search, Keyboard Nav)
  */
 
 /** Tournament data structure */
@@ -53,6 +53,9 @@ interface FilterState {
     countryFilter: string;
 }
 
+/** Sort options for tournaments */
+type SortOption = 'date-asc' | 'date-desc' | 'name' | 'location' | 'country';
+
 /** HTML element map for type safety */
 interface FilterElements {
     openOnly: HTMLInputElement | null;
@@ -84,6 +87,10 @@ class TournamentFinder {
     private currentPage: number;
     private readonly tournamentsPerPage: number;
     private allTournaments: Tournament[];
+    private filteredTournaments: Tournament[]; // For search within results
+
+    // Sorting state
+    private currentSort: SortOption;
 
     // Performance: Filter result cache
     private filterCache: Map<string, Tournament[]>;
@@ -109,6 +116,8 @@ class TournamentFinder {
         this.currentPage = 1;
         this.tournamentsPerPage = 20;
         this.allTournaments = [];
+        this.filteredTournaments = [];
+        this.currentSort = 'date-asc';
 
         // Initialize filter cache for performance
         this.filterCache = new Map();
@@ -167,8 +176,29 @@ class TournamentFinder {
                 exportBtn.addEventListener('click', () => this.exportToCSV());
             }
 
+            // Sort dropdown
+            const sortSelect = document.getElementById('sortBy') as HTMLSelectElement;
+            if (sortSelect) {
+                sortSelect.addEventListener('change', (e) => {
+                    const target = e.target as HTMLSelectElement;
+                    this.handleSortChange(target.value as SortOption);
+                });
+            }
+
+            // Quick search input
+            const quickSearch = document.getElementById('quickSearch') as HTMLInputElement;
+            if (quickSearch) {
+                quickSearch.addEventListener('input', (e) => {
+                    const target = e.target as HTMLInputElement;
+                    this.searchWithinResults(target.value);
+                });
+            }
+
             // Attach filter change listeners to save preferences (Phase 2 feature)
             this.attachFilterChangeListeners();
+
+            // Setup keyboard navigation (Alt+S, Alt+D, Alt+E, Esc)
+            this.setupKeyboardNavigation();
         } catch (error) {
             console.error('Initialization error:', error);
             this.showError('Failed to initialize application. Please refresh the page.', 'error');
@@ -1141,10 +1171,18 @@ class TournamentFinder {
         const tournamentList = document.getElementById('tournamentList');
         if (!tournamentList) return;
 
-        const totalPages = Math.ceil(this.allTournaments.length / this.tournamentsPerPage);
+        // Use filtered tournaments if search is active, otherwise all tournaments
+        const displayTournaments = this.filteredTournaments.length > 0
+            ? this.filteredTournaments
+            : this.allTournaments;
+
+        // Apply sorting
+        const sortedTournaments = this.sortTournaments(displayTournaments, this.currentSort);
+
+        const totalPages = Math.ceil(sortedTournaments.length / this.tournamentsPerPage);
         const startIndex = (this.currentPage - 1) * this.tournamentsPerPage;
         const endIndex = startIndex + this.tournamentsPerPage;
-        const tournamentsToShow = this.allTournaments.slice(startIndex, endIndex);
+        const tournamentsToShow = sortedTournaments.slice(startIndex, endIndex);
 
         // Render tournaments
         const tournamentCards = tournamentsToShow
@@ -1152,7 +1190,7 @@ class TournamentFinder {
             .join('');
 
         // Render pagination controls
-        const paginationHTML = this.createPaginationControls(totalPages);
+        const paginationHTML = this.createPaginationControls(totalPages, sortedTournaments.length);
 
         tournamentList.innerHTML = tournamentCards + paginationHTML;
 
@@ -1163,16 +1201,16 @@ class TournamentFinder {
         this.attachCalendarExportListeners(tournamentsToShow);
     }
 
-    private createPaginationControls(totalPages: number): string {
+    private createPaginationControls(totalPages: number, totalTournaments: number): string {
         if (totalPages <= 1) return '';
 
         const startIndex = (this.currentPage - 1) * this.tournamentsPerPage + 1;
-        const endIndex = Math.min(this.currentPage * this.tournamentsPerPage, this.allTournaments.length);
+        const endIndex = Math.min(this.currentPage * this.tournamentsPerPage, totalTournaments);
 
         let paginationHTML = `
             <div class="pagination-container">
                 <div class="pagination-info">
-                    Showing ${startIndex}-${endIndex} of ${this.allTournaments.length} tournaments
+                    Showing ${startIndex}-${endIndex} of ${totalTournaments} tournaments
                 </div>
                 <div class="pagination-controls">
         `;
@@ -1805,10 +1843,15 @@ class TournamentFinder {
      */
 
     /**
-     * Export filtered tournaments to CSV
+     * Export filtered tournaments to CSV (#3)
      */
-    private exportToCSV(): void {
-        if (this.allTournaments.length === 0) {
+    public exportToCSV(): void {
+        // Use filtered tournaments if search is active, otherwise all tournaments
+        const tournaments = this.filteredTournaments.length > 0
+            ? this.filteredTournaments
+            : this.allTournaments;
+
+        if (tournaments.length === 0) {
             this.showError('No tournaments to export. Please search first.', 'warning');
             return;
         }
@@ -1819,7 +1862,7 @@ class TournamentFinder {
             const rows = [headers.join(',')];
 
             // CSV rows
-            this.allTournaments.forEach(tournament => {
+            tournaments.forEach(tournament => {
                 const row = [
                     this.escapeCSV(tournament.name),
                     tournament.date.toLocaleDateString('en-US'),
@@ -1846,8 +1889,8 @@ class TournamentFinder {
             link.click();
             document.body.removeChild(link);
 
-            this.showError(`Exported ${this.allTournaments.length} tournaments to CSV`, 'success');
-            console.log(`✓ Exported ${this.allTournaments.length} tournaments to CSV`);
+            this.showError(`✅ Exported ${tournaments.length} tournaments to CSV`, 'success');
+            console.log(`✓ Exported ${tournaments.length} tournaments to CSV`);
         } catch (error) {
             console.error('Export error:', error);
             this.showError('Failed to export tournaments. Please try again.', 'error');
@@ -1993,14 +2036,154 @@ class TournamentFinder {
 
         console.log(`✓ Attached calendar export listeners to ${calendarButtons.length} buttons`);
     }
+
+    /**
+     * TOURNAMENT SORTING (#4)
+     */
+
+    /**
+     * Sort tournaments by specified criteria
+     */
+    private sortTournaments(tournaments: Tournament[], sortBy: SortOption): Tournament[] {
+        const sorted = [...tournaments];
+
+        switch (sortBy) {
+            case 'date-asc':
+                return sorted.sort((a, b) => a.date.getTime() - b.date.getTime());
+            case 'date-desc':
+                return sorted.sort((a, b) => b.date.getTime() - a.date.getTime());
+            case 'name':
+                return sorted.sort((a, b) => a.name.localeCompare(b.name));
+            case 'location':
+                return sorted.sort((a, b) => a.location.localeCompare(b.location));
+            case 'country':
+                return sorted.sort((a, b) => {
+                    const countryA = a.location.split(',').pop()?.trim() || '';
+                    const countryB = b.location.split(',').pop()?.trim() || '';
+                    return countryA.localeCompare(countryB);
+                });
+            default:
+                return sorted;
+        }
+    }
+
+    /**
+     * Handle sort change from UI
+     */
+    private handleSortChange(sortBy: SortOption): void {
+        this.currentSort = sortBy;
+        this.currentPage = 1; // Reset to first page
+        this.renderPaginatedTournaments();
+    }
+
+    /**
+     * SEARCH WITHIN RESULTS (#8)
+     */
+
+    /**
+     * Filter displayed tournaments by search query
+     */
+    private searchWithinResults(query: string): void {
+        if (!query.trim()) {
+            // No query - show all tournaments
+            this.filteredTournaments = [];
+            this.currentPage = 1;
+            this.renderPaginatedTournaments();
+            return;
+        }
+
+        const searchTerm = query.toLowerCase();
+        this.filteredTournaments = this.allTournaments.filter(tournament => {
+            return tournament.name.toLowerCase().includes(searchTerm) ||
+                   tournament.location.toLowerCase().includes(searchTerm) ||
+                   tournament.category.toLowerCase().includes(searchTerm);
+        });
+
+        this.currentPage = 1;
+        this.renderPaginatedTournaments();
+
+        // Update results count
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+            const total = this.allTournaments.length;
+            const filtered = this.filteredTournaments.length;
+            resultsCount.textContent = `${filtered} of ${total} tournament${total !== 1 ? 's' : ''} (filtered)`;
+        }
+    }
+
+    /**
+     * DARK MODE TOGGLE (#2)
+     */
+
+    /**
+     * Toggle dark mode theme
+     */
+    public toggleDarkMode(): void {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem(this.CACHE_KEYS.THEME, isDark ? 'dark' : 'light');
+        this.showError(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'success');
+    }
+
+    /**
+     * KEYBOARD NAVIGATION (#7)
+     */
+
+    /**
+     * Setup keyboard shortcuts
+     */
+    private setupKeyboardNavigation(): void {
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            // Alt+S to search
+            if (e.altKey && e.key === 's') {
+                e.preventDefault();
+                const searchBtn = document.getElementById('searchBtn');
+                if (searchBtn) {
+                    searchBtn.click();
+                }
+            }
+
+            // Escape to clear quick search
+            if (e.key === 'Escape') {
+                const quickSearch = document.getElementById('quickSearch') as HTMLInputElement;
+                if (quickSearch && document.activeElement === quickSearch) {
+                    quickSearch.value = '';
+                    this.searchWithinResults('');
+                }
+            }
+
+            // Alt+D to toggle dark mode
+            if (e.altKey && e.key === 'd') {
+                e.preventDefault();
+                this.toggleDarkMode();
+            }
+
+            // Alt+E to export CSV
+            if (e.altKey && e.key === 'e') {
+                e.preventDefault();
+                this.exportToCSV();
+            }
+        });
+
+        console.log('✓ Keyboard shortcuts initialized (Alt+S=Search, Alt+D=Dark Mode, Alt+E=Export, Esc=Clear)');
+    }
 }
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const app = new TournamentFinder();
 
-    // Expose clearCaches function globally for debugging
-    (window as typeof window & { clearCaches: () => void }).clearCaches = () => {
+    // Expose functions globally for UI access
+    (window as typeof window & {
+        clearCaches: () => void;
+        toggleDarkMode: () => void;
+        exportToCSV: () => void;
+    }).clearCaches = () => {
         app.clearAllCaches();
+    };
+    (window as typeof window & { toggleDarkMode: () => void }).toggleDarkMode = () => {
+        app.toggleDarkMode();
+    };
+    (window as typeof window & { exportToCSV: () => void }).exportToCSV = () => {
+        app.exportToCSV();
     };
 });

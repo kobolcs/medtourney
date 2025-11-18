@@ -885,3 +885,217 @@ footer a {
         padding: 16px 20px;
     }
 }
+
+/* ========================================
+   V3 FEATURES: Dark Mode, Sorting, Search Within Results
+   ======================================== */
+
+/* DARK MODE THEME */
+.dark-theme {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --card-bg: #2a2a2a;
+    --header-bg: #1e1e1e;
+    --border-color: #404040;
+    --primary-color: #4a9eff;
+    --secondary-color: #5cb85c;
+    --error-bg: #3d1f1f;
+    --error-text: #ff6b6b;
+    --success-bg: #1f3d1f;
+    --success-text: #5cb85c;
+}
+
+.dark-theme body {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.dark-theme .container {
+    background: var(--bg-color);
+}
+
+.dark-theme header {
+    background: var(--header-bg);
+    border-bottom-color: var(--border-color);
+}
+
+.dark-theme .filters-card,
+.dark-theme .tournament-card {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+.dark-theme input[type="checkbox"] {
+    border-color: var(--border-color);
+    background: var(--card-bg);
+}
+
+.dark-theme select,
+.dark-theme input[type="date"],
+.dark-theme input[type="search"] {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.dark-theme .search-button,
+.dark-theme .export-button {
+    background: var(--primary-color);
+}
+
+.dark-theme .error-message {
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.dark-theme .error-message.success {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+/* RESULTS CONTROLS LAYOUT */
+.results-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-within {
+    flex: 1;
+    min-width: 200px;
+}
+
+.quick-search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.quick-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.sort-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.sort-controls label {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.sort-select {
+    padding: 8px 32px 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sort-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.sort-select:hover {
+    border-color: var(--primary-color);
+}
+
+/* ENHANCED FOCUS INDICATORS */
+*:focus-visible {
+    outline: 3px solid #3498db;
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+/* LOADING SKELETONS */
+.skeleton-card {
+    background: #f0f0f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.skeleton-title,
+.skeleton-location,
+.skeleton-date,
+.skeleton-category {
+    height: 20px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.skeleton-title {
+    height: 24px;
+    width: 70%;
+}
+
+.skeleton-location {
+    width: 50%;
+}
+
+.skeleton-date {
+    width: 30%;
+}
+
+.skeleton-category {
+    width: 60%;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.dark-theme .skeleton-card {
+    background: #2a2a2a;
+}
+
+.dark-theme .skeleton-title,
+.dark-theme .skeleton-location,
+.dark-theme .skeleton-date,
+.dark-theme .skeleton-category {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+}
+
+/* MOBILE RESPONSIVE UPDATES */
+@media (max-width: 768px) {
+    .results-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-within,
+    .sort-controls {
+        width: 100%;
+    }
+
+    .sort-controls {
+        justify-content: space-between;
+    }
+
+    .export-button {
+        width: 100%;
+    }
+}

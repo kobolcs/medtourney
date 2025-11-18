@@ -224,9 +224,29 @@
                     <h2>Search Results</h2>
                     <span id="resultsCount" class="results-count" role="status" aria-live="polite"></span>
                 </div>
-                <button id="exportBtn" class="export-button" aria-label="Export tournaments to CSV">
-                    📥 Export CSV
-                </button>
+                <div class="results-controls">
+                    <div class="search-within">
+                        <label for="quickSearch" class="sr-only">Search within results</label>
+                        <input type="search"
+                               id="quickSearch"
+                               class="quick-search-input"
+                               placeholder="🔍 Filter results..."
+                               aria-label="Search within results by name or location">
+                    </div>
+                    <div class="sort-controls">
+                        <label for="sortBy">Sort:</label>
+                        <select id="sortBy" class="sort-select" aria-label="Sort tournaments by">
+                            <option value="date-asc">Date (earliest first)</option>
+                            <option value="date-desc">Date (latest first)</option>
+                            <option value="name">Name (A-Z)</option>
+                            <option value="location">Location (A-Z)</option>
+                            <option value="country">Country (A-Z)</option>
+                        </select>
+                    </div>
+                    <button id="exportBtn" class="export-button" aria-label="Export tournaments to CSV">
+                        📥 Export CSV
+                    </button>
+                </div>
             </div>
             <div id="tournamentList" class="tournament-list" role="list"></div>
         </div>
