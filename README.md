@@ -387,6 +387,6 @@ MIT License
 - ✅ **Security scans** daily
 - ✅ **Multi-stage testing** (type → lint → build → test)
 
-See [IMPROVEMENTS_REPORT.md](IMPROVEMENTS_REPORT.md) for detailed analysis and future roadmap.
+See [IMPLEMENTATION_ROADMAP_V3.md](IMPLEMENTATION_ROADMAP_V3.md) for detailed roadmap and [TEST_COVERAGE_REPORT_V3.md](TEST_COVERAGE_REPORT_V3.md) for comprehensive test documentation.
 
 ---

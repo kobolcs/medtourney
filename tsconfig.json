@@ -10,12 +10,12 @@
     "resolveJsonModule": true,
 
     /* Emit */
-    "outDir": "./dist",
+    "outDir": "./",
     "rootDir": "./src",
     "removeComments": true,
     "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": false,
+    "declarationMap": false,
 
     /* Interop Constraints */
     "esModuleInterop": true,
@@ -49,6 +49,9 @@
   "exclude": [
     "node_modules",
     "dist",
-    "**/*.spec.ts"
+    "tests",
+    "**/*.spec.ts",
+    "app.js",
+    "app.js.map"
   ]
 }

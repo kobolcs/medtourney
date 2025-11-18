@@ -1,8 +1,8 @@
 {
   "name": "medtourney",
-  "version": "2.0.0",
+  "version": "2.3.0",
   "description": "Mediterranean Chess Tournament Finder",
-  "main": "dist/app.js",
+  "main": "app.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
