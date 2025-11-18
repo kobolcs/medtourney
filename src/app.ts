@@ -1105,13 +1105,14 @@ class TournamentFinder {
         }
 
         if (tournaments.length === 0) {
-            tournamentList.innerHTML = `
-                <p style="text-align: center; padding: 40px; color: #999;">
-                    No tournaments found matching your criteria.<br>
-                    Try adjusting your filters or check back later.<br><br>
-                    <small>Note: Real-time data fetching from chess-results.com may be limited due to CORS restrictions.</small>
-                </p>
-            `;
+            const emptyStateHTML = this.createEmptyStateMessage();
+            tournamentList.innerHTML = emptyStateHTML;
+
+            // Attach event listener to reset button
+            const resetBtn = document.getElementById('resetFiltersBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => this.resetFilters());
+            }
         } else {
             // Sort tournaments by date
             const sortedTournaments = [...tournaments].sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -1287,6 +1288,131 @@ class TournamentFinder {
                 </a>
             </div>
         `;
+    }
+
+    /**
+     * Create enhanced empty state message with helpful suggestions
+     */
+    private createEmptyStateMessage(): string {
+        const filterElements: FilterElements = {
+            openOnly: document.getElementById('openOnly') as HTMLInputElement | null,
+            excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
+            mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
+            seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+            womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
+            includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
+            classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
+            rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
+            blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
+            startDate: document.getElementById('startDate') as HTMLInputElement | null,
+            endDate: document.getElementById('endDate') as HTMLInputElement | null,
+            countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null
+        };
+
+        const suggestions: string[] = [];
+
+        // Analyze which filters might be too restrictive
+        if (filterElements.mediterraneanOnly?.checked) {
+            suggestions.push('Try unchecking "Mediterranean Seaside Only" to see more tournaments');
+        }
+        if (filterElements.seniorCategory?.checked) {
+            suggestions.push('Try unchecking "S50+ (Senior) Category" for more options');
+        }
+        if (filterElements.womenOnly?.checked) {
+            suggestions.push('Try unchecking "Women\'s Tournaments" to expand your search');
+        }
+        if (filterElements.countryFilter?.value) {
+            suggestions.push('Try selecting "All European Countries" to see tournaments from all locations');
+        }
+        if (filterElements.startDate?.value || filterElements.endDate?.value) {
+            suggestions.push('Try adjusting or clearing your date range');
+        }
+        if (!filterElements.classicalTime?.checked || !filterElements.rapidTime?.checked || !filterElements.blitzTime?.checked) {
+            suggestions.push('Try enabling all time controls (Classical, Rapid, and Blitz)');
+        }
+
+        // Get last update time from tournaments data
+        const lastUpdate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const suggestionsHTML = suggestions.length > 0
+            ? `<div class="empty-state-suggestions">
+                <h3>Try these suggestions:</h3>
+                <ul>
+                    ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+               </div>`
+            : '';
+
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h2 class="empty-state-title">No Tournaments Found</h2>
+                <p class="empty-state-message">
+                    We couldn't find any tournaments matching your current filter criteria.
+                </p>
+                ${suggestionsHTML}
+                <div class="empty-state-actions">
+                    <button id="resetFiltersBtn" class="reset-filters-btn" aria-label="Reset all filters to default values">
+                        🔄 Reset All Filters
+                    </button>
+                </div>
+                <div class="empty-state-info">
+                    <small>
+                        Data updated daily from chess-results.com<br>
+                        Last checked: ${lastUpdate}
+                    </small>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Reset all filters to default values
+     */
+    private resetFilters(): void {
+        const filterElements: FilterElements = {
+            openOnly: document.getElementById('openOnly') as HTMLInputElement | null,
+            excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
+            mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
+            seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+            womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
+            includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
+            classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
+            rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
+            blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
+            startDate: document.getElementById('startDate') as HTMLInputElement | null,
+            endDate: document.getElementById('endDate') as HTMLInputElement | null,
+            countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null
+        };
+
+        // Reset to default values
+        if (filterElements.openOnly) filterElements.openOnly.checked = true;
+        if (filterElements.excludeYouth) filterElements.excludeYouth.checked = true;
+        if (filterElements.mediterraneanOnly) filterElements.mediterraneanOnly.checked = false;
+        if (filterElements.seniorCategory) filterElements.seniorCategory.checked = false;
+        if (filterElements.womenOnly) filterElements.womenOnly.checked = false;
+        if (filterElements.includeTeamTournaments) filterElements.includeTeamTournaments.checked = false;
+        if (filterElements.classicalTime) filterElements.classicalTime.checked = true;
+        if (filterElements.rapidTime) filterElements.rapidTime.checked = true;
+        if (filterElements.blitzTime) filterElements.blitzTime.checked = true;
+        if (filterElements.startDate) filterElements.startDate.value = '';
+        if (filterElements.endDate) filterElements.endDate.value = '';
+        if (filterElements.countryFilter) filterElements.countryFilter.value = '';
+
+        // Show success message
+        this.showError('Filters have been reset to default values', 'success');
+
+        // Trigger a new search automatically
+        const searchBtn = document.getElementById('searchBtn') as HTMLButtonElement | null;
+        if (searchBtn) {
+            searchBtn.click();
+        }
     }
 
     /**
