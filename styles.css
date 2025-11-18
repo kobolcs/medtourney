@@ -482,20 +482,57 @@ body.dark-theme .error-message.success-type {
     margin-bottom: 15px;
 }
 
+.tournament-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
 .tournament-link {
     display: inline-block;
     background: var(--success-color);
     color: white;
     padding: 10px 20px;
+    min-height: 44px;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
     transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tournament-link:hover {
     background: #229954;
     transform: translateY(-2px);
+}
+
+.calendar-export-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    min-height: 44px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.calendar-export-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.calendar-export-btn:active {
+    transform: translateY(0);
 }
 
 footer {
@@ -800,9 +837,14 @@ footer a {
         align-self: start;
     }
 
-    .tournament-link {
-        display: block;
-        text-align: center;
+    .tournament-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .tournament-link,
+    .calendar-export-btn {
+        width: 100%;
         min-height: 48px;
         padding: 14px 24px;
         font-size: 1rem;

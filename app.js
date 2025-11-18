@@ -1,13 +1,14 @@
 "use strict";
 class TournamentFinder {
     constructor() {
-        this.CACHE_VERSION = '2.2.0';
+        this.CACHE_VERSION = '2.3.0';
         this.CACHE_DURATION = 24 * 60 * 60 * 1000;
         this.CACHE_KEYS = {
             TOURNAMENTS: 'medtourney_tournaments',
             CONFIG: 'medtourney_config',
             THEME: 'medtourney_theme',
-            FILTERS_COLLAPSED: 'medtourney_filters_collapsed'
+            FILTERS_COLLAPSED: 'medtourney_filters_collapsed',
+            FILTER_PREFERENCES: 'medtourney_filter_preferences'
         };
         this.corsProxies = [
             'https://api.allorigins.win/get?url=',
@@ -36,6 +37,7 @@ class TournamentFinder {
                 startDateElement.valueAsDate = today;
             if (endDateElement)
                 endDateElement.valueAsDate = threeMonthsLater;
+            this.loadFilterPreferences();
             const searchBtn = document.getElementById('searchBtn');
             if (searchBtn) {
                 searchBtn.addEventListener('click', () => void this.searchTournaments());
@@ -48,6 +50,7 @@ class TournamentFinder {
             if (exportBtn) {
                 exportBtn.addEventListener('click', () => this.exportToCSV());
             }
+            this.attachFilterChangeListeners();
         }
         catch (error) {
             console.error('Initialization error:', error);
@@ -719,13 +722,12 @@ class TournamentFinder {
             return;
         }
         if (tournaments.length === 0) {
-            tournamentList.innerHTML = `
-                <p style="text-align: center; padding: 40px; color: #999;">
-                    No tournaments found matching your criteria.<br>
-                    Try adjusting your filters or check back later.<br><br>
-                    <small>Note: Real-time data fetching from chess-results.com may be limited due to CORS restrictions.</small>
-                </p>
-            `;
+            const emptyStateHTML = this.createEmptyStateMessage();
+            tournamentList.innerHTML = emptyStateHTML;
+            const resetBtn = document.getElementById('resetFiltersBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => this.resetFilters());
+            }
         }
         else {
             const sortedTournaments = [...tournaments].sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -751,6 +753,7 @@ class TournamentFinder {
         const paginationHTML = this.createPaginationControls(totalPages);
         tournamentList.innerHTML = tournamentCards + paginationHTML;
         this.attachPaginationListeners();
+        this.attachCalendarExportListeners(tournamentsToShow);
     }
     createPaginationControls(totalPages) {
         if (totalPages <= 1)
@@ -855,8 +858,9 @@ class TournamentFinder {
         const category = tournament.category || '';
         const description = tournament.description || '';
         const url = tournament.url || '';
+        const tournamentId = this.generateTournamentId(tournament);
         return `
-            <div class="tournament-card" role="listitem">
+            <div class="tournament-card" role="listitem" data-tournament-id="${tournamentId}">
                 <div class="tournament-header">
                     <div class="tournament-name">${this.escapeHtml(name)}</div>
                     <div class="tournament-date"><time datetime="${tournament.date.toISOString()}">${dateStr}</time></div>
@@ -864,11 +868,132 @@ class TournamentFinder {
                 <div class="tournament-location">${this.escapeHtml(location)}</div>
                 <div class="tournament-category">${this.escapeHtml(category)}</div>
                 <div class="tournament-description">${this.escapeHtml(description)}</div>
-                <a href="${this.escapeHtml(url)}" target="_blank" class="tournament-link" rel="noopener noreferrer" aria-label="View ${this.escapeHtml(name)} details">
-                    View Tournament Details →
-                </a>
+                <div class="tournament-actions">
+                    <a href="${this.escapeHtml(url)}" target="_blank" class="tournament-link" rel="noopener noreferrer" aria-label="View ${this.escapeHtml(name)} details">
+                        View Tournament Details →
+                    </a>
+                    <button class="calendar-export-btn" data-tournament-id="${tournamentId}" aria-label="Add ${this.escapeHtml(name)} to calendar">
+                        📅 Add to Calendar
+                    </button>
+                </div>
             </div>
         `;
+    }
+    createEmptyStateMessage() {
+        const filterElements = {
+            openOnly: document.getElementById('openOnly'),
+            excludeYouth: document.getElementById('excludeYouth'),
+            mediterraneanOnly: document.getElementById('mediterraneanOnly'),
+            seniorCategory: document.getElementById('seniorCategory'),
+            womenOnly: document.getElementById('womenOnly'),
+            includeTeamTournaments: document.getElementById('includeTeamTournaments'),
+            classicalTime: document.getElementById('classicalTime'),
+            rapidTime: document.getElementById('rapidTime'),
+            blitzTime: document.getElementById('blitzTime'),
+            startDate: document.getElementById('startDate'),
+            endDate: document.getElementById('endDate'),
+            countryFilter: document.getElementById('countryFilter')
+        };
+        const suggestions = [];
+        if (filterElements.mediterraneanOnly?.checked) {
+            suggestions.push('Try unchecking "Mediterranean Seaside Only" to see more tournaments');
+        }
+        if (filterElements.seniorCategory?.checked) {
+            suggestions.push('Try unchecking "S50+ (Senior) Category" for more options');
+        }
+        if (filterElements.womenOnly?.checked) {
+            suggestions.push('Try unchecking "Women\'s Tournaments" to expand your search');
+        }
+        if (filterElements.countryFilter?.value) {
+            suggestions.push('Try selecting "All European Countries" to see tournaments from all locations');
+        }
+        if (filterElements.startDate?.value || filterElements.endDate?.value) {
+            suggestions.push('Try adjusting or clearing your date range');
+        }
+        if (!filterElements.classicalTime?.checked || !filterElements.rapidTime?.checked || !filterElements.blitzTime?.checked) {
+            suggestions.push('Try enabling all time controls (Classical, Rapid, and Blitz)');
+        }
+        const lastUpdate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        const suggestionsHTML = suggestions.length > 0
+            ? `<div class="empty-state-suggestions">
+                <h3>Try these suggestions:</h3>
+                <ul>
+                    ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+               </div>`
+            : '';
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h2 class="empty-state-title">No Tournaments Found</h2>
+                <p class="empty-state-message">
+                    We couldn't find any tournaments matching your current filter criteria.
+                </p>
+                ${suggestionsHTML}
+                <div class="empty-state-actions">
+                    <button id="resetFiltersBtn" class="reset-filters-btn" aria-label="Reset all filters to default values">
+                        🔄 Reset All Filters
+                    </button>
+                </div>
+                <div class="empty-state-info">
+                    <small>
+                        Data updated daily from chess-results.com<br>
+                        Last checked: ${lastUpdate}
+                    </small>
+                </div>
+            </div>
+        `;
+    }
+    resetFilters() {
+        const filterElements = {
+            openOnly: document.getElementById('openOnly'),
+            excludeYouth: document.getElementById('excludeYouth'),
+            mediterraneanOnly: document.getElementById('mediterraneanOnly'),
+            seniorCategory: document.getElementById('seniorCategory'),
+            womenOnly: document.getElementById('womenOnly'),
+            includeTeamTournaments: document.getElementById('includeTeamTournaments'),
+            classicalTime: document.getElementById('classicalTime'),
+            rapidTime: document.getElementById('rapidTime'),
+            blitzTime: document.getElementById('blitzTime'),
+            startDate: document.getElementById('startDate'),
+            endDate: document.getElementById('endDate'),
+            countryFilter: document.getElementById('countryFilter')
+        };
+        if (filterElements.openOnly)
+            filterElements.openOnly.checked = true;
+        if (filterElements.excludeYouth)
+            filterElements.excludeYouth.checked = true;
+        if (filterElements.mediterraneanOnly)
+            filterElements.mediterraneanOnly.checked = false;
+        if (filterElements.seniorCategory)
+            filterElements.seniorCategory.checked = false;
+        if (filterElements.womenOnly)
+            filterElements.womenOnly.checked = false;
+        if (filterElements.includeTeamTournaments)
+            filterElements.includeTeamTournaments.checked = false;
+        if (filterElements.classicalTime)
+            filterElements.classicalTime.checked = true;
+        if (filterElements.rapidTime)
+            filterElements.rapidTime.checked = true;
+        if (filterElements.blitzTime)
+            filterElements.blitzTime.checked = true;
+        if (filterElements.startDate)
+            filterElements.startDate.value = '';
+        if (filterElements.endDate)
+            filterElements.endDate.value = '';
+        if (filterElements.countryFilter)
+            filterElements.countryFilter.value = '';
+        this.showError('Filters have been reset to default values', 'success');
+        const searchBtn = document.getElementById('searchBtn');
+        if (searchBtn) {
+            searchBtn.click();
+        }
     }
     getFilterCacheKey(filters) {
         return JSON.stringify({
@@ -955,6 +1080,108 @@ class TournamentFinder {
         this.filterCache.clear();
         console.log('✓ All caches cleared');
         this.showError('All caches cleared successfully', 'success');
+    }
+    saveFilterPreferences() {
+        try {
+            const filterElements = {
+                openOnly: document.getElementById('openOnly'),
+                excludeYouth: document.getElementById('excludeYouth'),
+                mediterraneanOnly: document.getElementById('mediterraneanOnly'),
+                seniorCategory: document.getElementById('seniorCategory'),
+                womenOnly: document.getElementById('womenOnly'),
+                includeTeamTournaments: document.getElementById('includeTeamTournaments'),
+                classicalTime: document.getElementById('classicalTime'),
+                rapidTime: document.getElementById('rapidTime'),
+                blitzTime: document.getElementById('blitzTime'),
+                startDate: document.getElementById('startDate'),
+                endDate: document.getElementById('endDate'),
+                countryFilter: document.getElementById('countryFilter')
+            };
+            const preferences = {
+                openOnly: filterElements.openOnly?.checked ?? true,
+                excludeYouth: filterElements.excludeYouth?.checked ?? true,
+                mediterraneanOnly: filterElements.mediterraneanOnly?.checked ?? false,
+                seniorCategory: filterElements.seniorCategory?.checked ?? false,
+                womenOnly: filterElements.womenOnly?.checked ?? false,
+                includeTeamTournaments: filterElements.includeTeamTournaments?.checked ?? false,
+                classicalTime: filterElements.classicalTime?.checked ?? true,
+                rapidTime: filterElements.rapidTime?.checked ?? true,
+                blitzTime: filterElements.blitzTime?.checked ?? true,
+                startDate: filterElements.startDate?.valueAsDate ?? null,
+                endDate: filterElements.endDate?.valueAsDate ?? null,
+                countryFilter: filterElements.countryFilter?.value ?? ''
+            };
+            localStorage.setItem(this.CACHE_KEYS.FILTER_PREFERENCES, JSON.stringify(preferences));
+            console.log('✓ Filter preferences saved');
+        }
+        catch (error) {
+            console.warn('Failed to save filter preferences:', error);
+        }
+    }
+    loadFilterPreferences() {
+        try {
+            const savedPrefs = localStorage.getItem(this.CACHE_KEYS.FILTER_PREFERENCES);
+            if (!savedPrefs) {
+                console.log('No saved filter preferences found');
+                return;
+            }
+            const preferences = JSON.parse(savedPrefs);
+            const filterElements = {
+                openOnly: document.getElementById('openOnly'),
+                excludeYouth: document.getElementById('excludeYouth'),
+                mediterraneanOnly: document.getElementById('mediterraneanOnly'),
+                seniorCategory: document.getElementById('seniorCategory'),
+                womenOnly: document.getElementById('womenOnly'),
+                includeTeamTournaments: document.getElementById('includeTeamTournaments'),
+                classicalTime: document.getElementById('classicalTime'),
+                rapidTime: document.getElementById('rapidTime'),
+                blitzTime: document.getElementById('blitzTime'),
+                startDate: document.getElementById('startDate'),
+                endDate: document.getElementById('endDate'),
+                countryFilter: document.getElementById('countryFilter')
+            };
+            if (filterElements.openOnly)
+                filterElements.openOnly.checked = preferences.openOnly;
+            if (filterElements.excludeYouth)
+                filterElements.excludeYouth.checked = preferences.excludeYouth;
+            if (filterElements.mediterraneanOnly)
+                filterElements.mediterraneanOnly.checked = preferences.mediterraneanOnly;
+            if (filterElements.seniorCategory)
+                filterElements.seniorCategory.checked = preferences.seniorCategory;
+            if (filterElements.womenOnly)
+                filterElements.womenOnly.checked = preferences.womenOnly;
+            if (filterElements.includeTeamTournaments)
+                filterElements.includeTeamTournaments.checked = preferences.includeTeamTournaments;
+            if (filterElements.classicalTime)
+                filterElements.classicalTime.checked = preferences.classicalTime;
+            if (filterElements.rapidTime)
+                filterElements.rapidTime.checked = preferences.rapidTime;
+            if (filterElements.blitzTime)
+                filterElements.blitzTime.checked = preferences.blitzTime;
+            if (filterElements.countryFilter)
+                filterElements.countryFilter.value = preferences.countryFilter;
+            console.log('✓ Filter preferences loaded');
+            this.showError('Your filter preferences have been restored', 'success');
+        }
+        catch (error) {
+            console.warn('Failed to load filter preferences:', error);
+        }
+    }
+    attachFilterChangeListeners() {
+        const filterIds = [
+            'openOnly', 'excludeYouth', 'mediterraneanOnly', 'seniorCategory',
+            'womenOnly', 'includeTeamTournaments', 'classicalTime', 'rapidTime',
+            'blitzTime', 'startDate', 'endDate', 'countryFilter'
+        ];
+        filterIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', () => {
+                    this.saveFilterPreferences();
+                });
+            }
+        });
+        console.log('✓ Filter change listeners attached');
     }
     initTheme() {
         const savedTheme = localStorage.getItem(this.CACHE_KEYS.THEME);
@@ -1076,6 +1303,102 @@ class TournamentFinder {
             return `"${str}"`;
         }
         return str;
+    }
+    generateTournamentId(tournament) {
+        const str = `${tournament.name}-${tournament.date.toISOString()}-${tournament.location}`;
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(36);
+    }
+    exportToCalendar(tournament) {
+        try {
+            const formatICalDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}${month}${day}T090000Z`;
+            };
+            const formatICalEndDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}${month}${day}T180000Z`;
+            };
+            const now = new Date();
+            const uid = this.generateTournamentId(tournament);
+            const dtStart = formatICalDate(tournament.date);
+            const dtEnd = formatICalEndDate(tournament.date);
+            const dtStamp = formatICalDate(now);
+            const cleanDescription = (tournament.description || '')
+                .replace(/<[^>]*>/g, '')
+                .replace(/\n/g, '\\n')
+                .substring(0, 500);
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//MedTourney//Chess Tournament Finder//EN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'BEGIN:VEVENT',
+                `UID:${uid}@medtourney.com`,
+                `DTSTAMP:${dtStamp}`,
+                `DTSTART:${dtStart}`,
+                `DTEND:${dtEnd}`,
+                `SUMMARY:${tournament.name}`,
+                `DESCRIPTION:${cleanDescription}\\n\\nCategory: ${tournament.category}\\n\\nMore info: ${tournament.url}`,
+                `LOCATION:${tournament.location}`,
+                `URL:${tournament.url}`,
+                'STATUS:CONFIRMED',
+                'SEQUENCE:0',
+                'BEGIN:VALARM',
+                'TRIGGER:-P1D',
+                'ACTION:DISPLAY',
+                `DESCRIPTION:Chess tournament tomorrow: ${tournament.name}`,
+                'END:VALARM',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            const filename = tournament.name
+                .replace(/[^a-z0-9]/gi, '-')
+                .toLowerCase()
+                .substring(0, 50);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${filename}.ics`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            this.showError(`Calendar event created for ${tournament.name}`, 'success');
+            console.log(`✓ Exported tournament to calendar: ${tournament.name}`);
+        }
+        catch (error) {
+            console.error('Calendar export error:', error);
+            this.showError('Failed to create calendar event. Please try again.', 'error');
+        }
+    }
+    attachCalendarExportListeners(tournaments) {
+        const calendarButtons = document.querySelectorAll('.calendar-export-btn');
+        calendarButtons.forEach(btn => {
+            const tournamentId = btn.dataset.tournamentId;
+            if (!tournamentId)
+                return;
+            const tournament = tournaments.find(t => this.generateTournamentId(t) === tournamentId);
+            if (!tournament)
+                return;
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.exportToCalendar(tournament);
+            });
+        });
+        console.log(`✓ Attached calendar export listeners to ${calendarButtons.length} buttons`);
     }
 }
 document.addEventListener('DOMContentLoaded', () => {
