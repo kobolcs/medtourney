@@ -3,13 +3,13 @@ Integration tests for the Robot Framework scraper
 Tests actual data download with timeout handling for CI/CD environments
 """
 
-import pytest
-import subprocess
 import json
 import os
-from pathlib import Path
+import subprocess
 from datetime import datetime, timedelta
+from pathlib import Path
 
+import pytest
 
 # Mark tests that actually download data
 pytestmark = pytest.mark.integration
@@ -26,7 +26,7 @@ class TestScraperIntegration:
     @pytest.fixture
     def expected_json_file(self, project_root):
         """Path to expected JSON output file"""
-        return project_root / 'tournaments_data.json'
+        return project_root / "tournaments_data.json"
 
     def test_scraper_can_run_with_timeout(self, project_root):
         """
@@ -34,27 +34,24 @@ class TestScraperIntegration:
         This test will timeout after 5 minutes to prevent CI/CD hanging
         """
         cmd = [
-            'robot',
-            '--outputdir', str(project_root / 'robot_results'),
-            '--loglevel', 'INFO',
-            '--consolecolors', 'off',
-            str(project_root / 'scrape_tournaments.robot')
+            "robot",
+            "--outputdir", str(project_root / "robot_results"),
+            "--loglevel", "INFO",
+            "--consolecolors", "off",
+            str(project_root / "scrape_tournaments.robot")
         ]
 
         try:
             # Run with 5 minute timeout (300 seconds)
             result = subprocess.run(
                 cmd,
-                cwd=str(project_root),
+                check=False, cwd=str(project_root),
                 capture_output=True,
                 text=True,
                 timeout=300  # 5 minutes
             )
 
             # Log output for debugging
-            print("STDOUT:", result.stdout)
-            print("STDERR:", result.stderr)
-            print("Return code:", result.returncode)
 
             # Robot Framework returns 0 on success
             # We allow some failures as the site might be slow/unstable
@@ -64,7 +61,7 @@ class TestScraperIntegration:
             pytest.fail("Scraper timed out after 5 minutes - needs optimization for CI/CD")
 
     @pytest.mark.skipif(
-        os.environ.get('CI') == 'true',
+        os.environ.get("CI") == "true",
         reason="Skip actual download in CI to save time"
     )
     def test_scraper_downloads_real_data(self, project_root, expected_json_file):
@@ -78,26 +75,24 @@ class TestScraperIntegration:
 
         # Run the scraper
         cmd = [
-            'python3',
-            str(project_root / 'run_scraper.py')
+            "python3",
+            str(project_root / "run_scraper.py")
         ]
 
-        result = subprocess.run(
+        subprocess.run(
             cmd,
-            cwd=str(project_root),
+            check=False, cwd=str(project_root),
             capture_output=True,
             text=True,
             timeout=600  # 10 minutes for full download
         )
 
-        print("STDOUT:", result.stdout)
-        print("STDERR:", result.stderr)
 
         # Check JSON file was created
         assert expected_json_file.exists(), "tournaments_data.json was not created"
 
         # Validate JSON structure
-        with open(expected_json_file, 'r', encoding='utf-8') as f:
+        with open(expected_json_file, encoding="utf-8") as f:
             data = json.load(f)
 
         assert isinstance(data, list), "JSON should contain a list of tournaments"
@@ -105,12 +100,12 @@ class TestScraperIntegration:
         if len(data) > 0:
             # Validate first tournament structure
             tournament = data[0]
-            required_fields = {'name', 'location', 'date', 'category', 'url'}
+            required_fields = {"name", "location", "date", "category", "url"}
             assert all(field in tournament for field in required_fields), \
                 f"Tournament missing required fields. Has: {tournament.keys()}"
 
             # Validate date format
-            tournament_date = datetime.strptime(tournament['date'], '%Y-%m-%d')
+            tournament_date = datetime.strptime(tournament["date"], "%Y-%m-%d")
             tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
             assert tournament_date >= tomorrow, "Tournament date should be in the future"
 
@@ -123,7 +118,7 @@ class TestScraperIntegration:
         if not expected_json_file.exists():
             pytest.skip("tournaments_data.json doesn't exist yet")
 
-        with open(expected_json_file, 'r', encoding='utf-8') as f:
+        with open(expected_json_file, encoding="utf-8") as f:
             data = json.load(f)
 
         assert isinstance(data, list), "JSON should contain a list"
@@ -131,21 +126,21 @@ class TestScraperIntegration:
         if len(data) > 0:
             # Check structure of all tournaments
             for idx, tournament in enumerate(data):
-                required_fields = {'name', 'location', 'date', 'category', 'url', 'description'}
+                required_fields = {"name", "location", "date", "category", "url", "description"}
                 missing_fields = required_fields - set(tournament.keys())
                 assert len(missing_fields) == 0, \
                     f"Tournament {idx} missing fields: {missing_fields}"
 
                 # Validate types
-                assert isinstance(tournament['name'], str)
-                assert isinstance(tournament['location'], str)
-                assert isinstance(tournament['date'], str)
-                assert isinstance(tournament['category'], str)
-                assert isinstance(tournament['url'], str)
+                assert isinstance(tournament["name"], str)
+                assert isinstance(tournament["location"], str)
+                assert isinstance(tournament["date"], str)
+                assert isinstance(tournament["category"], str)
+                assert isinstance(tournament["url"], str)
 
                 # Validate date format (YYYY-MM-DD)
                 try:
-                    datetime.strptime(tournament['date'], '%Y-%m-%d')
+                    datetime.strptime(tournament["date"], "%Y-%m-%d")
                 except ValueError:
                     pytest.fail(f"Invalid date format for tournament {idx}: {tournament['date']}")
 
@@ -157,19 +152,19 @@ class TestScraperIntegration:
         if not expected_json_file.exists():
             pytest.skip("tournaments_data.json doesn't exist yet")
 
-        with open(expected_json_file, 'r', encoding='utf-8') as f:
+        with open(expected_json_file, encoding="utf-8") as f:
             data = json.load(f)
 
         # Non-European countries that should be excluded
         non_european_keywords = [
-            'russia', 'moscow', 'petersburg',
-            'malaysia', 'uae', 'dubai', 'qatar', 'saudi',
-            'china', 'india', 'singapore', 'thailand',
-            'usa', 'canada', 'mexico', 'brazil'
+            "russia", "moscow", "petersburg",
+            "malaysia", "uae", "dubai", "qatar", "saudi",
+            "china", "india", "singapore", "thailand",
+            "usa", "canada", "mexico", "brazil"
         ]
 
         for idx, tournament in enumerate(data):
-            location_lower = tournament['location'].lower()
+            location_lower = tournament["location"].lower()
             for keyword in non_european_keywords:
                 assert keyword not in location_lower, \
                     f"Tournament {idx} has non-European location: {tournament['location']}"
@@ -181,13 +176,13 @@ class TestScraperIntegration:
         if not expected_json_file.exists():
             pytest.skip("tournaments_data.json doesn't exist yet")
 
-        with open(expected_json_file, 'r', encoding='utf-8') as f:
+        with open(expected_json_file, encoding="utf-8") as f:
             data = json.load(f)
 
         tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
         for idx, tournament in enumerate(data):
-            tournament_date = datetime.strptime(tournament['date'], '%Y-%m-%d')
+            tournament_date = datetime.strptime(tournament["date"], "%Y-%m-%d")
             assert tournament_date >= tomorrow, \
                 f"Tournament {idx} is not in the future: {tournament['date']}"
 
@@ -199,8 +194,8 @@ class TestScraperIntegration:
         """
         # Check if rfbrowser is installed
         result = subprocess.run(
-            ['python3', '-c', 'import Browser'],
-            capture_output=True,
+            ["python3", "-c", "import Browser"],
+            check=False, capture_output=True,
             text=True
         )
 
@@ -214,17 +209,17 @@ class TestScraperIntegration:
         Uses a very short timeout to simulate CI/CD time constraints
         """
         cmd = [
-            'robot',
-            '--outputdir', str(project_root / 'robot_results'),
-            '--loglevel', 'DEBUG',
-            '--variable', 'TIMEOUT:5s',  # Very short timeout
-            str(project_root / 'scrape_tournaments.robot')
+            "robot",
+            "--outputdir", str(project_root / "robot_results"),
+            "--loglevel", "DEBUG",
+            "--variable", "TIMEOUT:5s",  # Very short timeout
+            str(project_root / "scrape_tournaments.robot")
         ]
 
         try:
             result = subprocess.run(
                 cmd,
-                cwd=str(project_root),
+                check=False, cwd=str(project_root),
                 capture_output=True,
                 text=True,
                 timeout=30  # Max 30 seconds for this test
@@ -257,12 +252,12 @@ class TestScraperPerformance:
         import time
 
         cmd = [
-            'robot',
-            '--version'
+            "robot",
+            "--version"
         ]
 
         start = time.time()
-        result = subprocess.run(cmd, capture_output=True, timeout=10)
+        result = subprocess.run(cmd, check=False, capture_output=True, timeout=10)
         elapsed = time.time() - start
 
         assert result.returncode == 0
@@ -277,11 +272,10 @@ class TestScraperPerformance:
         import time
 
         start = time.time()
-        from TournamentProcessor import TournamentProcessor
         elapsed = time.time() - start
 
         assert elapsed < 1, f"Import took {elapsed}s (should be < 1s)"
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '-s'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "-s"])

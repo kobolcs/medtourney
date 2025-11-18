@@ -7,7 +7,9 @@ the same configuration and produce consistent filtering results.
 import json
 import re
 from pathlib import Path
+
 import pytest
+
 from TournamentProcessor import TournamentProcessor
 
 
@@ -22,20 +24,20 @@ class TestFrontendBackendParity:
     @pytest.fixture
     def config_json(self) -> dict:
         """Load config.json."""
-        config_path = Path(__file__).parent.parent.parent / 'config.json'
-        with open(config_path, 'r', encoding='utf-8') as f:
+        config_path = Path(__file__).parent.parent.parent / "config.json"
+        with open(config_path, encoding="utf-8") as f:
             return json.load(f)
 
     @pytest.fixture
     def app_js_content(self) -> str:
         """Load app.js content."""
-        app_js_path = Path(__file__).parent.parent.parent / 'app.js'
-        with open(app_js_path, 'r', encoding='utf-8') as f:
+        app_js_path = Path(__file__).parent.parent.parent / "app.js"
+        with open(app_js_path, encoding="utf-8") as f:
             return f.read()
 
     def test_mediterranean_cities_in_config(self, config_json: dict, processor: TournamentProcessor):
         """Test that config.json Mediterranean cities match processor"""
-        config_cities = set(config_json['mediterraneanLocations'])
+        config_cities = set(config_json["mediterraneanLocations"])
         processor_cities = processor.mediterranean_locations
 
         assert config_cities == processor_cities, \
@@ -45,7 +47,7 @@ class TestFrontendBackendParity:
         """Test that app.js has same Mediterranean cities as config.json"""
         # Extract mediterraneanLocations from app.js
         # Look for: this.mediterraneanLocations = new Set([...])
-        pattern = r'this\.mediterraneanLocations\s*=\s*new Set\(\[(.*?)\]\)'
+        pattern = r"this\.mediterraneanLocations\s*=\s*new Set\(\[(.*?)\]\)"
         match = re.search(pattern, app_js_content, re.DOTALL)
 
         assert match, "Could not find mediterraneanLocations in app.js"
@@ -56,7 +58,7 @@ class TestFrontendBackendParity:
         for city in re.findall(r"'([^']+)'", js_cities_raw):
             js_cities.add(city)
 
-        config_cities = set(config_json['mediterraneanLocations'])
+        config_cities = set(config_json["mediterraneanLocations"])
 
         # Check that they match (allow JS to have defaults if config load fails)
         if js_cities:
@@ -71,23 +73,23 @@ class TestFrontendBackendParity:
 
     def test_senior_regex_pattern_matches(self, processor: TournamentProcessor):
         """Test that senior regex pattern matches all expected variations"""
-        pattern = processor.REGEX_PATTERNS['s50']
+        pattern = processor.REGEX_PATTERNS["s50"]
 
         # Test cases that SHOULD match
         should_match = [
-            's50+',
-            'S50+',
-            's50',
-            'S50',
-            'senior',
-            'Senior',
-            'SENIOR',
-            'veteran',
-            'Veteran',
-            '50+',
-            'Tournament S50+ Open',
-            'Senior Championship',
-            'Veteran Cup',
+            "s50+",
+            "S50+",
+            "s50",
+            "S50",
+            "senior",
+            "Senior",
+            "SENIOR",
+            "veteran",
+            "Veteran",
+            "50+",
+            "Tournament S50+ Open",
+            "Senior Championship",
+            "Veteran Cup",
         ]
 
         for text in should_match:
@@ -96,12 +98,12 @@ class TestFrontendBackendParity:
 
         # Test cases that should NOT match
         should_not_match = [
-            'Open',
-            'Youth',
-            'U18',
-            'Classical',
-            'Rapid',
-            's49',  # Not 50+
+            "Open",
+            "Youth",
+            "U18",
+            "Classical",
+            "Rapid",
+            "s49",  # Not 50+
         ]
 
         for text in should_not_match:
@@ -111,7 +113,7 @@ class TestFrontendBackendParity:
     def test_senior_filter_consistency_frontend_backend(self, app_js_content: str):
         """Test that frontend hasSeniorCategory uses same regex as backend"""
         # Find hasSeniorCategory in app.js - look for seniorPattern variable assignment
-        pattern = r'hasSeniorCategory\([^)]+\)\s*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)'
+        pattern = r"hasSeniorCategory\([^)]+\)\s*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)"
         match = re.search(pattern, app_js_content, re.DOTALL)
 
         assert match, "Could not find hasSeniorCategory regex in app.js"
@@ -119,22 +121,22 @@ class TestFrontendBackendParity:
         js_regex_str = match.group(1)
 
         # Check that it includes key patterns
-        assert 's50' in js_regex_str.lower(), \
+        assert "s50" in js_regex_str.lower(), \
             "Frontend senior regex should include s50"
-        assert 'senior' in js_regex_str.lower(), \
+        assert "senior" in js_regex_str.lower(), \
             "Frontend senior regex should include senior"
-        assert 'veteran' in js_regex_str.lower(), \
+        assert "veteran" in js_regex_str.lower(), \
             "Frontend senior regex should include veteran"
-        assert '50' in js_regex_str, \
+        assert "50" in js_regex_str, \
             "Frontend senior regex should include 50+"
 
     def test_config_structure_is_valid(self, config_json: dict):
         """Test that config.json has required structure"""
         required_keys = [
-            'europeanCountries',
-            'nonEuropeanCountries',
-            'mediterraneanLocations',
-            'countryCodes',
+            "europeanCountries",
+            "nonEuropeanCountries",
+            "mediterraneanLocations",
+            "countryCodes",
         ]
 
         for key in required_keys:
@@ -142,22 +144,22 @@ class TestFrontendBackendParity:
                 f"config.json missing required key: {key}"
 
         # Check types
-        assert isinstance(config_json['europeanCountries'], list), \
+        assert isinstance(config_json["europeanCountries"], list), \
             "europeanCountries should be a list"
-        assert isinstance(config_json['mediterraneanLocations'], list), \
+        assert isinstance(config_json["mediterraneanLocations"], list), \
             "mediterraneanLocations should be a list"
-        assert isinstance(config_json['countryCodes'], dict), \
+        assert isinstance(config_json["countryCodes"], dict), \
             "countryCodes should be a dict"
 
         # Check that lists are not empty
-        assert len(config_json['europeanCountries']) > 0, \
+        assert len(config_json["europeanCountries"]) > 0, \
             "europeanCountries should not be empty"
-        assert len(config_json['mediterraneanLocations']) > 0, \
+        assert len(config_json["mediterraneanLocations"]) > 0, \
             "mediterraneanLocations should not be empty"
 
     def test_mediterranean_cities_are_unique(self, config_json: dict):
         """Test that Mediterranean cities list has no duplicates"""
-        cities = config_json['mediterraneanLocations']
+        cities = config_json["mediterraneanLocations"]
         unique_cities = set(cities)
 
         assert len(cities) == len(unique_cities), \
@@ -167,17 +169,17 @@ class TestFrontendBackendParity:
         """Test that Mediterranean filter covers key coastal cities"""
         # Key Mediterranean cities that MUST be included
         must_have_cities = [
-            'barcelona',  # Spain
-            'valencia',   # Spain
-            'nice',       # France
-            'monaco',     # Monaco
-            'genoa',      # Italy
-            'naples',     # Italy
-            'rome',       # Italy
-            'athens',     # Greece
-            'split',      # Croatia
-            'dubrovnik',  # Croatia
-            'malta',      # Malta
+            "barcelona",  # Spain
+            "valencia",   # Spain
+            "nice",       # France
+            "monaco",     # Monaco
+            "genoa",      # Italy
+            "naples",     # Italy
+            "rome",       # Italy
+            "athens",     # Greece
+            "split",      # Croatia
+            "dubrovnik",  # Croatia
+            "malta",      # Malta
         ]
 
         for city in must_have_cities:
@@ -188,15 +190,15 @@ class TestFrontendBackendParity:
         """Test that non-coastal cities are NOT in Mediterranean list"""
         # Major European cities that are NOT Mediterranean
         should_not_be_mediterranean = [
-            'madrid',     # Spain - inland
-            'paris',      # France - inland
-            'milan',      # Italy - inland
-            'berlin',     # Germany - not Mediterranean
-            'london',     # UK - not Mediterranean
-            'vienna',     # Austria - landlocked
-            'prague',     # Czech - landlocked
-            'budapest',   # Hungary - landlocked
-            'warsaw',     # Poland - Baltic, not Mediterranean
+            "madrid",     # Spain - inland
+            "paris",      # France - inland
+            "milan",      # Italy - inland
+            "berlin",     # Germany - not Mediterranean
+            "london",     # UK - not Mediterranean
+            "vienna",     # Austria - landlocked
+            "prague",     # Czech - landlocked
+            "budapest",   # Hungary - landlocked
+            "warsaw",     # Poland - Baltic, not Mediterranean
         ]
 
         for city in should_not_be_mediterranean:
@@ -204,5 +206,5 @@ class TestFrontendBackendParity:
                 f"Non-Mediterranean city '{city}' should NOT be in the list"
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

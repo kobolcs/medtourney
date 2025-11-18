@@ -18,7 +18,7 @@ import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Pattern, Set, Union
+from typing import Any, ClassVar, Dict, List, Optional, Pattern, Set, Union
 
 import openpyxl
 from openpyxl.workbook.workbook import Workbook
@@ -43,32 +43,32 @@ class TournamentProcessor:
     """
 
     # Precompiled regex patterns for performance
-    REGEX_PATTERNS: Dict[str, Pattern[str]] = {
-        'date_yyyymmdd': re.compile(r'^(\d{8})$'),
-        'date_ddmmyyyy_dot': re.compile(r'(\d{1,2})\.(\d{1,2})\.(\d{4})'),
-        'date_yyyymmdd_dash': re.compile(r'(\d{4})-(\d{1,2})-(\d{1,2})'),
-        'date_ddmmyyyy_slash': re.compile(r'(\d{1,2})/(\d{1,2})/(\d{4})'),
-        'open': re.compile(r'\bopen\b', re.IGNORECASE),
-        's50': re.compile(r'\bs50\+|s50|senior|veteran|50\+', re.IGNORECASE),
+    REGEX_PATTERNS: ClassVar[Dict[str, Pattern[str]]] = {
+        "date_yyyymmdd": re.compile(r"^(\d{8})$"),
+        "date_ddmmyyyy_dot": re.compile(r"(\d{1,2})\.(\d{1,2})\.(\d{4})"),
+        "date_yyyymmdd_dash": re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})"),
+        "date_ddmmyyyy_slash": re.compile(r"(\d{1,2})/(\d{1,2})/(\d{4})"),
+        "open": re.compile(r"\bopen\b", re.IGNORECASE),
+        "s50": re.compile(r"\bs50\+|s50|senior|veteran|50\+", re.IGNORECASE),
         # International youth keywords: English, Polish, Czech, Slovak, Hungarian, German, French, Spanish, Italian
-        'youth': re.compile(
-            r'\bu\d+|youth|junior|u18|under|'  # English
-            r'żiak|młodzie[żz]|juniorzy|juniorów|'  # Polish (żiak, młodzież, juniorzy, juniorów)
-            r'ml[áa]de[žz]|'  # Czech/Slovak (mládež)
-            r'ifjúság|junior|'  # Hungarian
-            r'jugend|'  # German
-            r'jeune|junior|'  # French
-            r'juvenil|joven|'  # Spanish
-            r'giovani|giovanile',  # Italian
+        "youth": re.compile(
+            r"\bu\d+|youth|junior|u18|under|"  # English
+            r"żiak|młodzie[żz]|juniorzy|juniorów|"  # Polish (żiak, młodzież, juniorzy, juniorów)
+            r"ml[áa]de[žz]|"  # Czech/Slovak (mládež)
+            r"ifjúság|junior|"  # Hungarian
+            r"jugend|"  # German
+            r"jeune|junior|"  # French
+            r"juvenil|joven|"  # Spanish
+            r"giovani|giovanile",  # Italian
             re.IGNORECASE
         ),
-        'women': re.compile(r'\bwomen|ladies|female', re.IGNORECASE),
-        'blitz': re.compile(r'\bblitz\b', re.IGNORECASE),
-        'rapid': re.compile(r'\brapid\b', re.IGNORECASE),
-        'classical': re.compile(r'\bclassic|classical|standard\b', re.IGNORECASE),
+        "women": re.compile(r"\bwomen|ladies|female", re.IGNORECASE),
+        "blitz": re.compile(r"\bblitz\b", re.IGNORECASE),
+        "rapid": re.compile(r"\brapid\b", re.IGNORECASE),
+        "classical": re.compile(r"\bclassic|classical|standard\b", re.IGNORECASE),
     }
 
-    ROBOT_LIBRARY_SCOPE: str = 'GLOBAL'
+    ROBOT_LIBRARY_SCOPE: ClassVar[str] = "GLOBAL"
 
     def __init__(self) -> None:
         """Initialize the TournamentProcessor with empty tournament list."""
@@ -89,27 +89,21 @@ class TournamentProcessor:
         Raises:
             No exceptions raised - falls back to defaults on any error.
         """
-        config_path: Path = Path(__file__).parent / 'config.json'
+        config_path: Path = Path(__file__).parent / "config.json"
         try:
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, encoding="utf-8") as f:
                 config: Dict[str, List[str]] = json.load(f)
 
             # Convert lists to sets for O(1) lookup performance
-            self.european_countries = set(config['europeanCountries'])
-            self.non_european_countries = set(config['nonEuropeanCountries'])
-            self.mediterranean_locations = set(config['mediterraneanLocations'])
+            self.european_countries = set(config["europeanCountries"])
+            self.non_european_countries = set(config["nonEuropeanCountries"])
+            self.mediterranean_locations = set(config["mediterraneanLocations"])
 
-            print(f"Loaded config: {len(self.european_countries)} European countries, "
-                  f"{len(self.non_european_countries)} non-European countries, "
-                  f"{len(self.mediterranean_locations)} Mediterranean locations")
         except FileNotFoundError:
-            print(f"Warning: config.json not found at {config_path}, using defaults")
             self._load_default_config()
-        except json.JSONDecodeError as e:
-            print(f"Error parsing config.json: {e}, using defaults")
+        except json.JSONDecodeError:
             self._load_default_config()
-        except KeyError as e:
-            print(f"Missing key in config.json: {e}, using defaults")
+        except KeyError:
             self._load_default_config()
 
     def _load_default_config(self) -> None:
@@ -119,33 +113,33 @@ class TournamentProcessor:
         and Mediterranean locations as a fallback.
         """
         self.european_countries = {
-            'albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia',
-            'bulgaria', 'croatia', 'cyprus', 'czech', 'denmark', 'estonia',
-            'finland', 'france', 'germany', 'greece', 'hungary', 'iceland',
-            'ireland', 'italy', 'kosovo', 'latvia', 'liechtenstein', 'lithuania',
-            'luxembourg', 'malta', 'moldova', 'monaco', 'montenegro', 'netherlands',
-            'north macedonia', 'norway', 'poland', 'portugal', 'romania',
-            'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden',
-            'switzerland', 'ukraine', 'united kingdom', 'england', 'scotland',
-            'wales', 'northern ireland', 'gbr', 'ger', 'fra', 'esp', 'ita', 'ned',
-            'aut', 'cze', 'hun', 'pol', 'cro', 'gre', 'srb', 'rou', 'ukr',
-            'svk', 'slo', 'den', 'nor', 'swe', 'fin', 'bel', 'sui', 'por'
+            "albania", "andorra", "austria", "belarus", "belgium", "bosnia",
+            "bulgaria", "croatia", "cyprus", "czech", "denmark", "estonia",
+            "finland", "france", "germany", "greece", "hungary", "iceland",
+            "ireland", "italy", "kosovo", "latvia", "liechtenstein", "lithuania",
+            "luxembourg", "malta", "moldova", "monaco", "montenegro", "netherlands",
+            "north macedonia", "norway", "poland", "portugal", "romania",
+            "san marino", "serbia", "slovakia", "slovenia", "spain", "sweden",
+            "switzerland", "ukraine", "united kingdom", "england", "scotland",
+            "wales", "northern ireland", "gbr", "ger", "fra", "esp", "ita", "ned",
+            "aut", "cze", "hun", "pol", "cro", "gre", "srb", "rou", "ukr",
+            "svk", "slo", "den", "nor", "swe", "fin", "bel", "sui", "por"
         }
         self.non_european_countries = {
-            'russia', 'moscow', 'petersburg', 'malaysia', 'uae', 'dubai', 'qatar',
-            'saudi', 'china', 'india', 'indonesia', 'singapore', 'thailand',
-            'vietnam', 'philippines', 'japan', 'korea', 'australia', 'new zealand',
-            'usa', 'canada', 'mexico', 'brazil', 'argentina', 'chile', 'peru',
-            'colombia', 'egypt', 'morocco', 'tunisia', 'algeria', 'south africa',
-            'israel', 'jordan', 'lebanon', 'iran', 'iraq', 'turkey', 'kazakhstan',
-            'uzbekistan', 'rus', 'mas', 'tur'
+            "russia", "moscow", "petersburg", "malaysia", "uae", "dubai", "qatar",
+            "saudi", "china", "india", "indonesia", "singapore", "thailand",
+            "vietnam", "philippines", "japan", "korea", "australia", "new zealand",
+            "usa", "canada", "mexico", "brazil", "argentina", "chile", "peru",
+            "colombia", "egypt", "morocco", "tunisia", "algeria", "south africa",
+            "israel", "jordan", "lebanon", "iran", "iraq", "turkey", "kazakhstan",
+            "uzbekistan", "rus", "mas", "tur"
         }
         self.mediterranean_locations = {
-            'barcelona', 'valencia', 'alicante', 'malaga', 'marbella',
-            'nice', 'cannes', 'monaco', 'marseille', 'montpellier',
-            'genoa', 'genova', 'naples', 'napoli', 'sicily', 'sicilia', 'rome', 'roma',
-            'athens', 'thessaloniki', 'split', 'dubrovnik', 'rijeka',
-            'malta', 'valletta', 'sliema', 'limassol', 'larnaca', 'cyprus'
+            "barcelona", "valencia", "alicante", "malaga", "marbella",
+            "nice", "cannes", "monaco", "marseille", "montpellier",
+            "genoa", "genova", "naples", "napoli", "sicily", "sicilia", "rome", "roma",
+            "athens", "thessaloniki", "split", "dubrovnik", "rijeka",
+            "malta", "valletta", "sliema", "limassol", "larnaca", "cyprus"
         }
 
     @keyword("Load And Filter Tournaments")  # type: ignore[misc]
@@ -178,7 +172,6 @@ class TournamentProcessor:
             >>> print(f"Found {len(tournaments)} tournaments")
             Found 42 tournaments
         """
-        print(f"Loading tournaments from: {excel_file}")
 
         try:
             # Load Excel file
@@ -191,13 +184,12 @@ class TournamentProcessor:
                 if cell.value:
                     headers.append(str(cell.value).strip().lower())
 
-            print(f"Found columns: {headers}")
 
             # Find column indices
-            name_col: Optional[int] = self._find_column(headers, ['name', 'tournament', 'turnier'])
-            location_col: Optional[int] = self._find_column(headers, ['location', 'place', 'ort', 'city', 'country'])
-            date_col: Optional[int] = self._find_column(headers, ['date', 'datum', 'start', 'begin'])
-            url_col: Optional[int] = self._find_column(headers, ['url', 'link', 'website'])
+            name_col: Optional[int] = self._find_column(headers, ["name", "tournament", "turnier"])
+            location_col: Optional[int] = self._find_column(headers, ["location", "place", "ort", "city", "country"])
+            date_col: Optional[int] = self._find_column(headers, ["date", "datum", "start", "begin"])
+            url_col: Optional[int] = self._find_column(headers, ["url", "link", "website"])
 
             tournaments: List[Dict[str, Any]] = []
 
@@ -239,32 +231,29 @@ class TournamentProcessor:
 
                     # Build tournament dict
                     tournament: Dict[str, Any] = {
-                        'name': name,
-                        'location': location,
-                        'date': parsed_date.strftime('%Y-%m-%d'),  # Convert to string for JSON
-                        'category': category,
-                        'url': url,
-                        'description': name
+                        "name": name,
+                        "location": location,
+                        "date": parsed_date.strftime("%Y-%m-%d"),  # Convert to string for JSON
+                        "category": category,
+                        "url": url,
+                        "description": name
                     }
 
                     tournaments.append(tournament)
 
-                except Exception as e:
-                    print(f"Error processing row {row_idx}: {e}")
+                except Exception:
                     continue
 
             workbook.close()
 
-            print(f"Loaded {len(tournaments)} European tournaments")
             self.tournaments = tournaments
             return tournaments
 
-        except Exception as e:
-            print(f"Error loading Excel file: {e}")
+        except Exception:
             raise
 
     @keyword("Export To JSON")  # type: ignore[misc]
-    def export_to_json(self, tournaments: List[Dict[str, Any]], output_file: str) -> None:
+    def export_to_json(self, tournaments: Any, output_file: str) -> None:
         """Export tournaments to JSON file.
 
         Validates tournament data structure and exports to JSON file with
@@ -290,39 +279,33 @@ class TournamentProcessor:
         try:
             # Validate tournament data structure
             if not isinstance(tournaments, list):
-                raise ValueError(f"Expected list of tournaments, got {type(tournaments)}")
+                msg = f"Expected list of tournaments, got {type(tournaments)}"
+                raise ValueError(msg)
 
             # Validate each tournament has required fields
-            required_fields: Set[str] = {'name', 'location', 'date', 'category', 'url'}
+            required_fields: Set[str] = {"name", "location", "date", "category", "url"}
             valid_tournaments: List[Dict[str, Any]] = []
 
-            for idx, tournament in enumerate(tournaments):
+            for _idx, tournament in enumerate(tournaments):
                 if not isinstance(tournament, dict):
-                    print(f"Warning: Tournament at index {idx} is not a dict, skipping")  # type: ignore[unreachable]
                     continue
 
                 missing_fields: Set[str] = required_fields - set(tournament.keys())
                 if missing_fields:
-                    print(f"Warning: Tournament at index {idx} missing fields {missing_fields}, skipping")
                     continue
 
                 valid_tournaments.append(tournament)
 
-            skipped_count: int = len(tournaments) - len(valid_tournaments)
-            print(f"Validated {len(valid_tournaments)} tournaments (skipped {skipped_count})")
+            len(tournaments) - len(valid_tournaments)
 
             # Export validated tournaments
-            with open(output_file, 'w', encoding='utf-8') as f:
+            with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(valid_tournaments, f, indent=2, ensure_ascii=False)
-            print(f"Exported {len(valid_tournaments)} tournaments to {output_file}")
-        except (IOError, OSError) as e:
-            print(f"Error writing to file {output_file}: {e}")
+        except OSError:
             raise
-        except ValueError as e:
-            print(f"Validation error: {e}")
+        except ValueError:
             raise
-        except Exception as e:
-            print(f"Unexpected error exporting to JSON: {e}")
+        except Exception:
             raise
 
     @keyword("Filter Tournaments By Criteria")  # type: ignore[misc]
@@ -368,13 +351,13 @@ class TournamentProcessor:
         filtered: List[Dict[str, Any]] = []
 
         for tournament in tournaments:
-            category_lower: str = tournament['category'].lower()
-            location_lower: str = tournament['location'].lower()
-            name_lower: str = tournament['name'].lower()
+            category_lower: str = tournament["category"].lower()
+            location_lower: str = tournament["location"].lower()
+            name_lower: str = tournament["name"].lower()
             full_text: str = f"{name_lower} {category_lower}"
 
             # Open filter
-            if open_only and 'open' not in category_lower:
+            if open_only and "open" not in category_lower:
                 continue
 
             # IMPROVED Youth/School filter - STRICT: exclude ANY youth or school tournament
@@ -401,7 +384,6 @@ class TournamentProcessor:
 
             filtered.append(tournament)
 
-        print(f"Filtered to {len(filtered)} tournaments")
         return filtered
 
     def _is_youth_or_school_tournament(self, full_text: str) -> bool:
@@ -417,20 +399,20 @@ class TournamentProcessor:
         """
         # Youth keywords (international) - expanded
         youth_pattern = re.compile(
-            r'\bu\d+|u-\d+|youth|junior|junioren|u18|u16|u14|u12|u10|u8|under|'
-            r'żiak|młodzie[żz]|juniorzy|juniorów|ml[áa]de[žz]|ifjúság|jugend|'
-            r'jeune|juvenil|joven|giovani|giovanile',
+            r"\bu\d+|u-\d+|youth|junior|junioren|u18|u16|u14|u12|u10|u8|under|"
+            r"żiak|młodzie[żz]|juniorzy|juniorów|ml[áa]de[žz]|ifjúság|jugend|"
+            r"jeune|juvenil|joven|giovani|giovanile",
             re.IGNORECASE
         )
 
         # School keywords (international)
         school_pattern = re.compile(
-            r'\bschool|schule|école|escuela|scuola|szkoł|škol',
+            r"\bschool|schule|école|escuela|scuola|szkoł|škol",
             re.IGNORECASE
         )
 
         # Age restriction patterns (under/u/bis + number less than 50)
-        age_pattern = re.compile(r'\b(under|u|bis)\s*(\d{1,2})\b', re.IGNORECASE)
+        age_pattern = re.compile(r"\b(under|u|bis)\s*(\d{1,2})\b", re.IGNORECASE)
 
         # Check for youth/school indicators
         if youth_pattern.search(full_text):
@@ -463,7 +445,7 @@ class TournamentProcessor:
         """
         # Team keywords (international)
         team_pattern = re.compile(
-            r'\bteam|mannschaft|équipe|equipo|squadra|drużyn|družstv',
+            r"\bteam|mannschaft|équipe|equipo|squadra|drużyn|družstv",
             re.IGNORECASE
         )
 
@@ -483,8 +465,8 @@ class TournamentProcessor:
         """
         # Senior/veteran keywords (expanded)
         senior_pattern = re.compile(
-            r'\bs50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|'
-            r'vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50',
+            r"\bs50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|"
+            r"vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50",
             re.IGNORECASE
         )
 
@@ -548,42 +530,41 @@ class TournamentProcessor:
         date_str: str = str(date_value).strip()
 
         # Try YYYYMMDD format (chess-results.com format: 20251128)
-        match = self.REGEX_PATTERNS['date_yyyymmdd'].search(date_str)
+        match = self.REGEX_PATTERNS["date_yyyymmdd"].search(date_str)
         if match:
             try:
                 year: int = int(date_str[0:4])
                 month: int = int(date_str[4:6])
                 day: int = int(date_str[6:8])
                 return datetime(year, month, day)
-            except (ValueError, IndexError) as e:
-                print(f"Failed to parse YYYYMMDD date '{date_str}': {e}")
+            except (ValueError, IndexError):
+                pass
 
         # Try DD.MM.YYYY format
-        match = self.REGEX_PATTERNS['date_ddmmyyyy_dot'].search(date_str)
+        match = self.REGEX_PATTERNS["date_ddmmyyyy_dot"].search(date_str)
         if match:
             try:
                 return datetime(int(match[3]), int(match[2]), int(match[1]))
-            except (ValueError, IndexError) as e:
-                print(f"Failed to parse DD.MM.YYYY date '{date_str}': {e}")
+            except (ValueError, IndexError):
+                pass
 
         # Try YYYY-MM-DD format
-        match = self.REGEX_PATTERNS['date_yyyymmdd_dash'].search(date_str)
+        match = self.REGEX_PATTERNS["date_yyyymmdd_dash"].search(date_str)
         if match:
             try:
                 return datetime(int(match[1]), int(match[2]), int(match[3]))
-            except (ValueError, IndexError) as e:
-                print(f"Failed to parse YYYY-MM-DD date '{date_str}': {e}")
+            except (ValueError, IndexError):
+                pass
 
         # Try DD/MM/YYYY format
-        match = self.REGEX_PATTERNS['date_ddmmyyyy_slash'].search(date_str)
+        match = self.REGEX_PATTERNS["date_ddmmyyyy_slash"].search(date_str)
         if match:
             try:
                 return datetime(int(match[3]), int(match[2]), int(match[1]))
-            except (ValueError, IndexError) as e:
-                print(f"Failed to parse DD/MM/YYYY date '{date_str}': {e}")
+            except (ValueError, IndexError):
+                pass
 
         # Default to today if no pattern matched
-        print(f"Warning: Could not parse date '{date_str}', defaulting to today")
         return datetime.now()
 
     def _extract_category(self, text: str) -> str:
@@ -608,31 +589,28 @@ class TournamentProcessor:
         categories: List[str] = []
 
         # Tournament type - use precompiled patterns
-        if self.REGEX_PATTERNS['open'].search(text):
-            categories.append('Open')
-        if self.REGEX_PATTERNS['s50'].search(text):
-            categories.append('S50+')
-        if self.REGEX_PATTERNS['youth'].search(text):
-            categories.append('Youth')
-        if self.REGEX_PATTERNS['women'].search(text):
-            categories.append('Women')
+        if self.REGEX_PATTERNS["open"].search(text):
+            categories.append("Open")
+        if self.REGEX_PATTERNS["s50"].search(text):
+            categories.append("S50+")
+        if self.REGEX_PATTERNS["youth"].search(text):
+            categories.append("Youth")
+        if self.REGEX_PATTERNS["women"].search(text):
+            categories.append("Women")
 
         # Time control (important for filtering) - use precompiled patterns
-        if self.REGEX_PATTERNS['blitz'].search(text):
-            categories.append('Blitz')
-        elif self.REGEX_PATTERNS['rapid'].search(text):
-            categories.append('Rapid')
-        elif self.REGEX_PATTERNS['classical'].search(text):
-            categories.append('Classical')
-        # If no time control specified, assume Classical
-        elif not any(pattern.search(text) for pattern in [
-            self.REGEX_PATTERNS['blitz'],
-            self.REGEX_PATTERNS['rapid'],
-            self.REGEX_PATTERNS['classical']
+        if self.REGEX_PATTERNS["blitz"].search(text):
+            categories.append("Blitz")
+        elif self.REGEX_PATTERNS["rapid"].search(text):
+            categories.append("Rapid")
+        elif self.REGEX_PATTERNS["classical"].search(text) or not any(pattern.search(text) for pattern in [
+            self.REGEX_PATTERNS["blitz"],
+            self.REGEX_PATTERNS["rapid"],
+            self.REGEX_PATTERNS["classical"]
         ]):
-            categories.append('Classical')
+            categories.append("Classical")
 
-        return ', '.join(categories) if categories else 'Open, Classical'
+        return ", ".join(categories) if categories else "Open, Classical"
 
     def _is_european(self, location: str) -> bool:
         """Check if location is in Europe, excluding Russia.
