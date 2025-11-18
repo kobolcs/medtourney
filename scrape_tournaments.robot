@@ -8,7 +8,8 @@ Library           ./TournamentProcessor.py
 *** Variables ***
 ${SEARCH_URL}     https://s1.chess-results.com/TurnierSuche.aspx?lan=1
 ${DOWNLOAD_DIR}   ${CURDIR}/downloads
-${MAX_RESULTS}    2000
+${MAX_RESULTS}    5000
+${DATE_RANGE_MONTHS}    6
 
 *** Test Cases ***
 Scrape European Chess Tournaments
@@ -41,11 +42,12 @@ Navigate To Search Page
 Fill Search Form
     [Documentation]    Fill in the search form with date range and filters
 
-    # Get current date and 3 months ahead
+    # Get current date and calculate end date based on configuration
     ${start_date}=    Get Current Date    result_format=%d.%m.%Y
-    ${end_date}=    Add Time To Date    ${start_date}    90 days    result_format=%d.%m.%Y    date_format=%d.%m.%Y
+    ${days}=    Evaluate    ${DATE_RANGE_MONTHS} * 30
+    ${end_date}=    Add Time To Date    ${start_date}    ${days} days    result_format=%d.%m.%Y    date_format=%d.%m.%Y
 
-    Log    Searching from ${start_date} to ${end_date}
+    Log    Searching from ${start_date} to ${end_date} (${DATE_RANGE_MONTHS} months)
 
     # Try to fill date fields (names may vary on the actual page)
     # We'll try multiple possible selectors

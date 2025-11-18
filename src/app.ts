@@ -3,7 +3,7 @@
  * Fetches and displays tournaments from chess-results.com
  *
  * @author MedTourney Project
- * @version 2.2.0 (TypeScript - Enhanced with Caching, Dark Mode, Export)
+ * @version 2.4.0 (v3.1 - Dark Mode, Sorting, CSV Export, Search, Keyboard Nav)
  */
 
 /** Tournament data structure */
@@ -53,6 +53,9 @@ interface FilterState {
     countryFilter: string;
 }
 
+/** Sort options for tournaments */
+type SortOption = 'date-asc' | 'date-desc' | 'name' | 'location' | 'country';
+
 /** HTML element map for type safety */
 interface FilterElements {
     openOnly: HTMLInputElement | null;
@@ -84,18 +87,23 @@ class TournamentFinder {
     private currentPage: number;
     private readonly tournamentsPerPage: number;
     private allTournaments: Tournament[];
+    private filteredTournaments: Tournament[]; // For search within results
+
+    // Sorting state
+    private currentSort: SortOption;
 
     // Performance: Filter result cache
     private filterCache: Map<string, Tournament[]>;
 
     // Cache configuration
-    private readonly CACHE_VERSION = '2.2.0';
+    private readonly CACHE_VERSION = '2.3.0'; // Updated for Phase 2
     private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
     private readonly CACHE_KEYS = {
         TOURNAMENTS: 'medtourney_tournaments',
         CONFIG: 'medtourney_config',
         THEME: 'medtourney_theme',
-        FILTERS_COLLAPSED: 'medtourney_filters_collapsed'
+        FILTERS_COLLAPSED: 'medtourney_filters_collapsed',
+        FILTER_PREFERENCES: 'medtourney_filter_preferences'
     };
 
     constructor() {
@@ -108,6 +116,8 @@ class TournamentFinder {
         this.currentPage = 1;
         this.tournamentsPerPage = 20;
         this.allTournaments = [];
+        this.filteredTournaments = [];
+        this.currentSort = 'date-asc';
 
         // Initialize filter cache for performance
         this.filterCache = new Map();
@@ -147,6 +157,9 @@ class TournamentFinder {
             if (startDateElement) startDateElement.valueAsDate = today;
             if (endDateElement) endDateElement.valueAsDate = threeMonthsLater;
 
+            // Load saved filter preferences (Phase 2 feature)
+            this.loadFilterPreferences();
+
             // Attach event listeners
             const searchBtn = document.getElementById('searchBtn');
             if (searchBtn) {
@@ -162,6 +175,30 @@ class TournamentFinder {
             if (exportBtn) {
                 exportBtn.addEventListener('click', () => this.exportToCSV());
             }
+
+            // Sort dropdown
+            const sortSelect = document.getElementById('sortBy') as HTMLSelectElement;
+            if (sortSelect) {
+                sortSelect.addEventListener('change', (e) => {
+                    const target = e.target as HTMLSelectElement;
+                    this.handleSortChange(target.value as SortOption);
+                });
+            }
+
+            // Quick search input
+            const quickSearch = document.getElementById('quickSearch') as HTMLInputElement;
+            if (quickSearch) {
+                quickSearch.addEventListener('input', (e) => {
+                    const target = e.target as HTMLInputElement;
+                    this.searchWithinResults(target.value);
+                });
+            }
+
+            // Attach filter change listeners to save preferences (Phase 2 feature)
+            this.attachFilterChangeListeners();
+
+            // Setup keyboard navigation (Alt+S, Alt+D, Alt+E, Esc)
+            this.setupKeyboardNavigation();
         } catch (error) {
             console.error('Initialization error:', error);
             this.showError('Failed to initialize application. Please refresh the page.', 'error');
@@ -1105,13 +1142,14 @@ class TournamentFinder {
         }
 
         if (tournaments.length === 0) {
-            tournamentList.innerHTML = `
-                <p style="text-align: center; padding: 40px; color: #999;">
-                    No tournaments found matching your criteria.<br>
-                    Try adjusting your filters or check back later.<br><br>
-                    <small>Note: Real-time data fetching from chess-results.com may be limited due to CORS restrictions.</small>
-                </p>
-            `;
+            const emptyStateHTML = this.createEmptyStateMessage();
+            tournamentList.innerHTML = emptyStateHTML;
+
+            // Attach event listener to reset button
+            const resetBtn = document.getElementById('resetFiltersBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => this.resetFilters());
+            }
         } else {
             // Sort tournaments by date
             const sortedTournaments = [...tournaments].sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -1133,10 +1171,18 @@ class TournamentFinder {
         const tournamentList = document.getElementById('tournamentList');
         if (!tournamentList) return;
 
-        const totalPages = Math.ceil(this.allTournaments.length / this.tournamentsPerPage);
+        // Use filtered tournaments if search is active, otherwise all tournaments
+        const displayTournaments = this.filteredTournaments.length > 0
+            ? this.filteredTournaments
+            : this.allTournaments;
+
+        // Apply sorting
+        const sortedTournaments = this.sortTournaments(displayTournaments, this.currentSort);
+
+        const totalPages = Math.ceil(sortedTournaments.length / this.tournamentsPerPage);
         const startIndex = (this.currentPage - 1) * this.tournamentsPerPage;
         const endIndex = startIndex + this.tournamentsPerPage;
-        const tournamentsToShow = this.allTournaments.slice(startIndex, endIndex);
+        const tournamentsToShow = sortedTournaments.slice(startIndex, endIndex);
 
         // Render tournaments
         const tournamentCards = tournamentsToShow
@@ -1144,24 +1190,27 @@ class TournamentFinder {
             .join('');
 
         // Render pagination controls
-        const paginationHTML = this.createPaginationControls(totalPages);
+        const paginationHTML = this.createPaginationControls(totalPages, sortedTournaments.length);
 
         tournamentList.innerHTML = tournamentCards + paginationHTML;
 
         // Attach event listeners to pagination buttons
         this.attachPaginationListeners();
+
+        // Attach event listeners to calendar export buttons (Phase 2)
+        this.attachCalendarExportListeners(tournamentsToShow);
     }
 
-    private createPaginationControls(totalPages: number): string {
+    private createPaginationControls(totalPages: number, totalTournaments: number): string {
         if (totalPages <= 1) return '';
 
         const startIndex = (this.currentPage - 1) * this.tournamentsPerPage + 1;
-        const endIndex = Math.min(this.currentPage * this.tournamentsPerPage, this.allTournaments.length);
+        const endIndex = Math.min(this.currentPage * this.tournamentsPerPage, totalTournaments);
 
         let paginationHTML = `
             <div class="pagination-container">
                 <div class="pagination-info">
-                    Showing ${startIndex}-${endIndex} of ${this.allTournaments.length} tournaments
+                    Showing ${startIndex}-${endIndex} of ${totalTournaments} tournaments
                 </div>
                 <div class="pagination-controls">
         `;
@@ -1273,8 +1322,11 @@ class TournamentFinder {
         const description = tournament.description || '';
         const url = tournament.url || '';
 
+        // Generate unique ID for calendar event
+        const tournamentId = this.generateTournamentId(tournament);
+
         return `
-            <div class="tournament-card" role="listitem">
+            <div class="tournament-card" role="listitem" data-tournament-id="${tournamentId}">
                 <div class="tournament-header">
                     <div class="tournament-name">${this.escapeHtml(name)}</div>
                     <div class="tournament-date"><time datetime="${tournament.date.toISOString()}">${dateStr}</time></div>
@@ -1282,11 +1334,141 @@ class TournamentFinder {
                 <div class="tournament-location">${this.escapeHtml(location)}</div>
                 <div class="tournament-category">${this.escapeHtml(category)}</div>
                 <div class="tournament-description">${this.escapeHtml(description)}</div>
-                <a href="${this.escapeHtml(url)}" target="_blank" class="tournament-link" rel="noopener noreferrer" aria-label="View ${this.escapeHtml(name)} details">
-                    View Tournament Details →
-                </a>
+                <div class="tournament-actions">
+                    <a href="${this.escapeHtml(url)}" target="_blank" class="tournament-link" rel="noopener noreferrer" aria-label="View ${this.escapeHtml(name)} details">
+                        View Tournament Details →
+                    </a>
+                    <button class="calendar-export-btn" data-tournament-id="${tournamentId}" aria-label="Add ${this.escapeHtml(name)} to calendar">
+                        📅 Add to Calendar
+                    </button>
+                </div>
             </div>
         `;
+    }
+
+    /**
+     * Create enhanced empty state message with helpful suggestions
+     */
+    private createEmptyStateMessage(): string {
+        const filterElements: FilterElements = {
+            openOnly: document.getElementById('openOnly') as HTMLInputElement | null,
+            excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
+            mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
+            seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+            womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
+            includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
+            classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
+            rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
+            blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
+            startDate: document.getElementById('startDate') as HTMLInputElement | null,
+            endDate: document.getElementById('endDate') as HTMLInputElement | null,
+            countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null
+        };
+
+        const suggestions: string[] = [];
+
+        // Analyze which filters might be too restrictive
+        if (filterElements.mediterraneanOnly?.checked) {
+            suggestions.push('Try unchecking "Mediterranean Seaside Only" to see more tournaments');
+        }
+        if (filterElements.seniorCategory?.checked) {
+            suggestions.push('Try unchecking "S50+ (Senior) Category" for more options');
+        }
+        if (filterElements.womenOnly?.checked) {
+            suggestions.push('Try unchecking "Women\'s Tournaments" to expand your search');
+        }
+        if (filterElements.countryFilter?.value) {
+            suggestions.push('Try selecting "All European Countries" to see tournaments from all locations');
+        }
+        if (filterElements.startDate?.value || filterElements.endDate?.value) {
+            suggestions.push('Try adjusting or clearing your date range');
+        }
+        if (!filterElements.classicalTime?.checked || !filterElements.rapidTime?.checked || !filterElements.blitzTime?.checked) {
+            suggestions.push('Try enabling all time controls (Classical, Rapid, and Blitz)');
+        }
+
+        // Get last update time from tournaments data
+        const lastUpdate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const suggestionsHTML = suggestions.length > 0
+            ? `<div class="empty-state-suggestions">
+                <h3>Try these suggestions:</h3>
+                <ul>
+                    ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+               </div>`
+            : '';
+
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h2 class="empty-state-title">No Tournaments Found</h2>
+                <p class="empty-state-message">
+                    We couldn't find any tournaments matching your current filter criteria.
+                </p>
+                ${suggestionsHTML}
+                <div class="empty-state-actions">
+                    <button id="resetFiltersBtn" class="reset-filters-btn" aria-label="Reset all filters to default values">
+                        🔄 Reset All Filters
+                    </button>
+                </div>
+                <div class="empty-state-info">
+                    <small>
+                        Data updated daily from chess-results.com<br>
+                        Last checked: ${lastUpdate}
+                    </small>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Reset all filters to default values
+     */
+    private resetFilters(): void {
+        const filterElements: FilterElements = {
+            openOnly: document.getElementById('openOnly') as HTMLInputElement | null,
+            excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
+            mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
+            seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+            womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
+            includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
+            classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
+            rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
+            blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
+            startDate: document.getElementById('startDate') as HTMLInputElement | null,
+            endDate: document.getElementById('endDate') as HTMLInputElement | null,
+            countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null
+        };
+
+        // Reset to default values
+        if (filterElements.openOnly) filterElements.openOnly.checked = true;
+        if (filterElements.excludeYouth) filterElements.excludeYouth.checked = true;
+        if (filterElements.mediterraneanOnly) filterElements.mediterraneanOnly.checked = false;
+        if (filterElements.seniorCategory) filterElements.seniorCategory.checked = false;
+        if (filterElements.womenOnly) filterElements.womenOnly.checked = false;
+        if (filterElements.includeTeamTournaments) filterElements.includeTeamTournaments.checked = false;
+        if (filterElements.classicalTime) filterElements.classicalTime.checked = true;
+        if (filterElements.rapidTime) filterElements.rapidTime.checked = true;
+        if (filterElements.blitzTime) filterElements.blitzTime.checked = true;
+        if (filterElements.startDate) filterElements.startDate.value = '';
+        if (filterElements.endDate) filterElements.endDate.value = '';
+        if (filterElements.countryFilter) filterElements.countryFilter.value = '';
+
+        // Show success message
+        this.showError('Filters have been reset to default values', 'success');
+
+        // Trigger a new search automatically
+        const searchBtn = document.getElementById('searchBtn') as HTMLButtonElement | null;
+        if (searchBtn) {
+            searchBtn.click();
+        }
     }
 
     /**
@@ -1413,6 +1595,131 @@ class TournamentFinder {
     }
 
     /**
+     * FILTER PERSISTENCE (Phase 2 Feature)
+     */
+
+    /**
+     * Save current filter state to localStorage
+     */
+    private saveFilterPreferences(): void {
+        try {
+            const filterElements: FilterElements = {
+                openOnly: document.getElementById('openOnly') as HTMLInputElement | null,
+                excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
+                mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
+                seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+                womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
+                includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
+                classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
+                rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
+                blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
+                startDate: document.getElementById('startDate') as HTMLInputElement | null,
+                endDate: document.getElementById('endDate') as HTMLInputElement | null,
+                countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null
+            };
+
+            const preferences: FilterState = {
+                openOnly: filterElements.openOnly?.checked ?? true,
+                excludeYouth: filterElements.excludeYouth?.checked ?? true,
+                mediterraneanOnly: filterElements.mediterraneanOnly?.checked ?? false,
+                seniorCategory: filterElements.seniorCategory?.checked ?? false,
+                womenOnly: filterElements.womenOnly?.checked ?? false,
+                includeTeamTournaments: filterElements.includeTeamTournaments?.checked ?? false,
+                classicalTime: filterElements.classicalTime?.checked ?? true,
+                rapidTime: filterElements.rapidTime?.checked ?? true,
+                blitzTime: filterElements.blitzTime?.checked ?? true,
+                startDate: filterElements.startDate?.valueAsDate ?? null,
+                endDate: filterElements.endDate?.valueAsDate ?? null,
+                countryFilter: filterElements.countryFilter?.value ?? ''
+            };
+
+            localStorage.setItem(
+                this.CACHE_KEYS.FILTER_PREFERENCES,
+                JSON.stringify(preferences)
+            );
+            console.log('✓ Filter preferences saved');
+        } catch (error) {
+            console.warn('Failed to save filter preferences:', error);
+            // Silently fail - preference saving is optional
+        }
+    }
+
+    /**
+     * Load saved filter preferences from localStorage
+     */
+    private loadFilterPreferences(): void {
+        try {
+            const savedPrefs = localStorage.getItem(this.CACHE_KEYS.FILTER_PREFERENCES);
+            if (!savedPrefs) {
+                console.log('No saved filter preferences found');
+                return;
+            }
+
+            const preferences = JSON.parse(savedPrefs) as FilterState;
+
+            const filterElements: FilterElements = {
+                openOnly: document.getElementById('openOnly') as HTMLInputElement | null,
+                excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
+                mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
+                seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+                womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
+                includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
+                classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
+                rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
+                blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
+                startDate: document.getElementById('startDate') as HTMLInputElement | null,
+                endDate: document.getElementById('endDate') as HTMLInputElement | null,
+                countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null
+            };
+
+            // Restore checkbox states
+            if (filterElements.openOnly) filterElements.openOnly.checked = preferences.openOnly;
+            if (filterElements.excludeYouth) filterElements.excludeYouth.checked = preferences.excludeYouth;
+            if (filterElements.mediterraneanOnly) filterElements.mediterraneanOnly.checked = preferences.mediterraneanOnly;
+            if (filterElements.seniorCategory) filterElements.seniorCategory.checked = preferences.seniorCategory;
+            if (filterElements.womenOnly) filterElements.womenOnly.checked = preferences.womenOnly;
+            if (filterElements.includeTeamTournaments) filterElements.includeTeamTournaments.checked = preferences.includeTeamTournaments;
+            if (filterElements.classicalTime) filterElements.classicalTime.checked = preferences.classicalTime;
+            if (filterElements.rapidTime) filterElements.rapidTime.checked = preferences.rapidTime;
+            if (filterElements.blitzTime) filterElements.blitzTime.checked = preferences.blitzTime;
+
+            // Restore country filter
+            if (filterElements.countryFilter) filterElements.countryFilter.value = preferences.countryFilter;
+
+            // Note: We don't restore date filters as they should default to "today to 3 months"
+            // Users can manually set dates if they want specific ranges
+
+            console.log('✓ Filter preferences loaded');
+            this.showError('Your filter preferences have been restored', 'success');
+        } catch (error) {
+            console.warn('Failed to load filter preferences:', error);
+            // Silently fail - if preferences can't be loaded, use defaults
+        }
+    }
+
+    /**
+     * Attach change event listeners to all filter inputs
+     */
+    private attachFilterChangeListeners(): void {
+        const filterIds = [
+            'openOnly', 'excludeYouth', 'mediterraneanOnly', 'seniorCategory',
+            'womenOnly', 'includeTeamTournaments', 'classicalTime', 'rapidTime',
+            'blitzTime', 'startDate', 'endDate', 'countryFilter'
+        ];
+
+        filterIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', () => {
+                    this.saveFilterPreferences();
+                });
+            }
+        });
+
+        console.log('✓ Filter change listeners attached');
+    }
+
+    /**
      * THEME MANAGEMENT
      */
 
@@ -1536,10 +1843,15 @@ class TournamentFinder {
      */
 
     /**
-     * Export filtered tournaments to CSV
+     * Export filtered tournaments to CSV (#3)
      */
-    private exportToCSV(): void {
-        if (this.allTournaments.length === 0) {
+    public exportToCSV(): void {
+        // Use filtered tournaments if search is active, otherwise all tournaments
+        const tournaments = this.filteredTournaments.length > 0
+            ? this.filteredTournaments
+            : this.allTournaments;
+
+        if (tournaments.length === 0) {
             this.showError('No tournaments to export. Please search first.', 'warning');
             return;
         }
@@ -1550,7 +1862,7 @@ class TournamentFinder {
             const rows = [headers.join(',')];
 
             // CSV rows
-            this.allTournaments.forEach(tournament => {
+            tournaments.forEach(tournament => {
                 const row = [
                     this.escapeCSV(tournament.name),
                     tournament.date.toLocaleDateString('en-US'),
@@ -1577,8 +1889,8 @@ class TournamentFinder {
             link.click();
             document.body.removeChild(link);
 
-            this.showError(`Exported ${this.allTournaments.length} tournaments to CSV`, 'success');
-            console.log(`✓ Exported ${this.allTournaments.length} tournaments to CSV`);
+            this.showError(`✅ Exported ${tournaments.length} tournaments to CSV`, 'success');
+            console.log(`✓ Exported ${tournaments.length} tournaments to CSV`);
         } catch (error) {
             console.error('Export error:', error);
             this.showError('Failed to export tournaments. Please try again.', 'error');
@@ -1596,14 +1908,282 @@ class TournamentFinder {
         }
         return str;
     }
+
+    /**
+     * CALENDAR EXPORT (Phase 2 Feature)
+     */
+
+    /**
+     * Generate unique ID for tournament
+     */
+    private generateTournamentId(tournament: Tournament): string {
+        // Create a unique ID from tournament name, date, and location
+        const str = `${tournament.name}-${tournament.date.toISOString()}-${tournament.location}`;
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return Math.abs(hash).toString(36);
+    }
+
+    /**
+     * Export tournament to .ics calendar file
+     */
+    private exportToCalendar(tournament: Tournament): void {
+        try {
+            // Format dates for iCalendar (YYYYMMDDTHHMMSSZ format)
+            const formatICalDate = (date: Date): string => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}${month}${day}T090000Z`; // Default 9:00 AM UTC
+            };
+
+            const formatICalEndDate = (date: Date): string => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}${month}${day}T180000Z`; // Default 6:00 PM UTC
+            };
+
+            const now = new Date();
+            const uid = this.generateTournamentId(tournament);
+            const dtStart = formatICalDate(tournament.date);
+            const dtEnd = formatICalEndDate(tournament.date);
+            const dtStamp = formatICalDate(now);
+
+            // Clean description text (remove HTML, limit length)
+            const cleanDescription = (tournament.description || '')
+                .replace(/<[^>]*>/g, '') // Remove HTML tags
+                .replace(/\n/g, '\\n') // Escape newlines
+                .substring(0, 500); // Limit length
+
+            // Build .ics content
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//MedTourney//Chess Tournament Finder//EN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'BEGIN:VEVENT',
+                `UID:${uid}@medtourney.com`,
+                `DTSTAMP:${dtStamp}`,
+                `DTSTART:${dtStart}`,
+                `DTEND:${dtEnd}`,
+                `SUMMARY:${tournament.name}`,
+                `DESCRIPTION:${cleanDescription}\\n\\nCategory: ${tournament.category}\\n\\nMore info: ${tournament.url}`,
+                `LOCATION:${tournament.location}`,
+                `URL:${tournament.url}`,
+                'STATUS:CONFIRMED',
+                'SEQUENCE:0',
+                'BEGIN:VALARM',
+                'TRIGGER:-P1D', // Reminder 1 day before
+                'ACTION:DISPLAY',
+                `DESCRIPTION:Chess tournament tomorrow: ${tournament.name}`,
+                'END:VALARM',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+
+            // Create blob and download
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            // Generate filename from tournament name
+            const filename = tournament.name
+                .replace(/[^a-z0-9]/gi, '-')
+                .toLowerCase()
+                .substring(0, 50);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${filename}.ics`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            this.showError(`Calendar event created for ${tournament.name}`, 'success');
+            console.log(`✓ Exported tournament to calendar: ${tournament.name}`);
+        } catch (error) {
+            console.error('Calendar export error:', error);
+            this.showError('Failed to create calendar event. Please try again.', 'error');
+        }
+    }
+
+    /**
+     * Attach event listeners to calendar export buttons
+     */
+    private attachCalendarExportListeners(tournaments: Tournament[]): void {
+        const calendarButtons = document.querySelectorAll<HTMLButtonElement>('.calendar-export-btn');
+
+        calendarButtons.forEach(btn => {
+            const tournamentId = btn.dataset.tournamentId;
+            if (!tournamentId) return;
+
+            // Find tournament by ID
+            const tournament = tournaments.find(t => this.generateTournamentId(t) === tournamentId);
+            if (!tournament) return;
+
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.exportToCalendar(tournament);
+            });
+        });
+
+        console.log(`✓ Attached calendar export listeners to ${calendarButtons.length} buttons`);
+    }
+
+    /**
+     * TOURNAMENT SORTING (#4)
+     */
+
+    /**
+     * Sort tournaments by specified criteria
+     */
+    private sortTournaments(tournaments: Tournament[], sortBy: SortOption): Tournament[] {
+        const sorted = [...tournaments];
+
+        switch (sortBy) {
+            case 'date-asc':
+                return sorted.sort((a, b) => a.date.getTime() - b.date.getTime());
+            case 'date-desc':
+                return sorted.sort((a, b) => b.date.getTime() - a.date.getTime());
+            case 'name':
+                return sorted.sort((a, b) => a.name.localeCompare(b.name));
+            case 'location':
+                return sorted.sort((a, b) => a.location.localeCompare(b.location));
+            case 'country':
+                return sorted.sort((a, b) => {
+                    const countryA = a.location.split(',').pop()?.trim() || '';
+                    const countryB = b.location.split(',').pop()?.trim() || '';
+                    return countryA.localeCompare(countryB);
+                });
+            default:
+                return sorted;
+        }
+    }
+
+    /**
+     * Handle sort change from UI
+     */
+    private handleSortChange(sortBy: SortOption): void {
+        this.currentSort = sortBy;
+        this.currentPage = 1; // Reset to first page
+        this.renderPaginatedTournaments();
+    }
+
+    /**
+     * SEARCH WITHIN RESULTS (#8)
+     */
+
+    /**
+     * Filter displayed tournaments by search query
+     */
+    private searchWithinResults(query: string): void {
+        if (!query.trim()) {
+            // No query - show all tournaments
+            this.filteredTournaments = [];
+            this.currentPage = 1;
+            this.renderPaginatedTournaments();
+            return;
+        }
+
+        const searchTerm = query.toLowerCase();
+        this.filteredTournaments = this.allTournaments.filter(tournament => {
+            return tournament.name.toLowerCase().includes(searchTerm) ||
+                   tournament.location.toLowerCase().includes(searchTerm) ||
+                   tournament.category.toLowerCase().includes(searchTerm);
+        });
+
+        this.currentPage = 1;
+        this.renderPaginatedTournaments();
+
+        // Update results count
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+            const total = this.allTournaments.length;
+            const filtered = this.filteredTournaments.length;
+            resultsCount.textContent = `${filtered} of ${total} tournament${total !== 1 ? 's' : ''} (filtered)`;
+        }
+    }
+
+    /**
+     * DARK MODE TOGGLE (#2)
+     */
+
+    /**
+     * Toggle dark mode theme
+     */
+    public toggleDarkMode(): void {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem(this.CACHE_KEYS.THEME, isDark ? 'dark' : 'light');
+        this.showError(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'success');
+    }
+
+    /**
+     * KEYBOARD NAVIGATION (#7)
+     */
+
+    /**
+     * Setup keyboard shortcuts
+     */
+    private setupKeyboardNavigation(): void {
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            // Alt+S to search
+            if (e.altKey && e.key === 's') {
+                e.preventDefault();
+                const searchBtn = document.getElementById('searchBtn');
+                if (searchBtn) {
+                    searchBtn.click();
+                }
+            }
+
+            // Escape to clear quick search
+            if (e.key === 'Escape') {
+                const quickSearch = document.getElementById('quickSearch') as HTMLInputElement;
+                if (quickSearch && document.activeElement === quickSearch) {
+                    quickSearch.value = '';
+                    this.searchWithinResults('');
+                }
+            }
+
+            // Alt+D to toggle dark mode
+            if (e.altKey && e.key === 'd') {
+                e.preventDefault();
+                this.toggleDarkMode();
+            }
+
+            // Alt+E to export CSV
+            if (e.altKey && e.key === 'e') {
+                e.preventDefault();
+                this.exportToCSV();
+            }
+        });
+
+        console.log('✓ Keyboard shortcuts initialized (Alt+S=Search, Alt+D=Dark Mode, Alt+E=Export, Esc=Clear)');
+    }
 }
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const app = new TournamentFinder();
 
-    // Expose clearCaches function globally for debugging
-    (window as typeof window & { clearCaches: () => void }).clearCaches = () => {
+    // Expose functions globally for UI access
+    (window as typeof window & {
+        clearCaches: () => void;
+        toggleDarkMode: () => void;
+        exportToCSV: () => void;
+    }).clearCaches = () => {
         app.clearAllCaches();
+    };
+    (window as typeof window & { toggleDarkMode: () => void }).toggleDarkMode = () => {
+        app.toggleDarkMode();
+    };
+    (window as typeof window & { exportToCSV: () => void }).exportToCSV = () => {
+        app.exportToCSV();
     };
 });

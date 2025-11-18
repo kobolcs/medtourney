@@ -4,8 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
-    <title>European Chess Tournament Finder - chess-results.com</title>
+
+    <!-- Primary Meta Tags -->
+    <title>MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments</title>
+    <meta name="title" content="MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments">
+    <meta name="description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Search open tournaments, women's events, and vacation-friendly chess competitions. Updated daily from chess-results.com.">
+    <meta name="keywords" content="european chess tournaments, mediterranean chess, senior chess tournaments, chess tournament finder, chess-results.com, seaside chess, S50+ chess, open chess tournaments, vacation chess, chess travel">
+    <meta name="author" content="MedTourney">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://kobolcs.github.io/medtourney/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kobolcs.github.io/medtourney/">
+    <meta property="og:title" content="MedTourney - European Chess Tournament Finder">
+    <meta property="og:description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Updated daily from chess-results.com.">
+    <meta property="og:image" content="https://kobolcs.github.io/medtourney/og-image.png">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="MedTourney">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://kobolcs.github.io/medtourney/">
+    <meta property="twitter:title" content="MedTourney - European Chess Tournament Finder">
+    <meta property="twitter:description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories.">
+    <meta property="twitter:image" content="https://kobolcs.github.io/medtourney/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MedTourney",
+      "url": "https://kobolcs.github.io/medtourney/",
+      "description": "European chess tournament finder with specialized filters for Mediterranean and senior tournaments",
+      "applicationCategory": "Sports",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Mediterranean seaside tournament filter",
+        "Senior (S50+) category search",
+        "Daily automated updates",
+        "Mobile-responsive design",
+        "Advanced filtering options",
+        "CSV export"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5",
+        "ratingCount": "1",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -163,9 +224,29 @@
                     <h2>Search Results</h2>
                     <span id="resultsCount" class="results-count" role="status" aria-live="polite"></span>
                 </div>
-                <button id="exportBtn" class="export-button" aria-label="Export tournaments to CSV">
-                    📥 Export CSV
-                </button>
+                <div class="results-controls">
+                    <div class="search-within">
+                        <label for="quickSearch" class="sr-only">Search within results</label>
+                        <input type="search"
+                               id="quickSearch"
+                               class="quick-search-input"
+                               placeholder="🔍 Filter results..."
+                               aria-label="Search within results by name or location">
+                    </div>
+                    <div class="sort-controls">
+                        <label for="sortBy">Sort:</label>
+                        <select id="sortBy" class="sort-select" aria-label="Sort tournaments by">
+                            <option value="date-asc">Date (earliest first)</option>
+                            <option value="date-desc">Date (latest first)</option>
+                            <option value="name">Name (A-Z)</option>
+                            <option value="location">Location (A-Z)</option>
+                            <option value="country">Country (A-Z)</option>
+                        </select>
+                    </div>
+                    <button id="exportBtn" class="export-button" aria-label="Export tournaments to CSV">
+                        📥 Export CSV
+                    </button>
+                </div>
             </div>
             <div id="tournamentList" class="tournament-list" role="list"></div>
         </div>

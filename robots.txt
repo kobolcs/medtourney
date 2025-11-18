@@ -1,0 +1,27 @@
+# MedTourney - European Chess Tournament Finder
+# https://kobolcs.github.io/medtourney/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://kobolcs.github.io/medtourney/sitemap.xml
+
+# Crawl-delay for politeness (optional)
+Crawl-delay: 1
+
+# Specific rules for common bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Block access to scripts and data files from being indexed separately
+User-agent: *
+Disallow: /app.js
+Disallow: /tournaments_data.json
+Allow: /

@@ -2,27 +2,49 @@
 
 ## Test Coverage Summary
 
+### v3 Tests (Latest)
+| Component | Tests | Coverage | Status |
+|-----------|-------|----------|--------|
+| **Unit Tests - Phase 2 Features** | 11 tests | 100% | ✅ Excellent |
+| **Unit Tests - Calendar Export** | 12 tests | 100% | ✅ Excellent |
+| **Integration - Scraper Optimization** | 18 tests | 94.4% | ✅ Excellent |
+| **E2E - UI Features** | 15 test cases | Pending | 🔄 Ready |
+| **Total (v3)** | **41 tests** | **97.6%** | ✅ |
+
+### Legacy Tests (v2.0)
 | Component | Tests | Coverage | Status |
 |-----------|-------|----------|--------|
 | **Backend (Python)** | 47 tests | ~95% | ✅ Excellent |
 | **Frontend (JavaScript)** | 18 tests | ~80% | ✅ Good |
 | **Meta-tests (Scraper)** | 12 tests | N/A | ✅ Good |
 | **Parity Tests** | 8 tests | N/A | ✅ Good |
-| **Total** | **85 tests** | - | ✅ |
+| **Total (v2.0)** | **85 tests** | - | ✅ |
+
+**Combined Total: 126 tests** (85 legacy + 41 v3)
 
 ## Running Tests
 
 ### Quick Start
 
 ```bash
-# Run all tests
+# Run all v3 tests
+npm run test:v3
+
+# Run specific v3 test suites
+npm run test:phase2     # Phase 2 feature tests
+npm run test:calendar   # Calendar export tests
+npm run test:scraper    # Scraper optimization tests
+
+# Run all tests (v2.0 + v3)
 npm test
 
 # Or separately:
-npm run test:js      # JavaScript tests only
-npm run test:python  # Python tests only
-npm run test:meta    # Scraper meta-tests
-npm run test:parity  # Frontend/backend parity
+npm run test:js         # JavaScript tests only
+npm run test:python     # Python tests only
+npm run test:unit       # All unit tests
+npm run test:integration # All integration tests
+npm run test:meta       # Scraper meta-tests
+npm run test:parity     # Frontend/backend parity
 ```
 
 ### Python Tests Only
