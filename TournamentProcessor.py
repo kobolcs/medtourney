@@ -135,7 +135,12 @@ class TournamentProcessor:
             "usa", "canada", "mexico", "brazil", "argentina", "chile", "peru",
             "colombia", "egypt", "morocco", "tunisia", "algeria", "south africa",
             "israel", "jordan", "lebanon", "iran", "iraq", "turkey", "kazakhstan",
-            "uzbekistan", "rus", "mas", "tur"
+            "uzbekistan", "rus", "mas", "tur",
+            # Add more country codes for non-European countries
+            "ind", "uzb", "kaz", "isr", "jpn", "chn", "can", "mex",
+            "bra", "arg", "aus", "nzl", "sgp", "tha", "vnm", "phl",
+            "kor", "egy", "mar", "tun", "dza", "zaf", "jor", "lbn",
+            "irn", "irq", "qat", "are", "sau"
         }
         self.mediterranean_locations = {
             "barcelona", "valencia", "alicante", "malaga", "marbella",
@@ -153,17 +158,21 @@ class TournamentProcessor:
         filters for European tournaments only (excluding Russia), and returns only
         tournaments starting tomorrow or later.
 
+        Chess-results.com Excel format:
+            - Rows 1-3: Metadata/header info
+            - Row 4: Column headers (Tournament, from, to, Location, FED, teams, etc.)
+            - Row 5+: Tournament data
+
         Args:
             excel_file: Path to the Excel file downloaded from chess-results.com.
-                Expected columns: Name, Location, Date, URL.
 
         Returns:
             List of tournament dictionaries, each containing:
                 - name (str): Tournament name
-                - location (str): Tournament location
+                - location (str): Tournament location (City, COUNTRY_CODE format)
                 - date (str): Tournament start date in YYYY-MM-DD format
-                - category (str): Tournament category (e.g., "Open, Classical")
-                - url (str): Tournament URL
+                - category (str): Tournament category (e.g., "Open, Blitz")
+                - url (str): Tournament URL constructed from DB-Key
                 - description (str): Tournament description (same as name)
 
         Raises:
@@ -179,52 +188,127 @@ class TournamentProcessor:
         workbook: Workbook = openpyxl.load_workbook(excel_file, data_only=True)
         sheet: Worksheet = workbook.active
 
-        # Get headers from first row
+        # Chess-results.com format: Headers are in row 4 (rows 1-3 are metadata)
         headers: List[str] = []
-        for cell in sheet[1]:
+        for cell in sheet[4]:
             if cell.value:
                 headers.append(str(cell.value).strip().lower())
+            else:
+                headers.append("")
 
-
-        # Find column indices
-        name_col: Optional[int] = self._find_column(headers, ["name", "tournament", "turnier"])
-        location_col: Optional[int] = self._find_column(headers, ["location", "place", "ort", "city", "country"])
-        date_col: Optional[int] = self._find_column(headers, ["date", "datum", "start", "begin"])
-        url_col: Optional[int] = self._find_column(headers, ["url", "link", "website"])
+        # Find column indices (chess-results.com column names)
+        name_col: Optional[int] = self._find_column(headers, ["tournament", "name", "turnier"])
+        location_col: Optional[int] = self._find_column(headers, ["location", "place", "ort"])
+        date_from_col: Optional[int] = self._find_column(headers, ["from", "start", "datum"])
+        date_to_col: Optional[int] = self._find_column(headers, ["to", "end"])
+        fed_col: Optional[int] = self._find_column(headers, ["fed", "federation", "country"])
+        teams_col: Optional[int] = self._find_column(headers, ["teams"])
+        time_control_col: Optional[int] = self._find_column(headers, ["time control", "timecontrol"])
+        db_key_col: Optional[int] = self._find_column(headers, ["db-key", "dbkey", "key"])
+        event_id_col: Optional[int] = self._find_column(headers, ["eventid", "event id"])
 
         tournaments: List[Dict[str, Any]] = []
 
         # Calculate tomorrow once (not in loop) - PERFORMANCE FIX
         tomorrow: datetime = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
-        # Process each row
-        for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+        # Process each row (data starts at row 5)
+        for row_idx, row in enumerate(sheet.iter_rows(min_row=5, values_only=True), start=5):
             try:
-                # Extract data
+                # Extract tournament name
                 name: str = (str(row[name_col]).strip()
                            if name_col is not None and row[name_col]
                            else f"Tournament {row_idx}")
-                location: str = (str(row[location_col]).strip()
-                               if location_col is not None and row[location_col]
-                               else "Unknown")
-                date_value: Any = row[date_col] if date_col is not None else None
-                url: str = (str(row[url_col]).strip()
-                          if url_col is not None and row[url_col]
-                          else "https://chess-results.com")
 
                 # Skip empty rows
-                if not name or name == "None":
+                if not name or name == "None" or name == "":
                     continue
 
-                # Parse date
+                # Extract location (city) and FED (country code)
+                city: str = (str(row[location_col]).strip()
+                           if location_col is not None and row[location_col]
+                           else "")
+                fed: str = (str(row[fed_col]).strip().upper()
+                          if fed_col is not None and row[fed_col]
+                          else "")
+
+                # Filter out non-European countries FIRST (before processing location)
+                if fed and fed.lower() in self.non_european_countries:
+                    continue  # Skip non-European tournaments
+
+                # Clean up city name (remove country name if already in city field)
+                # e.g., "Trikala,Greece" -> "Trikala"
+                if city and ',' in city:
+                    city = city.split(',')[0].strip()
+
+                # Combine into "City, COUNTRY" format
+                if city and fed:
+                    location = f"{city}, {fed}"
+                elif fed:
+                    location = fed
+                elif city:
+                    location = city
+                else:
+                    location = "Unknown"
+
+                # Extract date from "from" column (YYYYMMDD format)
+                date_value: Any = row[date_from_col] if date_from_col is not None else None
                 parsed_date: datetime = self._parse_date(date_value)
 
-                # Filter: only tournaments starting tomorrow or later (not today or past)
+                # Filter: only tournaments starting tomorrow or later
                 if parsed_date < tomorrow:
-                    continue  # Skip tournaments that already started or start today
+                    continue
 
-                # Extract category
-                category: str = self._extract_category(name + " " + location)
+                # Extract time control to determine blitz/rapid/classical
+                time_control: str = (str(row[time_control_col]).strip()
+                                   if time_control_col is not None and row[time_control_col]
+                                   else "")
+
+                # Extract category from tournament name and time control
+                category_parts: List[str] = []
+
+                # Determine time control category from the time control field
+                if time_control:
+                    tc_lower = time_control.lower()
+                    if "blitz" in tc_lower or ("5" in tc_lower and ("min" in tc_lower or "'" in tc_lower)):
+                        category_parts.append("Blitz")
+                    elif "rapid" in tc_lower or ("15" in tc_lower or "25" in tc_lower):
+                        category_parts.append("Rapid")
+                    else:
+                        category_parts.append("Classical")
+
+                # Extract other categories from name
+                name_category: str = self._extract_category(name + " " + location)
+                for cat in name_category.split(", "):
+                    if cat not in category_parts:
+                        category_parts.append(cat)
+
+                category = ", ".join(category_parts) if category_parts else "Open"
+
+                # Construct URL from DB-Key or EventID
+                db_key: Any = row[db_key_col] if db_key_col is not None else None
+                event_id: Any = row[event_id_col] if event_id_col is not None else None
+
+                if db_key and str(db_key).strip() and str(db_key).strip() != "0":
+                    url = f"https://chess-results.com/tnr{db_key}.aspx?lan=1"
+                elif event_id and str(event_id).strip() and str(event_id).strip() != "0":
+                    url = f"https://chess-results.com/tnr{event_id}.aspx?lan=1"
+                else:
+                    url = "https://chess-results.com"
+
+                # Check if it's a team tournament (teams > 0)
+                teams_value: Any = row[teams_col] if teams_col is not None else 0
+                is_team = False
+                try:
+                    if teams_value and int(teams_value) > 0:
+                        is_team = True
+                except (ValueError, TypeError):
+                    pass
+
+                # Skip team tournaments (frontend has a filter for this now)
+                # Actually, let's include them and let the frontend filter handle it
+                # if is_team:
+                #     continue
 
                 # Filter: only European tournaments
                 if not self._is_european(location):
@@ -234,7 +318,7 @@ class TournamentProcessor:
                 tournament: Dict[str, Any] = {
                     "name": name,
                     "location": location,
-                    "date": parsed_date.strftime("%Y-%m-%d"),  # Convert to string for JSON
+                    "date": parsed_date.strftime("%Y-%m-%d"),
                     "category": category,
                     "url": url,
                     "description": name
@@ -242,7 +326,8 @@ class TournamentProcessor:
 
                 tournaments.append(tournament)
 
-            except Exception:
+            except Exception as e:
+                self.logger.debug(f"Error processing row {row_idx}: {e}")
                 continue
 
         workbook.close()

@@ -1,6 +1,14 @@
 "use strict";
 class TournamentFinder {
     constructor() {
+        this.CACHE_VERSION = '2.2.0';
+        this.CACHE_DURATION = 24 * 60 * 60 * 1000;
+        this.CACHE_KEYS = {
+            TOURNAMENTS: 'medtourney_tournaments',
+            CONFIG: 'medtourney_config',
+            THEME: 'medtourney_theme',
+            FILTERS_COLLAPSED: 'medtourney_filters_collapsed'
+        };
         this.corsProxies = [
             'https://api.allorigins.win/get?url=',
             'https://corsproxy.io/?',
@@ -16,6 +24,8 @@ class TournamentFinder {
     }
     async initAsync() {
         try {
+            this.initTheme();
+            this.initCollapsibleFilters();
             await this.loadConfig();
             const today = new Date();
             const threeMonthsLater = new Date(today);
@@ -30,13 +40,28 @@ class TournamentFinder {
             if (searchBtn) {
                 searchBtn.addEventListener('click', () => void this.searchTournaments());
             }
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => this.toggleTheme());
+            }
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => this.exportToCSV());
+            }
         }
         catch (error) {
             console.error('Initialization error:', error);
+            this.showError('Failed to initialize application. Please refresh the page.', 'error');
         }
     }
     async loadConfig() {
         try {
+            const cachedConfig = this.loadFromCache(this.CACHE_KEYS.CONFIG);
+            if (cachedConfig) {
+                this.applyConfig(cachedConfig);
+                console.log('✓ Using cached configuration');
+                return;
+            }
             const response = await fetch('./config.json', {
                 cache: 'no-cache',
                 headers: { 'Accept': 'application/json' }
@@ -46,19 +71,24 @@ class TournamentFinder {
             }
             const rawConfig = await response.json();
             const config = this.validateConfig(rawConfig);
-            this.nonEuropeanCountries = new Set(config.nonEuropeanCountries);
-            this.mediterraneanLocations = new Set(config.mediterraneanLocations);
-            this.europeanCountries = {};
-            for (const [code, data] of Object.entries(config.countryCodes)) {
-                this.europeanCountries[code] = data.keywords;
-            }
-            console.log(`Loaded config: ${Object.keys(this.europeanCountries).length} countries, ` +
+            this.saveToCache(this.CACHE_KEYS.CONFIG, config);
+            this.applyConfig(config);
+            console.log(`✓ Loaded config: ${Object.keys(this.europeanCountries).length} countries, ` +
                 `${this.nonEuropeanCountries.size} non-European countries, ` +
                 `${this.mediterraneanLocations.size} Mediterranean locations`);
         }
         catch (error) {
             console.error('Error loading config.json, using fallback defaults:', error);
+            this.showError('Failed to load configuration. Using defaults.', 'warning');
             this.loadDefaultConfig();
+        }
+    }
+    applyConfig(config) {
+        this.nonEuropeanCountries = new Set(config.nonEuropeanCountries);
+        this.mediterraneanLocations = new Set(config.mediterraneanLocations);
+        this.europeanCountries = {};
+        for (const [code, data] of Object.entries(config.countryCodes)) {
+            this.europeanCountries[code] = data.keywords;
         }
     }
     loadDefaultConfig() {
@@ -198,6 +228,14 @@ class TournamentFinder {
         }
     }
     async fetchTournaments() {
+        const cachedTournaments = this.loadFromCache(this.CACHE_KEYS.TOURNAMENTS);
+        if (cachedTournaments && cachedTournaments.length > 0) {
+            console.log(`✓ Loaded ${cachedTournaments.length} tournaments from cache`);
+            return cachedTournaments.map(t => ({
+                ...t,
+                date: new Date(t.date)
+            }));
+        }
         try {
             console.log('Loading tournaments from local data file...');
             const response = await fetch('./tournaments_data.json', {
@@ -210,6 +248,7 @@ class TournamentFinder {
                 const rawTournaments = await response.json();
                 if (Array.isArray(rawTournaments) && rawTournaments.length > 0) {
                     console.log(`✓ Loaded ${rawTournaments.length} tournaments from local data file`);
+                    this.saveToCache(this.CACHE_KEYS.TOURNAMENTS, rawTournaments);
                     return rawTournaments.map(t => ({
                         ...t,
                         date: new Date(t.date)
@@ -243,6 +282,49 @@ class TournamentFinder {
         console.error('Could not fetch tournament data from any source');
         throw new Error('Unable to fetch tournament data. Please try again later or run the data scraper to update tournaments_data.json');
     }
+    validateChessResultsResponse(html) {
+        try {
+            if (!html.includes('chess-results')) {
+                console.warn('Validation failed: Missing chess-results domain reference');
+                return false;
+            }
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const parserError = doc.querySelector('parsererror');
+            if (parserError) {
+                console.warn('Validation failed: HTML parsing error');
+                return false;
+            }
+            const tnrLinks = doc.querySelectorAll('a[href*="tnr"]');
+            if (tnrLinks.length === 0) {
+                console.warn('Validation failed: No tournament links found');
+                return false;
+            }
+            let hasChessResultsLinks = false;
+            tnrLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                if (href.includes('chess-results.com') || href.startsWith('/') || href.startsWith('tnr')) {
+                    hasChessResultsLinks = true;
+                }
+            });
+            if (!hasChessResultsLinks) {
+                console.warn('Validation failed: Tournament links do not reference chess-results.com');
+                return false;
+            }
+            const tables = doc.querySelectorAll('table');
+            const rows = doc.querySelectorAll('tr');
+            if (tables.length === 0 && rows.length === 0) {
+                console.warn('Validation failed: Missing expected table structure');
+                return false;
+            }
+            console.log(`Response validation passed: Found ${tnrLinks.length} tournament links`);
+            return true;
+        }
+        catch (error) {
+            console.error('Validation error:', error);
+            return false;
+        }
+    }
     async fetchWithProxy(url) {
         let lastError;
         for (let i = 0; i < this.corsProxies.length; i++) {
@@ -271,7 +353,7 @@ class TournamentFinder {
                         html = data;
                     }
                 }
-                if (!html.includes('chess-results')) {
+                if (!this.validateChessResultsResponse(html)) {
                     throw new Error('Invalid response from proxy - possible content injection');
                 }
                 console.log(`Successfully fetched ${html.length} bytes via proxy ${i + 1}`);
@@ -447,6 +529,8 @@ class TournamentFinder {
             excludeYouth: document.getElementById('excludeYouth'),
             mediterraneanOnly: document.getElementById('mediterraneanOnly'),
             seniorCategory: document.getElementById('seniorCategory'),
+            womenOnly: document.getElementById('womenOnly'),
+            includeTeamTournaments: document.getElementById('includeTeamTournaments'),
             classicalTime: document.getElementById('classicalTime'),
             rapidTime: document.getElementById('rapidTime'),
             blitzTime: document.getElementById('blitzTime'),
@@ -466,6 +550,8 @@ class TournamentFinder {
             excludeYouth: filterElements.excludeYouth.checked,
             mediterraneanOnly: filterElements.mediterraneanOnly.checked,
             seniorCategory: filterElements.seniorCategory.checked,
+            womenOnly: filterElements.womenOnly.checked,
+            includeTeamTournaments: filterElements.includeTeamTournaments.checked,
             classicalTime: filterElements.classicalTime.checked,
             rapidTime: filterElements.rapidTime.checked,
             blitzTime: filterElements.blitzTime.checked,
@@ -519,7 +605,10 @@ class TournamentFinder {
             if (filters.excludeYouth && this.isYouthOnly(tournament)) {
                 return false;
             }
-            if (this.isTeamTournament(tournament)) {
+            if (filters.womenOnly && !this.hasWomenCategory(tournament.category)) {
+                return false;
+            }
+            if (!filters.includeTeamTournaments && this.isTeamTournament(tournament)) {
                 return false;
             }
             if (filters.mediterraneanOnly && !this.isMediterranean(tournament.location)) {
@@ -588,6 +677,11 @@ class TournamentFinder {
         const categoryLower = category.toLowerCase();
         const seniorPattern = /\bs50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50/i;
         return seniorPattern.test(categoryLower);
+    }
+    hasWomenCategory(category) {
+        const categoryLower = category.toLowerCase();
+        const womenPattern = /\bwomen|ladies|female|frauen|dames|feminin|donne|kobiet/i;
+        return womenPattern.test(categoryLower);
     }
     matchesCountry(location, countryCode) {
         const locationLower = location.toLowerCase();
@@ -790,14 +884,17 @@ class TournamentFinder {
             countryFilter: filters.countryFilter
         });
     }
-    showError(message) {
-        const error = document.getElementById('error');
-        if (error) {
-            error.textContent = message;
-            error.style.display = 'block';
+    showError(message, type = 'error') {
+        const errorEl = document.getElementById('error');
+        if (errorEl) {
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            errorEl.classList.remove('error-type', 'warning-type', 'success-type');
+            errorEl.classList.add(`${type}-type`);
+            const duration = type === 'success' ? 3000 : (type === 'warning' ? 5000 : 7000);
             setTimeout(() => {
-                error.style.display = 'none';
-            }, 5000);
+                errorEl.style.display = 'none';
+            }, duration);
         }
     }
     escapeHtml(text) {
@@ -812,8 +909,179 @@ class TournamentFinder {
         };
         return String(text).replace(/[&<>"']/g, char => htmlEscapeMap[char] || char);
     }
+    saveToCache(key, data) {
+        try {
+            const cached = {
+                data,
+                timestamp: Date.now(),
+                version: this.CACHE_VERSION
+            };
+            localStorage.setItem(key, JSON.stringify(cached));
+            console.log(`✓ Cached ${key} to LocalStorage`);
+        }
+        catch (error) {
+            console.warn('Failed to save to cache:', error);
+        }
+    }
+    loadFromCache(key) {
+        try {
+            const cached = localStorage.getItem(key);
+            if (!cached)
+                return null;
+            const parsed = JSON.parse(cached);
+            if (parsed.version !== this.CACHE_VERSION) {
+                console.log(`Cache version mismatch for ${key}, clearing...`);
+                localStorage.removeItem(key);
+                return null;
+            }
+            const age = Date.now() - parsed.timestamp;
+            if (age > this.CACHE_DURATION) {
+                console.log(`Cache expired for ${key} (${Math.round(age / 1000 / 60 / 60)}h old)`);
+                localStorage.removeItem(key);
+                return null;
+            }
+            console.log(`✓ Loaded ${key} from cache (${Math.round(age / 1000 / 60)}min old)`);
+            return parsed.data;
+        }
+        catch (error) {
+            console.warn('Failed to load from cache:', error);
+            return null;
+        }
+    }
+    clearAllCaches() {
+        Object.values(this.CACHE_KEYS).forEach(key => {
+            localStorage.removeItem(key);
+        });
+        this.filterCache.clear();
+        console.log('✓ All caches cleared');
+        this.showError('All caches cleared successfully', 'success');
+    }
+    initTheme() {
+        const savedTheme = localStorage.getItem(this.CACHE_KEYS.THEME);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+        this.updateThemeButton();
+    }
+    toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-theme');
+        const theme = isDark ? 'dark' : 'light';
+        localStorage.setItem(this.CACHE_KEYS.THEME, theme);
+        this.updateThemeButton();
+        console.log(`Theme switched to ${theme} mode`);
+    }
+    updateThemeButton() {
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            const isDark = document.body.classList.contains('dark-theme');
+            themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+    }
+    initCollapsibleFilters() {
+        const filtersCard = document.querySelector('.filters-card');
+        if (!filtersCard)
+            return;
+        const collapseBtn = document.createElement('button');
+        collapseBtn.id = 'filtersToggle';
+        collapseBtn.className = 'filters-toggle';
+        collapseBtn.setAttribute('aria-expanded', 'true');
+        collapseBtn.setAttribute('aria-label', 'Toggle filter visibility');
+        const h2 = filtersCard.querySelector('h2');
+        if (h2) {
+            h2.style.cursor = 'pointer';
+            h2.style.display = 'flex';
+            h2.style.justifyContent = 'space-between';
+            h2.style.alignItems = 'center';
+            const icon = document.createElement('span');
+            icon.className = 'collapse-icon';
+            icon.textContent = '▼';
+            icon.setAttribute('aria-hidden', 'true');
+            h2.appendChild(icon);
+            h2.addEventListener('click', () => this.toggleFilters());
+        }
+        const isCollapsed = localStorage.getItem(this.CACHE_KEYS.FILTERS_COLLAPSED) === 'true';
+        if (isCollapsed && window.innerWidth <= 768) {
+            this.setFiltersCollapsed(true);
+        }
+    }
+    toggleFilters() {
+        const filtersCard = document.querySelector('.filters-card');
+        if (!filtersCard)
+            return;
+        const isCurrentlyCollapsed = filtersCard.classList.contains('collapsed');
+        this.setFiltersCollapsed(!isCurrentlyCollapsed);
+        localStorage.setItem(this.CACHE_KEYS.FILTERS_COLLAPSED, (!isCurrentlyCollapsed).toString());
+    }
+    setFiltersCollapsed(collapsed) {
+        const filtersCard = document.querySelector('.filters-card');
+        const icon = document.querySelector('.collapse-icon');
+        if (filtersCard) {
+            if (collapsed) {
+                filtersCard.classList.add('collapsed');
+            }
+            else {
+                filtersCard.classList.remove('collapsed');
+            }
+        }
+        if (icon) {
+            icon.textContent = collapsed ? '▶' : '▼';
+        }
+    }
+    exportToCSV() {
+        if (this.allTournaments.length === 0) {
+            this.showError('No tournaments to export. Please search first.', 'warning');
+            return;
+        }
+        try {
+            const headers = ['Name', 'Date', 'Location', 'Category', 'URL', 'Description'];
+            const rows = [headers.join(',')];
+            this.allTournaments.forEach(tournament => {
+                const row = [
+                    this.escapeCSV(tournament.name),
+                    tournament.date.toLocaleDateString('en-US'),
+                    this.escapeCSV(tournament.location),
+                    this.escapeCSV(tournament.category),
+                    this.escapeCSV(tournament.url),
+                    this.escapeCSV(tournament.description)
+                ];
+                rows.push(row.join(','));
+            });
+            const csv = rows.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.setAttribute('href', url);
+            link.setAttribute('download', `chess-tournaments-${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            this.showError(`Exported ${this.allTournaments.length} tournaments to CSV`, 'success');
+            console.log(`✓ Exported ${this.allTournaments.length} tournaments to CSV`);
+        }
+        catch (error) {
+            console.error('Export error:', error);
+            this.showError('Failed to export tournaments. Please try again.', 'error');
+        }
+    }
+    escapeCSV(field) {
+        if (!field)
+            return '';
+        const str = String(field).replace(/"/g, '""');
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            return `"${str}"`;
+        }
+        return str;
+    }
 }
 document.addEventListener('DOMContentLoaded', () => {
-    new TournamentFinder();
+    const app = new TournamentFinder();
+    window.clearCaches = () => {
+        app.clearAllCaches();
+    };
 });
 //# sourceMappingURL=app.js.map
