@@ -1,0 +1,454 @@
+/**
+ * UIManager - Handles all DOM manipulation and UI rendering
+ *
+ * Provides:
+ * - Tournament list rendering
+ * - Loading states (spinner, skeletons)
+ * - Error/success messages
+ * - Pagination
+ * - Empty states
+ * - Dark mode
+ */
+
+import { Tournament } from '../types';
+
+export class UIManager {
+    private currentPage = 1;
+    private itemsPerPage = 10;
+    private filteredTournaments: Tournament[] = [];
+
+    /**
+     * Show loading spinner
+     */
+    showLoading(): void {
+        const loading = document.getElementById('loading');
+        if (loading) {
+            loading.style.display = 'block';
+        }
+    }
+
+    /**
+     * Hide loading spinner
+     */
+    hideLoading(): void {
+        const loading = document.getElementById('loading');
+        if (loading) {
+            loading.style.display = 'none';
+        }
+    }
+
+    /**
+     * Display loading skeletons while fetching data
+     */
+    showLoadingSkeletons(): void {
+        const tournamentList = document.getElementById('tournamentList');
+        const results = document.getElementById('results');
+
+        if (!tournamentList || !results) return;
+
+        // Show results container
+        results.style.display = 'block';
+
+        // Clear existing content
+        tournamentList.innerHTML = '';
+
+        // Create 6 skeleton cards
+        for (let i = 0; i < 6; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.setAttribute('aria-hidden', 'true');
+            skeleton.setAttribute('data-skeleton', 'true');
+
+            skeleton.innerHTML = `
+                <div class="skeleton-title"></div>
+                <div class="skeleton-location"></div>
+                <div class="skeleton-date"></div>
+                <div class="skeleton-category"></div>
+            `;
+
+            tournamentList.appendChild(skeleton);
+        }
+
+        // Update results count
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+            resultsCount.textContent = 'Loading tournaments...';
+            resultsCount.setAttribute('aria-live', 'polite');
+        }
+
+        // Hide export button
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.style.display = 'none';
+        }
+    }
+
+    /**
+     * Display tournaments
+     */
+    displayTournaments(tournaments: Tournament[]): void {
+        this.filteredTournaments = tournaments;
+        this.currentPage = 1;
+        this.renderResults();
+    }
+
+    /**
+     * Update displayed tournaments (after filter/sort)
+     */
+    updateDisplayedTournaments(tournaments: Tournament[]): void {
+        this.filteredTournaments = tournaments;
+        this.currentPage = 1;
+        this.renderResults();
+    }
+
+    /**
+     * Render results with pagination
+     */
+    private renderResults(): void {
+        const results = document.getElementById('results');
+        const tournamentList = document.getElementById('tournamentList');
+        const resultsCount = document.getElementById('resultsCount');
+        const exportBtn = document.getElementById('exportBtn');
+
+        if (!results || !tournamentList || !resultsCount) return;
+
+        // Show results container
+        results.style.display = 'block';
+
+        // Update results count
+        resultsCount.textContent = `${this.filteredTournaments.length} tournament${this.filteredTournaments.length !== 1 ? 's' : ''} found`;
+        resultsCount.setAttribute('aria-live', 'polite');
+
+        // Show/hide export button
+        if (exportBtn) {
+            exportBtn.style.display = this.filteredTournaments.length > 0 ? 'inline-flex' : 'none';
+        }
+
+        // Handle empty state
+        if (this.filteredTournaments.length === 0) {
+            this.showEmptyState(tournamentList);
+            return;
+        }
+
+        // Render paginated tournaments
+        this.renderPaginatedTournaments(tournamentList);
+    }
+
+    /**
+     * Render paginated tournament list
+     */
+    private renderPaginatedTournaments(container: HTMLElement): void {
+        container.innerHTML = '';
+
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = Math.min(startIndex + this.itemsPerPage, this.filteredTournaments.length);
+        const pageTournaments = this.filteredTournaments.slice(startIndex, endIndex);
+
+        pageTournaments.forEach(tournament => {
+            const card = this.createTournamentCard(tournament);
+            container.appendChild(card);
+        });
+
+        // Render pagination if needed
+        if (this.filteredTournaments.length > this.itemsPerPage) {
+            this.renderPagination(container);
+        }
+    }
+
+    /**
+     * Create tournament card element
+     */
+    private createTournamentCard(tournament: Tournament): HTMLElement {
+        const card = document.createElement('div');
+        card.className = 'tournament-card';
+
+        const dateStr = tournament.date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+
+        card.innerHTML = `
+            <div class="tournament-header">
+                <h3 class="tournament-name">${this.escapeHTML(tournament.name)}</h3>
+                <span class="tournament-date">${dateStr}</span>
+            </div>
+            <div class="tournament-location">${this.escapeHTML(tournament.location)}</div>
+            <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
+            <p class="tournament-description">${this.escapeHTML(tournament.description)}</p>
+            <div class="tournament-actions">
+                <a href="${tournament.url}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="tournament-link"
+                   aria-label="View details for ${this.escapeHTML(tournament.name)}">
+                    View Tournament
+                </a>
+                <button class="calendar-export-btn"
+                        data-tournament-index="${this.filteredTournaments.indexOf(tournament)}"
+                        aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
+                    📅 Add to Calendar
+                </button>
+            </div>
+        `;
+
+        return card;
+    }
+
+    /**
+     * Render pagination controls
+     */
+    private renderPagination(container: HTMLElement): void {
+        const totalPages = Math.ceil(this.filteredTournaments.length / this.itemsPerPage);
+
+        const paginationDiv = document.createElement('div');
+        paginationDiv.className = 'pagination-container';
+
+        // Pagination info
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage + 1;
+        const endIndex = Math.min(this.currentPage * this.itemsPerPage, this.filteredTournaments.length);
+
+        paginationDiv.innerHTML = `
+            <div class="pagination-info">
+                Showing ${startIndex}-${endIndex} of ${this.filteredTournaments.length} tournaments
+            </div>
+            <div class="pagination-controls" role="navigation" aria-label="Tournament pagination">
+                <button class="pagination-btn"
+                        data-page="prev"
+                        ${this.currentPage === 1 ? 'disabled' : ''}
+                        aria-label="Previous page">
+                    ← Previous
+                </button>
+                ${this.generatePageButtons(totalPages)}
+                <button class="pagination-btn"
+                        data-page="next"
+                        ${this.currentPage === totalPages ? 'disabled' : ''}
+                        aria-label="Next page">
+                    Next →
+                </button>
+            </div>
+        `;
+
+        container.appendChild(paginationDiv);
+
+        // Add event listeners
+        this.attachPaginationListeners(paginationDiv, totalPages);
+    }
+
+    /**
+     * Generate page number buttons
+     */
+    private generatePageButtons(totalPages: number): string {
+        const buttons: string[] = [];
+        const maxButtons = 7;
+
+        if (totalPages <= maxButtons) {
+            // Show all pages
+            for (let i = 1; i <= totalPages; i++) {
+                buttons.push(this.createPageButton(i));
+            }
+        } else {
+            // Show first, last, current, and nearby pages
+            buttons.push(this.createPageButton(1));
+
+            if (this.currentPage > 3) {
+                buttons.push('<span class="pagination-ellipsis">...</span>');
+            }
+
+            const start = Math.max(2, this.currentPage - 1);
+            const end = Math.min(totalPages - 1, this.currentPage + 1);
+
+            for (let i = start; i <= end; i++) {
+                buttons.push(this.createPageButton(i));
+            }
+
+            if (this.currentPage < totalPages - 2) {
+                buttons.push('<span class="pagination-ellipsis">...</span>');
+            }
+
+            buttons.push(this.createPageButton(totalPages));
+        }
+
+        return buttons.join('');
+    }
+
+    /**
+     * Create page button HTML
+     */
+    private createPageButton(page: number): string {
+        const isActive = page === this.currentPage;
+        return `
+            <button class="pagination-btn ${isActive ? 'active' : ''}"
+                    data-page="${page}"
+                    ${isActive ? 'aria-current="page"' : ''}
+                    aria-label="Page ${page}">
+                ${page}
+            </button>
+        `;
+    }
+
+    /**
+     * Attach pagination event listeners
+     */
+    private attachPaginationListeners(container: HTMLElement, totalPages: number): void {
+        const buttons = container.querySelectorAll('.pagination-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.target as HTMLButtonElement;
+                const page = target.getAttribute('data-page');
+
+                if (page === 'prev' && this.currentPage > 1) {
+                    this.currentPage--;
+                    this.renderResults();
+                } else if (page === 'next' && this.currentPage < totalPages) {
+                    this.currentPage++;
+                    this.renderResults();
+                } else if (page && !isNaN(parseInt(page))) {
+                    this.currentPage = parseInt(page);
+                    this.renderResults();
+                }
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    }
+
+    /**
+     * Show empty state
+     */
+    private showEmptyState(container: HTMLElement): void {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h3 class="empty-state-title">No Tournaments Found</h3>
+                <p class="empty-state-message">
+                    We couldn't find any tournaments matching your current filters.
+                </p>
+                <div class="empty-state-suggestions">
+                    <h4>Try adjusting your filters:</h4>
+                    <ul>
+                        <li>Expand the date range</li>
+                        <li>Remove some filter criteria</li>
+                        <li>Try a different country or location</li>
+                        <li>Include more tournament categories</li>
+                    </ul>
+                </div>
+                <div class="empty-state-actions">
+                    <button class="reset-filters-btn" id="resetFiltersBtn">
+                        🔄 Reset All Filters
+                    </button>
+                </div>
+                <p class="empty-state-info">
+                    <small>Tournament data is updated daily from chess-results.com</small>
+                </p>
+            </div>
+        `;
+    }
+
+    /**
+     * Show error message
+     */
+    showError(message: string, type: 'error' | 'warning' | 'success' = 'error'): void {
+        const error = document.getElementById('error');
+        if (!error) return;
+
+        error.textContent = message;
+        error.className = `error-message ${type}-type`;
+        error.style.display = 'block';
+
+        // Auto-hide success messages
+        if (type === 'success') {
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    /**
+     * Hide error message
+     */
+    hideError(): void {
+        const error = document.getElementById('error');
+        if (error) {
+            error.style.display = 'none';
+        }
+    }
+
+    /**
+     * Update last updated timestamp
+     */
+    updateLastUpdatedTimestamp(): void {
+        const timestampEl = document.getElementById('lastUpdatedTime');
+        if (timestampEl) {
+            const now = new Date();
+            const formattedDate = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+            });
+            timestampEl.textContent = formattedDate;
+        }
+    }
+
+    /**
+     * Get filtered tournaments for export
+     */
+    getFilteredTournaments(): Tournament[] {
+        return this.filteredTournaments;
+    }
+
+    /**
+     * Get tournament by index (for calendar export from card button)
+     */
+    getTournamentByIndex(index: number): Tournament | null {
+        return this.filteredTournaments[index] || null;
+    }
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    private escapeHTML(text: string): string {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /**
+     * Toggle dark mode
+     */
+    toggleDarkMode(): void {
+        document.body.classList.toggle('dark-theme');
+        const isDark = document.body.classList.contains('dark-theme');
+
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+    }
+
+    /**
+     * Set dark mode state
+     */
+    setDarkMode(enabled: boolean): void {
+        if (enabled) {
+            document.body.classList.add('dark-theme');
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.textContent = '☀️ Light Mode';
+                themeToggle.setAttribute('aria-label', 'Switch to light mode');
+            }
+        } else {
+            document.body.classList.remove('dark-theme');
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.textContent = '🌙 Dark Mode';
+                themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+            }
+        }
+    }
+}

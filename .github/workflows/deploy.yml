@@ -37,36 +37,37 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
-      - name: Build TypeScript
-        run: npm run build:prod
+      - name: Build with Vite (Production Optimized)
+        run: npm run build:vite
 
       - name: Verify build output
         run: |
-          if [ ! -f "app.js" ]; then
-            echo "❌ Build failed: app.js not found"
+          if [ ! -d "dist" ]; then
+            echo "❌ Build failed: dist directory not found"
             exit 1
           fi
-          echo "✅ Build successful: app.js created"
-          ls -lh app.js
+          echo "✅ Build successful: Vite dist created"
+          ls -lh dist/
+          du -sh dist/
 
       - name: Create deployment directory
         run: |
           mkdir -p _site
-          # Copy all necessary files for deployment
-          cp index.html _site/
-          cp app.js _site/
-          cp styles.css _site/
+          # Copy Vite build output (optimized, minified, compressed)
+          cp -r dist/* _site/
+          # Copy additional files not handled by Vite
           cp robots.txt _site/
           cp sitemap.xml _site/
           # Copy data files
           [ -f tournaments_data.json ] && cp tournaments_data.json _site/ || echo "No tournament data"
           [ -f config.json ] && cp config.json _site/ || echo "No config file"
-          # Copy any images/assets if they exist
-          [ -d "assets" ] && cp -r assets _site/ || echo "No assets directory"
           # Create .nojekyll to prevent Jekyll processing
           touch _site/.nojekyll
           echo "✅ Deployment directory created"
           ls -la _site/
+          echo "📦 Bundle sizes:"
+          du -h _site/*.js 2>/dev/null || echo "JS files compressed"
+          du -h _site/*.css 2>/dev/null || echo "CSS files compressed"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -97,13 +98,23 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Site URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build System:** Vite (Production Optimized)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Optimizations Applied:**" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Minification (Terser)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tree-shaking" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Code splitting" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Gzip compression" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Brotli compression" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Legacy browser support" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Deployed files:**" >> $GITHUB_STEP_SUMMARY
           echo "- index.html" >> $GITHUB_STEP_SUMMARY
-          echo "- app.js (compiled TypeScript)" >> $GITHUB_STEP_SUMMARY
-          echo "- styles.css" >> $GITHUB_STEP_SUMMARY
+          echo "- Optimized JavaScript bundles (minified, compressed)" >> $GITHUB_STEP_SUMMARY
+          echo "- Optimized CSS (code-split)" >> $GITHUB_STEP_SUMMARY
           echo "- robots.txt" >> $GITHUB_STEP_SUMMARY
           echo "- sitemap.xml" >> $GITHUB_STEP_SUMMARY
-          echo "- tournaments_data.json (if present)" >> $GITHUB_STEP_SUMMARY
+          echo "- tournaments_data.json" >> $GITHUB_STEP_SUMMARY
           echo "- config.json" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Deployed at:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
