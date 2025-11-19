@@ -21,10 +21,19 @@
     "test:meta": "python3 -m pytest tests/python/test_scraper_meta.py -v --override-ini='addopts='",
     "test:parity": "python3 -m pytest tests/python/test_frontend_backend_parity.py -v --override-ini='addopts='",
     "test:scraper": "python3 -m pytest tests/integration/test_scraper_optimization.py -v --override-ini='addopts='",
-    "test:all": "npm run test:js && npm run test:unit && npm run test:python && npm run test:integration",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:firefox": "playwright test --project=firefox",
+    "test:e2e:webkit": "playwright test --project=webkit",
+    "test:e2e:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
+    "test:all": "npm run test:js && npm run test:unit && npm run test:python && npm run test:integration && npm run test:e2e",
     "test:v3": "npm run test:phase2 && npm run test:calendar && npm run test:scraper",
     "test": "npm run test:all",
-    "pretest": "npm run build"
+    "pretest": "npm run build",
+    "playwright:install": "playwright install --with-deps"
   },
   "keywords": [
     "chess",
@@ -35,6 +44,8 @@
   "author": "MedTourney Project",
   "license": "MIT",
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@playwright/test": "^1.56.1",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.50.0",
