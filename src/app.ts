@@ -406,11 +406,13 @@ class TournamentFinder {
             return;
         }
 
-        // Show loading, hide results
+        // Show loading, prepare UI
         searchBtn.disabled = true;
         loading.style.display = 'block';
         error.style.display = 'none';
-        results.style.display = 'none';
+
+        // Show loading skeletons immediately for better UX
+        this.displayLoadingSkeletons();
 
         try {
             // Clear filter cache when fetching new data to prevent stale results
@@ -422,12 +424,16 @@ class TournamentFinder {
             // Apply filters
             const filtered = this.filterTournaments(tournaments);
 
-            // Display results
+            // Display results (this will replace skeletons)
             this.displayResults(filtered);
 
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
             console.error('Error fetching tournaments:', err);
+
+            // Hide skeletons on error
+            results.style.display = 'none';
+
             error.textContent = `Error: ${errorMessage}. The tool is using fallback data.`;
             error.style.display = 'block';
 
@@ -2199,6 +2205,53 @@ class TournamentFinder {
         });
 
         console.log('✓ Keyboard shortcuts initialized (Alt+S=Search, Alt+D=Dark Mode, Alt+E=Export, Esc=Clear)');
+    }
+
+    /**
+     * Display loading skeletons while fetching data
+     * Provides visual feedback during data loading
+     */
+    private displayLoadingSkeletons(): void {
+        const tournamentList = document.getElementById('tournamentList');
+        const results = document.getElementById('results');
+
+        if (!tournamentList || !results) return;
+
+        // Show results container
+        results.style.display = 'block';
+
+        // Clear existing content
+        tournamentList.innerHTML = '';
+
+        // Create 6 skeleton cards for visual loading feedback
+        for (let i = 0; i < 6; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.setAttribute('aria-hidden', 'true');
+            skeleton.setAttribute('data-skeleton', 'true'); // Mark as skeleton for easy removal
+
+            skeleton.innerHTML = `
+                <div class="skeleton-title"></div>
+                <div class="skeleton-location"></div>
+                <div class="skeleton-date"></div>
+                <div class="skeleton-category"></div>
+            `;
+
+            tournamentList.appendChild(skeleton);
+        }
+
+        // Update results count to show loading state
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+            resultsCount.textContent = 'Loading tournaments...';
+            resultsCount.setAttribute('aria-live', 'polite');
+        }
+
+        // Hide export button during loading
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.style.display = 'none';
+        }
     }
 
     /**

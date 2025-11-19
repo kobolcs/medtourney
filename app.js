@@ -229,7 +229,7 @@ class TournamentFinder {
         searchBtn.disabled = true;
         loading.style.display = 'block';
         error.style.display = 'none';
-        results.style.display = 'none';
+        this.displayLoadingSkeletons();
         try {
             this.filterCache.clear();
             const tournaments = await this.fetchTournaments();
@@ -239,6 +239,7 @@ class TournamentFinder {
         catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
             console.error('Error fetching tournaments:', err);
+            results.style.display = 'none';
             error.textContent = `Error: ${errorMessage}. The tool is using fallback data.`;
             error.style.display = 'block';
             const filtered = this.filterTournaments([]);
@@ -1527,6 +1528,36 @@ class TournamentFinder {
             }
         });
         console.log('✓ Keyboard shortcuts initialized (Alt+S=Search, Alt+D=Dark Mode, Alt+E=Export, Esc=Clear)');
+    }
+    displayLoadingSkeletons() {
+        const tournamentList = document.getElementById('tournamentList');
+        const results = document.getElementById('results');
+        if (!tournamentList || !results)
+            return;
+        results.style.display = 'block';
+        tournamentList.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.setAttribute('aria-hidden', 'true');
+            skeleton.setAttribute('data-skeleton', 'true');
+            skeleton.innerHTML = `
+                <div class="skeleton-title"></div>
+                <div class="skeleton-location"></div>
+                <div class="skeleton-date"></div>
+                <div class="skeleton-category"></div>
+            `;
+            tournamentList.appendChild(skeleton);
+        }
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+            resultsCount.textContent = 'Loading tournaments...';
+            resultsCount.setAttribute('aria-live', 'polite');
+        }
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.style.display = 'none';
+        }
     }
     updateLastUpdatedTimestamp() {
         const timestampEl = document.getElementById('lastUpdatedTime');
