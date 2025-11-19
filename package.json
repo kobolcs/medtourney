@@ -1,7 +1,7 @@
 {
   "name": "medtourney",
-  "version": "2.3.0",
-  "description": "Mediterranean Chess Tournament Finder",
+  "version": "3.0.0",
+  "description": "Advanced chess tournament search tool with modular service-oriented architecture, Vite bundler, 296+ tests, and production-ready optimizations",
   "main": "app.js",
   "scripts": {
     "dev": "vite",
@@ -53,7 +53,17 @@
     "chess",
     "tournaments",
     "mediterranean",
-    "typescript"
+    "typescript",
+    "vite",
+    "modular-architecture",
+    "service-oriented",
+    "playwright",
+    "testing",
+    "wcag",
+    "accessibility",
+    "performance",
+    "pwa-ready",
+    "chess-results"
   ],
   "author": "MedTourney Project",
   "license": "MIT",
