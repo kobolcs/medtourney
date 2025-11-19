@@ -20,8 +20,11 @@ Allow: /
 User-agent: Slurp
 Allow: /
 
-# Block access to scripts and data files from being indexed separately
+# Block access to development and test directories
 User-agent: *
-Disallow: /app.js
-Disallow: /tournaments_data.json
+Disallow: /tests/
+Disallow: /node_modules/
+Disallow: /dist/
+Disallow: /.git/
+Disallow: /.github/
 Allow: /

@@ -53,6 +53,13 @@ yarn-error.log*
 # package-lock.json now tracked for reproducible builds
 # Note: app.js and app.js.map are intentionally tracked (TypeScript output for GitHub Pages)
 
+# Build artifacts
+*.js.map
+main.js
+types.js
+/services/
+.lighthouseci/
+
 # Linting and type checking
 .mypy_cache/
 .ruff_cache/
