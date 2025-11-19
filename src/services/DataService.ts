@@ -11,6 +11,7 @@
 import { Tournament, AppConfig } from '../types';
 import { CacheManager } from './CacheManager';
 import { Logger } from '../utils/Logger';
+import { safeValidateTournaments, safeValidateAppConfig } from '../utils/validators';
 
 export class DataService {
     private readonly githubRepo = 'kobolcs/medtourney';
@@ -57,9 +58,21 @@ export class DataService {
             });
 
             if (response.ok) {
-                const rawTournaments = await response.json() as Array<Omit<Tournament, 'date'> & { date: string }>;
-                if (Array.isArray(rawTournaments) && rawTournaments.length > 0) {
-                    this.logger.info('Loaded tournaments from local file', {
+                const rawData = await response.json();
+
+                // Validate data structure with Zod
+                const validation = safeValidateTournaments(rawData);
+                if (!validation.success) {
+                    this.logger.warn('Tournament data validation failed', {
+                        errors: validation.error?.issues,
+                        source: 'local file'
+                    });
+                    throw new Error(`Invalid tournament data structure: ${validation.error?.message}`);
+                }
+
+                const rawTournaments = validation.data!;
+                if (rawTournaments.length > 0) {
+                    this.logger.info('Loaded and validated tournaments from local file', {
                         count: rawTournaments.length,
                         loadTime: Date.now() - fetchStartTime
                     });
@@ -91,9 +104,21 @@ export class DataService {
             });
 
             if (response.ok) {
-                const rawTournaments = await response.json() as Array<Omit<Tournament, 'date'> & { date: string }>;
-                if (Array.isArray(rawTournaments) && rawTournaments.length > 0) {
-                    this.logger.info('Loaded tournaments from GitHub Pages', {
+                const rawData = await response.json();
+
+                // Validate data structure
+                const validation = safeValidateTournaments(rawData);
+                if (!validation.success) {
+                    this.logger.warn('Tournament data validation failed', {
+                        errors: validation.error?.issues,
+                        source: 'GitHub Pages'
+                    });
+                    throw new Error(`Invalid tournament data structure: ${validation.error?.message}`);
+                }
+
+                const rawTournaments = validation.data!;
+                if (rawTournaments.length > 0) {
+                    this.logger.info('Loaded and validated tournaments from GitHub Pages', {
                         count: rawTournaments.length,
                         loadTime: Date.now() - fetchStartTime
                     });
@@ -123,9 +148,21 @@ export class DataService {
             });
 
             if (response.ok) {
-                const rawTournaments = await response.json() as Array<Omit<Tournament, 'date'> & { date: string }>;
-                if (Array.isArray(rawTournaments) && rawTournaments.length > 0) {
-                    this.logger.info('Loaded tournaments from GitHub API', {
+                const rawData = await response.json();
+
+                // Validate data structure
+                const validation = safeValidateTournaments(rawData);
+                if (!validation.success) {
+                    this.logger.warn('Tournament data validation failed', {
+                        errors: validation.error?.issues,
+                        source: 'GitHub API'
+                    });
+                    throw new Error(`Invalid tournament data structure: ${validation.error?.message}`);
+                }
+
+                const rawTournaments = validation.data!;
+                if (rawTournaments.length > 0) {
+                    this.logger.info('Loaded and validated tournaments from GitHub API', {
                         count: rawTournaments.length,
                         loadTime: Date.now() - fetchStartTime
                     });
@@ -176,12 +213,23 @@ export class DataService {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            const config = await response.json() as AppConfig;
+            const rawData = await response.json();
+
+            // Validate config structure
+            const validation = safeValidateAppConfig(rawData);
+            if (!validation.success) {
+                this.logger.warn('Config data validation failed, using defaults', {
+                    errors: validation.error?.issues
+                });
+                return this.getDefaultConfig();
+            }
+
+            const config = validation.data!;
 
             // Save to cache
             this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.CONFIG, config);
 
-            this.logger.info('Loaded config from file', {
+            this.logger.info('Loaded and validated config from file', {
                 countriesCount: config.europeanCountries.length,
                 locationsCount: config.mediterraneanLocations.length
             });
