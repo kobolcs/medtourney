@@ -9,22 +9,14 @@
  * - Country filtering
  */
 
-import { Tournament, FilterState, AppConfig } from '../types';
+import { Tournament, FilterState } from '../types';
 
 export class FilterService {
     private filterCache: Map<string, Tournament[]>;
     private readonly MAX_FILTER_CACHE_SIZE = 50;
-    private config: AppConfig | null = null;
 
     constructor() {
         this.filterCache = new Map();
-    }
-
-    /**
-     * Set application configuration
-     */
-    setConfig(config: AppConfig): void {
-        this.config = config;
     }
 
     /**
@@ -37,7 +29,11 @@ export class FilterService {
     /**
      * Filter tournaments based on filter state
      */
-    filterTournaments(tournaments: Tournament[], filterState: FilterState): Tournament[] {
+    filterTournaments(
+        tournaments: Tournament[],
+        filterState: FilterState,
+        mediterraneanLocations: Set<string>
+    ): Tournament[] {
         // Generate cache key from filter state
         const cacheKey = this.generateCacheKey(filterState);
 
@@ -81,7 +77,7 @@ export class FilterService {
             }
 
             // Mediterranean filter
-            if (filterState.mediterraneanOnly && !this.isMediterraneanLocation(locationLower)) {
+            if (filterState.mediterraneanOnly && !this.isMediterraneanLocation(locationLower, mediterraneanLocations)) {
                 return false;
             }
 
@@ -159,11 +155,13 @@ export class FilterService {
         return youthPattern.test(name) || youthPattern.test(category);
     }
 
-    private isMediterraneanLocation(location: string): boolean {
-        if (!this.config) return false;
-        return this.config.mediterraneanLocations.some(place =>
-            location.includes(place.toLowerCase())
-        );
+    private isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
+        for (const place of mediterraneanLocations) {
+            if (location.includes(place.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private isSeniorCategory(category: string, name: string): boolean {
