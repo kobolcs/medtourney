@@ -3,8 +3,10 @@ import { FilterService } from './services/FilterService';
 import { DataService } from './services/DataService';
 import { ExportService } from './services/ExportService';
 import { UIManager } from './services/UIManager';
+import { Logger } from './utils/Logger';
 class TournamentFinder {
     constructor() {
+        this.logger = Logger.createScoped('TournamentFinder');
         this.cacheManager = new CacheManager();
         this.filterService = new FilterService();
         this.dataService = new DataService(this.cacheManager);
@@ -36,7 +38,7 @@ class TournamentFinder {
             this.displayLastUpdated();
         }
         catch (error) {
-            console.error('Initialization error:', error);
+            this.logger.error('Application initialization failed', error);
             this.uiManager.showError('Failed to initialize application. Please refresh the page.');
         }
     }
@@ -77,10 +79,13 @@ class TournamentFinder {
             for (const [code, data] of Object.entries(config.countryCodes)) {
                 this.europeanCountries[code] = data.keywords;
             }
-            console.log('✓ Configuration loaded successfully');
+            this.logger.info('Configuration loaded successfully', {
+                mediterraneanLocationsCount: config.mediterraneanLocations.length,
+                countryCodesCount: Object.keys(config.countryCodes).length
+            });
         }
         catch (error) {
-            console.error('Failed to load config:', error);
+            this.logger.error('Failed to load configuration', error);
             this.uiManager.showError('Failed to load configuration. Some filters may not work correctly.');
         }
     }
@@ -214,7 +219,10 @@ class TournamentFinder {
             this.attachCalendarExportListeners();
         }
         catch (error) {
-            console.error('Search failed:', error);
+            this.logger.error('Tournament search failed', error, {
+                filterState: this.getFilterState(),
+                currentSort: this.currentSort
+            });
             this.uiManager.showError(error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.');
         }
     }
@@ -245,9 +253,14 @@ class TournamentFinder {
         }
         try {
             this.exportService.exportToCSV(this.filteredTournaments);
+            this.logger.info('CSV export successful', {
+                tournamentCount: this.filteredTournaments.length
+            });
         }
         catch (error) {
-            console.error('CSV export failed:', error);
+            this.logger.error('CSV export failed', error, {
+                tournamentCount: this.filteredTournaments.length
+            });
             this.uiManager.showError('Failed to export CSV. Please try again.');
         }
     }
@@ -319,7 +332,9 @@ class TournamentFinder {
                     }
                 }
                 catch (e) {
-                    console.warn('Failed to parse cache timestamp:', e);
+                    this.logger.warn('Failed to parse cache timestamp', {
+                        error: e instanceof Error ? e.message : 'Unknown error'
+                    });
                 }
             }
         }

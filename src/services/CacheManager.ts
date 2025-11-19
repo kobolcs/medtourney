@@ -7,6 +7,9 @@
  * - User preferences (theme, filters)
  */
 
+import packageJson from '../../package.json';
+import { Logger } from '../utils/Logger';
+
 interface CachedData<T> {
     data: T;
     timestamp: number;
@@ -14,8 +17,10 @@ interface CachedData<T> {
 }
 
 export class CacheManager {
-    private readonly CACHE_VERSION = '2.3.0';
+    // Automatically sync with package.json version
+    private readonly CACHE_VERSION = packageJson.version;
     private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+    private logger = Logger.createScoped('CacheManager');
 
     readonly CACHE_KEYS = {
         TOURNAMENTS: 'medtourney_tournaments',
@@ -36,8 +41,12 @@ export class CacheManager {
                 version: this.CACHE_VERSION
             };
             localStorage.setItem(key, JSON.stringify(cachedData));
+            this.logger.debug('Saved to cache', { key, version: this.CACHE_VERSION });
         } catch (err) {
-            console.warn(`Failed to save to cache (${key}):`, err);
+            this.logger.warn('Failed to save to cache', {
+                key,
+                error: err instanceof Error ? err.message : 'Unknown error'
+            });
         }
     }
 
@@ -53,7 +62,11 @@ export class CacheManager {
 
             // Version check
             if (cachedData.version !== this.CACHE_VERSION) {
-                console.log(`Cache version mismatch for ${key}. Clearing...`);
+                this.logger.info('Cache version mismatch, clearing cache', {
+                    key,
+                    cachedVersion: cachedData.version,
+                    currentVersion: this.CACHE_VERSION
+                });
                 localStorage.removeItem(key);
                 return null;
             }
@@ -61,14 +74,22 @@ export class CacheManager {
             // TTL check
             const age = Date.now() - cachedData.timestamp;
             if (age > this.CACHE_DURATION) {
-                console.log(`Cache expired for ${key} (age: ${Math.round(age / 1000 / 60)} minutes)`);
+                this.logger.info('Cache expired, clearing cache', {
+                    key,
+                    ageMinutes: Math.round(age / 1000 / 60),
+                    maxAgeMinutes: Math.round(this.CACHE_DURATION / 1000 / 60)
+                });
                 localStorage.removeItem(key);
                 return null;
             }
 
+            this.logger.debug('Loaded from cache', { key, ageMinutes: Math.round(age / 1000 / 60) });
             return cachedData.data;
         } catch (err) {
-            console.warn(`Failed to load from cache (${key}):`, err);
+            this.logger.warn('Failed to load from cache', {
+                key,
+                error: err instanceof Error ? err.message : 'Unknown error'
+            });
             return null;
         }
     }
@@ -79,8 +100,12 @@ export class CacheManager {
     clearCache(key: string): void {
         try {
             localStorage.removeItem(key);
+            this.logger.debug('Cleared cache entry', { key });
         } catch (err) {
-            console.warn(`Failed to clear cache (${key}):`, err);
+            this.logger.warn('Failed to clear cache', {
+                key,
+                error: err instanceof Error ? err.message : 'Unknown error'
+            });
         }
     }
 
@@ -89,6 +114,7 @@ export class CacheManager {
      */
     clearAllCaches(): void {
         Object.values(this.CACHE_KEYS).forEach(key => this.clearCache(key));
+        this.logger.info('Cleared all caches');
     }
 
     /**
@@ -132,5 +158,12 @@ export class CacheManager {
      */
     saveFilterPreferences(preferences: Record<string, boolean>): void {
         this.saveToCache(this.CACHE_KEYS.FILTER_PREFERENCES, preferences);
+    }
+
+    /**
+     * Get current cache version (for debugging)
+     */
+    getCacheVersion(): string {
+        return this.CACHE_VERSION;
     }
 }

@@ -4,45 +4,52 @@
  * Provides:
  * - Tournament data loading from multiple sources
  * - Configuration loading
- * - CORS proxy fallback strategy
- * - Error handling and retries
+ * - GitHub API integration (no CORS proxies needed)
+ * - Error handling with detailed context
  */
 
 import { Tournament, AppConfig } from '../types';
 import { CacheManager } from './CacheManager';
+import { Logger } from '../utils/Logger';
+import { safeValidateTournaments, safeValidateAppConfig } from '../utils/validators';
 
 export class DataService {
-    private readonly corsProxies: string[];
+    private readonly githubRepo = 'kobolcs/medtourney';
+    private readonly githubBranch = 'main';
     private cacheManager: CacheManager;
+    private logger = Logger.createScoped('DataService');
 
     constructor(cacheManager: CacheManager) {
         this.cacheManager = cacheManager;
-        this.corsProxies = [
-            'https://api.allorigins.win/raw?url=',
-            'https://corsproxy.io/?',
-            '' // Direct fetch (may fail due to CORS)
-        ];
     }
 
     /**
      * Fetch tournaments from various sources with fallback strategy
+     * Order: Cache → Local file → GitHub Pages → GitHub API
      */
     async fetchTournaments(): Promise<Tournament[]> {
-        // Strategy 0: Try to load from cache first
+        const fetchStartTime = Date.now();
+
+        // Strategy 1: Try to load from cache first
         const cachedTournaments = this.cacheManager.loadFromCache<Array<Omit<Tournament, 'date'> & { date: string }>>(
             this.cacheManager.CACHE_KEYS.TOURNAMENTS
         );
         if (cachedTournaments && cachedTournaments.length > 0) {
-            console.log(`✓ Loaded ${cachedTournaments.length} tournaments from cache`);
+            this.logger.info('Loaded tournaments from cache', {
+                count: cachedTournaments.length,
+                loadTime: Date.now() - fetchStartTime
+            });
             return cachedTournaments.map(t => ({
                 ...t,
                 date: new Date(t.date)
             }));
         }
 
-        // Strategy 1: Try to load tournaments_data.json from repository
+        // Strategy 2: Try to load tournaments_data.json from same origin (GitHub Pages)
         try {
             const dataUrl = 'tournaments_data.json';
+            this.logger.debug('Fetching from local file', { url: dataUrl });
+
             const response = await fetch(dataUrl, {
                 method: 'GET',
                 headers: {
@@ -51,9 +58,24 @@ export class DataService {
             });
 
             if (response.ok) {
-                const rawTournaments = await response.json() as Array<Omit<Tournament, 'date'> & { date: string }>;
-                if (Array.isArray(rawTournaments) && rawTournaments.length > 0) {
-                    console.log(`✓ Loaded ${rawTournaments.length} tournaments from local data file`);
+                const rawData = await response.json();
+
+                // Validate data structure with Zod
+                const validation = safeValidateTournaments(rawData);
+                if (!validation.success) {
+                    this.logger.warn('Tournament data validation failed', {
+                        errors: validation.error?.issues,
+                        source: 'local file'
+                    });
+                    throw new Error(`Invalid tournament data structure: ${validation.error?.message}`);
+                }
+
+                const rawTournaments = validation.data!;
+                if (rawTournaments.length > 0) {
+                    this.logger.info('Loaded and validated tournaments from local file', {
+                        count: rawTournaments.length,
+                        loadTime: Date.now() - fetchStartTime
+                    });
                     // Save to cache
                     this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.TOURNAMENTS, rawTournaments);
                     // Convert date strings to Date objects
@@ -64,44 +86,112 @@ export class DataService {
                 }
             }
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-            console.warn('Could not load local data file:', errorMessage);
+            this.logger.warn('Could not load local data file', {
+                error: err instanceof Error ? err.message : 'Unknown error'
+            });
         }
 
-        // Strategy 2: Try CORS proxies with fallback
-        for (const proxy of this.corsProxies) {
-            try {
-                const url = `${proxy}https://raw.githubusercontent.com/kobolcs/medtourney/main/tournaments_data.json`;
-                console.log(`Trying to fetch from GitHub via proxy: ${proxy || 'direct'}`);
+        // Strategy 3: Try GitHub Pages raw URL (usually same origin, no CORS)
+        try {
+            const pagesUrl = `https://${this.githubRepo.split('/')[0]}.github.io/${this.githubRepo.split('/')[1]}/tournaments_data.json`;
+            this.logger.debug('Fetching from GitHub Pages', { url: pagesUrl });
 
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const rawTournaments = await response.json() as Array<Omit<Tournament, 'date'> & { date: string }>;
-                    if (Array.isArray(rawTournaments) && rawTournaments.length > 0) {
-                        console.log(`✓ Loaded ${rawTournaments.length} tournaments from GitHub`);
-                        // Save to cache
-                        this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.TOURNAMENTS, rawTournaments);
-                        // Convert date strings to Date objects
-                        return rawTournaments.map(t => ({
-                            ...t,
-                            date: new Date(t.date)
-                        }));
-                    }
+            const response = await fetch(pagesUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
                 }
-            } catch (err) {
-                console.warn(`Failed to fetch via proxy ${proxy}:`, err);
-                continue; // Try next proxy
+            });
+
+            if (response.ok) {
+                const rawData = await response.json();
+
+                // Validate data structure
+                const validation = safeValidateTournaments(rawData);
+                if (!validation.success) {
+                    this.logger.warn('Tournament data validation failed', {
+                        errors: validation.error?.issues,
+                        source: 'GitHub Pages'
+                    });
+                    throw new Error(`Invalid tournament data structure: ${validation.error?.message}`);
+                }
+
+                const rawTournaments = validation.data!;
+                if (rawTournaments.length > 0) {
+                    this.logger.info('Loaded and validated tournaments from GitHub Pages', {
+                        count: rawTournaments.length,
+                        loadTime: Date.now() - fetchStartTime
+                    });
+                    this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.TOURNAMENTS, rawTournaments);
+                    return rawTournaments.map(t => ({
+                        ...t,
+                        date: new Date(t.date)
+                    }));
+                }
             }
+        } catch (err) {
+            this.logger.warn('Could not load from GitHub Pages', {
+                error: err instanceof Error ? err.message : 'Unknown error'
+            });
+        }
+
+        // Strategy 4: Try GitHub API directly (no CORS proxy needed)
+        try {
+            const apiUrl = `https://api.github.com/repos/${this.githubRepo}/contents/tournaments_data.json?ref=${this.githubBranch}`;
+            this.logger.debug('Fetching from GitHub API', { url: apiUrl });
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.github.v3.raw' // Get raw content, not base64
+                }
+            });
+
+            if (response.ok) {
+                const rawData = await response.json();
+
+                // Validate data structure
+                const validation = safeValidateTournaments(rawData);
+                if (!validation.success) {
+                    this.logger.warn('Tournament data validation failed', {
+                        errors: validation.error?.issues,
+                        source: 'GitHub API'
+                    });
+                    throw new Error(`Invalid tournament data structure: ${validation.error?.message}`);
+                }
+
+                const rawTournaments = validation.data!;
+                if (rawTournaments.length > 0) {
+                    this.logger.info('Loaded and validated tournaments from GitHub API', {
+                        count: rawTournaments.length,
+                        loadTime: Date.now() - fetchStartTime
+                    });
+                    this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.TOURNAMENTS, rawTournaments);
+                    return rawTournaments.map(t => ({
+                        ...t,
+                        date: new Date(t.date)
+                    }));
+                }
+            } else {
+                this.logger.error('GitHub API returned error status', undefined, {
+                    status: response.status,
+                    statusText: response.statusText
+                });
+            }
+        } catch (err) {
+            this.logger.error('Failed to fetch from GitHub API', err, {
+                repo: this.githubRepo,
+                branch: this.githubBranch
+            });
         }
 
         // All strategies failed
-        throw new Error('Failed to load tournament data from all sources');
+        const error = new Error('Failed to load tournament data from all sources (cache, local file, GitHub Pages, GitHub API)');
+        this.logger.error('All fetch strategies failed', error, {
+            attemptedSources: ['cache', 'local', 'github-pages', 'github-api'],
+            totalTime: Date.now() - fetchStartTime
+        });
+        throw error;
     }
 
     /**
@@ -113,25 +203,41 @@ export class DataService {
             this.cacheManager.CACHE_KEYS.CONFIG
         );
         if (cachedConfig) {
-            console.log('✓ Loaded config from cache');
+            this.logger.info('Loaded config from cache');
             return cachedConfig;
         }
 
         try {
             const response = await fetch('config.json');
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            const config = await response.json() as AppConfig;
+            const rawData = await response.json();
+
+            // Validate config structure
+            const validation = safeValidateAppConfig(rawData);
+            if (!validation.success) {
+                this.logger.warn('Config data validation failed, using defaults', {
+                    errors: validation.error?.issues
+                });
+                return this.getDefaultConfig();
+            }
+
+            const config = validation.data!;
 
             // Save to cache
             this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.CONFIG, config);
 
-            console.log('✓ Loaded config from file');
+            this.logger.info('Loaded and validated config from file', {
+                countriesCount: config.europeanCountries.length,
+                locationsCount: config.mediterraneanLocations.length
+            });
             return config;
         } catch (err) {
-            console.error('Failed to load config.json:', err);
+            this.logger.warn('Failed to load config.json, using defaults', {
+                error: err instanceof Error ? err.message : 'Unknown error'
+            });
             // Return default config
             return this.getDefaultConfig();
         }
@@ -204,7 +310,10 @@ export class DataService {
         }
 
         // Default to today if parsing fails
-        console.warn(`Failed to parse date: ${dateStr}`);
+        this.logger.warn('Failed to parse date, using current date', {
+            dateString: dateStr,
+            defaultDate: new Date().toISOString()
+        });
         return new Date();
     }
 }
