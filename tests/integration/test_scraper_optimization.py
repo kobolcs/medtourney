@@ -10,10 +10,10 @@ Tests:
 Run with: pytest tests/integration/test_scraper_optimization.py -v
 """
 
-import os
 import re
-from datetime import datetime, timedelta
 from pathlib import Path
+
+import pytest
 
 
 class TestScraperOptimization:
@@ -166,7 +166,7 @@ class TestScraperOptimization:
         for months in test_ranges:
             expected_days = months * 30
             assert expected_days > 0, f"Range of {months} months should be valid"
-            assert expected_days <= 365, f"Range should be reasonable (<= 1 year)"
+            assert expected_days <= 365, "Range should be reasonable (<= 1 year)"
 
 
 class TestScraperIntegration:
@@ -186,7 +186,7 @@ class TestScraperIntegration:
             processor = TournamentProcessor()
             assert processor is not None, "TournamentProcessor should be importable"
         except ImportError as e:
-            assert False, f"Failed to import TournamentProcessor: {e}"
+            pytest.fail(f"Failed to import TournamentProcessor: {e}")
 
     def test_config_json_exists(self):
         """Test that config.json exists for tournament processor"""
@@ -195,10 +195,10 @@ class TestScraperIntegration:
 
     def test_downloads_directory_creation(self):
         """Test that downloads directory can be created"""
-        downloads_dir = Path(__file__).parent.parent.parent / "downloads"
-
-        # This is checked in the scraper
-        assert True, "Downloads directory creation is handled by scraper"
+        # Downloads directory creation is handled by the scraper itself
+        # This test validates that the path is correct
+        downloads_path = Path(__file__).parent.parent.parent / "downloads"
+        assert downloads_path.parent.exists(), "Parent directory should exist for downloads creation"
 
 
 if __name__ == "__main__":

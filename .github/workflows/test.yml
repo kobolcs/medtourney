@@ -274,10 +274,72 @@ jobs:
       env:
         CI: true
 
+  v3-tests:
+    name: V3 Feature Tests (Filter Persistence, Calendar, Scraper)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [typescript-build]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install Node dependencies
+      run: npm ci || npm install
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Build TypeScript
+      run: npm run build
+
+    - name: Run Phase 2 Feature Tests (JavaScript)
+      run: |
+        node tests/javascript/test_phase2_features.spec.js
+      env:
+        CI: true
+
+    - name: Run Calendar Export Tests (JavaScript)
+      run: |
+        node tests/unit/test_calendar_export.spec.js
+      env:
+        CI: true
+
+    - name: Run Scraper Optimization Tests (Python)
+      run: |
+        pytest tests/integration/test_scraper_optimization.py -v --tb=short
+      env:
+        CI: true
+
+    - name: Upload v3 test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: v3-test-results
+        path: |
+          tests/javascript/
+          tests/unit/
+          tests/integration/
+        retention-days: 7
+
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [type-check, lint, typescript-build, unit-tests, javascript-tests, meta-tests, parity-tests]
+    needs: [type-check, lint, typescript-build, unit-tests, javascript-tests, meta-tests, parity-tests, v3-tests]
     if: always()
 
     steps:
@@ -290,9 +352,10 @@ jobs:
         echo "JavaScript tests: ${{ needs.javascript-tests.result }}"
         echo "Meta-tests: ${{ needs.meta-tests.result }}"
         echo "Parity tests: ${{ needs.parity-tests.result }}"
+        echo "V3 tests: ${{ needs.v3-tests.result }}"
         echo "Integration tests: ${{ needs.integration-tests.result }}"
 
-        # Check required tests (type-check, lint, ts-build, unit, javascript, meta, parity)
+        # Check required tests (type-check, lint, ts-build, unit, javascript, meta, parity, v3)
         if [ "${{ needs.type-check.result }}" != "success" ]; then
           echo "❌ Type checking failed!"
           exit 1
@@ -328,13 +391,19 @@ jobs:
           exit 1
         fi
 
+        if [ "${{ needs.v3-tests.result }}" != "success" ]; then
+          echo "❌ V3 tests failed!"
+          exit 1
+        fi
+
         echo "✅ All required tests passed!"
         echo "📊 Test Summary:"
         echo "  ✅ Type checking (mypy)"
         echo "  ✅ Linting (ruff)"
         echo "  ✅ TypeScript build"
-        echo "  ✅ 47 backend unit tests"
-        echo "  ✅ 18 JavaScript tests"
+        echo "  ✅ 47 backend unit tests (v2.0)"
+        echo "  ✅ 18 JavaScript tests (v2.0)"
         echo "  ✅ 12 meta-tests"
         echo "  ✅ 8 parity tests"
-        echo "  Total: 85 tests + type safety"
+        echo "  ✅ 41 v3 tests (filter persistence, calendar, scraper)"
+        echo "  Total: 126 tests + type safety"

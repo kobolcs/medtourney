@@ -150,6 +150,82 @@ class TournamentProcessor:
             "malta", "valletta", "sliema", "limassol", "larnaca", "cyprus"
         }
 
+    def _extract_row_data(
+        self,
+        row: Tuple[Any, ...],
+        name_col: Optional[int],
+        location_col: Optional[int],
+        fed_col: Optional[int],
+        date_from_col: Optional[int],
+        time_control_col: Optional[int],
+        db_key_col: Optional[int],
+        event_id_col: Optional[int],
+        row_idx: int
+    ) -> Dict[str, Any]:
+        """Extract data from Excel row."""
+        return {
+            "name": (str(row[name_col]).strip()
+                    if name_col is not None and row[name_col]
+                    else f"Tournament {row_idx}"),
+            "city": (str(row[location_col]).strip()
+                    if location_col is not None and row[location_col]
+                    else ""),
+            "fed": (str(row[fed_col]).strip().upper()
+                   if fed_col is not None and row[fed_col]
+                   else ""),
+            "date_value": row[date_from_col] if date_from_col is not None else None,
+            "time_control": (str(row[time_control_col]).strip()
+                           if time_control_col is not None and row[time_control_col]
+                           else ""),
+            "db_key": row[db_key_col] if db_key_col is not None else None,
+            "event_id": row[event_id_col] if event_id_col is not None else None,
+        }
+
+    def _process_location(self, city: str, fed: str) -> str:
+        """Process city and federation into location string."""
+        # Clean up city name (remove country name if already in city field)
+        if city and "," in city:
+            city = city.split(",")[0].strip()
+
+        # Combine into "City, COUNTRY" format
+        if city and fed:
+            return f"{city}, {fed}"
+        if fed:
+            return fed
+        if city:
+            return city
+        return "Unknown"
+
+    def _determine_category(self, name: str, location: str, time_control: str) -> str:
+        """Determine tournament category from time control and name."""
+        category_parts: List[str] = []
+
+        # Determine time control category from the time control field
+        if time_control:
+            tc_lower = time_control.lower()
+            if "blitz" in tc_lower or ("5" in tc_lower and ("min" in tc_lower or "'" in tc_lower)):
+                category_parts.append("Blitz")
+            elif "rapid" in tc_lower or ("15" in tc_lower or "25" in tc_lower):
+                category_parts.append("Rapid")
+            else:
+                category_parts.append("Classical")
+
+        # Extract other categories from name
+        name_category: str = self._extract_category(name + " " + location)
+        for cat in name_category.split(", "):
+            if cat not in category_parts:
+                category_parts.append(cat)
+
+        return ", ".join(category_parts) if category_parts else "Open"
+
+    def _build_tournament_url(self, db_key: Any, event_id: Any) -> str:
+        """Build tournament URL from DB-Key or EventID."""
+        if db_key and str(db_key).strip() and str(db_key).strip() != "0":
+            return f"https://chess-results.com/tnr{db_key}.aspx?lan=1"
+        if event_id and str(event_id).strip() and str(event_id).strip() != "0":
+            return f"https://chess-results.com/tnr{event_id}.aspx?lan=1"
+        return "https://chess-results.com"
+
     @keyword("Load And Filter Tournaments")  # type: ignore[misc]
     def load_and_filter_tournaments(self, excel_file: str) -> List[Dict[str, Any]]:
         """Load tournaments from Excel file and filter for European tournaments.
@@ -200,9 +276,9 @@ class TournamentProcessor:
         name_col: Optional[int] = self._find_column(headers, ["tournament", "name", "turnier"])
         location_col: Optional[int] = self._find_column(headers, ["location", "place", "ort"])
         date_from_col: Optional[int] = self._find_column(headers, ["from", "start", "datum"])
-        date_to_col: Optional[int] = self._find_column(headers, ["to", "end"])
+        # date_to_col: Optional[int] = self._find_column(headers, ["to", "end"])  # Not used currently
         fed_col: Optional[int] = self._find_column(headers, ["fed", "federation", "country"])
-        teams_col: Optional[int] = self._find_column(headers, ["teams"])
+        # teams_col: Optional[int] = self._find_column(headers, ["teams"])  # Not used currently - frontend handles filtering
         time_control_col: Optional[int] = self._find_column(headers, ["time control", "timecontrol"])
         db_key_col: Optional[int] = self._find_column(headers, ["db-key", "dbkey", "key"])
         event_id_col: Optional[int] = self._find_column(headers, ["eventid", "event id"])
@@ -215,104 +291,37 @@ class TournamentProcessor:
         # Process each row (data starts at row 5)
         for row_idx, row in enumerate(sheet.iter_rows(min_row=5, values_only=True), start=5):
             try:
-                # Extract tournament name
-                name: str = (str(row[name_col]).strip()
-                           if name_col is not None and row[name_col]
-                           else f"Tournament {row_idx}")
+                # Extract row data
+                row_data = self._extract_row_data(
+                    row, name_col, location_col, fed_col, date_from_col,
+                    time_control_col, db_key_col, event_id_col, row_idx
+                )
 
-                # Skip empty rows
-                if not name or name == "None" or name == "":
+                name = row_data["name"]
+                city = row_data["city"]
+                fed = row_data["fed"]
+
+                # Skip empty rows or non-European countries
+                if not name or name in {"None", ""}:
+                    continue
+                if fed and fed.lower() in self.non_european_countries:
                     continue
 
-                # Extract location (city) and FED (country code)
-                city: str = (str(row[location_col]).strip()
-                           if location_col is not None and row[location_col]
-                           else "")
-                fed: str = (str(row[fed_col]).strip().upper()
-                          if fed_col is not None and row[fed_col]
-                          else "")
+                # Process location
+                location = self._process_location(city, fed)
 
-                # Filter out non-European countries FIRST (before processing location)
-                if fed and fed.lower() in self.non_european_countries:
-                    continue  # Skip non-European tournaments
-
-                # Clean up city name (remove country name if already in city field)
-                # e.g., "Trikala,Greece" -> "Trikala"
-                if city and ',' in city:
-                    city = city.split(',')[0].strip()
-
-                # Combine into "City, COUNTRY" format
-                if city and fed:
-                    location = f"{city}, {fed}"
-                elif fed:
-                    location = fed
-                elif city:
-                    location = city
-                else:
-                    location = "Unknown"
-
-                # Extract date from "from" column (YYYYMMDD format)
-                date_value: Any = row[date_from_col] if date_from_col is not None else None
-                parsed_date: datetime = self._parse_date(date_value)
-
-                # Filter: only tournaments starting tomorrow or later
+                # Parse and filter date
+                parsed_date: datetime = self._parse_date(row_data["date_value"])
                 if parsed_date < tomorrow:
                     continue
-
-                # Extract time control to determine blitz/rapid/classical
-                time_control: str = (str(row[time_control_col]).strip()
-                                   if time_control_col is not None and row[time_control_col]
-                                   else "")
-
-                # Extract category from tournament name and time control
-                category_parts: List[str] = []
-
-                # Determine time control category from the time control field
-                if time_control:
-                    tc_lower = time_control.lower()
-                    if "blitz" in tc_lower or ("5" in tc_lower and ("min" in tc_lower or "'" in tc_lower)):
-                        category_parts.append("Blitz")
-                    elif "rapid" in tc_lower or ("15" in tc_lower or "25" in tc_lower):
-                        category_parts.append("Rapid")
-                    else:
-                        category_parts.append("Classical")
-
-                # Extract other categories from name
-                name_category: str = self._extract_category(name + " " + location)
-                for cat in name_category.split(", "):
-                    if cat not in category_parts:
-                        category_parts.append(cat)
-
-                category = ", ".join(category_parts) if category_parts else "Open"
-
-                # Construct URL from DB-Key or EventID
-                db_key: Any = row[db_key_col] if db_key_col is not None else None
-                event_id: Any = row[event_id_col] if event_id_col is not None else None
-
-                if db_key and str(db_key).strip() and str(db_key).strip() != "0":
-                    url = f"https://chess-results.com/tnr{db_key}.aspx?lan=1"
-                elif event_id and str(event_id).strip() and str(event_id).strip() != "0":
-                    url = f"https://chess-results.com/tnr{event_id}.aspx?lan=1"
-                else:
-                    url = "https://chess-results.com"
-
-                # Check if it's a team tournament (teams > 0)
-                teams_value: Any = row[teams_col] if teams_col is not None else 0
-                is_team = False
-                try:
-                    if teams_value and int(teams_value) > 0:
-                        is_team = True
-                except (ValueError, TypeError):
-                    pass
-
-                # Skip team tournaments (frontend has a filter for this now)
-                # Actually, let's include them and let the frontend filter handle it
-                # if is_team:
-                #     continue
 
                 # Filter: only European tournaments
                 if not self._is_european(location):
                     continue
+
+                # Determine category and build URL
+                category = self._determine_category(name, location, row_data["time_control"])
+                url = self._build_tournament_url(row_data["db_key"], row_data["event_id"])
 
                 # Build tournament dict
                 tournament: Dict[str, Any] = {
@@ -327,7 +336,7 @@ class TournamentProcessor:
                 tournaments.append(tournament)
 
             except Exception as e:
-                self.logger.debug(f"Error processing row {row_idx}: {e}")
+                self.logger.debug("Error processing row %d: %s", row_idx, e)
                 continue
 
         workbook.close()
