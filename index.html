@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
 
     <!-- Primary Meta Tags -->
     <title>MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments</title>
@@ -69,6 +69,9 @@
     </script>
 </head>
 <body>
+    <!-- Skip Navigation Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <div class="container">
         <header role="banner">
             <div class="header-controls">
@@ -80,8 +83,8 @@
             <p class="subtitle">Search for chess tournaments on chess-results.com with advanced filtering</p>
         </header>
 
-        <main role="main">
-        <div class="filters-card" role="search" aria-label="Tournament search filters">
+        <main role="main" id="main-content">
+        <div class="filters-card" role="search" aria-label="Tournament search filters" aria-expanded="true">
             <h2>Search Filters</h2>
 
             <div class="filter-grid">
@@ -248,12 +251,15 @@
                     </button>
                 </div>
             </div>
-            <div id="tournamentList" class="tournament-list" role="list"></div>
+            <div id="tournamentList" class="tournament-list"></div>
         </div>
         </main>
 
         <footer role="contentinfo">
             <p>Data source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a></p>
+            <p id="lastUpdated" class="last-updated" aria-live="polite">
+                <strong>Last updated:</strong> <span id="lastUpdatedTime">Loading...</span>
+            </p>
             <p class="note">
                 Tournament data is fetched from the repository's <code>tournaments_data.json</code> file.<br>
                 To update data: Run the Robot Framework scraper locally, then commit and push the updated JSON file.<br>

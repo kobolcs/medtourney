@@ -1,6 +1,7 @@
 "use strict";
 class TournamentFinder {
     constructor() {
+        this.MAX_FILTER_CACHE_SIZE = 50;
         this.CACHE_VERSION = '2.3.0';
         this.CACHE_DURATION = 24 * 60 * 60 * 1000;
         this.CACHE_KEYS = {
@@ -230,6 +231,7 @@ class TournamentFinder {
         error.style.display = 'none';
         results.style.display = 'none';
         try {
+            this.filterCache.clear();
             const tournaments = await this.fetchTournaments();
             const filtered = this.filterTournaments(tournaments);
             this.displayResults(filtered);
@@ -269,6 +271,7 @@ class TournamentFinder {
                 if (Array.isArray(rawTournaments) && rawTournaments.length > 0) {
                     console.log(`✓ Loaded ${rawTournaments.length} tournaments from local data file`);
                     this.saveToCache(this.CACHE_KEYS.TOURNAMENTS, rawTournaments);
+                    this.updateLastUpdatedTimestamp();
                     return rawTournaments.map(t => ({
                         ...t,
                         date: new Date(t.date)
@@ -647,6 +650,12 @@ class TournamentFinder {
             }
             return true;
         });
+        if (this.filterCache.size >= this.MAX_FILTER_CACHE_SIZE) {
+            const firstKey = this.filterCache.keys().next().value;
+            if (firstKey) {
+                this.filterCache.delete(firstKey);
+            }
+        }
         this.filterCache.set(cacheKey, filtered);
         console.log(`Filtered ${filtered.length} tournaments (cached for future use)`);
         return filtered;
@@ -1239,6 +1248,10 @@ class TournamentFinder {
         collapseBtn.setAttribute('aria-label', 'Toggle filter visibility');
         const h2 = filtersCard.querySelector('h2');
         if (h2) {
+            h2.setAttribute('tabindex', '0');
+            h2.setAttribute('role', 'button');
+            h2.setAttribute('aria-expanded', 'true');
+            h2.setAttribute('aria-label', 'Toggle search filters visibility');
             h2.style.cursor = 'pointer';
             h2.style.display = 'flex';
             h2.style.justifyContent = 'space-between';
@@ -1249,6 +1262,12 @@ class TournamentFinder {
             icon.setAttribute('aria-hidden', 'true');
             h2.appendChild(icon);
             h2.addEventListener('click', () => this.toggleFilters());
+            h2.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.toggleFilters();
+                }
+            });
         }
         const isCollapsed = localStorage.getItem(this.CACHE_KEYS.FILTERS_COLLAPSED) === 'true';
         if (isCollapsed && window.innerWidth <= 768) {
@@ -1257,10 +1276,15 @@ class TournamentFinder {
     }
     toggleFilters() {
         const filtersCard = document.querySelector('.filters-card');
+        const h2 = filtersCard?.querySelector('h2');
         if (!filtersCard)
             return;
         const isCurrentlyCollapsed = filtersCard.classList.contains('collapsed');
         this.setFiltersCollapsed(!isCurrentlyCollapsed);
+        if (h2) {
+            h2.setAttribute('aria-expanded', isCurrentlyCollapsed ? 'true' : 'false');
+        }
+        filtersCard.setAttribute('aria-expanded', isCurrentlyCollapsed ? 'true' : 'false');
         localStorage.setItem(this.CACHE_KEYS.FILTERS_COLLAPSED, (!isCurrentlyCollapsed).toString());
     }
     setFiltersCollapsed(collapsed) {
@@ -1503,6 +1527,21 @@ class TournamentFinder {
             }
         });
         console.log('✓ Keyboard shortcuts initialized (Alt+S=Search, Alt+D=Dark Mode, Alt+E=Export, Esc=Clear)');
+    }
+    updateLastUpdatedTimestamp() {
+        const timestampEl = document.getElementById('lastUpdatedTime');
+        if (timestampEl) {
+            const now = new Date();
+            const formattedDate = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+            });
+            timestampEl.textContent = formattedDate;
+        }
     }
 }
 document.addEventListener('DOMContentLoaded', () => {

@@ -94,6 +94,7 @@ class TournamentFinder {
 
     // Performance: Filter result cache
     private filterCache: Map<string, Tournament[]>;
+    private readonly MAX_FILTER_CACHE_SIZE = 50; // Limit cache size to prevent memory leaks
 
     // Cache configuration
     private readonly CACHE_VERSION = '2.3.0'; // Updated for Phase 2
@@ -412,6 +413,9 @@ class TournamentFinder {
         results.style.display = 'none';
 
         try {
+            // Clear filter cache when fetching new data to prevent stale results
+            this.filterCache.clear();
+
             // Fetch tournaments from chess-results.com
             const tournaments = await this.fetchTournaments();
 
@@ -469,6 +473,8 @@ class TournamentFinder {
                     console.log(`✓ Loaded ${rawTournaments.length} tournaments from local data file`);
                     // Save to cache
                     this.saveToCache(this.CACHE_KEYS.TOURNAMENTS, rawTournaments);
+                    // Update last updated timestamp in UI
+                    this.updateLastUpdatedTimestamp();
                     // Convert date strings to Date objects
                     return rawTournaments.map(t => ({
                         ...t,
@@ -1000,7 +1006,14 @@ class TournamentFinder {
             return true;
         });
 
-        // PERFORMANCE: Cache the filtered results
+        // PERFORMANCE: Cache the filtered results with size limit
+        // Clear oldest entries if cache is full (FIFO eviction policy)
+        if (this.filterCache.size >= this.MAX_FILTER_CACHE_SIZE) {
+            const firstKey = this.filterCache.keys().next().value;
+            if (firstKey) {
+                this.filterCache.delete(firstKey);
+            }
+        }
         this.filterCache.set(cacheKey, filtered);
         console.log(`Filtered ${filtered.length} tournaments (cached for future use)`);
 
@@ -1783,6 +1796,11 @@ class TournamentFinder {
         // Insert as first child
         const h2 = filtersCard.querySelector('h2');
         if (h2) {
+            // Make h2 keyboard accessible
+            h2.setAttribute('tabindex', '0');
+            h2.setAttribute('role', 'button');
+            h2.setAttribute('aria-expanded', 'true');
+            h2.setAttribute('aria-label', 'Toggle search filters visibility');
             h2.style.cursor = 'pointer';
             h2.style.display = 'flex';
             h2.style.justifyContent = 'space-between';
@@ -1794,7 +1812,16 @@ class TournamentFinder {
             icon.setAttribute('aria-hidden', 'true');
             h2.appendChild(icon);
 
+            // Click event
             h2.addEventListener('click', () => this.toggleFilters());
+
+            // Keyboard event (Enter and Space)
+            h2.addEventListener('keydown', (e: KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.toggleFilters();
+                }
+            });
         }
 
         // Load saved state
@@ -1809,10 +1836,17 @@ class TournamentFinder {
      */
     private toggleFilters(): void {
         const filtersCard = document.querySelector('.filters-card');
+        const h2 = filtersCard?.querySelector('h2');
         if (!filtersCard) return;
 
         const isCurrentlyCollapsed = filtersCard.classList.contains('collapsed');
         this.setFiltersCollapsed(!isCurrentlyCollapsed);
+
+        // Update ARIA attribute
+        if (h2) {
+            h2.setAttribute('aria-expanded', isCurrentlyCollapsed ? 'true' : 'false');
+        }
+        filtersCard.setAttribute('aria-expanded', isCurrentlyCollapsed ? 'true' : 'false');
 
         // Save state
         localStorage.setItem(this.CACHE_KEYS.FILTERS_COLLAPSED, (!isCurrentlyCollapsed).toString());
@@ -2165,6 +2199,25 @@ class TournamentFinder {
         });
 
         console.log('✓ Keyboard shortcuts initialized (Alt+S=Search, Alt+D=Dark Mode, Alt+E=Export, Esc=Clear)');
+    }
+
+    /**
+     * Update last updated timestamp in footer
+     */
+    private updateLastUpdatedTimestamp(): void {
+        const timestampEl = document.getElementById('lastUpdatedTime');
+        if (timestampEl) {
+            const now = new Date();
+            const formattedDate = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+            });
+            timestampEl.textContent = formattedDate;
+        }
     }
 }
 

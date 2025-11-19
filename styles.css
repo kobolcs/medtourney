@@ -17,6 +17,27 @@
     border-width: 0;
 }
 
+/* Skip navigation link - visible on focus for keyboard navigation */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--secondary-color);
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 0 0 8px 0;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 3px solid #3498db;
+    outline-offset: 2px;
+}
+
 :root {
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
@@ -467,8 +488,8 @@ body.dark-theme .error-message.success-type {
 
 .tournament-category {
     display: inline-block;
-    background: #e8f4fd;
-    color: var(--secondary-color);
+    background: #d4e9f7; /* Darker background for better contrast with blue text */
+    color: #1f6aa5; /* Darker blue for WCAG AA compliance (4.5:1 ratio) */
     padding: 4px 12px;
     border-radius: 15px;
     font-size: 0.85rem;
@@ -549,6 +570,19 @@ footer p {
 footer a {
     color: white;
     text-decoration: underline;
+}
+
+.last-updated {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 15px 0;
+    font-size: 0.95rem;
+}
+
+.last-updated strong {
+    margin-right: 8px;
 }
 
 .note {
@@ -637,7 +671,7 @@ footer a {
 
 .pagination-ellipsis {
     padding: 8px 6px;
-    color: #999;
+    color: #666; /* Improved contrast from #999 to #666 for WCAG AA compliance */
     font-weight: 500;
 }
 
