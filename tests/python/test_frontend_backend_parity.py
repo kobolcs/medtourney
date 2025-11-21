@@ -35,6 +35,13 @@ class TestFrontendBackendParity:
         with app_js_path.open(encoding="utf-8") as f:
             return f.read()
 
+    @pytest.fixture
+    def filter_service_js_content(self) -> str:
+        """Load FilterService.js content."""
+        filter_service_js_path = Path(__file__).parent.parent.parent / "services" / "FilterService.js"
+        with filter_service_js_path.open(encoding="utf-8") as f:
+            return f.read()
+
     def test_mediterranean_cities_in_config(self, config_json: dict, processor: TournamentProcessor):
         """Test that config.json Mediterranean cities match processor"""
         config_cities = set(config_json["mediterraneanLocations"])
@@ -44,32 +51,19 @@ class TestFrontendBackendParity:
             "Mediterranean cities in config.json don't match TournamentProcessor"
 
     def test_mediterranean_cities_in_frontend(self, app_js_content: str, config_json: dict):
-        """Test that app.js has same Mediterranean cities as config.json"""
-        # Extract mediterraneanLocations from app.js
-        # Look for: this.mediterraneanLocations = new Set([...])
-        pattern = r"this\.mediterraneanLocations\s*=\s*new Set\(\[(.*?)\]\)"
-        match = re.search(pattern, app_js_content, re.DOTALL)
+        """Test that app.js loads Mediterranean cities from config.json"""
+        # In the refactored architecture, mediterraneanLocations is loaded from config.json
+        # Look for: this.mediterraneanLocations = new Set(config.mediterraneanLocations)
 
-        assert match, "Could not find mediterraneanLocations in app.js"
+        # Check that mediterraneanLocations is initialized
+        init_pattern = r"this\.mediterraneanLocations\s*=\s*new Set\(\)"
+        init_match = re.search(init_pattern, app_js_content)
+        assert init_match, "Could not find mediterraneanLocations initialization in app.js"
 
-        # Parse the cities from JS (simple approach - split by quotes)
-        js_cities_raw = match.group(1)
-        js_cities = set()
-        for city in re.findall(r"'([^']+)'", js_cities_raw):
-            js_cities.add(city)
-
-        config_cities = set(config_json["mediterraneanLocations"])
-
-        # Check that they match (allow JS to have defaults if config load fails)
-        if js_cities:
-            missing_in_js = config_cities - js_cities
-            extra_in_js = js_cities - config_cities
-
-            # Report differences
-            assert not missing_in_js, \
-                f"Cities in config.json but not in app.js: {sorted(missing_in_js)}"
-            assert not extra_in_js, \
-                f"Cities in app.js but not in config.json: {sorted(extra_in_js)}"
+        # Check that it's loaded from config
+        load_pattern = r"this\.mediterraneanLocations\s*=\s*new Set\(config\.mediterraneanLocations\)"
+        load_match = re.search(load_pattern, app_js_content)
+        assert load_match, "Could not find mediterraneanLocations loading from config in app.js"
 
     def test_senior_regex_pattern_matches(self, processor: TournamentProcessor):
         """Test that senior regex pattern matches all expected variations"""
@@ -110,13 +104,14 @@ class TestFrontendBackendParity:
             assert not pattern.search(text), \
                 f"Senior pattern should NOT match '{text}'"
 
-    def test_senior_filter_consistency_frontend_backend(self, app_js_content: str):
-        """Test that frontend hasSeniorCategory uses same regex as backend"""
-        # Find hasSeniorCategory in app.js - look for seniorPattern variable assignment
-        pattern = r"hasSeniorCategory\([^)]+\)\s*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)"
-        match = re.search(pattern, app_js_content, re.DOTALL)
+    def test_senior_filter_consistency_frontend_backend(self, filter_service_js_content: str):
+        """Test that frontend isSeniorCategory uses same regex as backend"""
+        # In refactored architecture, senior logic is in FilterService.js
+        # Find isSeniorCategory - look for seniorPattern variable assignment
+        pattern = r"isSeniorCategory\([^)]+\)\s*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)"
+        match = re.search(pattern, filter_service_js_content, re.DOTALL)
 
-        assert match, "Could not find hasSeniorCategory regex in app.js"
+        assert match, "Could not find isSeniorCategory regex in FilterService.js"
 
         js_regex_str = match.group(1)
 
