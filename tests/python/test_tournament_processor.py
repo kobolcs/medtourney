@@ -93,43 +93,54 @@ class TestTournamentProcessor:
         wb: openpyxl.Workbook = openpyxl.Workbook()
         ws = wb.active
 
-        # Headers
-        ws.append(["Name", "Location", "Date", "URL"])
+        # Chess-results.com format: rows 1-3 are metadata, row 4 is headers
+        ws.append(["Chess-results.com Tournament Export"])  # Row 1: metadata
+        ws.append(["Export Date: 2025-01-01"])  # Row 2: metadata
+        ws.append([])  # Row 3: empty
+
+        # Row 4: Headers (chess-results.com format)
+        ws.append(["Tournament", "Location", "from", "FED", "DB-Key"])
 
         # Sample data - dates in YYYYMMDD format (chess-results.com format)
         tomorrow: datetime = datetime.now() + timedelta(days=1)
         future_date: datetime = datetime.now() + timedelta(days=30)
         past_date: datetime = datetime.now() - timedelta(days=1)
 
+        # Row 5+: Tournament data
         ws.append([
             "Barcelona Open 2025",
-            "Barcelona, ESP",
+            "Barcelona",
             tomorrow.strftime("%Y%m%d"),
-            "https://chess-results.com/test1"
+            "ESP",
+            "12345"
         ])
         ws.append([
             "Athens Senior Open",
-            "Athens, Greece",
+            "Athens",
             future_date.strftime("%Y%m%d"),
-            "https://chess-results.com/test2"
+            "GRE",
+            "12346"
         ])
         ws.append([
             "Dubai Open",
-            "Dubai, UAE",
+            "Dubai",
             future_date.strftime("%Y%m%d"),
-            "https://chess-results.com/test3"
+            "UAE",
+            "12347"
         ])
         ws.append([
             "Past Tournament",
-            "Madrid, ESP",
+            "Madrid",
             past_date.strftime("%Y%m%d"),
-            "https://chess-results.com/test4"
+            "ESP",
+            "12348"
         ])
         ws.append([
             "Moscow Championship",
-            "Moscow, Russia",
+            "Moscow",
             future_date.strftime("%Y%m%d"),
-            "https://chess-results.com/test5"
+            "RUS",
+            "12349"
         ])
 
         excel_file = tmp_path / "test_tournaments.xlsx"
