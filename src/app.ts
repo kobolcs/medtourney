@@ -90,16 +90,16 @@ class TournamentFinder {
             // Load configuration
             await this.loadConfig();
 
-            // Set default dates (today to 3 months from now)
+            // Set default dates (today to 6 months from now, matching the scraper horizon)
             const today = new Date();
-            const threeMonthsLater = new Date(today);
-            threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+            const sixMonthsLater = new Date(today);
+            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
 
             const startDateElement = document.getElementById('startDate') as HTMLInputElement | null;
             const endDateElement = document.getElementById('endDate') as HTMLInputElement | null;
 
             if (startDateElement) startDateElement.valueAsDate = today;
-            if (endDateElement) endDateElement.valueAsDate = threeMonthsLater;
+            if (endDateElement) endDateElement.valueAsDate = sixMonthsLater;
 
             // Load saved filter preferences
             this.loadFilterPreferences();
@@ -158,6 +158,9 @@ class TournamentFinder {
 
         // Attach filter change listeners to save preferences
         this.attachFilterChangeListeners();
+
+        // Delegated calendar export — one listener handles all pages/re-renders
+        this.initCalendarExportDelegation();
     }
 
     /**
@@ -389,9 +392,6 @@ class TournamentFinder {
             // Display results
             this.uiManager.displayTournaments(this.filteredTournaments);
 
-            // Attach calendar export listeners to each tournament card
-            this.attachCalendarExportListeners();
-
         } catch (error) {
             this.logger.error('Tournament search failed', error, {
                 filterState: this.getFilterState(),
@@ -415,9 +415,6 @@ class TournamentFinder {
                 sortBy
             );
             this.uiManager.updateDisplayedTournaments(this.filteredTournaments);
-
-            // Re-attach calendar export listeners after re-render
-            this.attachCalendarExportListeners();
         }
     }
 
@@ -435,9 +432,6 @@ class TournamentFinder {
             );
             this.uiManager.updateDisplayedTournaments(searchResults);
         }
-
-        // Re-attach calendar export listeners after search
-        this.attachCalendarExportListeners();
     }
 
     /**
@@ -463,36 +457,24 @@ class TournamentFinder {
     }
 
     /**
-     * Attach calendar export listeners to tournament cards
+     * Set up delegated calendar export listener on the tournament list container.
+     * Called once during initialization — works correctly across all paginated pages
+     * because it reads the stable global index from data-tournament-index.
      */
-    private attachCalendarExportListeners(): void {
-        const calendarButtons = document.querySelectorAll('.btn-calendar');
+    private initCalendarExportDelegation(): void {
+        const tournamentList = document.getElementById('tournamentList');
+        if (!tournamentList) return;
 
-        calendarButtons.forEach((btn) => {
-            // Remove existing listeners by cloning
-            const newBtn = btn.cloneNode(true) as HTMLElement;
-            btn.parentNode?.replaceChild(newBtn, btn);
+        tournamentList.addEventListener('click', (e) => {
+            const btn = (e.target as Element).closest('.calendar-export-btn');
+            if (!btn) return;
+            e.preventDefault();
 
-            newBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                // Get tournaments from current page
-                const tournamentList = document.getElementById('tournamentList');
-                if (!tournamentList) return;
-
-                const cards = tournamentList.querySelectorAll('.tournament-card');
-                const tournamentCard = newBtn.closest('.tournament-card');
-                if (!tournamentCard) return;
-
-                const cardIndex = Array.from(cards).indexOf(tournamentCard);
-
-                if (cardIndex >= 0 && cardIndex < this.filteredTournaments.length) {
-                    const tournament = this.filteredTournaments[cardIndex];
-                    if (tournament) {
-                        this.exportService.exportToCalendar(tournament);
-                    }
-                }
-            });
+            const index = parseInt((btn as HTMLElement).dataset.tournamentIndex ?? '-1', 10);
+            const tournament = this.uiManager.getTournamentByIndex(index);
+            if (tournament) {
+                this.exportService.exportToCalendar(tournament);
+            }
         });
     }
 
