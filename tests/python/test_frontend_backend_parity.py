@@ -50,7 +50,7 @@ class TestFrontendBackendParity:
         assert config_cities == processor_cities, \
             "Mediterranean cities in config.json don't match TournamentProcessor"
 
-    def test_mediterranean_cities_in_frontend(self, app_js_content: str, _config_json: dict):
+    def test_mediterranean_cities_in_frontend(self, app_js_content: str):
         """Test that app.js loads Mediterranean cities from config.json"""
         # In the refactored architecture, mediterraneanLocations is loaded from config.json
         # Look for: this.mediterraneanLocations = new Set(config.mediterraneanLocations)
