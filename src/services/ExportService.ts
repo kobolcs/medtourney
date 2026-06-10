@@ -44,6 +44,56 @@ export class ExportService {
     }
 
     /**
+     * Export multiple shortlisted tournaments into a single .ics file
+     */
+    exportMultipleToCalendar(tournaments: Tournament[]): void {
+        if (tournaments.length === 0) {
+            throw new Error('No tournaments to export');
+        }
+
+        const now = new Date();
+        const lines: string[] = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//MedTourney//Chess Tournament Finder//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+        ];
+
+        for (const tournament of tournaments) {
+            const dateStr = this.formatICSDate(tournament.date);
+            const endDateStr = this.formatICSDate(this.addDays(tournament.date, 1));
+            const timestamp = this.formatICSDate(now);
+            const uid = `tournament-${tournament.date.getTime()}-${Math.random().toString(36).substr(2, 9)}@medtourney.com`;
+
+            lines.push(
+                'BEGIN:VEVENT',
+                `UID:${uid}`,
+                `DTSTAMP:${timestamp}`,
+                `DTSTART;VALUE=DATE:${dateStr}`,
+                `DTEND;VALUE=DATE:${endDateStr}`,
+                `SUMMARY:${this.escapeICS(tournament.name)}`,
+                `LOCATION:${this.escapeICS(tournament.location)}`,
+                `DESCRIPTION:${this.escapeICS(`${tournament.category} - ${tournament.description}\\n\\nMore info: ${tournament.url}`)}`,
+                `URL:${tournament.url}`,
+                'CATEGORIES:Chess,Tournament',
+                'STATUS:CONFIRMED',
+                'TRANSP:TRANSPARENT',
+                'END:VEVENT',
+            );
+        }
+
+        lines.push('END:VCALENDAR');
+
+        const icsContent = lines.join('\r\n');
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const filename = `chess-shortlist-${new Date().toISOString().split('T')[0]}.ics`;
+        this.downloadFile(blob, filename);
+
+        console.log(`Exported ${tournaments.length} shortlisted tournaments to calendar`);
+    }
+
+    /**
      * Export single tournament to calendar (.ics) format
      */
     exportToCalendar(tournament: Tournament): void {

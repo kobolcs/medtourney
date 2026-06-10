@@ -37,8 +37,8 @@ class TestFrontendBackendParity:
 
     @pytest.fixture
     def filter_service_js_content(self) -> str:
-        """Load FilterService.js content."""
-        filter_service_js_path = Path(__file__).parent.parent.parent / "services" / "FilterService.js"
+        """Load FilterService source content."""
+        filter_service_js_path = Path(__file__).parent.parent.parent / "src" / "services" / "FilterService.ts"
         with filter_service_js_path.open(encoding="utf-8") as f:
             return f.read()
 
@@ -50,7 +50,7 @@ class TestFrontendBackendParity:
         assert config_cities == processor_cities, \
             "Mediterranean cities in config.json don't match TournamentProcessor"
 
-    def test_mediterranean_cities_in_frontend(self, app_js_content: str, config_json: dict):
+    def test_mediterranean_cities_in_frontend(self, app_js_content: str):
         """Test that app.js loads Mediterranean cities from config.json"""
         # In the refactored architecture, mediterraneanLocations is loaded from config.json
         # Look for: this.mediterraneanLocations = new Set(config.mediterraneanLocations)
@@ -108,7 +108,7 @@ class TestFrontendBackendParity:
         """Test that frontend isSeniorCategory uses same regex as backend"""
         # In refactored architecture, senior logic is in FilterService.js
         # Find isSeniorCategory - look for seniorPattern variable assignment
-        pattern = r"isSeniorCategory\([^)]+\)\s*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)"
+        pattern = r"isSeniorCategory\([^)]+\)[^{]*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)"
         match = re.search(pattern, filter_service_js_content, re.DOTALL)
 
         assert match, "Could not find isSeniorCategory regex in FilterService.js"

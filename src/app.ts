@@ -51,10 +51,19 @@ class TournamentFinder {
     private mediterraneanLocations: Set<string>;
 
     // Tournament data
+    private allTournaments: Tournament[];
     private filteredTournaments: Tournament[];
 
     // Sorting state
     private currentSort: SortOption;
+
+    // Shortlist (persisted to localStorage)
+    private shortlist: Set<string>;
+    private readonly SHORTLIST_KEY = 'medtourney_shortlist';
+
+    // Display state
+    private showShortlistOnly = false;
+    private currentQuickSearch = '';
 
     constructor() {
         // Initialize service modules
@@ -64,8 +73,10 @@ class TournamentFinder {
         this.exportService = new ExportService();
         this.uiManager = new UIManager();
 
+        this.allTournaments = [];
         this.filteredTournaments = [];
         this.currentSort = 'date-asc';
+        this.shortlist = new Set();
 
         // Will be loaded from config.json
         this.europeanCountries = {};
@@ -90,19 +101,23 @@ class TournamentFinder {
             // Load configuration
             await this.loadConfig();
 
-            // Set default dates (today to 3 months from now)
+            // Set default dates (today to 6 months from now, matching the scraper horizon)
             const today = new Date();
-            const threeMonthsLater = new Date(today);
-            threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+            const sixMonthsLater = new Date(today);
+            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
 
             const startDateElement = document.getElementById('startDate') as HTMLInputElement | null;
             const endDateElement = document.getElementById('endDate') as HTMLInputElement | null;
 
             if (startDateElement) startDateElement.valueAsDate = today;
-            if (endDateElement) endDateElement.valueAsDate = threeMonthsLater;
+            if (endDateElement) endDateElement.valueAsDate = sixMonthsLater;
 
             // Load saved filter preferences
             this.loadFilterPreferences();
+
+            // Load shortlist from localStorage
+            this.loadShortlist();
+            this.uiManager.updateShortlistCount(this.shortlist.size);
 
             // Attach event listeners
             this.attachEventListeners();
@@ -158,6 +173,30 @@ class TournamentFinder {
 
         // Attach filter change listeners to save preferences
         this.attachFilterChangeListeners();
+
+        // Delegated calendar export — one listener handles all pages/re-renders
+        this.initCalendarExportDelegation();
+
+        // Delegated shortlist toggle
+        this.initShortlistDelegation();
+
+        // Date preset buttons
+        this.initDatePresets();
+
+        // Show shortlist only toggle
+        const showShortlistOnlyEl = document.getElementById('showShortlistOnly') as HTMLInputElement | null;
+        if (showShortlistOnlyEl) {
+            showShortlistOnlyEl.addEventListener('change', () => {
+                this.showShortlistOnly = showShortlistOnlyEl.checked;
+                this.applyDisplayFilters();
+            });
+        }
+
+        // Export shortlist to ICS
+        const exportShortlistBtn = document.getElementById('exportShortlistBtn');
+        if (exportShortlistBtn) {
+            exportShortlistBtn.addEventListener('click', () => this.exportShortlistToCalendar());
+        }
     }
 
     /**
@@ -369,8 +408,9 @@ class TournamentFinder {
             // Show loading skeletons immediately
             this.uiManager.showLoadingSkeletons();
 
-            // Fetch tournaments (with caching)
+            // Fetch tournaments (with caching) and store full set for shortlist export
             const tournaments = await this.dataService.fetchTournaments();
+            this.allTournaments = tournaments;
 
             // Apply filters
             const filterState = this.getFilterState();
@@ -386,11 +426,17 @@ class TournamentFinder {
                 this.currentSort
             );
 
-            // Display results
-            this.uiManager.displayTournaments(this.filteredTournaments);
+            // Annotate with confidence, reasons, and travel tags
+            this.filteredTournaments = this.filteredTournaments.map(t =>
+                this.filterService.annotate(t, this.mediterraneanLocations)
+            );
 
-            // Attach calendar export listeners to each tournament card
-            this.attachCalendarExportListeners();
+            // Reset display filters and render
+            this.currentQuickSearch = '';
+            const quickSearch = document.getElementById('quickSearch') as HTMLInputElement | null;
+            if (quickSearch) quickSearch.value = '';
+
+            this.applyDisplayFilters();
 
         } catch (error) {
             this.logger.error('Tournament search failed', error, {
@@ -414,10 +460,7 @@ class TournamentFinder {
                 this.filteredTournaments,
                 sortBy
             );
-            this.uiManager.updateDisplayedTournaments(this.filteredTournaments);
-
-            // Re-attach calendar export listeners after re-render
-            this.attachCalendarExportListeners();
+            this.applyDisplayFilters();
         }
     }
 
@@ -425,19 +468,31 @@ class TournamentFinder {
      * Search within current results
      */
     private searchWithinResults(query: string): void {
-        if (!query.trim()) {
-            this.uiManager.updateDisplayedTournaments(this.filteredTournaments);
-        } else {
-            const lowerQuery = query.toLowerCase();
-            const searchResults = this.filteredTournaments.filter(tournament =>
-                tournament.name.toLowerCase().includes(lowerQuery) ||
-                tournament.location.toLowerCase().includes(lowerQuery)
-            );
-            this.uiManager.updateDisplayedTournaments(searchResults);
+        this.currentQuickSearch = query;
+        this.applyDisplayFilters();
+    }
+
+    /**
+     * Apply shortlist-only and quick-search display filters on top of filteredTournaments.
+     * Always call this instead of uiManager.updateDisplayedTournaments directly.
+     */
+    private applyDisplayFilters(): void {
+        let toDisplay = this.filteredTournaments;
+
+        if (this.showShortlistOnly) {
+            toDisplay = toDisplay.filter(t => this.shortlist.has(t.url));
         }
 
-        // Re-attach calendar export listeners after search
-        this.attachCalendarExportListeners();
+        if (this.currentQuickSearch.trim()) {
+            const q = this.currentQuickSearch.toLowerCase();
+            toDisplay = toDisplay.filter(t =>
+                t.name.toLowerCase().includes(q) ||
+                t.location.toLowerCase().includes(q)
+            );
+        }
+
+        this.uiManager.setShortlistedUrls(this.shortlist);
+        this.uiManager.displayTournaments(toDisplay);
     }
 
     /**
@@ -463,36 +518,127 @@ class TournamentFinder {
     }
 
     /**
-     * Attach calendar export listeners to tournament cards
+     * Load shortlist from localStorage (URLs, no TTL — persists indefinitely)
      */
-    private attachCalendarExportListeners(): void {
-        const calendarButtons = document.querySelectorAll('.btn-calendar');
+    private loadShortlist(): void {
+        try {
+            const saved = localStorage.getItem(this.SHORTLIST_KEY);
+            if (saved) {
+                const urls: string[] = JSON.parse(saved);
+                this.shortlist = new Set(urls);
+            }
+        } catch {
+            this.shortlist = new Set();
+        }
+    }
 
-        calendarButtons.forEach((btn) => {
-            // Remove existing listeners by cloning
-            const newBtn = btn.cloneNode(true) as HTMLElement;
-            btn.parentNode?.replaceChild(newBtn, btn);
+    private saveShortlist(): void {
+        try {
+            localStorage.setItem(this.SHORTLIST_KEY, JSON.stringify([...this.shortlist]));
+        } catch {
+            // Storage full or unavailable — silently ignore
+        }
+    }
 
-            newBtn.addEventListener('click', (e) => {
-                e.preventDefault();
+    private toggleShortlist(url: string): void {
+        if (this.shortlist.has(url)) {
+            this.shortlist.delete(url);
+        } else {
+            this.shortlist.add(url);
+        }
+        this.saveShortlist();
+        this.uiManager.refreshShortlistButtons(this.shortlist);
+        this.uiManager.updateShortlistCount(this.shortlist.size);
+        if (this.showShortlistOnly) {
+            this.applyDisplayFilters();
+        }
+    }
 
-                // Get tournaments from current page
-                const tournamentList = document.getElementById('tournamentList');
-                if (!tournamentList) return;
+    /**
+     * Delegated shortlist toggle listener — one listener handles all cards/pages
+     */
+    private initShortlistDelegation(): void {
+        const tournamentList = document.getElementById('tournamentList');
+        if (!tournamentList) return;
 
-                const cards = tournamentList.querySelectorAll('.tournament-card');
-                const tournamentCard = newBtn.closest('.tournament-card');
-                if (!tournamentCard) return;
+        tournamentList.addEventListener('click', (e) => {
+            const btn = (e.target as Element).closest('.shortlist-btn');
+            if (!btn) return;
+            e.preventDefault();
+            const url = (btn as HTMLElement).dataset.tournamentUrl;
+            if (url) {
+                this.toggleShortlist(url);
+            }
+        });
+    }
 
-                const cardIndex = Array.from(cards).indexOf(tournamentCard);
+    /**
+     * Wire up date preset buttons (Next Month / 3 Months / 6 Months)
+     */
+    private initDatePresets(): void {
+        const startDateEl = document.getElementById('startDate') as HTMLInputElement | null;
+        const endDateEl = document.getElementById('endDate') as HTMLInputElement | null;
+        if (!startDateEl || !endDateEl) return;
 
-                if (cardIndex >= 0 && cardIndex < this.filteredTournaments.length) {
-                    const tournament = this.filteredTournaments[cardIndex];
-                    if (tournament) {
-                        this.exportService.exportToCalendar(tournament);
-                    }
-                }
+        document.querySelectorAll<HTMLButtonElement>('.date-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = btn.dataset.preset;
+                const today = new Date();
+                const end = new Date(today);
+
+                if (preset === 'month') end.setMonth(end.getMonth() + 1);
+                else if (preset === '3months') end.setMonth(end.getMonth() + 3);
+                else if (preset === '6months') end.setMonth(end.getMonth() + 6);
+                else return;
+
+                startDateEl.valueAsDate = today;
+                endDateEl.valueAsDate = end;
             });
+        });
+    }
+
+    /**
+     * Export all shortlisted tournaments to a single .ics file
+     */
+    private exportShortlistToCalendar(): void {
+        const shortlisted = this.allTournaments.filter(t => this.shortlist.has(t.url));
+
+        if (shortlisted.length === 0) {
+            this.uiManager.showError('Star tournaments to add them to your shortlist first', 'warning');
+            return;
+        }
+
+        try {
+            this.exportService.exportMultipleToCalendar(shortlisted);
+            this.uiManager.showError(
+                `Exported ${shortlisted.length} shortlisted tournament${shortlisted.length !== 1 ? 's' : ''} to calendar`,
+                'success'
+            );
+        } catch (error) {
+            this.logger.error('Shortlist calendar export failed', error);
+            this.uiManager.showError('Failed to export shortlist. Please try again.');
+        }
+    }
+
+    /**
+     * Set up delegated calendar export listener on the tournament list container.
+     * Called once during initialization — works correctly across all paginated pages
+     * because it reads the stable global index from data-tournament-index.
+     */
+    private initCalendarExportDelegation(): void {
+        const tournamentList = document.getElementById('tournamentList');
+        if (!tournamentList) return;
+
+        tournamentList.addEventListener('click', (e) => {
+            const btn = (e.target as Element).closest('.calendar-export-btn');
+            if (!btn) return;
+            e.preventDefault();
+
+            const index = parseInt((btn as HTMLElement).dataset.tournamentIndex ?? '-1', 10);
+            const tournament = this.uiManager.getTournamentByIndex(index);
+            if (tournament) {
+                this.exportService.exportToCalendar(tournament);
+            }
         });
     }
 
@@ -521,6 +667,15 @@ class TournamentFinder {
             if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
                 e.preventDefault();
                 this.toggleTheme();
+            }
+
+            // Ctrl/Cmd + S: Export shortlist to calendar
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                const exportShortlistBtn = document.getElementById('exportShortlistBtn');
+                if (exportShortlistBtn && exportShortlistBtn.style.display !== 'none') {
+                    e.preventDefault();
+                    this.exportShortlistToCalendar();
+                }
             }
 
             // Escape: Clear quick search

@@ -171,6 +171,12 @@
                     <input type="date" id="endDate" aria-label="Tournament start date until">
                 </div>
             </div>
+            <div class="date-presets" role="group" aria-label="Date range presets">
+                <span class="date-presets-label">Quick:</span>
+                <button type="button" class="date-preset-btn" data-preset="month">Next Month</button>
+                <button type="button" class="date-preset-btn" data-preset="3months">3 Months</button>
+                <button type="button" class="date-preset-btn" data-preset="6months">6 Months</button>
+            </div>
 
             <div class="search-options">
                 <div class="country-select">
@@ -249,6 +255,16 @@
                     <button id="exportBtn" class="export-button" aria-label="Export tournaments to CSV">
                         📥 Export CSV
                     </button>
+                    <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar">
+                        📅 Export Shortlist
+                        <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
+                    </button>
+                </div>
+                <div class="shortlist-controls">
+                    <label class="shortlist-toggle-label">
+                        <input type="checkbox" id="showShortlistOnly" aria-label="Show shortlisted tournaments only">
+                        <span>★ Shortlist only</span>
+                    </label>
                 </div>
             </div>
             <div id="tournamentList" class="tournament-list"></div>

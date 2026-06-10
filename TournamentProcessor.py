@@ -185,7 +185,7 @@ class TournamentProcessor:
         """Process city and federation into location string."""
         # Clean up city name (remove country name if already in city field)
         if city and "," in city:
-            city = city.split(",")[0].strip()
+            city = city.split(",", 1)[0].strip()
 
         # Combine into "City, COUNTRY" format
         if city and fed:
@@ -226,7 +226,7 @@ class TournamentProcessor:
             return f"https://chess-results.com/tnr{event_id}.aspx?lan=1"
         return "https://chess-results.com"
 
-    @keyword("Load And Filter Tournaments")  # type: ignore[misc]
+    @keyword("Load And Filter Tournaments")
     def load_and_filter_tournaments(self, excel_file: str) -> List[Dict[str, Any]]:
         """Load tournaments from Excel file and filter for European tournaments.
 
@@ -344,7 +344,7 @@ class TournamentProcessor:
         self.tournaments = tournaments
         return tournaments
 
-    @keyword("Export To JSON")  # type: ignore[misc]
+    @keyword("Export To JSON")
     def export_to_json(self, tournaments: Any, output_file: str) -> None:
         """Export tournaments to JSON file.
 
@@ -392,7 +392,7 @@ class TournamentProcessor:
         with output_path.open("w", encoding="utf-8") as f:
             json.dump(valid_tournaments, f, indent=2, ensure_ascii=False)
 
-    @keyword("Filter Tournaments By Criteria")  # type: ignore[misc]
+    @keyword("Filter Tournaments By Criteria")
     def filter_tournaments_by_criteria(
         self,
         tournaments: List[Dict[str, Any]],
