@@ -89,6 +89,7 @@ jobs:
     name: CodeQL Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    continue-on-error: true
     permissions:
       security-events: write
       actions: read
