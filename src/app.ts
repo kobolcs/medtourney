@@ -289,16 +289,33 @@ class TournamentFinder {
 
         const filterTitle = document.querySelector('.filters-card h2') as HTMLElement | null;
         if (filterTitle && filtersCard) {
+            // Make the heading an operable, keyboard-accessible toggle button
+            // (WCAG 2.1.1 Keyboard + 4.1.2 Name, Role, Value).
             filterTitle.style.cursor = 'pointer';
-            filterTitle.addEventListener('click', () => {
+            filterTitle.setAttribute('role', 'button');
+            filterTitle.setAttribute('tabindex', '0');
+            const startCollapsed = filtersCard.classList.contains('collapsed');
+            filterTitle.setAttribute('aria-expanded', startCollapsed ? 'false' : 'true');
+
+            const toggleFilters = (): void => {
                 const isCollapsed = filtersCard.classList.toggle('collapsed');
-                filtersCard.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+                const expanded = isCollapsed ? 'false' : 'true';
+                filtersCard.setAttribute('aria-expanded', expanded);
+                filterTitle.setAttribute('aria-expanded', expanded);
 
                 // Save state
                 this.cacheManager.saveToCache(
                     this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED,
                     isCollapsed ? 'collapsed' : 'expanded'
                 );
+            };
+
+            filterTitle.addEventListener('click', toggleFilters);
+            filterTitle.addEventListener('keydown', (e: KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    toggleFilters();
+                }
             });
         }
     }

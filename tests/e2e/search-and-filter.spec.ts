@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { stubTournaments } from './_fixtures';
 
 test.describe('Tournament Search and Filter', () => {
   test.beforeEach(async ({ page }) => {
+    await stubTournaments(page);
     await page.goto('/');
     await expect(page.locator('h1')).toContainText('European Chess Tournament Finder');
   });

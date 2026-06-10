@@ -379,16 +379,11 @@ jobs:
     - name: Build TypeScript
       run: npm run build
 
-    - name: Run export E2E tests (Chromium)
-      # The Playwright webServer now serves a production-equivalent Vite build,
-      # so the app actually boots and these export specs run for real.
-      #
-      # Scope: the export-correctness specs verified by this hardening PR. The
-      # other legacy E2E specs (accessibility/keyboard/dark-mode/search) have
-      # pre-existing, unrelated failures (stale selectors, Alt-key shortcuts the
-      # app never implemented, no data stubbing) and are out of scope here —
-      # see the PR's "Known limitations".
-      run: npx playwright test --project=chromium tests/e2e/exports.spec.ts tests/e2e/exports-hardening.spec.ts
+    - name: Run E2E Tests (Chromium)
+      # The Playwright webServer serves a production-equivalent Vite build so
+      # the app actually boots and all specs run for real (deterministic data
+      # is stubbed via page.route).
+      run: npm run test:e2e:chromium
       env:
         CI: true
 
