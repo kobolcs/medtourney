@@ -286,15 +286,8 @@ class TournamentProcessor:
                 headers.append("")
 
         # Find column indices (chess-results.com column names)
-        name_col: Optional[int] = self._find_column(headers, ["tournament", "name", "turnier"])
-        location_col: Optional[int] = self._find_column(headers, ["location", "place", "ort"])
-        date_from_col: Optional[int] = self._find_column(headers, ["from", "start", "datum"])
-        # date_to_col: Optional[int] = self._find_column(headers, ["to", "end"])  # Not used currently
-        fed_col: Optional[int] = self._find_column(headers, ["fed", "federation", "country"])
-        # teams_col: Optional[int] = self._find_column(headers, ["teams"])  # Not used currently - frontend handles filtering
-        time_control_col: Optional[int] = self._find_column(headers, ["time control", "timecontrol"])
-        db_key_col: Optional[int] = self._find_column(headers, ["db-key", "dbkey", "key"])
-        event_id_col: Optional[int] = self._find_column(headers, ["eventid", "event id"])
+        (name_col, location_col, date_from_col, fed_col,
+         time_control_col, db_key_col, event_id_col) = self._find_columns(headers)
 
         tournaments: List[Dict[str, Any]] = []
 
@@ -617,6 +610,26 @@ class TournamentProcessor:
         )
 
         return bool(senior_pattern.search(category) or senior_pattern.search(name))
+
+    def _find_columns(
+        self, headers: List[str]
+    ) -> Tuple[Optional[int], Optional[int], Optional[int], Optional[int],
+               Optional[int], Optional[int], Optional[int]]:
+        """Resolve the chess-results.com column indices used during parsing.
+
+        Returns:
+            (name, location, date_from, fed, time_control, db_key, event_id)
+            column indices, each None if the column was not found.
+        """
+        return (
+            self._find_column(headers, ["tournament", "name", "turnier"]),
+            self._find_column(headers, ["location", "place", "ort"]),
+            self._find_column(headers, ["from", "start", "datum"]),
+            self._find_column(headers, ["fed", "federation", "country"]),
+            self._find_column(headers, ["time control", "timecontrol"]),
+            self._find_column(headers, ["db-key", "dbkey", "key"]),
+            self._find_column(headers, ["eventid", "event id"]),
+        )
 
     def _find_column(self, headers: List[str], possible_names: List[str]) -> Optional[int]:
         """Find column index by matching possible header names.
