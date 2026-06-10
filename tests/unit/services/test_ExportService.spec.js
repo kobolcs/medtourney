@@ -1,387 +1,250 @@
 /**
- * Unit tests for ExportService
- * Tests CSV export and iCalendar generation
+ * Unit tests for the REAL production ExportService.
+ *
+ * These tests `require` the compiled production implementation from
+ * `dist-test/` (built by `npm run build:test`). They do NOT define a local
+ * fake ExportService — that would test nothing. If production code regresses
+ * (random UID, invalid VALUE=DATE date-time, broken escaping, …) these tests
+ * must fail.
  */
 
-// Simple ExportService implementation for testing
-class ExportService {
-    exportToCSV(tournaments) {
-        if (!tournaments || tournaments.length === 0) {
-            throw new Error('No tournaments to export');
-        }
+const { loadProductionModule } = require('../../helpers/production');
+const { ExportService } = loadProductionModule('services/ExportService.js');
 
-        const headers = ['Name', 'Location', 'Date', 'Category', 'URL'];
-        const rows = tournaments.map(t => [
-            this.escapeCSV(t.name),
-            this.escapeCSV(t.location),
-            t.date.toLocaleDateString('en-GB'),
-            this.escapeCSV(t.category),
-            t.url
-        ]);
+// ---------------------------------------------------------------------------
+// Tiny test harness
+// ---------------------------------------------------------------------------
+let passed = 0;
+let failed = 0;
 
-        const csvContent = [
-            headers.join(','),
-            ...rows.map(row => row.join(','))
-        ].join('\n');
-
-        return csvContent;
-    }
-
-    escapeCSV(value) {
-        if (typeof value !== 'string') return value;
-        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-            return `"${value.replace(/"/g, '""')}"`;
-        }
-        return value;
-    }
-
-    exportToCalendar(tournament) {
-        const icsContent = this.generateICSContent(tournament);
-        return icsContent;
-    }
-
-    generateICSContent(tournament) {
-        const uid = this.generateTournamentId(tournament);
-        const dtstart = this.formatDateForICS(tournament.date);
-        const description = this.cleanDescription(tournament.description || tournament.name);
-
-        const ics = [
-            'BEGIN:VCALENDAR',
-            'VERSION:2.0',
-            'PRODID:-//MedTourney//Chess Tournament Finder//EN',
-            'CALSCALE:GREGORIAN',
-            'METHOD:PUBLISH',
-            'BEGIN:VEVENT',
-            `UID:${uid}`,
-            `DTSTAMP:${this.formatDateForICS(new Date())}`,
-            `DTSTART;VALUE=DATE:${dtstart}`,
-            `SUMMARY:${this.escapeICS(tournament.name)}`,
-            `LOCATION:${this.escapeICS(tournament.location)}`,
-            `DESCRIPTION:${this.escapeICS(description)}`,
-            `URL:${tournament.url}`,
-            'STATUS:CONFIRMED',
-            'SEQUENCE:0',
-            'BEGIN:VALARM',
-            'TRIGGER:-P1D',
-            'ACTION:DISPLAY',
-            `DESCRIPTION:Reminder: ${this.escapeICS(tournament.name)}`,
-            'END:VALARM',
-            'END:VEVENT',
-            'END:VCALENDAR'
-        ].join('\r\n');
-
-        return ics;
-    }
-
-    generateTournamentId(tournament) {
-        const str = `${tournament.name}-${tournament.location}-${tournament.date.toISOString()}`;
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return `medtourney-${Math.abs(hash)}@medtourney.github.io`;
-    }
-
-    formatDateForICS(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-        return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
-    }
-
-    cleanDescription(description) {
-        // Remove HTML tags
-        let cleaned = description.replace(/<[^>]*>/g, '');
-        // Limit length
-        if (cleaned.length > 200) {
-            cleaned = cleaned.substring(0, 197) + '...';
-        }
-        return cleaned;
-    }
-
-    escapeICS(value) {
-        if (typeof value !== 'string') return value;
-        return value
-            .replace(/\\/g, '\\\\')
-            .replace(/;/g, '\\;')
-            .replace(/,/g, '\\,')
-            .replace(/\n/g, '\\n');
-    }
-
-    generateSafeFilename(name) {
-        return name
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '_')
-            .replace(/^_+|_+$/g, '')
-            .substring(0, 50);
+function test(name, fn) {
+    try {
+        fn();
+        console.log(`✅ ${name}`);
+        passed++;
+    } catch (error) {
+        console.log(`❌ ${name}`);
+        console.log(`   Error: ${error.message}`);
+        failed++;
     }
 }
 
-// Test suite
-function runTests() {
-    console.log('\n🧪 Running ExportService Unit Tests\n');
-    console.log('='.repeat(60));
-
-    let passed = 0;
-    let failed = 0;
-
-    function test(name, fn) {
-        try {
-            fn();
-            console.log(`✅ ${name}`);
-            passed++;
-        } catch (error) {
-            console.log(`❌ ${name}`);
-            console.log(`   Error: ${error.message}`);
-            failed++;
-        }
-    }
-
-    function assertEqual(actual, expected, message) {
-        if (actual !== expected) {
-            throw new Error(`${message || 'Assertion failed'}: expected "${expected}", got "${actual}"`);
-        }
-    }
-
-    function assertContains(str, substring, message) {
-        if (!str.includes(substring)) {
-            throw new Error(`${message || 'Assertion failed'}: "${str}" does not contain "${substring}"`);
-        }
-    }
-
-    function assertThrows(fn, message) {
-        let threw = false;
-        try {
-            fn();
-        } catch (e) {
-            threw = true;
-        }
-        if (!threw) {
-            throw new Error(message || 'Expected function to throw');
-        }
-    }
-
-    // Test data
-    const tournament = {
-        name: 'Barcelona Open 2025',
-        location: 'Barcelona, ESP',
-        date: new Date('2025-06-01'),
-        category: 'Open',
-        url: 'https://chess-results.com/tournament123',
-        description: 'International chess tournament in Barcelona'
-    };
-
-    const tournaments = [
-        tournament,
-        {
-            name: 'Athens Rapid',
-            location: 'Athens, GRE',
-            date: new Date('2025-07-15'),
-            category: 'Rapid',
-            url: 'https://chess-results.com/tournament456',
-            description: 'Rapid chess in Athens'
-        }
-    ];
-
-    // Test 1: CSV export with single tournament
-    test('CSV export with single tournament', () => {
-        const service = new ExportService();
-        const csv = service.exportToCSV([tournament]);
-
-        assertContains(csv, 'Name,Location,Date,Category,URL');
-        assertContains(csv, 'Barcelona Open 2025');
-        assertContains(csv, 'Barcelona, ESP');
-    });
-
-    // Test 2: CSV export with multiple tournaments
-    test('CSV export with multiple tournaments', () => {
-        const service = new ExportService();
-        const csv = service.exportToCSV(tournaments);
-
-        const lines = csv.split('\n');
-        assertEqual(lines.length, 3); // Header + 2 tournaments
-        assertContains(csv, 'Barcelona Open 2025');
-        assertContains(csv, 'Athens Rapid');
-    });
-
-    // Test 3: CSV escaping commas
-    test('CSV escaping commas in values', () => {
-        const service = new ExportService();
-        const tournamentWithComma = {
-            ...tournament,
-            name: 'Barcelona Open, 2025'
-        };
-
-        const csv = service.exportToCSV([tournamentWithComma]);
-        assertContains(csv, '"Barcelona Open, 2025"');
-    });
-
-    // Test 4: CSV escaping quotes
-    test('CSV escaping quotes in values', () => {
-        const service = new ExportService();
-        const tournamentWithQuote = {
-            ...tournament,
-            name: 'Barcelona "Premium" Open'
-        };
-
-        const csv = service.exportToCSV([tournamentWithQuote]);
-        assertContains(csv, '"Barcelona ""Premium"" Open"');
-    });
-
-    // Test 5: CSV empty tournaments throws error
-    test('CSV export with empty array throws error', () => {
-        const service = new ExportService();
-        assertThrows(() => service.exportToCSV([]), 'Should throw on empty array');
-    });
-
-    // Test 6: iCalendar generation
-    test('iCalendar generation has correct structure', () => {
-        const service = new ExportService();
-        const ics = service.exportToCalendar(tournament);
-
-        assertContains(ics, 'BEGIN:VCALENDAR');
-        assertContains(ics, 'END:VCALENDAR');
-        assertContains(ics, 'BEGIN:VEVENT');
-        assertContains(ics, 'END:VEVENT');
-        assertContains(ics, 'VERSION:2.0');
-    });
-
-    // Test 7: iCalendar contains tournament data
-    test('iCalendar contains tournament data', () => {
-        const service = new ExportService();
-        const ics = service.exportToCalendar(tournament);
-
-        assertContains(ics, 'SUMMARY:Barcelona Open 2025');
-        assertContains(ics, 'LOCATION:Barcelona\\, ESP');
-        assertContains(ics, 'URL:https://chess-results.com/tournament123');
-    });
-
-    // Test 8: iCalendar has alarm
-    test('iCalendar has 1-day reminder alarm', () => {
-        const service = new ExportService();
-        const ics = service.exportToCalendar(tournament);
-
-        assertContains(ics, 'BEGIN:VALARM');
-        assertContains(ics, 'TRIGGER:-P1D');
-        assertContains(ics, 'ACTION:DISPLAY');
-        assertContains(ics, 'END:VALARM');
-    });
-
-    // Test 9: iCalendar STATUS is CONFIRMED
-    test('iCalendar status is CONFIRMED', () => {
-        const service = new ExportService();
-        const ics = service.exportToCalendar(tournament);
-
-        assertContains(ics, 'STATUS:CONFIRMED');
-    });
-
-    // Test 10: iCalendar uses CRLF line endings
-    test('iCalendar uses CRLF line endings', () => {
-        const service = new ExportService();
-        const ics = service.exportToCalendar(tournament);
-
-        assertContains(ics, '\r\n');
-    });
-
-    // Test 11: Generate unique tournament ID
-    test('Generate unique tournament ID', () => {
-        const service = new ExportService();
-        const id1 = service.generateTournamentId(tournament);
-        const id2 = service.generateTournamentId({
-            ...tournament,
-            name: 'Different Tournament'
-        });
-
-        assertContains(id1, 'medtourney-');
-        assertContains(id1, '@medtourney.github.io');
-
-        // Different tournaments should have different IDs
-        if (id1 === id2) {
-            throw new Error('Different tournaments should have different IDs');
-        }
-    });
-
-    // Test 12: Generate consistent tournament ID
-    test('Generate consistent tournament ID', () => {
-        const service = new ExportService();
-        const id1 = service.generateTournamentId(tournament);
-        const id2 = service.generateTournamentId(tournament);
-
-        assertEqual(id1, id2);
-    });
-
-    // Test 13: Format date for ICS
-    test('Format date for iCalendar correctly', () => {
-        const service = new ExportService();
-        const date = new Date('2025-06-01T00:00:00Z');
-        const formatted = service.formatDateForICS(date);
-
-        assertContains(formatted, '20250601');
-        assertContains(formatted, 'T');
-        assertContains(formatted, 'Z');
-    });
-
-    // Test 14: Clean HTML from description
-    test('Clean HTML tags from description', () => {
-        const service = new ExportService();
-        const dirtyDescription = '<p>Tournament in <b>Barcelona</b></p>';
-        const cleaned = service.cleanDescription(dirtyDescription);
-
-        assertEqual(cleaned, 'Tournament in Barcelona');
-    });
-
-    // Test 15: Limit description length
-    test('Limit description length to 200 characters', () => {
-        const service = new ExportService();
-        const longDescription = 'A'.repeat(300);
-        const cleaned = service.cleanDescription(longDescription);
-
-        assertEqual(cleaned.length, 200);
-        assertContains(cleaned, '...');
-    });
-
-    // Test 16: Escape ICS special characters
-    test('Escape ICS special characters', () => {
-        const service = new ExportService();
-
-        assertEqual(service.escapeICS('Text with, comma'), 'Text with\\, comma');
-        assertEqual(service.escapeICS('Text with; semicolon'), 'Text with\\; semicolon');
-        assertEqual(service.escapeICS('Text with\nNewline'), 'Text with\\nNewline');
-    });
-
-    // Test 17: Generate safe filename
-    test('Generate safe filename from tournament name', () => {
-        const service = new ExportService();
-
-        const filename1 = service.generateSafeFilename('Barcelona Open 2025!');
-        assertEqual(filename1, 'barcelona_open_2025');
-
-        const filename2 = service.generateSafeFilename('Test@#$%Tournament');
-        assertEqual(filename2, 'test_tournament');
-    });
-
-    // Test 18: Safe filename length limit
-    test('Safe filename has length limit', () => {
-        const service = new ExportService();
-        const longName = 'A'.repeat(100);
-        const filename = service.generateSafeFilename(longName);
-
-        if (filename.length > 50) {
-            throw new Error(`Filename too long: ${filename.length} characters`);
-        }
-    });
-
-    console.log('='.repeat(60));
-    console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${passed + failed} total`);
-    console.log(`✨ Pass Rate: ${((passed / (passed + failed)) * 100).toFixed(1)}%\n`);
-
-    return failed === 0 ? 0 : 1;
+function assert(condition, message) {
+    if (!condition) throw new Error(message || 'Assertion failed');
 }
 
-// Run tests
-process.exit(runTests());
+function assertEqual(actual, expected, message) {
+    if (actual !== expected) {
+        throw new Error(`${message || 'Assertion failed'}: expected "${expected}", got "${actual}"`);
+    }
+}
+
+function assertContains(str, substring, message) {
+    if (!str.includes(substring)) {
+        throw new Error(`${message || 'Assertion failed'}: output does not contain "${substring}"`);
+    }
+}
+
+function assertNotContains(str, substring, message) {
+    if (str.includes(substring)) {
+        throw new Error(`${message || 'Assertion failed'}: output unexpectedly contains "${substring}"`);
+    }
+}
+
+function count(haystack, needle) {
+    return haystack.split(needle).length - 1;
+}
+
+// ---------------------------------------------------------------------------
+// Fixtures
+// ---------------------------------------------------------------------------
+const tournament = {
+    name: 'Barcelona Open 2025',
+    location: 'Barcelona, ESP',
+    date: new Date('2025-06-01'),
+    category: 'Open',
+    url: 'https://chess-results.com/tnr123.aspx?lan=1',
+    description: 'International chess tournament in Barcelona',
+};
+
+const tournament2 = {
+    name: 'Athens Rapid',
+    location: 'Athens, GRE',
+    date: new Date('2025-07-15'),
+    category: 'Rapid',
+    url: 'https://chess-results.com/tnr456.aspx?lan=1',
+    description: 'Rapid chess in Athens',
+};
+
+console.log('\n🧪 Running ExportService Unit Tests (REAL production code)\n');
+console.log('='.repeat(60));
+
+// ---------------------------------------------------------------------------
+// CSV
+// ---------------------------------------------------------------------------
+test('CSV: header + single row', () => {
+    const csv = new ExportService().buildCSV([tournament]);
+    assertContains(csv, 'Name,Location,Date,Category,URL');
+    assertContains(csv, 'Barcelona Open 2025');
+    assertContains(csv, '2025-06-01');
+});
+
+test('CSV: multiple tournaments produce header + N rows', () => {
+    const csv = new ExportService().buildCSV([tournament, tournament2]);
+    const lines = csv.split('\n');
+    assertEqual(lines.length, 3, 'Header + 2 rows');
+    assertContains(csv, 'Athens Rapid');
+});
+
+test('CSV: escapes commas', () => {
+    const csv = new ExportService().buildCSV([{ ...tournament, name: 'Barcelona Open, 2025' }]);
+    assertContains(csv, '"Barcelona Open, 2025"');
+});
+
+test('CSV: escapes embedded quotes', () => {
+    const csv = new ExportService().buildCSV([{ ...tournament, name: 'Barcelona "Premium" Open' }]);
+    assertContains(csv, '"Barcelona ""Premium"" Open"');
+});
+
+test('CSV: empty array throws', () => {
+    let threw = false;
+    try { new ExportService().buildCSV([]); } catch { threw = true; }
+    assert(threw, 'Expected buildCSV([]) to throw');
+});
+
+// ---------------------------------------------------------------------------
+// iCalendar — single event
+// ---------------------------------------------------------------------------
+test('ICS: has VCALENDAR wrapper and exactly one VEVENT', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assertContains(ics, 'BEGIN:VCALENDAR');
+    assertContains(ics, 'END:VCALENDAR');
+    assertEqual(count(ics, 'BEGIN:VEVENT'), 1, 'exactly one VEVENT');
+    assertEqual(count(ics, 'END:VEVENT'), 1, 'exactly one END:VEVENT');
+    assertContains(ics, 'VERSION:2.0');
+});
+
+test('ICS: all-day DTSTART uses VALUE=DATE:YYYYMMDD', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assertContains(ics, 'DTSTART;VALUE=DATE:20250601');
+});
+
+test('ICS: DTEND is exclusive (start + 1 day) as VALUE=DATE', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assertContains(ics, 'DTEND;VALUE=DATE:20250602');
+});
+
+test('ICS: does NOT emit invalid VALUE=DATE date-time (no T000000Z)', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assertNotContains(ics, 'DTSTART;VALUE=DATE:20250601T000000Z');
+    // No VALUE=DATE property may carry a time component.
+    assert(!/VALUE=DATE:\d{8}T/.test(ics), 'VALUE=DATE must not include a time component');
+});
+
+test('ICS: DTSTAMP is a UTC date-time YYYYMMDDTHHMMSSZ', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assert(/DTSTAMP:\d{8}T\d{6}Z/.test(ics), 'DTSTAMP must be UTC date-time');
+});
+
+test('ICS: contains stable UID at medtourney.github.io', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assert(/UID:medtourney-[a-z0-9]+@medtourney\.github\.io/.test(ics), 'UID must be stable medtourney UID');
+});
+
+test('ICS: UID is deterministic (no Math.random) across repeated exports', () => {
+    const svc = new ExportService();
+    const uid1 = svc.buildICSForTournament(tournament).match(/UID:(.+)/)[1].trim();
+    const uid2 = svc.buildICSForTournament(tournament).match(/UID:(.+)/)[1].trim();
+    assertEqual(uid1, uid2, 'Same tournament must yield same UID');
+});
+
+test('ICS: different tournaments yield different UIDs', () => {
+    const svc = new ExportService();
+    assert(
+        svc.generateStableUID(tournament) !== svc.generateStableUID(tournament2),
+        'Different tournaments must yield different UIDs'
+    );
+});
+
+test('ICS: escapes commas in SUMMARY/LOCATION', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assertContains(ics, 'LOCATION:Barcelona\\, ESP');
+    assertContains(ics, 'SUMMARY:Barcelona Open 2025');
+});
+
+test('ICS: includes the tournament URL', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assertContains(ics, 'URL:https://chess-results.com/tnr123.aspx?lan=1');
+});
+
+test('ICS: uses CRLF line endings', () => {
+    const ics = new ExportService().buildICSForTournament(tournament);
+    assertContains(ics, '\r\n');
+    assert(ics.startsWith('BEGIN:VCALENDAR\r\n'), 'must use CRLF between lines');
+});
+
+// ---------------------------------------------------------------------------
+// Escaping primitives (RFC 5545 §3.3.11)
+// ---------------------------------------------------------------------------
+test('escapeICS: backslash, semicolon, comma, newline', () => {
+    const svc = new ExportService();
+    assertEqual(svc.escapeICS('a\\b'), 'a\\\\b', 'backslash');
+    assertEqual(svc.escapeICS('a;b'), 'a\\;b', 'semicolon');
+    assertEqual(svc.escapeICS('a,b'), 'a\\,b', 'comma');
+    assertEqual(svc.escapeICS('a\nb'), 'a\\nb', 'newline');
+});
+
+test('escapeICS: backslash escaped before others (no double-escape)', () => {
+    // A real newline must become \n (single backslash), not \\n.
+    const svc = new ExportService();
+    assertEqual(svc.escapeICS('line1\nline2'), 'line1\\nline2');
+});
+
+// ---------------------------------------------------------------------------
+// Date format helpers
+// ---------------------------------------------------------------------------
+test('formatICSDateOnly: YYYYMMDD in UTC', () => {
+    assertEqual(new ExportService().formatICSDateOnly(new Date('2025-06-01')), '20250601');
+});
+
+test('formatICSDateTimeUTC: YYYYMMDDTHHMMSSZ in UTC', () => {
+    assertEqual(
+        new ExportService().formatICSDateTimeUTC(new Date('2025-06-01T09:30:15Z')),
+        '20250601T093015Z'
+    );
+});
+
+// ---------------------------------------------------------------------------
+// iCalendar — multiple events (shortlist)
+// ---------------------------------------------------------------------------
+test('Multi-ICS: one VCALENDAR, multiple VEVENT', () => {
+    const ics = new ExportService().buildICSForTournaments([tournament, tournament2]);
+    assertEqual(count(ics, 'BEGIN:VCALENDAR'), 1, 'one VCALENDAR');
+    assertEqual(count(ics, 'BEGIN:VEVENT'), 2, 'two VEVENT');
+});
+
+test('Multi-ICS: each event has a distinct stable UID', () => {
+    const ics = new ExportService().buildICSForTournaments([tournament, tournament2]);
+    const uids = (ics.match(/UID:[^\r\n]+/g) || []).map(u => u.trim());
+    assertEqual(uids.length, 2, 'two UIDs');
+    assert(uids[0] !== uids[1], 'UIDs must be distinct');
+});
+
+test('Multi-ICS: all-day dates + CRLF', () => {
+    const ics = new ExportService().buildICSForTournaments([tournament, tournament2]);
+    assertContains(ics, 'DTSTART;VALUE=DATE:20250601');
+    assertContains(ics, 'DTSTART;VALUE=DATE:20250715');
+    assertContains(ics, '\r\n');
+});
+
+test('Multi-ICS: empty array throws', () => {
+    let threw = false;
+    try { new ExportService().buildICSForTournaments([]); } catch { threw = true; }
+    assert(threw, 'Expected buildICSForTournaments([]) to throw');
+});
+
+// ---------------------------------------------------------------------------
+console.log('='.repeat(60));
+console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${passed + failed} total`);
+console.log(`✨ Pass Rate: ${((passed / (passed + failed)) * 100).toFixed(1)}%\n`);
+process.exit(failed === 0 ? 0 : 1);

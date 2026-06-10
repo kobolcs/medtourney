@@ -72,6 +72,10 @@ class TournamentProcessor:
     ROBOT_LIBRARY_SCOPE: ClassVar[str] = "GLOBAL"
     MINIMUM_SENIOR_AGE: ClassVar[int] = 50  # Minimum age for senior tournaments
 
+    # Number of months ahead the scraper searches (kept in sync with
+    # scrape_tournaments.robot ${DATE_RANGE_MONTHS}).
+    RANGE_MONTHS: ClassVar[int] = 6
+
     def __init__(self) -> None:
         """Initialize the TournamentProcessor with empty tournament list."""
         self.logger = logging.getLogger(__name__)
@@ -79,6 +83,15 @@ class TournamentProcessor:
         self.european_countries: Set[str] = set()
         self.non_european_countries: Set[str] = set()
         self.mediterranean_locations: Set[str] = set()
+        # Stats from the most recent load_and_filter_tournaments() run, used to
+        # emit a metadata sidecar file for data-freshness/observability.
+        self.last_run_stats: Dict[str, int] = {
+            "rawRows": 0,
+            "keptRows": 0,
+            "excludedPast": 0,
+            "excludedNonEuropean": 0,
+            "excludedInvalid": 0,
+        }
         # Load configuration from config.json
         self._load_config()
 
@@ -285,11 +298,18 @@ class TournamentProcessor:
 
         tournaments: List[Dict[str, Any]] = []
 
+        # Reset per-run stats.
+        raw_rows = 0
+        excluded_past = 0
+        excluded_non_european = 0
+        excluded_invalid = 0
+
         # Calculate tomorrow once (not in loop) - PERFORMANCE FIX
         tomorrow: datetime = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
         # Process each row (data starts at row 5)
         for row_idx, row in enumerate(sheet.iter_rows(min_row=5, values_only=True), start=5):
+            raw_rows += 1
             try:
                 # Extract row data
                 row_data = self._extract_row_data(
@@ -303,8 +323,10 @@ class TournamentProcessor:
 
                 # Skip empty rows or non-European countries
                 if not name or name in {"None", ""}:
+                    excluded_invalid += 1
                     continue
                 if fed and fed.lower() in self.non_european_countries:
+                    excluded_non_european += 1
                     continue
 
                 # Process location
@@ -313,10 +335,12 @@ class TournamentProcessor:
                 # Parse and filter date
                 parsed_date: datetime = self._parse_date(row_data["date_value"])
                 if parsed_date < tomorrow:
+                    excluded_past += 1
                     continue
 
                 # Filter: only European tournaments
                 if not self._is_european(location):
+                    excluded_non_european += 1
                     continue
 
                 # Determine category and build URL
@@ -336,13 +360,52 @@ class TournamentProcessor:
                 tournaments.append(tournament)
 
             except Exception as e:
+                excluded_invalid += 1
                 self.logger.debug("Error processing row %d: %s", row_idx, e)
                 continue
 
         workbook.close()
 
         self.tournaments = tournaments
+        self.last_run_stats = {
+            "rawRows": raw_rows,
+            "keptRows": len(tournaments),
+            "excludedPast": excluded_past,
+            "excludedNonEuropean": excluded_non_european,
+            "excludedInvalid": excluded_invalid,
+        }
         return tournaments
+
+    @keyword("Export Metadata")
+    def export_metadata(self, output_file: str) -> Dict[str, Any]:
+        """Write a metadata sidecar describing the most recent scrape run.
+
+        Captures provenance and filtering stats so consumers can reason about
+        data freshness and coverage. Call after load_and_filter_tournaments().
+
+        Args:
+            output_file: Path to the metadata JSON file to write
+                (e.g. tournaments_data_meta.json).
+
+        Returns:
+            The metadata dictionary that was written.
+        """
+        metadata: Dict[str, Any] = {
+            "generatedAt": datetime.now(timezone.utc).isoformat(),
+            "source": "chess-results.com",
+            "rangeMonths": self.RANGE_MONTHS,
+            "rawRows": self.last_run_stats.get("rawRows", 0),
+            "keptRows": self.last_run_stats.get("keptRows", 0),
+            "excludedPast": self.last_run_stats.get("excludedPast", 0),
+            "excludedNonEuropean": self.last_run_stats.get("excludedNonEuropean", 0),
+            "excludedInvalid": self.last_run_stats.get("excludedInvalid", 0),
+        }
+
+        output_path = Path(output_file)
+        with output_path.open("w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=2, ensure_ascii=False)
+
+        return metadata
 
     @keyword("Export To JSON")
     def export_to_json(self, tournaments: Any, output_file: str) -> None:

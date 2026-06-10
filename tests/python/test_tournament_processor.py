@@ -630,6 +630,50 @@ class TestTournamentProcessor:
         assert not any("moscow" in loc.lower() for loc in locations)
 
 
+    # ========== Scrape Metadata Tests ==========
+
+    def test_load_populates_run_stats(self, processor, sample_excel_file):
+        """load_and_filter_tournaments records per-run filtering stats."""
+        tournaments = processor.load_and_filter_tournaments(sample_excel_file)
+        stats = processor.last_run_stats
+
+        # kept matches the returned list
+        assert stats["keptRows"] == len(tournaments)
+        # rawRows accounts for every processed row (kept + all exclusions)
+        assert stats["rawRows"] >= stats["keptRows"]
+        assert stats["rawRows"] == (
+            stats["keptRows"]
+            + stats["excludedPast"]
+            + stats["excludedNonEuropean"]
+            + stats["excludedInvalid"]
+        )
+        # The sample sheet contains past and non-European rows that get excluded.
+        assert stats["excludedPast"] >= 1
+        assert stats["excludedNonEuropean"] >= 1
+
+    def test_export_metadata_writes_expected_fields(self, processor, sample_excel_file, tmp_path):
+        """export_metadata writes a sidecar with the documented schema."""
+        processor.load_and_filter_tournaments(sample_excel_file)
+
+        meta_file = tmp_path / "tournaments_data_meta.json"
+        returned = processor.export_metadata(str(meta_file))
+
+        assert meta_file.exists()
+        with meta_file.open(encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert data == returned
+        for key in (
+            "generatedAt", "source", "rangeMonths", "rawRows", "keptRows",
+            "excludedPast", "excludedNonEuropean", "excludedInvalid",
+        ):
+            assert key in data, f"metadata missing key: {key}"
+
+        assert data["source"] == "chess-results.com"
+        assert data["rangeMonths"] == processor.RANGE_MONTHS
+        assert data["keptRows"] == processor.last_run_stats["keptRows"]
+
+
     # ========== JSON Export Tests ==========
 
     def test_export_to_json(self, processor, sample_tournaments, tmp_path):

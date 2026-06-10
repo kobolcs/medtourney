@@ -22,6 +22,7 @@ Scrape European Chess Tournaments
     Download Tournament Data
     ${tournaments}=    Process Downloaded Excel
     Export Tournaments To JSON    ${tournaments}
+    Export Tournament Metadata
     [Teardown]    Close Browser
 
 *** Keywords ***
@@ -98,3 +99,8 @@ Export Tournaments To JSON
     [Arguments]    ${tournaments}
     Export To JSON    ${tournaments}    ${CURDIR}/tournaments_data.json
     Log    Exported tournaments to tournaments_data.json
+
+Export Tournament Metadata
+    [Documentation]    Write a metadata sidecar (provenance + filtering stats)
+    Export Metadata    ${CURDIR}/tournaments_data_meta.json
+    Log    Exported scrape metadata to tournaments_data_meta.json

@@ -35,6 +35,10 @@ class LocalStorageMock {
 
 global.localStorage = new LocalStorageMock();
 
+// Load the REAL production ExportService (compiled to dist-test/).
+const { loadProductionModule } = require('../helpers/production');
+const { ExportService } = loadProductionModule('services/ExportService.js');
+
 // Mock Tournament structure
 class Tournament {
     constructor(name, date, location, category, description, url) {
@@ -110,9 +114,10 @@ class Phase2FeatureTester {
     }
 
     /**
-     * Test Calendar Export - Generate Tournament ID
+     * Test Calendar Export - Stable Tournament UID (REAL ExportService)
      */
     testGenerateTournamentId() {
+        const svc = new ExportService();
         const tournament = new Tournament(
             'Barcelona Open 2025',
             new Date('2025-03-15'),
@@ -122,22 +127,17 @@ class Phase2FeatureTester {
             'https://chess-results.com/test'
         );
 
-        const str = `${tournament.name}-${tournament.date.toISOString()}-${tournament.location}`;
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        const id = Math.abs(hash).toString(36);
-
-        return id.length > 0 && typeof id === 'string';
+        const id1 = svc.generateStableUID(tournament);
+        const id2 = svc.generateStableUID(tournament);
+        // Deterministic + correct domain, and no randomness.
+        return id1 === id2 && /^medtourney-[a-z0-9]+@medtourney\.github\.io$/.test(id1);
     }
 
     /**
-     * Test Calendar Export - iCal Format
+     * Test Calendar Export - iCal Format (REAL ExportService)
      */
     testGenerateICalContent() {
+        const svc = new ExportService();
         const tournament = new Tournament(
             'Test Tournament',
             new Date('2025-06-15'),
@@ -147,44 +147,24 @@ class Phase2FeatureTester {
             'https://example.com'
         );
 
-        const formatICalDate = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}${month}${day}T090000Z`;
-        };
+        const ics = svc.buildICSForTournament(tournament);
 
-        const dtStart = formatICalDate(tournament.date);
-
-        const icsContent = [
-            'BEGIN:VCALENDAR',
-            'VERSION:2.0',
-            'PRODID:-//MedTourney//Chess Tournament Finder//EN',
-            'BEGIN:VEVENT',
-            `DTSTART:${dtStart}`,
-            `SUMMARY:${tournament.name}`,
-            `LOCATION:${tournament.location}`,
-            'END:VEVENT',
-            'END:VCALENDAR'
-        ].join('\r\n');
-
-        return icsContent.includes('BEGIN:VCALENDAR') &&
-               icsContent.includes('BEGIN:VEVENT') &&
-               icsContent.includes('Test Tournament') &&
-               icsContent.includes('20250615T090000Z');
+        return ics.includes('BEGIN:VCALENDAR') &&
+               ics.includes('BEGIN:VEVENT') &&
+               ics.includes('SUMMARY:Test Tournament') &&
+               // all-day VALUE=DATE, NOT a date-time
+               ics.includes('DTSTART;VALUE=DATE:20250615') &&
+               !/VALUE=DATE:\d{8}T/.test(ics);
     }
 
     /**
-     * Test Calendar Export - Date Formatting
+     * Test Calendar Export - Date Formatting (REAL ExportService)
      */
     testICalDateFormatting() {
-        const date = new Date('2025-03-15T12:00:00Z');
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const formatted = `${year}${month}${day}T090000Z`;
-
-        return formatted === '20250315T090000Z';
+        const svc = new ExportService();
+        // All-day date is YYYYMMDD (UTC); DTSTAMP is a UTC date-time.
+        return svc.formatICSDateOnly(new Date('2025-03-15T12:00:00Z')) === '20250315' &&
+               svc.formatICSDateTimeUTC(new Date('2025-03-15T09:00:00Z')) === '20250315T090000Z';
     }
 
     /**
@@ -263,40 +243,33 @@ class Phase2FeatureTester {
     }
 
     /**
-     * Test Calendar Export - Filename Generation
+     * Test Calendar Export - DTEND is exclusive (start + 1 day) (REAL ExportService)
      */
     testGenerateCalendarFilename() {
+        const svc = new ExportService();
         const tournament = new Tournament(
-            'Barcelona Open 2025!',
+            'Barcelona Open 2025',
             new Date('2025-03-15'),
             'Barcelona, ESP',
             'Open',
             'Test',
             'https://example.com'
         );
-
-        const filename = tournament.name
-            .replace(/[^a-z0-9]/gi, '-')
-            .toLowerCase()
-            .substring(0, 50);
-
-        return filename === 'barcelona-open-2025-' &&
-               filename.length <= 50;
+        const ics = svc.buildICSForTournament(tournament);
+        // All-day event: DTEND is the day after DTSTART.
+        return ics.includes('DTSTART;VALUE=DATE:20250315') &&
+               ics.includes('DTEND;VALUE=DATE:20250316');
     }
 
     /**
-     * Test Calendar Export - Description Cleaning
+     * Test Calendar Export - ICS text escaping (REAL ExportService)
      */
     testCleanDescriptionForICS() {
-        const description = '<p>Test tournament</p>\nWith newlines';
-        const cleaned = description
-            .replace(/<[^>]*>/g, '')  // Remove HTML
-            .replace(/\n/g, '\\n')    // Escape newlines
-            .substring(0, 500);       // Limit length
-
-        return cleaned === 'Test tournament\\nWith newlines' &&
-               !cleaned.includes('<p>') &&
-               cleaned.includes('\\n');
+        const svc = new ExportService();
+        // A real newline must become a single-backslash \n (RFC 5545), and
+        // commas/semicolons must be escaped.
+        return svc.escapeICS('line1\nline2') === 'line1\\nline2' &&
+               svc.escapeICS('a, b; c') === 'a\\, b\\; c';
     }
 
     /**

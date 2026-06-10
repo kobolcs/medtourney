@@ -1,0 +1,21 @@
+{
+  "//": "Compiles selected production sources to CommonJS so Node-based unit tests can require and exercise the REAL implementation (not duplicated fakes).",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist-test",
+    "rootDir": "./src",
+    "removeComments": false,
+    "sourceMap": false,
+    "noEmit": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": [
+    "src/services/ExportService.ts",
+    "src/services/FilterService.ts",
+    "src/types.ts"
+  ],
+  "exclude": []
+}
