@@ -24,14 +24,14 @@ class TournamentFinder {
             this.initCollapsibleFilters();
             await this.loadConfig();
             const today = new Date();
-            const threeMonthsLater = new Date(today);
-            threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+            const sixMonthsLater = new Date(today);
+            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
             const startDateElement = document.getElementById('startDate');
             const endDateElement = document.getElementById('endDate');
             if (startDateElement)
                 startDateElement.valueAsDate = today;
             if (endDateElement)
-                endDateElement.valueAsDate = threeMonthsLater;
+                endDateElement.valueAsDate = sixMonthsLater;
             this.loadFilterPreferences();
             this.attachEventListeners();
             this.initKeyboardNavigation();
@@ -70,6 +70,7 @@ class TournamentFinder {
             });
         }
         this.attachFilterChangeListeners();
+        this.initCalendarExportDelegation();
     }
     async loadConfig() {
         try {
@@ -216,7 +217,6 @@ class TournamentFinder {
             this.filteredTournaments = this.filterService.filterTournaments(tournaments, filterState, this.mediterraneanLocations);
             this.filteredTournaments = this.filterService.sortTournaments(this.filteredTournaments, this.currentSort);
             this.uiManager.displayTournaments(this.filteredTournaments);
-            this.attachCalendarExportListeners();
         }
         catch (error) {
             this.logger.error('Tournament search failed', error, {
@@ -231,7 +231,6 @@ class TournamentFinder {
         if (this.filteredTournaments.length > 0) {
             this.filteredTournaments = this.filterService.sortTournaments(this.filteredTournaments, sortBy);
             this.uiManager.updateDisplayedTournaments(this.filteredTournaments);
-            this.attachCalendarExportListeners();
         }
     }
     searchWithinResults(query) {
@@ -244,7 +243,6 @@ class TournamentFinder {
                 tournament.location.toLowerCase().includes(lowerQuery));
             this.uiManager.updateDisplayedTournaments(searchResults);
         }
-        this.attachCalendarExportListeners();
     }
     exportToCSV() {
         if (this.filteredTournaments.length === 0) {
@@ -264,28 +262,20 @@ class TournamentFinder {
             this.uiManager.showError('Failed to export CSV. Please try again.');
         }
     }
-    attachCalendarExportListeners() {
-        const calendarButtons = document.querySelectorAll('.btn-calendar');
-        calendarButtons.forEach((btn) => {
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode?.replaceChild(newBtn, btn);
-            newBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tournamentList = document.getElementById('tournamentList');
-                if (!tournamentList)
-                    return;
-                const cards = tournamentList.querySelectorAll('.tournament-card');
-                const tournamentCard = newBtn.closest('.tournament-card');
-                if (!tournamentCard)
-                    return;
-                const cardIndex = Array.from(cards).indexOf(tournamentCard);
-                if (cardIndex >= 0 && cardIndex < this.filteredTournaments.length) {
-                    const tournament = this.filteredTournaments[cardIndex];
-                    if (tournament) {
-                        this.exportService.exportToCalendar(tournament);
-                    }
-                }
-            });
+    initCalendarExportDelegation() {
+        const tournamentList = document.getElementById('tournamentList');
+        if (!tournamentList)
+            return;
+        tournamentList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.calendar-export-btn');
+            if (!btn)
+                return;
+            e.preventDefault();
+            const index = parseInt(btn.dataset.tournamentIndex ?? '-1', 10);
+            const tournament = this.uiManager.getTournamentByIndex(index);
+            if (tournament) {
+                this.exportService.exportToCalendar(tournament);
+            }
         });
     }
     initKeyboardNavigation() {
