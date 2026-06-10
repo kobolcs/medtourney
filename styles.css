@@ -1133,3 +1133,342 @@ a:focus-visible {
         width: 100%;
     }
 }
+
+/* ========================================
+   PHASE 2 & 3: Confidence Badges, Travel Tags,
+   Shortlist, Date Presets
+   ======================================== */
+
+/* TOURNAMENT HEADER: right-side grouping for date + shortlist star */
+.tournament-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+/* SHORTLIST BUTTON */
+.shortlist-btn {
+    background: none;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #999;
+    transition: all 0.2s;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.shortlist-btn:hover {
+    border-color: #f4a261;
+    color: #f4a261;
+    transform: scale(1.1);
+}
+
+.shortlist-btn.shortlisted {
+    border-color: #f4a261;
+    color: #f4a261;
+    background: rgba(244, 162, 97, 0.1);
+}
+
+.shortlist-btn.shortlisted .shortlist-star {
+    color: #f4a261;
+}
+
+.shortlist-star {
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* TRAVEL TAGS */
+.travel-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.travel-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: #e8f4f8;
+    color: #1a6a8a;
+    border: 1px solid #b8d9e8;
+}
+
+/* CLASSIFICATION DETAILS (why shown) */
+.classification-details {
+    margin: 8px 0;
+    font-size: 0.85rem;
+}
+
+.classification-details summary {
+    cursor: pointer;
+    user-select: none;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    padding: 4px 0;
+}
+
+.classification-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.classification-details summary::before {
+    content: "▶";
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+    color: #999;
+}
+
+.classification-details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.classification-details summary:hover {
+    color: var(--secondary-color);
+}
+
+/* CONFIDENCE BADGE */
+.confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.confidence-high {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.confidence-medium {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.confidence-low {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+}
+
+/* CLASSIFICATION REASON CHIPS */
+.classification-reasons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 6px 0 4px 16px;
+}
+
+.reason-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: #f0f4ff;
+    color: #3a5a8a;
+    border: 1px solid #c8d8f0;
+}
+
+/* DATE PRESETS */
+.date-presets {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.date-presets-label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.date-preset-btn {
+    background: #f0f4ff;
+    color: #3a5a8a;
+    border: 1px solid #c8d8f0;
+    padding: 5px 12px;
+    border-radius: 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.date-preset-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+/* SHORTLIST CONTROLS (in results header) */
+.shortlist-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.shortlist-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+    user-select: none;
+}
+
+.shortlist-toggle-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* EXPORT SHORTLIST BUTTON */
+.export-shortlist-btn {
+    background: linear-gradient(135deg, #f4a261, #e76f51);
+    position: relative;
+}
+
+.export-shortlist-btn:hover {
+    background: linear-gradient(135deg, #e76f51, #d4603f);
+}
+
+.shortlist-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.9);
+    color: #e76f51;
+    font-size: 0.72rem;
+    font-weight: 800;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+/* DARK THEME OVERRIDES */
+.dark-theme .shortlist-btn {
+    border-color: #404040;
+    color: #888;
+}
+
+.dark-theme .shortlist-btn.shortlisted {
+    border-color: #f4a261;
+    color: #f4a261;
+    background: rgba(244, 162, 97, 0.15);
+}
+
+.dark-theme .travel-tag {
+    background: #1a3040;
+    color: #7ec8e3;
+    border-color: #2a5060;
+}
+
+.dark-theme .confidence-high {
+    background: #1a3a1a;
+    color: #5cb85c;
+    border-color: #2a5a2a;
+}
+
+.dark-theme .confidence-medium {
+    background: #3a2a00;
+    color: #ffd060;
+    border-color: #5a4000;
+}
+
+.dark-theme .confidence-low {
+    background: #2a2a2a;
+    color: #888;
+    border-color: #404040;
+}
+
+.dark-theme .reason-chip {
+    background: #1a2a3a;
+    color: #7eb8e8;
+    border-color: #2a4a6a;
+}
+
+.dark-theme .classification-details summary {
+    color: #999;
+}
+
+.dark-theme .date-preset-btn {
+    background: #1a2a3a;
+    color: #7eb8e8;
+    border-color: #2a4a6a;
+}
+
+.dark-theme .date-preset-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.dark-theme .shortlist-toggle-label {
+    color: #ccc;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+    .tournament-header-right {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+
+    .shortlist-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+
+    .shortlist-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .date-presets {
+        gap: 6px;
+    }
+
+    .date-preset-btn {
+        padding: 7px 14px;
+        min-height: 36px;
+        font-size: 0.85rem;
+    }
+
+    .export-shortlist-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

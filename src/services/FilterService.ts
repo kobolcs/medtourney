@@ -144,6 +144,39 @@ export class FilterService {
         });
     }
 
+    /**
+     * Annotate a tournament with classification confidence, reasons, and travel tags.
+     * Call after filtering so only displayed tournaments are annotated.
+     */
+    annotate(tournament: Tournament, mediterraneanLocations: Set<string>): Tournament {
+        const cat = tournament.category.toLowerCase();
+        const name = tournament.name.toLowerCase();
+        const loc = tournament.location.toLowerCase();
+
+        const reasons: string[] = [];
+        const tags: string[] = [];
+
+        if (this.isOpenCategory(cat)) reasons.push('Open to all');
+        if (this.isSeniorCategory(cat, name)) reasons.push('Senior (S50+)');
+        if (this.isWomenTournament(cat, name)) reasons.push("Women's");
+        if (this.isClassicalTime(cat)) reasons.push('Classical');
+        if (this.isRapidTime(cat)) reasons.push('Rapid');
+        if (this.isBlitzTime(cat)) reasons.push('Blitz');
+
+        if (this.isMediterraneanLocation(loc, mediterraneanLocations)) {
+            tags.push('Mediterranean');
+            tags.push('Seaside');
+        }
+        if (this.isSeniorCategory(cat, name)) tags.push('Senior-friendly');
+        if (this.isClassicalTime(cat)) tags.push('Classical');
+        if (this.isRapidTime(cat)) tags.push('Rapid');
+
+        const confidence: 'high' | 'medium' | 'low' =
+            reasons.length >= 2 ? 'high' : reasons.length === 1 ? 'medium' : 'low';
+
+        return { ...tournament, classificationReasons: reasons, travelTags: tags, classificationConfidence: confidence };
+    }
+
     // Category detection methods
 
     private isOpenCategory(category: string): boolean {

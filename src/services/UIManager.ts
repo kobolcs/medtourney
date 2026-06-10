@@ -16,6 +16,38 @@ export class UIManager {
     private currentPage = 1;
     private itemsPerPage = 10;
     private filteredTournaments: Tournament[] = [];
+    private shortlistedUrls: Set<string> = new Set();
+
+    setShortlistedUrls(urls: Set<string>): void {
+        this.shortlistedUrls = new Set(urls);
+    }
+
+    refreshShortlistButtons(shortlistedUrls: Set<string>): void {
+        this.shortlistedUrls = new Set(shortlistedUrls);
+        document.querySelectorAll<HTMLElement>('.shortlist-btn').forEach(btn => {
+            const url = btn.dataset.tournamentUrl;
+            if (!url) return;
+            const isShortlisted = shortlistedUrls.has(url);
+            btn.classList.toggle('shortlisted', isShortlisted);
+            btn.setAttribute('aria-pressed', String(isShortlisted));
+            const star = btn.querySelector('.shortlist-star');
+            if (star) star.textContent = isShortlisted ? '★' : '☆';
+            btn.setAttribute('aria-label',
+                `${isShortlisted ? 'Remove from' : 'Add to'} shortlist: ${btn.dataset.tournamentName ?? ''}`);
+        });
+    }
+
+    updateShortlistCount(count: number): void {
+        const badge = document.getElementById('shortlistCount');
+        if (badge) {
+            badge.textContent = String(count);
+            badge.style.display = count > 0 ? 'inline-flex' : 'none';
+        }
+        const exportShortlistBtn = document.getElementById('exportShortlistBtn') as HTMLButtonElement | null;
+        if (exportShortlistBtn) {
+            exportShortlistBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+        }
+    }
 
     /**
      * Show loading spinner
@@ -168,13 +200,40 @@ export class UIManager {
             year: 'numeric'
         });
 
+        const isShortlisted = this.shortlistedUrls.has(tournament.url);
+        const confidence = tournament.classificationConfidence;
+        const reasons = tournament.classificationReasons ?? [];
+        const tags = tournament.travelTags ?? [];
+
+        const travelTagsHTML = tags.length > 0
+            ? `<div class="travel-tags">${tags.map(t => `<span class="travel-tag">${this.escapeHTML(t)}</span>`).join('')}</div>`
+            : '';
+
+        const classificationHTML = confidence
+            ? `<details class="classification-details">
+                <summary>Why shown? <span class="confidence-badge confidence-${confidence}">${confidence}</span></summary>
+                <div class="classification-reasons">${reasons.map(r => `<span class="reason-chip">${this.escapeHTML(r)}</span>`).join('')}</div>
+               </details>`
+            : '';
+
         card.innerHTML = `
             <div class="tournament-header">
                 <h3 class="tournament-name">${this.escapeHTML(tournament.name)}</h3>
-                <span class="tournament-date">${dateStr}</span>
+                <div class="tournament-header-right">
+                    <span class="tournament-date">${dateStr}</span>
+                    <button class="shortlist-btn${isShortlisted ? ' shortlisted' : ''}"
+                            data-tournament-url="${this.escapeHTML(tournament.url)}"
+                            data-tournament-name="${this.escapeHTML(tournament.name)}"
+                            aria-pressed="${isShortlisted}"
+                            aria-label="${isShortlisted ? 'Remove from' : 'Add to'} shortlist: ${this.escapeHTML(tournament.name)}">
+                        <span class="shortlist-star">${isShortlisted ? '★' : '☆'}</span>
+                    </button>
+                </div>
             </div>
             <div class="tournament-location">${this.escapeHTML(tournament.location)}</div>
             <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
+            ${travelTagsHTML}
+            ${classificationHTML}
             <p class="tournament-description">${this.escapeHTML(tournament.description)}</p>
             <div class="tournament-actions">
                 <a href="${tournament.url}"
