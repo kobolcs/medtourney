@@ -412,6 +412,10 @@ class TournamentFinder {
             const tournaments = await this.dataService.fetchTournaments();
             this.allTournaments = tournaments;
 
+            // Invalidate the filter cache: results are keyed only on filter
+            // state, so a fresh data set must not reuse stale cached results.
+            this.filterService.clearCache();
+
             // Apply filters
             const filterState = this.getFilterState();
             this.filteredTournaments = this.filterService.filterTournaments(

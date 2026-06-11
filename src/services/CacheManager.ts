@@ -135,15 +135,14 @@ export class CacheManager {
      * Get filters collapsed state
      */
     getFiltersCollapsed(): boolean {
-        const collapsed = this.loadFromCache<string>(this.CACHE_KEYS.FILTERS_COLLAPSED);
-        return collapsed === 'true';
+        return this.loadFromCache<boolean>(this.CACHE_KEYS.FILTERS_COLLAPSED) === true;
     }
 
     /**
      * Save filters collapsed state
      */
     saveFiltersCollapsed(collapsed: boolean): void {
-        localStorage.setItem(this.CACHE_KEYS.FILTERS_COLLAPSED, collapsed.toString());
+        this.saveToCache(this.CACHE_KEYS.FILTERS_COLLAPSED, collapsed);
     }
 
     /**
