@@ -22,8 +22,8 @@ def main() -> int:
     Executes the scrape_tournaments.robot file using the robot command,
     which automates the following process:
     1. Opens chess-results.com search page
-    2. Fills in the search form (next 3 months)
-    3. Downloads up to 2000 tournament results as Excel
+    2. Fills in the search form (next 6 months)
+    3. Downloads up to 5000 tournament results as Excel
     4. Processes and filters for European tournaments only
     5. Exports to tournaments_data.json
 

@@ -3,8 +3,11 @@ import legacy from '@vitejs/plugin-legacy';
 import compression from 'vite-plugin-compression';
 
 export default defineConfig({
-  // Base public path when deployed
-  base: '/medtourney/',
+  // Base public path when deployed.
+  // Production/GitHub Pages is served under /medtourney/. For E2E (Playwright)
+  // we build/serve at the server root so `page.goto('/')` works against a
+  // production-equivalent bundle. Set E2E=1 to opt into the root base.
+  base: process.env.E2E === '1' ? '/' : '/medtourney/',
 
   // Build configuration
   build: {
@@ -59,7 +62,8 @@ export default defineConfig({
   // Preview server (for testing production build)
   preview: {
     port: 4173,
-    open: true,
+    // Don't try to launch a browser when Playwright drives the preview server.
+    open: process.env.E2E !== '1',
   },
 
   // Plugins

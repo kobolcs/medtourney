@@ -51,8 +51,14 @@ class TournamentFinder {
     private mediterraneanLocations: Set<string>;
 
     // Tournament data
+    // - allTournaments: the full fetched set (used for shortlist resolution)
+    // - filteredTournaments: after filters + sort + annotation
+    // - displayedTournaments: what the user actually sees, after the
+    //   shortlist-only toggle and quick-search are applied (this is what
+    //   CSV export operates on)
     private allTournaments: Tournament[];
     private filteredTournaments: Tournament[];
+    private displayedTournaments: Tournament[];
 
     // Sorting state
     private currentSort: SortOption;
@@ -75,6 +81,7 @@ class TournamentFinder {
 
         this.allTournaments = [];
         this.filteredTournaments = [];
+        this.displayedTournaments = [];
         this.currentSort = 'date-asc';
         this.shortlist = new Set();
 
@@ -118,6 +125,13 @@ class TournamentFinder {
             // Load shortlist from localStorage
             this.loadShortlist();
             this.uiManager.updateShortlistCount(this.shortlist.size);
+
+            // If the user returns with a saved shortlist, preload tournament
+            // data in the background so "Export Shortlist" works immediately
+            // after a reload (without forcing them to run a search first).
+            if (this.shortlist.size > 0) {
+                void this.preloadTournamentData();
+            }
 
             // Attach event listeners
             this.attachEventListeners();
@@ -195,7 +209,7 @@ class TournamentFinder {
         // Export shortlist to ICS
         const exportShortlistBtn = document.getElementById('exportShortlistBtn');
         if (exportShortlistBtn) {
-            exportShortlistBtn.addEventListener('click', () => this.exportShortlistToCalendar());
+            exportShortlistBtn.addEventListener('click', () => void this.exportShortlistToCalendar());
         }
     }
 
@@ -275,16 +289,33 @@ class TournamentFinder {
 
         const filterTitle = document.querySelector('.filters-card h2') as HTMLElement | null;
         if (filterTitle && filtersCard) {
+            // Make the heading an operable, keyboard-accessible toggle button
+            // (WCAG 2.1.1 Keyboard + 4.1.2 Name, Role, Value).
             filterTitle.style.cursor = 'pointer';
-            filterTitle.addEventListener('click', () => {
+            filterTitle.setAttribute('role', 'button');
+            filterTitle.setAttribute('tabindex', '0');
+            const startCollapsed = filtersCard.classList.contains('collapsed');
+            filterTitle.setAttribute('aria-expanded', startCollapsed ? 'false' : 'true');
+
+            const toggleFilters = (): void => {
                 const isCollapsed = filtersCard.classList.toggle('collapsed');
-                filtersCard.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+                const expanded = isCollapsed ? 'false' : 'true';
+                filtersCard.setAttribute('aria-expanded', expanded);
+                filterTitle.setAttribute('aria-expanded', expanded);
 
                 // Save state
                 this.cacheManager.saveToCache(
                     this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED,
                     isCollapsed ? 'collapsed' : 'expanded'
                 );
+            };
+
+            filterTitle.addEventListener('click', toggleFilters);
+            filterTitle.addEventListener('keydown', (e: KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    toggleFilters();
+                }
             });
         }
     }
@@ -491,29 +522,55 @@ class TournamentFinder {
             );
         }
 
+        this.displayedTournaments = toDisplay;
         this.uiManager.setShortlistedUrls(this.shortlist);
         this.uiManager.displayTournaments(toDisplay);
     }
 
     /**
-     * Export tournaments to CSV
+     * Export the currently displayed tournaments to CSV.
+     * Exports exactly what the user sees — i.e. after the shortlist-only
+     * toggle and quick-search have been applied — not the hidden superset.
      */
     private exportToCSV(): void {
-        if (this.filteredTournaments.length === 0) {
-            this.uiManager.showError('No tournaments to export');
+        if (this.displayedTournaments.length === 0) {
+            this.uiManager.showError('No tournaments to export. Adjust your filters or search first.', 'warning');
             return;
         }
 
         try {
-            this.exportService.exportToCSV(this.filteredTournaments);
+            this.exportService.exportToCSV(this.displayedTournaments);
             this.logger.info('CSV export successful', {
-                tournamentCount: this.filteredTournaments.length
+                tournamentCount: this.displayedTournaments.length
             });
+            const count = this.displayedTournaments.length;
+            this.uiManager.showError(
+                `Exported ${count} tournament${count !== 1 ? 's' : ''} to CSV`,
+                'success'
+            );
         } catch (error) {
             this.logger.error('CSV export failed', error, {
-                tournamentCount: this.filteredTournaments.length
+                tournamentCount: this.displayedTournaments.length
             });
             this.uiManager.showError('Failed to export CSV. Please try again.');
+        }
+    }
+
+    /**
+     * Best-effort background load of tournament data (no rendering).
+     * Used so shortlist export works after a page reload.
+     */
+    private async preloadTournamentData(): Promise<void> {
+        if (this.allTournaments.length > 0) return;
+        try {
+            this.allTournaments = await this.dataService.fetchTournaments();
+            this.logger.info('Preloaded tournament data for shortlist export', {
+                count: this.allTournaments.length
+            });
+        } catch (error) {
+            this.logger.warn('Background preload of tournament data failed', {
+                error: error instanceof Error ? error.message : 'Unknown error'
+            });
         }
     }
 
@@ -598,13 +655,41 @@ class TournamentFinder {
     }
 
     /**
-     * Export all shortlisted tournaments to a single .ics file
+     * Export all shortlisted tournaments to a single .ics file.
+     *
+     * Handles the post-reload case honestly: if the user has saved shortlist
+     * items but tournament data has not loaded yet, we load it first instead of
+     * falsely telling them to "star tournaments first".
      */
-    private exportShortlistToCalendar(): void {
+    private async exportShortlistToCalendar(): Promise<void> {
+        // Genuinely empty shortlist — this is the only case where the
+        // "star tournaments first" guidance is correct.
+        if (this.shortlist.size === 0) {
+            this.uiManager.showError('Star tournaments to add them to your shortlist first', 'warning');
+            return;
+        }
+
+        // The user has shortlist items but data may not be loaded yet
+        // (e.g. straight after a page reload). Load it before resolving URLs.
+        if (this.allTournaments.length === 0) {
+            await this.preloadTournamentData();
+        }
+
+        if (this.allTournaments.length === 0) {
+            this.uiManager.showError(
+                'Could not load tournament data. Please run a search first, then export your shortlist.',
+                'warning'
+            );
+            return;
+        }
+
         const shortlisted = this.allTournaments.filter(t => this.shortlist.has(t.url));
 
         if (shortlisted.length === 0) {
-            this.uiManager.showError('Star tournaments to add them to your shortlist first', 'warning');
+            this.uiManager.showError(
+                'Your shortlisted tournaments are not in the current data set (they may have passed or been removed).',
+                'warning'
+            );
             return;
         }
 
@@ -622,8 +707,9 @@ class TournamentFinder {
 
     /**
      * Set up delegated calendar export listener on the tournament list container.
-     * Called once during initialization — works correctly across all paginated pages
-     * because it reads the stable global index from data-tournament-index.
+     * Called once during initialization — works correctly across all paginated
+     * pages because each button carries its tournament's stable URL key
+     * (data-tournament-url) rather than a DOM/array position.
      */
     private initCalendarExportDelegation(): void {
         const tournamentList = document.getElementById('tournamentList');
@@ -634,10 +720,25 @@ class TournamentFinder {
             if (!btn) return;
             e.preventDefault();
 
-            const index = parseInt((btn as HTMLElement).dataset.tournamentIndex ?? '-1', 10);
-            const tournament = this.uiManager.getTournamentByIndex(index);
-            if (tournament) {
+            const url = (btn as HTMLElement).dataset.tournamentUrl;
+            if (!url) return;
+
+            const tournament =
+                this.displayedTournaments.find(t => t.url === url) ??
+                this.filteredTournaments.find(t => t.url === url) ??
+                this.allTournaments.find(t => t.url === url);
+
+            if (!tournament) {
+                this.uiManager.showError('Could not find that tournament to export.', 'warning');
+                return;
+            }
+
+            try {
                 this.exportService.exportToCalendar(tournament);
+                this.uiManager.showError(`Calendar event created for "${tournament.name}"`, 'success');
+            } catch (error) {
+                this.logger.error('Calendar export failed', error);
+                this.uiManager.showError('Failed to create calendar event. Please try again.');
             }
         });
     }
@@ -674,7 +775,7 @@ class TournamentFinder {
                 const exportShortlistBtn = document.getElementById('exportShortlistBtn');
                 if (exportShortlistBtn && exportShortlistBtn.style.display !== 'none') {
                     e.preventDefault();
-                    this.exportShortlistToCalendar();
+                    void this.exportShortlistToCalendar();
                 }
             }
 

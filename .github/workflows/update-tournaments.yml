@@ -67,6 +67,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add tournaments_data.json
+          [ -f tournaments_data_meta.json ] && git add tournaments_data_meta.json || true
           git commit -m "Update tournament data - $(date +'%Y-%m-%d %H:%M UTC')"
           git push
 
@@ -84,7 +85,7 @@ jobs:
           if [ -f tournaments_data.json ]; then
             TOURNAMENT_COUNT=$(python3 -c "import json; print(len(json.load(open('tournaments_data.json'))))")
             echo "✅ Successfully processed $TOURNAMENT_COUNT tournaments" >> $GITHUB_STEP_SUMMARY
-            echo "📅 Date range: Today to 3 months ahead (dynamic)" >> $GITHUB_STEP_SUMMARY
+            echo "📅 Date range: Today to 6 months ahead (dynamic)" >> $GITHUB_STEP_SUMMARY
             echo "🌍 Filtered: European tournaments only (Russia excluded)" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Failed to generate tournaments_data.json" >> $GITHUB_STEP_SUMMARY

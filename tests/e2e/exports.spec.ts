@@ -1,117 +1,88 @@
-import { test, expect } from '@playwright/test';
-import * as path from 'path';
+import { test, expect, Page } from '@playwright/test';
+
+/**
+ * Export functionality E2E.
+ *
+ * Data is stubbed via `page.route` so these tests are deterministic and never
+ * vacuously skip. Dates are generated relative to "now" so they always fall
+ * inside the app's default 6-month window.
+ */
+
+function isoInDays(days: number): string {
+    const d = new Date();
+    d.setUTCHours(0, 0, 0, 0);
+    d.setUTCDate(d.getUTCDate() + days);
+    return d.toISOString().slice(0, 10);
+}
+
+function fixtures() {
+    return [
+        {
+            name: 'Barcelona Open', location: 'Barcelona, ESP', date: isoInDays(14),
+            category: 'Open, Classical', url: 'https://chess-results.com/tnr101.aspx?lan=1',
+            description: 'Barcelona Open',
+        },
+        {
+            name: 'Athens Rapid', location: 'Athens, GRE', date: isoInDays(28),
+            category: 'Open, Rapid', url: 'https://chess-results.com/tnr102.aspx?lan=1',
+            description: 'Athens Rapid',
+        },
+    ];
+}
+
+async function stubData(page: Page): Promise<void> {
+    await page.route('**/tournaments_data.json', route =>
+        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(fixtures()) })
+    );
+}
+
+async function search(page: Page): Promise<void> {
+    await page.locator('#searchBtn').click();
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+}
 
 test.describe('Export Functionality', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await expect(page.locator('h1')).toContainText('European Chess Tournament Finder');
-  });
+    test.beforeEach(async ({ page }) => {
+        await stubData(page);
+        await page.goto('/');
+        await expect(page.locator('h1')).toContainText('European Chess Tournament Finder');
+    });
 
-  test('should export tournaments to CSV', async ({ page }) => {
-    // Search for tournaments
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
-
-    const resultsVisible = await page.locator('#results').isVisible();
-    if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
-      // Set up download listener
-      const downloadPromise = page.waitForEvent('download', { timeout: 5000 });
-
-      // Click export button
-      await page.getByRole('button', { name: /export csv/i }).click();
-
-      // Wait for download
-      const download = await downloadPromise;
-
-      // Verify filename contains "chess-tournaments" and ".csv"
-      const filename = download.suggestedFilename();
-      expect(filename).toContain('chess-tournaments');
-      expect(filename).toContain('.csv');
-
-      // Verify file is downloaded
-      const filePath = path.join(__dirname, filename);
-      await download.saveAs(filePath);
-
-      // Clean up
-      await download.delete();
-    }
-  });
-
-  test('should show warning when exporting with no results', async ({ page }) => {
-    // Try to export without searching
-    const exportBtn = page.getByRole('button', { name: /export csv/i });
-
-    // Export button should not be visible before search
-    await expect(exportBtn).not.toBeVisible();
-  });
-
-  test('should export tournament to calendar (.ics)', async ({ page }) => {
-    // Search for tournaments
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
-
-    const resultsVisible = await page.locator('#results').isVisible();
-    if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
-      // Find first "Add to Calendar" button
-      const calendarBtn = page.locator('.calendar-export-btn').first();
-
-      if (await calendarBtn.isVisible()) {
-        // Set up download listener
-        const downloadPromise = page.waitForEvent('download', { timeout: 5000 });
-
-        // Click calendar export button
-        await calendarBtn.click();
-
-        // Wait for download
-        const download = await downloadPromise;
-
-        // Verify filename ends with ".ics"
+    test('should export tournaments to CSV', async ({ page }) => {
+        await search(page);
+        const [download] = await Promise.all([
+            page.waitForEvent('download'),
+            page.locator('#exportBtn').click(),
+        ]);
         const filename = download.suggestedFilename();
-        expect(filename).toContain('.ics');
+        expect(filename).toContain('chess-tournaments');
+        expect(filename).toContain('.csv');
+    });
 
-        // Clean up
-        await download.delete();
-      }
-    }
-  });
+    test('export button is hidden before any search', async ({ page }) => {
+        await expect(page.locator('#exportBtn')).not.toBeVisible();
+    });
 
-  test('should display success message after CSV export', async ({ page }) => {
-    // Search for tournaments
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    test('should export a tournament to calendar (.ics)', async ({ page }) => {
+        await search(page);
+        const [download] = await Promise.all([
+            page.waitForEvent('download'),
+            page.locator('.calendar-export-btn').first().click(),
+        ]);
+        expect(download.suggestedFilename()).toContain('.ics');
+    });
 
-    const resultsVisible = await page.locator('#results').isVisible();
-    if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
-      // Set up download listener (to prevent test from failing)
-      page.on('download', () => {}); // Handle download
+    test('should display success message after CSV export', async ({ page }) => {
+        await search(page);
+        page.on('download', () => { /* swallow download */ });
+        await page.locator('#exportBtn').click();
+        await expect(page.locator('#error')).toContainText(/exported .* csv/i, { timeout: 3000 });
+    });
 
-      // Click export button
-      await page.getByRole('button', { name: /export csv/i }).click();
-
-      // Should show success message
-      await expect(page.locator('#error')).toContainText(/exported.*tournaments.*csv/i, { timeout: 3000 });
-    }
-  });
-
-  test('should display success message after calendar export', async ({ page }) => {
-    // Search for tournaments
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
-
-    const resultsVisible = await page.locator('#results').isVisible();
-    if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
-      const calendarBtn = page.locator('.calendar-export-btn').first();
-
-      if (await calendarBtn.isVisible()) {
-        // Set up download listener
-        page.on('download', () => {}); // Handle download
-
-        // Click calendar export button
-        await calendarBtn.click();
-
-        // Should show success message
+    test('should display success message after calendar export', async ({ page }) => {
+        await search(page);
+        page.on('download', () => { /* swallow download */ });
+        await page.locator('.calendar-export-btn').first().click();
         await expect(page.locator('#error')).toContainText(/calendar event created/i, { timeout: 3000 });
-      }
-    }
-  });
+    });
 });

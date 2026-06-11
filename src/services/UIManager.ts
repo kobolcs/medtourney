@@ -244,7 +244,7 @@ export class UIManager {
                     View Tournament
                 </a>
                 <button class="calendar-export-btn"
-                        data-tournament-index="${this.filteredTournaments.indexOf(tournament)}"
+                        data-tournament-url="${this.escapeHTML(tournament.url)}"
                         aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
                     📅 Add to Calendar
                 </button>
@@ -461,10 +461,12 @@ export class UIManager {
     }
 
     /**
-     * Get tournament by index (for calendar export from card button)
+     * Get tournament by its stable URL key (for calendar export from a card
+     * button). Resolves against the currently displayed set, so it works
+     * correctly regardless of pagination.
      */
-    getTournamentByIndex(index: number): Tournament | null {
-        return this.filteredTournaments[index] || null;
+    getTournamentByUrl(url: string): Tournament | null {
+        return this.filteredTournaments.find(t => t.url === url) ?? null;
     }
 
     /**

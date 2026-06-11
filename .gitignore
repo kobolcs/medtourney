@@ -76,3 +76,14 @@ audit-*.json
 *.tmp
 *.log
 downloads/*.xlsx
+
+# Test build output (compiled production code for Node unit tests)
+dist-test/
+
+# Playwright
+playwright-report/
+playwright-results.json
+test-results/
+
+# Scraper artifacts
+downloads/

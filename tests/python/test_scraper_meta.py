@@ -100,6 +100,7 @@ class TestScraperMeta:
             "Download Tournament Data",
             "Process Downloaded Excel",
             "Export Tournaments To JSON",
+            "Export Tournament Metadata",
         ]
 
         for keyword in custom_keywords_used:

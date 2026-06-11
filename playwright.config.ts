@@ -75,11 +75,19 @@ export default defineConfig({
     },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /*
+   * Serve a production-equivalent Vite build for E2E.
+   *
+   * The app entry is `/src/main.ts`, which only a Vite-aware server can serve —
+   * a plain static file server cannot, so the app would never boot and every
+   * data-dependent assertion would silently skip. Building + previewing with
+   * E2E=1 (base '/') gives the real, bundled app under the same CSP as
+   * production, so tests actually exercise it.
+   */
   webServer: {
-    command: 'python3 -m http.server 8080',
+    command: 'E2E=1 npm run build:vite && E2E=1 npx vite preview --port 8080 --strictPort',
     url: 'http://localhost:8080',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 180 * 1000,
   },
 });

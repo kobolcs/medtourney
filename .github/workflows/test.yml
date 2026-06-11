@@ -76,7 +76,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
 
     - name: Install dependencies
@@ -200,7 +200,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
 
     - name: Install dependencies
       run: npm ci || npm install
@@ -287,7 +287,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
 
     - name: Set up Python
@@ -307,15 +307,33 @@ jobs:
     - name: Build TypeScript
       run: npm run build
 
-    - name: Run Phase 2 Feature Tests (JavaScript)
+    - name: Compile production code for unit tests (CommonJS)
+      run: npm run build:test
+
+    - name: Validate workflow Node versions (>= 20)
+      run: npm run test:workflows
+
+    - name: Run Phase 2 Feature Tests (real production ExportService)
       run: |
         node tests/javascript/test_phase2_features.spec.js
       env:
         CI: true
 
-    - name: Run Calendar Export Tests (JavaScript)
+    - name: Run Calendar Export Tests (real production ExportService)
       run: |
         node tests/unit/test_calendar_export.spec.js
+      env:
+        CI: true
+
+    - name: Run ExportService unit tests (real production code)
+      run: |
+        node tests/unit/services/test_ExportService.spec.js
+      env:
+        CI: true
+
+    - name: Run service integration tests (real Filter + Export)
+      run: |
+        node tests/integration/test_services_integration.spec.js
       env:
         CI: true
 
@@ -349,7 +367,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
 
     - name: Install Node dependencies
@@ -361,7 +379,10 @@ jobs:
     - name: Build TypeScript
       run: npm run build
 
-    - name: Run E2E Tests (Chromium only for CI speed)
+    - name: Run E2E Tests (Chromium)
+      # The Playwright webServer serves a production-equivalent Vite build so
+      # the app actually boots and all specs run for real (deterministic data
+      # is stubbed via page.route).
       run: npm run test:e2e:chromium
       env:
         CI: true

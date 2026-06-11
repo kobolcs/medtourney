@@ -31,7 +31,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -60,6 +60,7 @@ jobs:
           cp sitemap.xml _site/
           # Copy data files
           [ -f tournaments_data.json ] && cp tournaments_data.json _site/ || echo "No tournament data"
+          [ -f tournaments_data_meta.json ] && cp tournaments_data_meta.json _site/ || echo "No tournament metadata"
           [ -f config.json ] && cp config.json _site/ || echo "No config file"
           # Create .nojekyll to prevent Jekyll processing
           touch _site/.nojekyll
