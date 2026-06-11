@@ -114,6 +114,13 @@ jobs:
       uses: github/codeql-action/autobuild@v3
 
     - name: Perform CodeQL Analysis
+      # The scan always runs; the SARIF upload only succeeds once "Code scanning"
+      # is enabled in the repo settings (Settings -> Code security -> Code
+      # scanning). Until then the upload reports a configuration error — don't
+      # let that turn the check red, since it's a repo-setting concern, not a
+      # code defect. Once code scanning is enabled, uploads (and alerts) work
+      # with no further change.
+      continue-on-error: true
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
