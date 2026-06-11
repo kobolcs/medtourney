@@ -59,6 +59,12 @@ main.js
 types.js
 /services/
 .lighthouseci/
+dist-test/
+
+# Test artifacts
+playwright-report/
+playwright-results.json
+test-results/
 
 # Linting and type checking
 .mypy_cache/
