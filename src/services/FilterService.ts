@@ -10,10 +10,12 @@
  */
 
 import { Tournament, FilterState } from '../types';
+import { Logger } from '../utils/Logger';
 
 export class FilterService {
     private filterCache: Map<string, Tournament[]>;
     private readonly MAX_FILTER_CACHE_SIZE = 50;
+    private readonly logger = Logger.createScoped('FilterService');
 
     constructor() {
         this.filterCache = new Map();
@@ -39,7 +41,7 @@ export class FilterService {
 
         // Check cache
         if (this.filterCache.has(cacheKey)) {
-            console.log('Using cached filter results');
+            this.logger.debug('Using cached filter results');
             return this.filterCache.get(cacheKey)!;
         }
 
@@ -120,7 +122,7 @@ export class FilterService {
         }
         this.filterCache.set(cacheKey, filtered);
 
-        console.log(`Filtered ${filtered.length} tournaments (cached for future use)`);
+        this.logger.debug(`Filtered ${filtered.length} tournaments (cached for future use)`);
         return filtered;
     }
 
@@ -184,7 +186,7 @@ export class FilterService {
     }
 
     private isYouthTournament(name: string, category: string): boolean {
-        const youthPattern = /\b(youth|junior|u\d+|u-\d+|under|młodzie[żz]|juniorów|juniorzy|żiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
+        const youthPattern = /\b(youth|junior|u\d+|u-\d+|under|młodzie[żz]|juniorów|juniorzy|žiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
         return youthPattern.test(name) || youthPattern.test(category);
     }
 
