@@ -10,6 +10,10 @@ ${SEARCH_URL}     https://s1.chess-results.com/TurnierSuche.aspx?lan=1
 ${DOWNLOAD_DIR}   ${CURDIR}/downloads
 ${MAX_RESULTS}    5000
 ${DATE_RANGE_MONTHS}    6
+# Generous default timeout for slow Excel generation on chess-results.com
+${BROWSER_TIMEOUT}    90s
+# How many times to attempt the Excel download before giving up
+${DOWNLOAD_RETRIES}    3
 
 *** Test Cases ***
 Scrape European Chess Tournaments
@@ -33,6 +37,9 @@ Setup Browser And Download Directory
     New Context    acceptDownloads=True
     ...            viewport={'width': 1920, 'height': 1080}
     New Page    ${SEARCH_URL}
+    # chess-results.com can be slow to generate large Excel exports, so raise
+    # the default timeout well above the 10s default to avoid flaky downloads.
+    Set Browser Timeout    ${BROWSER_TIMEOUT}
 
 Navigate To Search Page
     [Documentation]    Navigate to the tournament search page
@@ -69,7 +76,24 @@ Fill Search Form
     END
 
 Download Tournament Data
-    [Documentation]    Click download button and wait for Excel file
+    [Documentation]    Click download button and wait for Excel file, retrying on
+    ...    transient timeouts since chess-results.com can be slow under load.
+
+    FOR    ${attempt}    IN RANGE    1    ${DOWNLOAD_RETRIES} + 1
+        ${status}=    Run Keyword And Return Status    Attempt Excel Download
+        IF    ${status}
+            Log    Download succeeded on attempt ${attempt}
+            RETURN
+        END
+        Log    Download attempt ${attempt} failed, retrying...    level=WARN
+        # A reload resets the search form, so re-navigate and re-fill it.
+        Navigate To Search Page
+        Fill Search Form
+    END
+    Fail    Excel download failed after ${DOWNLOAD_RETRIES} attempts
+
+Attempt Excel Download
+    [Documentation]    Single attempt to click the Excel button and save the file
 
     # Look for Excel download button (usually has "Excel" or "XLS" in text)
     ${download_button}=    Get Element    button:has-text("Excel"), a:has-text("Excel"), input[value*="Excel"]

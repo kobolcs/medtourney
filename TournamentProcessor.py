@@ -277,17 +277,29 @@ class TournamentProcessor:
         workbook: Workbook = openpyxl.load_workbook(excel_file, data_only=True)
         sheet: Worksheet = workbook.active
 
-        # Chess-results.com format: Headers are in row 4 (rows 1-3 are metadata)
-        headers: List[str] = []
-        for cell in sheet[4]:
-            if cell.value:
-                headers.append(str(cell.value).strip().lower())
-            else:
-                headers.append("")
+        # Chess-results.com normally puts column headers in row 4 (rows 1-3 are
+        # metadata), but the exact row drifts when the site tweaks its export.
+        # Auto-detect the header row so a layout change does not silently produce
+        # zero results.
+        header_row, headers = self._detect_header_row(sheet)
 
         # Find column indices (chess-results.com column names)
         (name_col, location_col, date_from_col, fed_col,
          time_control_col, db_key_col, event_id_col) = self._find_columns(headers)
+
+        # Essential columns must be present, otherwise every row would be dropped
+        # and we would export an empty file with no indication of why. Fail loudly
+        # so the workflow surfaces the problem instead of committing empty data.
+        if name_col is None or date_from_col is None or (location_col is None and fed_col is None):
+            msg = (
+                "Could not locate the expected columns in the chess-results.com "
+                f"export (detected header row {header_row}: {headers}). "
+                "The site's Excel format may have changed."
+            )
+            raise ValueError(msg)
+
+        # Data starts on the row after the headers.
+        data_start_row = header_row + 1
 
         tournaments: List[Dict[str, Any]] = []
 
@@ -300,8 +312,8 @@ class TournamentProcessor:
         # Calculate tomorrow once (not in loop) - PERFORMANCE FIX
         tomorrow: datetime = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
-        # Process each row (data starts at row 5)
-        for row_idx, row in enumerate(sheet.iter_rows(min_row=5, values_only=True), start=5):
+        # Process each row (data starts just after the detected header row)
+        for row_idx, row in enumerate(sheet.iter_rows(min_row=data_start_row, values_only=True), start=data_start_row):
             raw_rows += 1
             try:
                 # Extract row data
@@ -610,6 +622,50 @@ class TournamentProcessor:
         )
 
         return bool(senior_pattern.search(category) or senior_pattern.search(name))
+
+    def _detect_header_row(
+        self, sheet: Worksheet, max_scan_rows: int = 15
+    ) -> Tuple[int, List[str]]:
+        """Locate the header row in a chess-results.com export.
+
+        The export usually keeps headers in row 4, but the leading metadata rows
+        change occasionally. Scans the first ``max_scan_rows`` rows and returns the
+        first one that looks like a header (contains a tournament/name column and a
+        date column). Falls back to row 4 if nothing matches so existing behaviour
+        is preserved.
+
+        Args:
+            sheet: The active worksheet to scan.
+            max_scan_rows: Maximum number of leading rows to inspect.
+
+        Returns:
+            A ``(row_number, headers)`` tuple where ``row_number`` is 1-based and
+            ``headers`` is the lower-cased cell values for that row.
+        """
+        fallback_row = 4
+        fallback_headers: List[str] = []
+
+        for row_idx in range(1, max_scan_rows + 1):
+            headers = [
+                str(cell.value).strip().lower() if cell.value is not None else ""
+                for cell in sheet[row_idx]
+            ]
+            if row_idx == fallback_row:
+                fallback_headers = headers
+
+            has_name = self._find_column(headers, ["tournament", "name", "turnier"]) is not None
+            has_date = self._find_column(headers, ["from", "start", "datum"]) is not None
+            if has_name and has_date:
+                return row_idx, headers
+
+        # Nothing matched - return the historical default so _find_columns can run
+        # and the explicit missing-column check can produce a clear error.
+        if not fallback_headers:
+            fallback_headers = [
+                str(cell.value).strip().lower() if cell.value is not None else ""
+                for cell in sheet[fallback_row]
+            ]
+        return fallback_row, fallback_headers
 
     def _find_columns(
         self, headers: List[str]

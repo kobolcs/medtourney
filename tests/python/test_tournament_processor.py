@@ -620,6 +620,42 @@ class TestTournamentProcessor:
         with pytest.raises(FileNotFoundError):
             processor.load_and_filter_tournaments("/nonexistent/file.xlsx")
 
+    def test_load_detects_shifted_header_row(self, processor, tmp_path):
+        """Headers not in the usual row 4 are still found (no silent zero results).
+
+        Regression test: chess-results.com occasionally changes the number of
+        leading metadata rows. Previously the parser hard-coded row 4 and would
+        silently return zero tournaments when the layout shifted.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        # Headers in row 1 (no metadata preamble at all).
+        ws.append(["Tournament", "Location", "from", "FED", "DB-Key"])
+        future = (datetime.now() + timedelta(days=30)).strftime("%Y%m%d")
+        ws.append(["Valencia Open", "Valencia", future, "ESP", "55501"])
+        ws.append(["Lisbon Open", "Lisbon", future, "POR", "55502"])
+        excel_file = tmp_path / "shifted.xlsx"
+        wb.save(excel_file)
+
+        tournaments = processor.load_and_filter_tournaments(str(excel_file))
+        assert len(tournaments) == 2
+
+    def test_load_raises_when_columns_missing(self, processor, tmp_path):
+        """An unrecognisable export fails loudly instead of exporting empty data.
+
+        Regression test: missing essential columns must raise rather than silently
+        produce an empty tournament list that overwrites good data.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.append(["foo", "bar", "baz"])
+        ws.append([1, 2, 3])
+        excel_file = tmp_path / "junk.xlsx"
+        wb.save(excel_file)
+
+        with pytest.raises(ValueError, match="Could not locate"):
+            processor.load_and_filter_tournaments(str(excel_file))
+
     def test_load_excel_validates_location(self, processor, sample_excel_file):
         """Test that non-European locations are filtered out"""
         tournaments = processor.load_and_filter_tournaments(sample_excel_file)
