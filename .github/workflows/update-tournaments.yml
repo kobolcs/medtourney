@@ -50,10 +50,28 @@ jobs:
           python3 run_scraper.py
         continue-on-error: false  # Fail workflow if scraper fails
 
+      - name: Validate scraped data
+        run: |
+          if [ ! -f tournaments_data.json ]; then
+            echo "::error::tournaments_data.json was not generated"
+            exit 1
+          fi
+          COUNT=$(python3 -c "import json; print(len(json.load(open('tournaments_data.json'))))")
+          echo "Scraper produced $COUNT tournaments"
+          # Guard against committing an empty result over good data: a healthy
+          # 6-month European scrape returns hundreds of tournaments.
+          if [ "$COUNT" -lt 10 ]; then
+            echo "::error::Only $COUNT tournaments parsed - refusing to overwrite data (likely a scrape/format failure)"
+            exit 1
+          fi
+
       - name: Check if tournaments_data.json was updated
         id: check_changes
         run: |
-          if git diff --quiet tournaments_data.json; then
+          # Use git status --porcelain so this also detects the file when it is
+          # currently untracked (e.g. after being removed from the repo).
+          git add -N tournaments_data.json tournaments_data_meta.json 2>/dev/null || true
+          if [ -z "$(git status --porcelain tournaments_data.json)" ]; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No changes to tournaments_data.json"
           else
