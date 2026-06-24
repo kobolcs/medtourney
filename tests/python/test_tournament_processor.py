@@ -656,6 +656,30 @@ class TestTournamentProcessor:
         with pytest.raises(ValueError, match="Could not locate"):
             processor.load_and_filter_tournaments(str(excel_file))
 
+    def test_load_skips_url_preamble_row(self, processor, tmp_path):
+        """URL preamble row added by chess-results.com is not mistaken for the header.
+
+        Regression test: row 1 of the chess-results.com Excel export now contains
+        "from the tournament-database of chess-results https://chess-results.com".
+        Both "tournament" and "from" appear in that single cell, which used to fool
+        _detect_header_row into treating it as the header row and then failing to
+        find any real columns.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        # Row 1: the URL preamble chess-results.com now prepends
+        ws.append(["from the tournament-database of chess-results https://chess-results.com"])
+        # Row 2: real column headers
+        ws.append(["Tournament", "Location", "from", "FED", "DB-Key"])
+        future = (datetime.now() + timedelta(days=30)).strftime("%Y%m%d")
+        ws.append(["Valencia Open", "Valencia", future, "ESP", "55501"])
+        excel_file = tmp_path / "preamble.xlsx"
+        wb.save(excel_file)
+
+        tournaments = processor.load_and_filter_tournaments(str(excel_file))
+        assert len(tournaments) == 1
+        assert tournaments[0]["name"] == "Valencia Open"
+
     def test_load_excel_validates_location(self, processor, sample_excel_file):
         """Test that non-European locations are filtered out"""
         tournaments = processor.load_and_filter_tournaments(sample_excel_file)

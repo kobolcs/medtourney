@@ -653,10 +653,15 @@ class TournamentProcessor:
             if row_idx == fallback_row:
                 fallback_headers = headers
 
-            has_name = self._find_column(headers, ["tournament", "name", "turnier"]) is not None
-            has_date = self._find_column(headers, ["from", "start", "datum"]) is not None
-            if has_name and has_date:
-                return row_idx, headers
+            name_idx = self._find_column(headers, ["tournament", "name", "turnier"])
+            date_idx = self._find_column(headers, ["from", "start", "datum"])
+            if name_idx is not None and date_idx is not None:
+                # Reject rows where the matching cells are long sentences rather than
+                # short column labels (e.g. the URL preamble row added by chess-results.com
+                # starts with "from the tournament-database of chess-results …" which
+                # contains both "tournament" and "from" but is clearly not a header).
+                if len(headers[name_idx]) <= 35 and len(headers[date_idx]) <= 35:
+                    return row_idx, headers
 
         # Nothing matched - return the historical default so _find_columns can run
         # and the explicit missing-column check can produce a clear error.

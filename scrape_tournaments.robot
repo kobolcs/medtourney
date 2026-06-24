@@ -57,19 +57,22 @@ Fill Search Form
 
     Log    Searching from ${start_date} to ${end_date} (${DATE_RANGE_MONTHS} months)
 
-    # Try to fill date fields (names may vary on the actual page)
-    # We'll try multiple possible selectors
+    # Fill date fields using the known chess-results.com ASP.NET control IDs.
+    # Wrapped in RKARS so the scraper continues even if the page layout changes.
     ${date_from_filled}=    Run Keyword And Return Status
-    ...    Fill Text    input[name*="DateFrom"], input[id*="DateFrom"], input[type="text"]    ${start_date}
+    ...    Fill Text    id=P1_txt_DatumVon    ${start_date}
 
     ${date_to_filled}=    Run Keyword And Return Status
-    ...    Fill Text    input[name*="DateTo"], input[id*="DateTo"], input[type="text"] >> nth=1    ${end_date}
+    ...    Fill Text    id=P1_txt_DatumBis    ${end_date}
 
     Log    Date fields filled: from=${date_from_filled}, to=${date_to_filled}
 
-    # Select result limit (2000 results)
+    # Select result limit. Use a short timeout because this dropdown is optional
+    # and has been absent from the page on some chess-results.com deployments.
+    Set Browser Timeout    5s
     ${limit_set}=    Run Keyword And Return Status
     ...    Select Options By    select[name*="PageSize"], select[id*="PageSize"]    value    ${MAX_RESULTS}
+    Set Browser Timeout    ${BROWSER_TIMEOUT}
 
     IF    not ${limit_set}
         Log    Could not set result limit, using default
