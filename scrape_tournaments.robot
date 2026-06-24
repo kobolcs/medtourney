@@ -50,28 +50,30 @@ Navigate To Search Page
 Fill Search Form
     [Documentation]    Fill in the search form with date range and filters
 
-    # Get current date and calculate end date based on configuration
-    ${start_date}=    Get Current Date    result_format=%d.%m.%Y
+    # Calculate date range in ISO format (YYYY-MM-DD) required by input[type="date"]
+    ${start_iso}=    Get Current Date    result_format=%Y-%m-%d
     ${days}=    Evaluate    ${DATE_RANGE_MONTHS} * 30
-    ${end_date}=    Add Time To Date    ${start_date}    ${days} days    result_format=%d.%m.%Y    date_format=%d.%m.%Y
+    ${end_iso}=    Add Time To Date    ${start_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
 
-    Log    Searching from ${start_date} to ${end_date} (${DATE_RANGE_MONTHS} months)
+    Log    Searching tournaments ending between ${start_iso} and ${end_iso} (${DATE_RANGE_MONTHS} months)
 
-    # Fill date fields using the known chess-results.com ASP.NET control IDs.
-    # Wrapped in RKARS so the scraper continues even if the page layout changes.
+    # The page has two input[type="date"] fields for "tournament end between".
+    # Use a short timeout in case the page layout changes; RKARS handles failures.
+    Set Browser Timeout    10s
     ${date_from_filled}=    Run Keyword And Return Status
-    ...    Fill Text    id=P1_txt_DatumVon    ${start_date}
+    ...    Fill Text    input[type="date"] >> nth=0    ${start_iso}
 
     ${date_to_filled}=    Run Keyword And Return Status
-    ...    Fill Text    id=P1_txt_DatumBis    ${end_date}
+    ...    Fill Text    input[type="date"] >> nth=1    ${end_iso}
+    Set Browser Timeout    ${BROWSER_TIMEOUT}
 
     Log    Date fields filled: from=${date_from_filled}, to=${date_to_filled}
 
-    # Select result limit. Use a short timeout because this dropdown is optional
-    # and has been absent from the page on some chess-results.com deployments.
+    # "Maximum number of lines" is the last <select> on the page (5th dropdown).
+    # Default is 100 – set to ${MAX_RESULTS} to get a full European dataset.
     Set Browser Timeout    5s
     ${limit_set}=    Run Keyword And Return Status
-    ...    Select Options By    select[name*="PageSize"], select[id*="PageSize"]    value    ${MAX_RESULTS}
+    ...    Select Options By    select >> nth=4    value    ${MAX_RESULTS}
     Set Browser Timeout    ${BROWSER_TIMEOUT}
 
     IF    not ${limit_set}
