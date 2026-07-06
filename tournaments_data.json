@@ -1,35 +1,147 @@
 [
   {
-    "name": "European Senior Team Championships 2026",
-    "location": "Hotel Royal Belvedere | Hersonissos Crete, ECX",
-    "date": "2026-08-27",
-    "category": "Classical, S50+",
-    "url": "https://chess-results.com/tnr1450648.aspx?lan=1",
-    "description": "European Senior Team Championships 2026"
-  },
-  {
-    "name": "14. Münsteraner ELO-Blitzturnier - A",
-    "location": "Münster / GER, GER",
-    "date": "2026-07-14",
+    "name": "Moviendo Sueños, Nahiara hacia las Olimpiadas 2/3",
+    "location": "Club Bella Vista - Agraciada 3100, URU",
+    "date": "2026-07-11",
     "category": "Classical",
-    "url": "https://chess-results.com/tnr1449285.aspx?lan=1",
-    "description": "14. Münsteraner ELO-Blitzturnier - A"
+    "url": "https://chess-results.com/tnr1443593.aspx?lan=1",
+    "description": "Moviendo Sueños, Nahiara hacia las Olimpiadas 2/3"
   },
   {
-    "name": "15. Münsterander ELO-Blitz - B",
-    "location": "Münster, GER",
-    "date": "2026-07-17",
+    "name": "Maia Chess Open 2026 - Masters",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-21",
+    "category": "Classical, Open",
+    "url": "https://chess-results.com/tnr1369101.aspx?lan=1",
+    "description": "Maia Chess Open 2026 - Masters"
+  },
+  {
+    "name": "Maia Chess Open 2026 - U2000",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-21",
+    "category": "Classical, Open, Youth",
+    "url": "https://chess-results.com/tnr1369102.aspx?lan=1",
+    "description": "Maia Chess Open 2026 - U2000"
+  },
+  {
+    "name": "Douro Blitz Cruise 2026",
+    "location": "Av. de Diogo Leite 135, POR",
+    "date": "2026-08-20",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1369103.aspx?lan=1",
+    "description": "Douro Blitz Cruise 2026"
+  },
+  {
+    "name": "Queens Maia Blitz 2026",
+    "location": "Quinta dos Cónegos: R. Souto 363, POR",
+    "date": "2026-08-23",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1369671.aspx?lan=1",
+    "description": "Queens Maia Blitz 2026"
+  },
+  {
+    "name": "Streamers Maia Blitz 2026",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-25",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1369670.aspx?lan=1",
+    "description": "Streamers Maia Blitz 2026"
+  },
+  {
+    "name": "Maia Rapid Cup 2026",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-25",
+    "category": "Blitz, Rapid",
+    "url": "https://chess-results.com/tnr1369104.aspx?lan=1",
+    "description": "Maia Rapid Cup 2026"
+  },
+  {
+    "name": "Maia Team Cup 2026",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-22",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1419493.aspx?lan=1",
+    "description": "Maia Team Cup 2026"
+  },
+  {
+    "name": "IRT BLITZ - OPEN ALFIL DE ORODía 28 de Julio 2026 - Ciudad de ILO",
+    "location": "ILO - Colegio Particular San Francisco de Asís (24 Octubre Mz 1 Lote 2), PER",
+    "date": "2026-07-28",
+    "category": "Blitz, Open",
+    "url": "https://chess-results.com/tnr1436757.aspx?lan=1",
+    "description": "IRT BLITZ - OPEN ALFIL DE ORODía 28 de Julio 2026 - Ciudad de ILO"
+  },
+  {
+    "name": "IRT OPEN ALFIL DE ORO - SUB 1800Días 28 y 29 de Julio 2026 - Ciudad de ILO",
+    "location": "ILO - Colegio Particular San Francisco de Asís (24 Octubre Mz 1 Lote 2), PER",
+    "date": "2026-07-28",
+    "category": "Classical, Open",
+    "url": "https://chess-results.com/tnr1436691.aspx?lan=1",
+    "description": "IRT OPEN ALFIL DE ORO - SUB 1800Días 28 y 29 de Julio 2026 - Ciudad de ILO"
+  },
+  {
+    "name": "Gran Blitz del Oeste 2026",
+    "location": "Club Bella Vista - Agraciada 3100, URU",
+    "date": "2026-08-15",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1447912.aspx?lan=1",
+    "description": "Gran Blitz del Oeste 2026"
+  },
+  {
+    "name": "Match en el Oeste",
+    "location": "Club Bella Vista - Agraciada 3100, URU",
+    "date": "2026-08-14",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1451267.aspx?lan=1",
+    "description": "Match en el Oeste"
+  },
+  {
+    "name": "Final del Circuito del Oeste 2026",
+    "location": "Club Bella Vista - Agraciada 3100, URU",
+    "date": "2026-08-14",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1447899.aspx?lan=1",
+    "description": "Final del Circuito del Oeste 2026"
+  },
+  {
+    "name": "IRT BLITZ SAN FRANCISCO DE ASIS - 19 Julio 2026Ciudad de ILO",
+    "location": "Colegio Particular San Francisco de Asís - 24 octubre Mz2 Lote1, PER",
+    "date": "2026-07-19",
     "category": "Blitz",
-    "url": "https://chess-results.com/tnr1450645.aspx?lan=1",
-    "description": "15. Münsterander ELO-Blitz - B"
+    "url": "https://chess-results.com/tnr1451261.aspx?lan=1",
+    "description": "IRT BLITZ SAN FRANCISCO DE ASIS - 19 Julio 2026Ciudad de ILO"
   },
   {
-    "name": "SSS - Pontresina 2026",
-    "location": "Sporthotel Pontresina, SUI",
-    "date": "2026-09-07",
+    "name": "IRT RAPIDO SAN FRANCISCO DE ASIS - 19 JULIO 2026CIUDAD ILO",
+    "location": "Colegio Particular San Francisco de Asís, PER",
+    "date": "2026-07-19",
     "category": "Classical",
-    "url": "https://chess-results.com/tnr1266830.aspx?lan=1",
-    "description": "SSS - Pontresina 2026"
+    "url": "https://chess-results.com/tnr1451248.aspx?lan=1",
+    "description": "IRT RAPIDO SAN FRANCISCO DE ASIS - 19 JULIO 2026CIUDAD ILO"
+  },
+  {
+    "name": "42. FAAKER SEE OPEN 8. - 15.08.2026 Kulturhaus Latschach/AUT",
+    "location": "Latschach ober dem Faaker See, AUT",
+    "date": "2026-08-08",
+    "category": "Classical, Open",
+    "url": "https://chess-results.com/tnr1237310.aspx?lan=1",
+    "description": "42. FAAKER SEE OPEN 8. - 15.08.2026 Kulturhaus Latschach/AUT"
+  },
+  {
+    "name": "Kutlovo 2026",
+    "location": "Kutlovo, SRB",
+    "date": "2026-07-26",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1449680.aspx?lan=1",
+    "description": "Kutlovo 2026"
+  },
+  {
+    "name": "Velika Gospojina 2026",
+    "location": "Kragujevac, SRB",
+    "date": "2026-08-30",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1449685.aspx?lan=1",
+    "description": "Velika Gospojina 2026"
   },
   {
     "name": "SSS - Adelboden 2026",
@@ -40,75 +152,35 @@
     "description": "SSS - Adelboden 2026"
   },
   {
-    "name": "XXXIII Festiwal Szachowy w Poznaniu (Open A) z okazji 90-lecia Wielkopolskiego Związku Szachowego",
-    "location": "Poznań, POL",
-    "date": "2026-08-23",
+    "name": "III OPEN 60+30 EBANO 2026",
+    "location": "San Cristóbal de La Laguna, ESP",
+    "date": "2026-10-22",
     "category": "Classical, Open",
-    "url": "https://chess-results.com/tnr1445145.aspx?lan=1",
-    "description": "XXXIII Festiwal Szachowy w Poznaniu (Open A) z okazji 90-lecia Wielkopolskiego Związku Szachowego"
+    "url": "https://chess-results.com/tnr1451238.aspx?lan=1",
+    "description": "III OPEN 60+30 EBANO 2026"
   },
   {
-    "name": "43. Münsterlandopen - A",
-    "location": "Münster / GER, GER",
-    "date": "2026-10-17",
-    "category": "Classical",
-    "url": "https://chess-results.com/tnr1450574.aspx?lan=1",
-    "description": "43. Münsterlandopen - A"
+    "name": "Schack på Rösåsen 2026",
+    "location": "Rösåsens utsiktstorn, SWE",
+    "date": "2026-07-11",
+    "category": "Blitz, Classical",
+    "url": "https://chess-results.com/tnr1344036.aspx?lan=1",
+    "description": "Schack på Rösåsen 2026"
   },
   {
-    "name": "43. Münsterlandopen - B",
-    "location": "Münster / GER, GER",
-    "date": "2026-10-17",
-    "category": "Classical",
-    "url": "https://chess-results.com/tnr1450577.aspx?lan=1",
-    "description": "43. Münsterlandopen - B"
-  },
-  {
-    "name": "34. Challengers",
-    "location": "Münster / GER, GER",
-    "date": "2026-10-18",
-    "category": "Classical",
-    "url": "https://chess-results.com/tnr1450580.aspx?lan=1",
-    "description": "34. Challengers"
-  },
-  {
-    "name": "2026 Mind Sports Olympiad LondonRapid - Open {£4,000 in prizes!}",
-    "location": "Mercure London Suite, ENG",
+    "name": "Amatördragen på Svarta Hästen 3",
+    "location": "Svarta Hästen, SWE",
     "date": "2026-08-22",
+    "category": "Blitz, Classical",
+    "url": "https://chess-results.com/tnr1429126.aspx?lan=1",
+    "description": "Amatördragen på Svarta Hästen 3"
+  },
+  {
+    "name": "XI Międzynarodowy Festiwal Szachowy im. Lecha Kaczyńskiego w Bydgoszczy - Turniej Główny OPEN",
+    "location": "Bydgoszcz, POL",
+    "date": "2026-07-25",
     "category": "Blitz, Open, Classical",
-    "url": "https://chess-results.com/tnr1394731.aspx?lan=1",
-    "description": "2026 Mind Sports Olympiad LondonRapid - Open {£4,000 in prizes!}"
-  },
-  {
-    "name": "2026 Mind Sports Olympiad LondonRapid - Under 1900 {£700 in prizes!}",
-    "location": "Mercure London Suite, ENG",
-    "date": "2026-08-22",
-    "category": "Blitz, Youth, Classical",
-    "url": "https://chess-results.com/tnr1394732.aspx?lan=1",
-    "description": "2026 Mind Sports Olympiad LondonRapid - Under 1900 {£700 in prizes!}"
-  },
-  {
-    "name": "2026 Mind Sports Olympiad LondonSaturday Blitz - Open {£1,600 in prizes!}",
-    "location": "Mercure London Suite, ENG",
-    "date": "2026-08-22",
-    "category": "Classical, Open, Blitz",
-    "url": "https://chess-results.com/tnr1394734.aspx?lan=1",
-    "description": "2026 Mind Sports Olympiad LondonSaturday Blitz - Open {£1,600 in prizes!}"
-  },
-  {
-    "name": "2026 Mind Sports Olympiad LondonSunday Blitz - Open {£300 in prizes!}",
-    "location": "Mercure London Suite, ENG",
-    "date": "2026-08-23",
-    "category": "Blitz, Open",
-    "url": "https://chess-results.com/tnr1395790.aspx?lan=1",
-    "description": "2026 Mind Sports Olympiad LondonSunday Blitz - Open {£300 in prizes!}"
-  },
-  {
-    "name": "ΑΚΑΔΗΜΙΑ ΣΚΑΚΙΣΤΩΝ ΒΟΛΟΥ | SUMMER BLITZ 2026",
-    "location": "ΜΑΚΡΥΝΙΤΣΗΣ, GRE",
-    "date": "2026-07-10",
-    "category": "Classical, Blitz",
-    "url": "https://chess-results.com/tnr1449054.aspx?lan=1",
-    "description": "ΑΚΑΔΗΜΙΑ ΣΚΑΚΙΣΤΩΝ ΒΟΛΟΥ | SUMMER BLITZ 2026"
+    "url": "https://chess-results.com/tnr1425259.aspx?lan=1",
+    "description": "XI Międzynarodowy Festiwal Szachowy im. Lecha Kaczyńskiego w Bydgoszczy - Turniej Główny OPEN"
   }
 ]
