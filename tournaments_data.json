@@ -1,13 +1,5 @@
 [
   {
-    "name": "Sparkassen Chess-Trophy 2026 Rapid",
-    "location": "Dortmund, GER",
-    "date": "2026-08-06",
-    "category": "Rapid",
-    "url": "https://chess-results.com/tnr1469514.aspx?lan=1",
-    "description": "Sparkassen Chess-Trophy 2026 Rapid"
-  },
-  {
     "name": "MEĐUNARODNI ŠAHOVSKI FESTIVAL GRADSKE OPŠTINE „PANTELEJ“ 2026– „6. TROFEJ PANTELEJ“ – NIŠ, 6 – 9. 8. 2026. godine; Nagradni fond 243.000 RSD",
     "location": "Hala Čair – Niš, SRB",
     "date": "2026-08-06",
@@ -24,12 +16,108 @@
     "description": "MEĐUNARODNI ŠAHOVSKI FESTIVAL GRADSKE OPŠTINE „PANTELEJ“ 2026– „OPEN BLIC PANTELEJ“ – NIŠ, 8. 8. 2026. godine; Nagradni fond 45.000 RSD"
   },
   {
-    "name": "2do TORNEO ABIERTO DE AJEDREZ - CLUB DEFENSOR SPORTING",
-    "location": "Club DefensorSporting / 21 de Setiembre 2362 / Montevideo, URU",
-    "date": "2026-09-05",
+    "name": "Torneo Ajedrez San Agustín Cúllar 2026",
+    "location": "SENPA, ESP",
+    "date": "2026-08-22",
     "category": "Blitz, Classical",
-    "url": "https://chess-results.com/tnr1469516.aspx?lan=1",
-    "description": "2do TORNEO ABIERTO DE AJEDREZ - CLUB DEFENSOR SPORTING"
+    "url": "https://chess-results.com/tnr1392956.aspx?lan=1",
+    "description": "Torneo Ajedrez San Agustín Cúllar 2026"
+  },
+  {
+    "name": "REGIONAL LITORAL  SUR LUAAbsoluto clasificatorio",
+    "location": "Bibloteca Terminal de Omnibus Fray Bentos, URU",
+    "date": "2026-08-08",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1465229.aspx?lan=1",
+    "description": "REGIONAL LITORAL  SUR LUAAbsoluto clasificatorio"
+  },
+  {
+    "name": "Brugsemeesters 2026 OPEN",
+    "location": "Brugge, BEL",
+    "date": "2026-08-08",
+    "category": "Classical, Open",
+    "url": "https://chess-results.com/tnr1445745.aspx?lan=1",
+    "description": "Brugsemeesters 2026 OPEN"
+  },
+  {
+    "name": "DRUGA LIGA CS ZAPAD 2026",
+    "location": "Vila Aleksandar – Orašac, SRB",
+    "date": "2026-09-04",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1431568.aspx?lan=1",
+    "description": "DRUGA LIGA CS ZAPAD 2026"
+  },
+  {
+    "name": "DRUGA LIGA CS ISTOK 2026 – ZONA 2",
+    "location": "Hotel MM Narcis – Vlasina, SRB",
+    "date": "2026-09-04",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1431565.aspx?lan=1",
+    "description": "DRUGA LIGA CS ISTOK 2026 – ZONA 2"
+  },
+  {
+    "name": "DRUGA LIGA CS ISTOK 2026 – ZONA 1",
+    "location": "Bazeni Prestiž – Paraćin, SRB",
+    "date": "2026-09-04",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1431564.aspx?lan=1",
+    "description": "DRUGA LIGA CS ISTOK 2026 – ZONA 1"
+  },
+  {
+    "name": "Maia Chess Open 2026 - Masters",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-21",
+    "category": "Classical, Open",
+    "url": "https://chess-results.com/tnr1369101.aspx?lan=1",
+    "description": "Maia Chess Open 2026 - Masters"
+  },
+  {
+    "name": "Maia Chess Open 2026 - U2000",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-21",
+    "category": "Classical, Open, Youth",
+    "url": "https://chess-results.com/tnr1369102.aspx?lan=1",
+    "description": "Maia Chess Open 2026 - U2000"
+  },
+  {
+    "name": "Douro Blitz Cruise 2026",
+    "location": "Av. de Diogo Leite 135, POR",
+    "date": "2026-08-20",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1369103.aspx?lan=1",
+    "description": "Douro Blitz Cruise 2026"
+  },
+  {
+    "name": "Queens Maia Blitz 2026",
+    "location": "Quinta dos Cónegos: R. Souto 363, POR",
+    "date": "2026-08-23",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1369671.aspx?lan=1",
+    "description": "Queens Maia Blitz 2026"
+  },
+  {
+    "name": "Streamers Maia Blitz 2026",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-25",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1369670.aspx?lan=1",
+    "description": "Streamers Maia Blitz 2026"
+  },
+  {
+    "name": "Maia Rapid Cup 2026",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-25",
+    "category": "Blitz, Rapid",
+    "url": "https://chess-results.com/tnr1369104.aspx?lan=1",
+    "description": "Maia Rapid Cup 2026"
+  },
+  {
+    "name": "Maia Team Cup 2026",
+    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
+    "date": "2026-08-22",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1419493.aspx?lan=1",
+    "description": "Maia Team Cup 2026"
   },
   {
     "name": "IV CIRCUITO DE SEMIRRÁPIDAS \"CIDADE DE LAGOS \" 2ºTORNEIOinscrições no 2º TORNEIO até ás 23h59m do dia 5 de agosto",
@@ -40,59 +128,27 @@
     "description": "IV CIRCUITO DE SEMIRRÁPIDAS \"CIDADE DE LAGOS \" 2ºTORNEIOinscrições no 2º TORNEIO até ás 23h59m do dia 5 de agosto"
   },
   {
-    "name": "VIII IRT DE AJEDREZ STANDARD U2400 CUENCA 2026. Inf. 0967959111",
-    "location": "Cuenca-Ecuador (Federacion Deportiva del Azuay. Casa del Ajedrez), ECU",
-    "date": "2026-10-09",
-    "category": "Classical, Youth",
-    "url": "https://chess-results.com/tnr1467183.aspx?lan=1",
-    "description": "VIII IRT DE AJEDREZ STANDARD U2400 CUENCA 2026. Inf. 0967959111"
-  },
-  {
-    "name": "75. Otwarte  Mistrzostwa Warszawy w szachach klasycznych gr. B (ELO = 2000)",
-    "location": "Warszawa, POL",
-    "date": "2026-08-10",
+    "name": "4º Torneio do V Circuito de Xadrez SC Beira-Mar / Pizzarte - 6 de agosto",
+    "location": "Pizzarte - Aveiro, POR",
+    "date": "2026-08-06",
     "category": "Classical",
-    "url": "https://chess-results.com/tnr1448986.aspx?lan=1",
-    "description": "75. Otwarte  Mistrzostwa Warszawy w szachach klasycznych gr. B (ELO = 2000)"
+    "url": "https://chess-results.com/tnr1460380.aspx?lan=1",
+    "description": "4º Torneio do V Circuito de Xadrez SC Beira-Mar / Pizzarte - 6 de agosto"
   },
   {
-    "name": "Otwarte Mistrzostwa Warszawy w szachach błyskawicznych",
-    "location": "Warszawa, POL",
+    "name": "7.º Torneio Maia Blitz Cup (Rápidas) 08 de agosto de 2026 | Pedrouços, Maia",
+    "location": "Tv. Nova de Teibas, POR",
+    "date": "2026-08-08",
+    "category": "Classical, Blitz",
+    "url": "https://chess-results.com/tnr1465204.aspx?lan=1",
+    "description": "7.º Torneio Maia Blitz Cup (Rápidas) 08 de agosto de 2026 | Pedrouços, Maia"
+  },
+  {
+    "name": "VII MAIA RAPID CUP (Semi-Rápidas) 2026 - 09 de agosto de 2026 | Pedrouços, Maia",
+    "location": "Tv. Nova de Teibas, POR",
     "date": "2026-08-09",
-    "category": "Blitz, Classical",
-    "url": "https://chess-results.com/tnr1448988.aspx?lan=1",
-    "description": "Otwarte Mistrzostwa Warszawy w szachach błyskawicznych"
-  },
-  {
-    "name": "IX Ràpides Hospitalet de l'Infant 2026Memorial Pere Corominas",
-    "location": "43890 L'Hospitalet de l'Infant, CAT",
-    "date": "2026-08-14",
-    "category": "Blitz, Classical",
-    "url": "https://chess-results.com/tnr1457965.aspx?lan=1",
-    "description": "IX Ràpides Hospitalet de l'Infant 2026Memorial Pere Corominas"
-  },
-  {
-    "name": "9no Torneo IRT Rapido  UDO Anzoategui 2026",
-    "location": "Complejo Polideportivo Simon Bolivar, VEN",
-    "date": "2026-08-07",
-    "category": "Blitz, Classical",
-    "url": "https://chess-results.com/tnr1469147.aspx?lan=1",
-    "description": "9no Torneo IRT Rapido  UDO Anzoategui 2026"
-  },
-  {
-    "name": "XXXVIII Open de Ajedrez Castillo de Luna. Rota (Cádiz)",
-    "location": "Rota (Cádiz), ESP",
-    "date": "2026-08-09",
-    "category": "Blitz, Open, Classical",
-    "url": "https://chess-results.com/tnr1461369.aspx?lan=1",
-    "description": "XXXVIII Open de Ajedrez Castillo de Luna. Rota (Cádiz)"
-  },
-  {
-    "name": "Nazomervierkampentoernooi Assen 2026",
-    "location": "Assen, NED",
-    "date": "2026-08-28",
-    "category": "Classical",
-    "url": "https://chess-results.com/tnr1443943.aspx?lan=1",
-    "description": "Nazomervierkampentoernooi Assen 2026"
+    "category": "Classical, Rapid",
+    "url": "https://chess-results.com/tnr1465215.aspx?lan=1",
+    "description": "VII MAIA RAPID CUP (Semi-Rápidas) 2026 - 09 de agosto de 2026 | Pedrouços, Maia"
   }
 ]
