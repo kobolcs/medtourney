@@ -1,82 +1,154 @@
 [
   {
-    "name": "Selokunkku-turnaussarja, syksy 2026, 1. osakilpailu 23.8.",
-    "location": "Sarvijaakonkatu 24 L2, FIN",
-    "date": "2026-08-23",
+    "name": "Hrajeme spolu 2026_mladší",
+    "location": "Plzeň-Radobyčice, CZE",
+    "date": "2026-08-29",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1478862.aspx?lan=1",
+    "description": "Hrajeme spolu 2026_mladší"
+  },
+  {
+    "name": "8. Bad Ischler Jugendturnier 2026(Gruppe U8-12)",
+    "location": "Sparkassensaal Bad Ischl, AUT",
+    "date": "2026-09-06",
+    "category": "Classical, Youth",
+    "url": "https://chess-results.com/tnr1382975.aspx?lan=1",
+    "description": "8. Bad Ischler Jugendturnier 2026(Gruppe U8-12)"
+  },
+  {
+    "name": "Festes Mare de Deu Gracia - Maó 2026 - Escolar",
+    "location": "Maó, ESP",
+    "date": "2026-08-29",
     "category": "Blitz, Classical",
-    "url": "https://chess-results.com/tnr1465478.aspx?lan=1",
-    "description": "Selokunkku-turnaussarja, syksy 2026, 1. osakilpailu 23.8."
+    "url": "https://chess-results.com/tnr1455458.aspx?lan=1",
+    "description": "Festes Mare de Deu Gracia - Maó 2026 - Escolar"
   },
   {
-    "name": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 OPEN SECTION",
-    "location": "MBOMBELA, RSA",
+    "name": "Hrajeme spolu 2026_starší",
+    "location": "Plzeň-Radobyčice, CZE",
     "date": "2026-08-29",
-    "category": "Classical, Open",
-    "url": "https://chess-results.com/tnr1478928.aspx?lan=1",
-    "description": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 OPEN SECTION"
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1478863.aspx?lan=1",
+    "description": "Hrajeme spolu 2026_starší"
   },
   {
-    "name": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 10",
-    "location": "MBOMBELA, RSA",
+    "name": "Festes Mare de Deu Gracia - Maó 2026 - Absolut",
+    "location": "Maó, ESP",
     "date": "2026-08-29",
+    "category": "Blitz, Classical",
+    "url": "https://chess-results.com/tnr1455279.aspx?lan=1",
+    "description": "Festes Mare de Deu Gracia - Maó 2026 - Absolut"
+  },
+  {
+    "name": "Open The Square Rapid II",
+    "location": "Soseaua Electronicii 19, ROU",
+    "date": "2026-11-14",
+    "category": "Blitz, Open, Rapid",
+    "url": "https://chess-results.com/tnr1482719.aspx?lan=1",
+    "description": "Open The Square Rapid II"
+  },
+  {
+    "name": "Open The Square Blitz II",
+    "location": "Soseaua Electronicii 19, ROU",
+    "date": "2026-11-15",
+    "category": "Classical, Open, Blitz",
+    "url": "https://chess-results.com/tnr1482731.aspx?lan=1",
+    "description": "Open The Square Blitz II"
+  },
+  {
+    "name": "Sabinka cup 2026 9. ročník",
+    "location": "Spišské Vlachy, SVK",
+    "date": "2026-08-29",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1438043.aspx?lan=1",
+    "description": "Sabinka cup 2026 9. ročník"
+  },
+  {
+    "name": "BUBAMARA OPEN V 2026 29.08.2026 DECIJI RAPID TURNIR U SAHU DEVOJCICE 2009 - 2020",
+    "location": "Novi Sad, SRB",
+    "date": "2026-08-29",
+    "category": "Classical, Open, Rapid",
+    "url": "https://chess-results.com/tnr1479824.aspx?lan=1",
+    "description": "BUBAMARA OPEN V 2026 29.08.2026 DECIJI RAPID TURNIR U SAHU DEVOJCICE 2009 - 2020"
+  },
+  {
+    "name": "BUBAMARA OPEN V 2026 29.08.2026 DECIJI RAPID TURNIR U SAHU DECACI 2015 - 2020",
+    "location": "Novi Sad, SRB",
+    "date": "2026-08-29",
+    "category": "Classical, Open, Rapid",
+    "url": "https://chess-results.com/tnr1479822.aspx?lan=1",
+    "description": "BUBAMARA OPEN V 2026 29.08.2026 DECIJI RAPID TURNIR U SAHU DECACI 2015 - 2020"
+  },
+  {
+    "name": "BUBAMARA OPEN V 2026 29.08.2026 DECIJI RAPID TURNIR U SAHU DECACI 2009 - 2014",
+    "location": "Novi Sad, SRB",
+    "date": "2026-08-29",
+    "category": "Classical, Open, Rapid",
+    "url": "https://chess-results.com/tnr1479813.aspx?lan=1",
+    "description": "BUBAMARA OPEN V 2026 29.08.2026 DECIJI RAPID TURNIR U SAHU DECACI 2009 - 2014"
+  },
+  {
+    "name": "III. Sakk Matt a Sonkamesternél 2026.08.30. ( Gyermek Verseny)",
+    "location": "HUN",
+    "date": "2026-08-30",
+    "category": "Rapid, Classical",
+    "url": "https://chess-results.com/tnr1449003.aspx?lan=1",
+    "description": "III. Sakk Matt a Sonkamesternél 2026.08.30. ( Gyermek Verseny)"
+  },
+  {
+    "name": "20th Open Grand Prix 2026, by SOXalandriou (Rapid)- Κυριακή 30/08, 17:30",
+    "location": "Averof 4, GRE",
+    "date": "2026-08-30",
+    "category": "Classical, Open, Rapid",
+    "url": "https://chess-results.com/tnr1478036.aspx?lan=1",
+    "description": "20th Open Grand Prix 2026, by SOXalandriou (Rapid)- Κυριακή 30/08, 17:30"
+  },
+  {
+    "name": "20th Open Grand Prix 2026, by SOXalandriou (Blitz)- Κυριακή 30/08, ~20:30",
+    "location": "Averof 4, GRE",
+    "date": "2026-08-30",
+    "category": "Classical, Open, Blitz",
+    "url": "https://chess-results.com/tnr1478037.aspx?lan=1",
+    "description": "20th Open Grand Prix 2026, by SOXalandriou (Blitz)- Κυριακή 30/08, ~20:30"
+  },
+  {
+    "name": "24. Pozničev memorial (ŠK Zagorje ob Savi)",
+    "location": "Zagorje ob Savi, SLO",
+    "date": "2026-08-30",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1484557.aspx?lan=1",
+    "description": "24. Pozničev memorial (ŠK Zagorje ob Savi)"
+  },
+  {
+    "name": "First Saturday 2026 October - GM",
+    "location": "Budapest, HUN",
+    "date": "2026-10-03",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1465523.aspx?lan=1",
+    "description": "First Saturday 2026 October - GM"
+  },
+  {
+    "name": "First Saturday 2026 October - IM_A",
+    "location": "Budapest, HUN",
+    "date": "2026-10-03",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1474258.aspx?lan=1",
+    "description": "First Saturday 2026 October - IM_A"
+  },
+  {
+    "name": "First Saturday 2026 October - IM-B",
+    "location": "Budapest, HUN",
+    "date": "2026-10-03",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1483584.aspx?lan=1",
+    "description": "First Saturday 2026 October - IM-B"
+  },
+  {
+    "name": "First Saturday 2026 October - U2250",
+    "location": "Budapest, HUN",
+    "date": "2026-10-03",
     "category": "Classical, Youth",
-    "url": "https://chess-results.com/tnr1478934.aspx?lan=1",
-    "description": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 10"
-  },
-  {
-    "name": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 18",
-    "location": "MBOMBELA, RSA",
-    "date": "2026-08-29",
-    "category": "Classical, Youth",
-    "url": "https://chess-results.com/tnr1478931.aspx?lan=1",
-    "description": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 18"
-  },
-  {
-    "name": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 14",
-    "location": "MBOMBELA, RSA",
-    "date": "2026-08-29",
-    "category": "Classical, Youth",
-    "url": "https://chess-results.com/tnr1478930.aspx?lan=1",
-    "description": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 14"
-  },
-  {
-    "name": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 10",
-    "location": "MBOMBELA, RSA",
-    "date": "2026-08-29",
-    "category": "Classical, Youth",
-    "url": "https://chess-results.com/tnr1478929.aspx?lan=1",
-    "description": "TRAC MBOMBELA 4TH ANNUAL CHESS TOURNAMENT 2026 UNDER 10"
-  },
-  {
-    "name": "Maia Chess Open 2026 - Masters",
-    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
-    "date": "2026-08-21",
-    "category": "Classical, Open",
-    "url": "https://chess-results.com/tnr1369101.aspx?lan=1",
-    "description": "Maia Chess Open 2026 - Masters"
-  },
-  {
-    "name": "Maia Chess Open 2026 - U2000",
-    "location": "TECMAIA Parque: R. Eng. Frederico Ulrich 2650, POR",
-    "date": "2026-08-21",
-    "category": "Classical, Open, Youth",
-    "url": "https://chess-results.com/tnr1369102.aspx?lan=1",
-    "description": "Maia Chess Open 2026 - U2000"
-  },
-  {
-    "name": "Douro Blitz Cruise 2026",
-    "location": "Av. de Diogo Leite 135, POR",
-    "date": "2026-08-20",
-    "category": "Classical, Blitz",
-    "url": "https://chess-results.com/tnr1369103.aspx?lan=1",
-    "description": "Douro Blitz Cruise 2026"
-  },
-  {
-    "name": "Douro Blitz Cruise 2026 - gr. A",
-    "location": "Av. de Diogo Leite 135, POR",
-    "date": "2026-08-20",
-    "category": "Classical, Blitz",
-    "url": "https://chess-results.com/tnr1476546.aspx?lan=1",
-    "description": "Douro Blitz Cruise 2026 - gr. A"
+    "url": "https://chess-results.com/tnr1483602.aspx?lan=1",
+    "description": "First Saturday 2026 October - U2250"
   }
 ]
