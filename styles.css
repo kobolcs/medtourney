@@ -192,6 +192,15 @@ header h1 {
     background-color: #f8f9fa;
 }
 
+.filter-group label:has(input:disabled) {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.filter-group label:has(input:disabled):hover {
+    background-color: transparent;
+}
+
 .filter-group input[type="checkbox"] {
     width: 24px;
     height: 24px;
@@ -1444,6 +1453,10 @@ a:focus-visible {
 /* Filter label hover: #f8f9fa (near-white) is invisible on dark card */
 .dark-theme .filter-group label:hover {
     background-color: rgba(255, 255, 255, 0.07);
+}
+
+.dark-theme .filter-group label:has(input:disabled):hover {
+    background-color: transparent;
 }
 
 /* Pagination buttons have hardcoded white background */

@@ -190,7 +190,7 @@ export class FilterService {
         return youthPattern.test(name) || youthPattern.test(category);
     }
 
-    private isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
+    isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
         const loc = location.toLowerCase();
         for (const place of mediterraneanLocations) {
             // Short city names (≤5 chars) require Unicode non-letter boundaries to

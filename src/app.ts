@@ -49,6 +49,7 @@ class TournamentFinder {
     // Configuration
     private europeanCountries: Record<string, string[]>;
     private mediterraneanLocations: Set<string>;
+    private mediterraneanCountries: Set<string>;
 
     // Tournament data
     // - allTournaments: the full fetched set (used for shortlist resolution)
@@ -88,6 +89,7 @@ class TournamentFinder {
         // Will be loaded from config.json
         this.europeanCountries = {};
         this.mediterraneanLocations = new Set();
+        this.mediterraneanCountries = new Set();
 
         // Initialize after loading config
         void this.initAsync();
@@ -387,6 +389,10 @@ class TournamentFinder {
                 element.addEventListener('change', savePrefs);
             }
         });
+
+        // Keep country ↔ Mediterranean mutually compatible in real-time
+        filterElements.countryFilter?.addEventListener('change', () => this.updateFilterCompatibility());
+        filterElements.mediterraneanOnly?.addEventListener('change', () => this.updateFilterCompatibility());
     }
 
     /**
@@ -443,6 +449,10 @@ class TournamentFinder {
             const tournaments = await this.dataService.fetchTournaments();
             this.allTournaments = tournaments;
 
+            // Recompute which countries have Mediterranean tournaments and update UI constraints
+            this.mediterraneanCountries = this.computeMediterraneanCountries();
+            this.updateFilterCompatibility();
+
             // Invalidate the filter cache: results are keyed only on filter
             // state, so a fresh data set must not reuse stale cached results.
             this.filterService.clearCache();
@@ -481,6 +491,64 @@ class TournamentFinder {
             this.uiManager.showError(
                 error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.'
             );
+        }
+    }
+
+    /**
+     * Compute which country codes (from the dropdown) have at least one
+     * Mediterranean tournament in the current dataset.
+     */
+    private computeMediterraneanCountries(): Set<string> {
+        const result = new Set<string>();
+        for (const t of this.allTournaments) {
+            if (this.filterService.isMediterraneanLocation(t.location.toLowerCase(), this.mediterraneanLocations)) {
+                const parts = t.location.split(',');
+                const last = parts[parts.length - 1];
+                const code = last ? last.trim().toUpperCase() : '';
+                if (code) result.add(code);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Keep the country dropdown and the Mediterranean checkbox in sync so the
+     * user cannot select a combination that will always return 0 results:
+     *
+     * - Country selected with no Med tournaments → disable Mediterranean checkbox.
+     * - Mediterranean checked → disable country options that have no Med tournaments.
+     */
+    private updateFilterCompatibility(): void {
+        if (this.allTournaments.length === 0) return;
+
+        const medCheckbox = document.getElementById('mediterraneanOnly') as HTMLInputElement | null;
+        const countrySelect = document.getElementById('countryFilter') as HTMLSelectElement | null;
+        if (!medCheckbox || !countrySelect) return;
+
+        const selectedCountry = countrySelect.value.toUpperCase();
+        const medChecked = medCheckbox.checked;
+
+        // --- Direction 1: country → Mediterranean ---
+        const countryHasMed = !selectedCountry || this.mediterraneanCountries.has(selectedCountry);
+        medCheckbox.disabled = !countryHasMed;
+        if (!countryHasMed && medChecked) {
+            medCheckbox.checked = false;
+        }
+        const medLabel = document.querySelector('label[for="mediterraneanOnly"]') as HTMLElement | null;
+        if (medLabel) {
+            medLabel.title = countryHasMed
+                ? ''
+                : 'No Mediterranean tournaments in the selected country';
+        }
+
+        // --- Direction 2: Mediterranean → country options ---
+        for (const option of countrySelect.options) {
+            if (!option.value) { option.disabled = false; continue; }
+            option.disabled = medChecked && !this.mediterraneanCountries.has(option.value.toUpperCase());
+        }
+        // If the currently-selected country is now incompatible, reset to "all"
+        if (selectedCountry && medChecked && !this.mediterraneanCountries.has(selectedCountry)) {
+            countrySelect.value = '';
         }
     }
 
