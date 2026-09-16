@@ -230,22 +230,42 @@ class TournamentProcessor:
 
     def _determine_category(self, name: str, location: str, time_control: str) -> str:
         """Determine tournament category from time control and name."""
+        TIME_CLASSES = {"Classical", "Rapid", "Blitz"}
         category_parts: List[str] = []
+        tc_class: Optional[str] = None
 
-        # Determine time control category from the time control field
         if time_control:
             tc_lower = time_control.lower()
-            if "blitz" in tc_lower or ("5" in tc_lower and ("min" in tc_lower or "'" in tc_lower)):
-                category_parts.append("Blitz")
-            elif "rapid" in tc_lower or ("15" in tc_lower or "25" in tc_lower):
-                category_parts.append("Rapid")
+            # Keyword shortcuts
+            if "blitz" in tc_lower:
+                tc_class = "Blitz"
+            elif "rapid" in tc_lower:
+                tc_class = "Rapid"
+            elif "classical" in tc_lower or "standard" in tc_lower:
+                tc_class = "Classical"
             else:
-                category_parts.append("Classical")
+                # Extract first numeric value + unit to classify by actual minutes
+                m = re.search(r'(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|\')', tc_lower)
+                if m:
+                    val = int(m.group(1))
+                    minutes = val * 60 if m.group(2).startswith('h') else val
+                    if minutes < 10:
+                        tc_class = "Blitz"
+                    elif minutes < 60:
+                        tc_class = "Rapid"
+                    else:
+                        tc_class = "Classical"
 
-        # Extract other categories from name
+        if tc_class:
+            category_parts.append(tc_class)
+
+        # Extract format labels from name; skip time-class labels when tc_class is authoritative
         name_category: str = self._extract_category(name + " " + location)
         for cat in name_category.split(", "):
-            if cat not in category_parts:
+            if cat in TIME_CLASSES:
+                if tc_class is None and cat not in category_parts:
+                    category_parts.append(cat)
+            elif cat not in category_parts:
                 category_parts.append(cat)
 
         return ", ".join(category_parts) if category_parts else "Open"
