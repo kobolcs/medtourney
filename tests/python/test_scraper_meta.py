@@ -97,8 +97,10 @@ class TestScraperMeta:
             "Setup Browser And Download Directory",
             "Navigate To Search Page",
             "Fill Search Form",
-            "Download Tournament Data",
-            "Process Downloaded Excel",
+            "Scrape Federation",
+            "Download Tournament Data For Fed",
+            "Dismiss Cookie Consent",
+            "Attempt Excel Download",
             "Export Tournaments To JSON",
             "Export Tournament Metadata",
         ]
@@ -166,7 +168,9 @@ class TestScraperMeta:
     def test_robot_uses_tournament_processor_keywords(self, robot_content: str):
         """Test that TournamentProcessor keywords are used"""
         processor_keywords = [
-            "Load And Filter Tournaments",
+            "Initialize Accumulator",
+            "Accumulate Fed Tournaments",
+            "Finalize Accumulated",
             "Export To JSON",
         ]
 

@@ -92,6 +92,17 @@ class TournamentProcessor:
             "excludedNonEuropean": 0,
             "excludedInvalid": 0,
         }
+        # Multi-federation accumulator — populated by Accumulate Fed Tournaments,
+        # finalised by Finalize Accumulated.
+        self._accumulated: List[Dict[str, Any]] = []
+        self._seen_urls: Set[str] = set()
+        self._accum_stats: Dict[str, int] = {
+            "rawRows": 0,
+            "keptRows": 0,
+            "excludedPast": 0,
+            "excludedNonEuropean": 0,
+            "excludedInvalid": 0,
+        }
         # Load configuration from config.json
         self._load_config()
 
@@ -451,6 +462,56 @@ class TournamentProcessor:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
 
         return metadata
+
+    @keyword("Initialize Accumulator")
+    def initialize_accumulator(self) -> None:
+        """Reset the multi-federation accumulator for a fresh collection run."""
+        self._accumulated = []
+        self._seen_urls = set()
+        self._accum_stats = {k: 0 for k in self._accum_stats}
+
+    @keyword("Accumulate Fed Tournaments")
+    def accumulate_fed_tournaments(self, excel_file: str) -> int:
+        """Load a per-federation Excel and merge new entries into the pool.
+
+        Calls load_and_filter_tournaments() then deduplicates by URL, keeping
+        the first-seen entry when duplicates appear across federations.
+
+        Args:
+            excel_file: Path to the per-federation Excel file.
+
+        Returns:
+            Number of new (non-duplicate) tournaments added in this call.
+        """
+        tournaments = self.load_and_filter_tournaments(excel_file)
+        new_count = 0
+        for t in tournaments:
+            url = t["url"]
+            if url not in self._seen_urls:
+                self._seen_urls.add(url)
+                self._accumulated.append(t)
+                new_count += 1
+        for key in self._accum_stats:
+            self._accum_stats[key] += self.last_run_stats.get(key, 0)
+        return new_count
+
+    @keyword("Finalize Accumulated")
+    def finalize_accumulated(self) -> List[Dict[str, Any]]:
+        """Return the deduplicated multi-federation tournament list.
+
+        Sets self.tournaments and self.last_run_stats to the aggregated totals
+        so Export To JSON and Export Metadata work correctly after a multi-fed run.
+
+        Returns:
+            Deduplicated list of all accumulated tournaments.
+        """
+        result = list(self._accumulated)
+        self.tournaments = result
+        self.last_run_stats = {
+            **self._accum_stats,
+            "keptRows": len(result),
+        }
+        return result
 
     @keyword("Export To JSON")
     def export_to_json(self, tournaments: Any, output_file: str) -> None:
