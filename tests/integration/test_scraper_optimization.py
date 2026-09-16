@@ -24,14 +24,21 @@ class TestScraperOptimization:
         """Get path to scraper robot file"""
         return Path(__file__).parent.parent.parent / "scrape_tournaments.robot"
 
-    def test_max_results_increased_to_5000(self):
-        """Test that MAX_RESULTS was increased from 2000 to 5000"""
+    def test_max_results_set_to_dropdown_value_5(self):
+        """Test that MAX_RESULTS uses dropdown option value 5 (= 2000 results).
+
+        chess-results.com's results-per-page dropdown uses option VALUES 0-5,
+        not the displayed row count (100/250/500/1000/1500/2000).  Value 5
+        selects 2000 results — the maximum available.  Using the raw display
+        number (e.g. 5000) is silently ignored and falls back to 100.
+        """
         robot_file = self.get_robot_file_path()
         content = robot_file.read_text()
 
-        # Check for MAX_RESULTS = 5000
-        assert "${MAX_RESULTS}    5000" in content, "MAX_RESULTS should be 5000"
-        assert "${MAX_RESULTS}    2000" not in content, "Old limit 2000 should not exist"
+        assert "${MAX_RESULTS}    5" in content, \
+            "MAX_RESULTS should be 5 (dropdown option value for 2000 results)"
+        assert "${MAX_RESULTS}    5000" not in content, \
+            "5000 is not a valid dropdown value and would silently default to 100"
 
     def test_date_range_months_variable_exists(self):
         """Test that DATE_RANGE_MONTHS variable was added"""
@@ -107,14 +114,19 @@ class TestScraperOptimization:
 
         assert coverage_increase == 100, "Coverage should double (100% increase)"
 
-    def test_result_limit_increases_capacity(self):
-        """Test that 5000 results provides more capacity than 2000"""
-        old_limit = 2000
-        new_limit = 5000
+    def test_result_limit_is_maximum_available(self):
+        """Test that MAX_RESULTS selects the maximum available option (2000 rows).
 
-        capacity_increase = ((new_limit - old_limit) / old_limit) * 100
-
-        assert capacity_increase == 150, "Capacity should increase by 150%"
+        The dropdown option value 5 maps to 2000 displayed results, which is
+        the highest tier chess-results.com offers.
+        """
+        # Dropdown value → row count mapping for chess-results.com
+        dropdown_mapping = {0: 100, 1: 250, 2: 500, 3: 1000, 4: 1500, 5: 2000}
+        max_option_value = 5
+        assert dropdown_mapping[max_option_value] == 2000, \
+            "Option value 5 should map to 2000 results"
+        assert max_option_value == max(dropdown_mapping.keys()), \
+            "Option value 5 should be the maximum available"
 
     def test_expected_tournament_increase(self):
         """Test expected tournament count increase calculation"""

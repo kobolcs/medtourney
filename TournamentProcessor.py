@@ -658,13 +658,18 @@ class TournamentProcessor:
 
             name_idx = self._find_column(headers, ["tournament", "name", "turnier"])
             date_idx = self._find_column(headers, ["from", "start", "datum"])
-            if name_idx is not None and date_idx is not None:
-                # Reject rows where the matching cells are long sentences rather than
-                # short column labels (e.g. the URL preamble row added by chess-results.com
-                # starts with "from the tournament-database of chess-results …" which
-                # contains both "tournament" and "from" but is clearly not a header).
-                if len(headers[name_idx]) <= 35 and len(headers[date_idx]) <= 35:
-                    return row_idx, headers
+            _MAX_HEADER_LEN = 35  # noqa: N806
+            if (
+                name_idx is not None
+                and date_idx is not None
+                # Reject rows where matching cells are long sentences rather than short
+                # column labels (e.g. the URL preamble row from chess-results.com starts
+                # with "from the tournament-database of chess-results …" which contains
+                # both "tournament" and "from" but is clearly not a header).
+                and len(headers[name_idx]) <= _MAX_HEADER_LEN
+                and len(headers[date_idx]) <= _MAX_HEADER_LEN
+            ):
+                return row_idx, headers
 
         # Nothing matched - return the historical default so _find_columns can run
         # and the explicit missing-column check can produce a clear error.
