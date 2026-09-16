@@ -136,11 +136,13 @@ export class ExportService {
 
     /**
      * Build the VEVENT lines for a tournament as an all-day event.
-     * DTSTART/DTEND use VALUE=DATE (DTEND is exclusive = start + 1 day).
+     * DTSTART/DTEND use VALUE=DATE (DTEND is exclusive = last day + 1).
+     * Uses dateTo when available so multi-day events span their full duration.
      */
     private eventLines(tournament: Tournament, now: Date): string[] {
         const startDate = this.formatICSDateOnly(tournament.date);
-        const endDate = this.formatICSDateOnly(this.addDaysUTC(tournament.date, 1));
+        const lastDay = tournament.dateTo ? new Date(tournament.dateTo) : tournament.date;
+        const endDate = this.formatICSDateOnly(this.addDaysUTC(lastDay, 1));
         const dtstamp = this.formatICSDateTimeUTC(now);
         const uid = this.generateStableUID(tournament);
 

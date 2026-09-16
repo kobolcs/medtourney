@@ -129,9 +129,16 @@ test('ICS: all-day DTSTART uses VALUE=DATE:YYYYMMDD', () => {
     assertContains(ics, 'DTSTART;VALUE=DATE:20250601');
 });
 
-test('ICS: DTEND is exclusive (start + 1 day) as VALUE=DATE', () => {
+test('ICS: DTEND is exclusive (start + 1 day) as VALUE=DATE when no dateTo', () => {
     const ics = new ExportService().buildICSForTournament(tournament);
     assertContains(ics, 'DTEND;VALUE=DATE:20250602');
+});
+
+test('ICS: DTEND uses dateTo + 1 day for multi-day tournaments', () => {
+    const multiDay = { ...tournament, dateTo: '2025-06-05' };
+    const ics = new ExportService().buildICSForTournament(multiDay);
+    assertContains(ics, 'DTSTART;VALUE=DATE:20250601');
+    assertContains(ics, 'DTEND;VALUE=DATE:20250606');
 });
 
 test('ICS: does NOT emit invalid VALUE=DATE date-time (no T000000Z)', () => {
