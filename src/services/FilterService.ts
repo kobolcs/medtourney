@@ -191,9 +191,16 @@ export class FilterService {
     }
 
     private isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
+        const loc = location.toLowerCase();
         for (const place of mediterraneanLocations) {
-            if (location.includes(place.toLowerCase())) {
-                return true;
+            // Short city names (≤5 chars, e.g. "bar", "nice", "rome") require
+            // non-alpha boundaries to avoid matching venue-name substrings like
+            // "bar" in "Lubartow" or "nice" in "Bohnice".
+            if (place.length <= 5) {
+                const re = new RegExp(`(?:^|[^a-z])${place}(?:[^a-z]|$)`);
+                if (re.test(loc)) return true;
+            } else {
+                if (loc.includes(place)) return true;
             }
         }
         return false;

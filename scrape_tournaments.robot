@@ -8,7 +8,9 @@ Library           ./TournamentProcessor.py
 *** Variables ***
 ${SEARCH_URL}     https://s1.chess-results.com/TurnierSuche.aspx?lan=1
 ${DOWNLOAD_DIR}   ${CURDIR}/downloads
-${MAX_RESULTS}    5000
+${MAX_RESULTS}    5
+# Note: value=5 selects the "2000" option in the results-per-page dropdown.
+# chess-results.com allows 100/250/500/1000/1500/2000 (values 0-5).
 ${DATE_RANGE_MONTHS}    6
 # Generous default timeout for slow Excel generation on chess-results.com
 ${BROWSER_TIMEOUT}    90s
@@ -97,8 +99,29 @@ Download Tournament Data
     END
     Fail    Excel download failed after ${DOWNLOAD_RETRIES} attempts
 
+Dismiss Cookie Consent
+    [Documentation]    Dismiss the Cookiebot consent overlay if it is present.
+    ...    The overlay intercepts pointer events and prevents the Excel button from
+    ...    being clicked. Tries the "Allow all" button first; falls back to removing
+    ...    all Cookiebot DOM elements via page-level JavaScript.
+    Set Browser Timeout    10s
+    # Try to click "Allow all" by its stable Cookiebot button ID
+    ${cookie_btn}=    Set Variable    \#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll
+    ${accepted}=    Run Keyword And Return Status    Click    ${cookie_btn}
+    IF    not ${accepted}
+        # Fall back: remove all Cookiebot elements from DOM via page-level JS.
+        # Store JS in variable to avoid Robot Framework treating = in CSS
+        # attribute selectors ([id^="..."]) as named argument syntax.
+        ${remove_js}=    Set Variable    document.querySelectorAll('[id^="CybotCookiebot"]').forEach(function(el){el.remove()})
+        Evaluate JavaScript    selector=${None}    ${remove_js}
+    END
+    Set Browser Timeout    ${BROWSER_TIMEOUT}
+
 Attempt Excel Download
     [Documentation]    Single attempt to click the Excel button and save the file
+
+    # Dismiss cookie consent dialog if present (it intercepts pointer events)
+    Dismiss Cookie Consent
 
     # Look for Excel download button (usually has "Excel" or "XLS" in text)
     ${download_button}=    Get Element    button:has-text("Excel"), a:has-text("Excel"), input[value*="Excel"]

@@ -148,12 +148,15 @@ class TournamentProcessor:
             "usa", "canada", "mexico", "brazil", "argentina", "chile", "peru",
             "colombia", "egypt", "morocco", "tunisia", "algeria", "south africa",
             "israel", "jordan", "lebanon", "iran", "iraq", "turkey", "kazakhstan",
-            "uzbekistan", "rus", "mas", "tur",
-            # Add more country codes for non-European countries
+            "uzbekistan", "uruguay", "costa rica", "venezuela",
+            "rus", "mas", "tur",
             "ind", "uzb", "kaz", "isr", "jpn", "chn", "can", "mex",
             "bra", "arg", "aus", "nzl", "sgp", "tha", "vnm", "phl",
             "kor", "egy", "mar", "tun", "dza", "zaf", "jor", "lbn",
-            "irn", "irq", "qat", "are", "sau"
+            "irn", "irq", "qat", "are", "sau",
+            "uru", "crc", "ven", "bol", "par", "ecu", "col", "chi",
+            "jam", "cub", "pur", "dom", "gua", "hnd", "pan", "slv",
+            "pak", "ban", "sri", "nep", "afg", "tpe", "hkg", "mgl",
         }
         self.mediterranean_locations = {
             "barcelona", "valencia", "alicante", "malaga", "marbella",
@@ -830,11 +833,13 @@ class TournamentProcessor:
     def _is_european(self, location: str) -> bool:
         """Check if location is in Europe, excluding Russia.
 
-        First checks if location matches non-European countries (including Russia),
-        then checks if it matches European countries.
+        Extracts the FED code from "City, FED" format and uses exact matching to
+        avoid substring false positives (e.g. "Deportivo" containing "por" which is
+        Portugal's FIDE code, or "Especiales" containing "esp" = Spain's code).
 
         Args:
-            location: Location string to check (city, country code, or country name).
+            location: Location string to check ("City, COUNTRYCODE" or just
+                "COUNTRYCODE").
 
         Returns:
             True if location is in Europe (excluding Russia), False otherwise.
@@ -844,14 +849,25 @@ class TournamentProcessor:
             True
             >>> processor._is_european('Moscow, Russia')
             False
-            >>> processor._is_european('Dubai, UAE')
+            >>> processor._is_european('Club Deportivo Artigas, URU')
+            False
+            >>> processor._is_european('Gimnasio de Olimpiadas Especiales, CRC')
             False
         """
         location_lower: str = location.lower()
 
-        # First check if it's explicitly non-European
+        # Extract the FED code from "City, COUNTRYCODE" format.
+        # When a comma is present, use exact matching on the country code only
+        # to avoid substring false positives from city names (e.g. "Deportivo"
+        # contains "por" = Portugal's code).
+        parts = location_lower.rsplit(",", 1)
+        if len(parts) > 1:
+            fed_code = parts[-1].strip()
+            if fed_code in self.non_european_countries:
+                return False
+            return fed_code in self.european_countries
+
+        # No comma — just a country code or full country name; substring is OK.
         if any(country in location_lower for country in self.non_european_countries):
             return False
-
-        # Then check if it matches European countries
         return any(country in location_lower for country in self.european_countries)
