@@ -66,52 +66,60 @@ Navigate To Search Page
 
 Scrape Federation
     [Documentation]    Scrape one ECU federation and accumulate results.
-    ...    Returns without downloading if the federation option is missing in the dropdown.
+    ...    Download failures (no results, transient network) are logged and skipped
+    ...    rather than propagated, so a single empty/slow federation cannot abort the run.
     [Arguments]    ${fed}
     Log    Scraping federation: ${fed}
     Navigate To Search Page
     ${fed_applied}=    Fill Search Form    ${fed}
     IF    not ${fed_applied}
-        Log    Federation ${fed}: dropdown option not found, skipping download    level=WARN
+        Log    Federation ${fed}: dropdown option not found, skipping    level=WARN
         RETURN
     END
-    Download Tournament Data For Fed    ${fed}
+    ${downloaded}=    Run Keyword And Return Status    Download Tournament Data For Fed    ${fed}
+    IF    not ${downloaded}
+        Log    Federation ${fed}: no download (0 results or transient failure), skipping    level=WARN
+        RETURN
+    END
     ${new_count}=    Accumulate Fed Tournaments    ${DOWNLOAD_DIR}/TournamentSearch.xlsx
     Log    Federation ${fed}: ${new_count} new unique tournaments added
 
 Fill Search Form
-    [Documentation]    Fill the search form with date range and optional federation filter.
-    ...    Returns True if the federation option was successfully selected (or no fed given).
+    [Documentation]    Fill the search form. If a federation is given it is selected first
+    ...    because chess-results.com fires an ASP.NET postback that reloads the page —
+    ...    dates and max-results must be filled on the post-reload page.
+    ...    Returns True if the federation option was found (or no fed given).
     [Arguments]    ${fed}=${EMPTY}
 
-    # Calculate date range
+    # Step 1: select federation — triggers a full-page postback on chess-results.com
+    ${fed_applied}=    Set Variable    ${TRUE}
+    IF    '${fed}' != '${EMPTY}'
+        Set Browser Timeout    15s
+        ${fed_applied}=    Run Keyword And Return Status    Select Options By    \#P1_combo_land    value    ${fed}
+        IF    ${fed_applied}
+            # Wait for the postback navigation to complete before touching other fields
+            Wait For Load State    domcontentloaded    timeout=15s
+        END
+        Set Browser Timeout    ${BROWSER_TIMEOUT}
+        IF    not ${fed_applied}
+            Log    Could not set federation filter for ${fed}    level=WARN
+            RETURN    ${fed_applied}
+        END
+    END
+
+    # Step 2: fill dates (must come AFTER postback — postback resets date fields)
     ${start_iso}=    Get Current Date    result_format=%Y-%m-%d
     ${days}=    Evaluate    ${DATE_RANGE_MONTHS} * 30
     ${end_iso}=    Add Time To Date    ${start_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
-
     Log    Date range: ${start_iso} to ${end_iso}, fed=${fed}
-
     Set Browser Timeout    10s
     Run Keyword And Return Status    Fill Text    input[type="date"] >> nth=0    ${start_iso}
     Run Keyword And Return Status    Fill Text    input[type="date"] >> nth=1    ${end_iso}
     Set Browser Timeout    ${BROWSER_TIMEOUT}
 
-    # Set federation filter — returns False when the option value is not in the dropdown
-    ${fed_applied}=    Set Variable    ${TRUE}
-    IF    '${fed}' != '${EMPTY}'
-        Set Browser Timeout    5s
-        ${fed_applied}=    Run Keyword And Return Status
-        ...    Select Options By    #P1_combo_land    value    ${fed}
-        Set Browser Timeout    ${BROWSER_TIMEOUT}
-        IF    not ${fed_applied}
-            Log    Could not set federation filter for ${fed}    level=WARN
-        END
-    END
-
-    # "Maximum number of lines" — value 5 = 2000 results (last select on page)
+    # Step 3: set max results to 2000 (value 5 in \#P1_combo_anzahl_zeilen)
     Set Browser Timeout    5s
-    ${limit_set}=    Run Keyword And Return Status
-    ...    Select Options By    select >> nth=4    value    ${MAX_RESULTS}
+    ${limit_set}=    Run Keyword And Return Status    Select Options By    \#P1_combo_anzahl_zeilen    value    ${MAX_RESULTS}
     Set Browser Timeout    ${BROWSER_TIMEOUT}
     IF    not ${limit_set}
         Log    Could not set result limit, using default    level=WARN
@@ -122,6 +130,7 @@ Fill Search Form
 Download Tournament Data For Fed
     [Documentation]    Click the Excel button and wait for download, retrying on
     ...    transient failures. Re-fills the form with the same federation on retry.
+    ...    Returns without error when no Excel button is present (0 results for fed).
     [Arguments]    ${fed}=${EMPTY}
 
     FOR    ${attempt}    IN RANGE    1    ${DOWNLOAD_RETRIES} + 1
@@ -145,7 +154,7 @@ Dismiss Cookie Consent
     ${accepted}=    Run Keyword And Return Status    Click    ${cookie_btn}
     IF    not ${accepted}
         ${remove_js}=    Set Variable    document.querySelectorAll('[id^="CybotCookiebot"]').forEach(function(el){el.remove()})
-        Evaluate JavaScript    selector=${None}    ${remove_js}
+        Run Keyword And Return Status    Evaluate JavaScript    ${NONE}    ${remove_js}
     END
     Set Browser Timeout    ${BROWSER_TIMEOUT}
 
@@ -156,9 +165,12 @@ Attempt Excel Download
 
     ${download_button}=    Get Element    button:has-text("Excel"), a:has-text("Excel"), input[value*="Excel"]
 
+    # Set 30s timeout BEFORE creating the promise — the promise inherits it
+    Set Browser Timeout    30s
     ${download_promise}=    Promise To Wait For Download    saveAs=${DOWNLOAD_DIR}/TournamentSearch.xlsx
     Click    ${download_button}
     ${file_info}=    Wait For    ${download_promise}
+    Set Browser Timeout    ${BROWSER_TIMEOUT}
 
     Log    Downloaded: ${file_info}[saveAs]
     Set Suite Variable    ${DOWNLOADED_FILE}    ${file_info}[saveAs]

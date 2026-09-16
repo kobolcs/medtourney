@@ -239,6 +239,44 @@ class TournamentProcessor:
             return city
         return "Unknown"
 
+    def _classify_by_fide_formula(self, tc_lower: str) -> Optional[str]:
+        """Classify time control using the official FIDE 60-move formula.
+
+        FIDE formula: total = base_minutes + increment_seconds
+        (60 moves × inc_sec / 60 sec = inc_sec minutes contribution)
+        Blitz: ≤ 10 min; Rapid: 10 < total < 60; Classical: ≥ 60.
+        """
+        # N+M bare format: "8+3", "90+30", "10+5'" etc.
+        m = re.search(r'(\d+)\s*\+\s*(\d+)', tc_lower)
+        if m:
+            base = int(m.group(1))
+            inc = int(m.group(2))
+            total = base + inc
+            if total <= 10:
+                return "Blitz"
+            elif total < 60:
+                return "Rapid"
+            else:
+                return "Classical"
+
+        # "N unit [+ M sec-unit]" format: "10min plus 3sec", "90 minutes + 30 seconds"
+        m = re.search(r'(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|\')', tc_lower)
+        if m:
+            val = int(m.group(1))
+            base = val * 60 if m.group(2).startswith('h') else val
+            # Look for increment in seconds (handles "+" or "plus" as separator)
+            m2 = re.search(r'(?:\+|plus)\s*(\d+)\s*s(?:ec|ek|eg|ekunde|econds?|ekundy)?', tc_lower)
+            inc = int(m2.group(1)) if m2 else 0
+            total = base + inc
+            if total <= 10:
+                return "Blitz"
+            elif total < 60:
+                return "Rapid"
+            else:
+                return "Classical"
+
+        return None
+
     def _determine_category(self, name: str, location: str, time_control: str) -> str:
         """Determine tournament category from time control and name."""
         TIME_CLASSES = {"Classical", "Rapid", "Blitz"}
@@ -255,17 +293,9 @@ class TournamentProcessor:
             elif "classical" in tc_lower or "standard" in tc_lower:
                 tc_class = "Classical"
             else:
-                # Extract first numeric value + unit to classify by actual minutes
-                m = re.search(r'(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|\')', tc_lower)
-                if m:
-                    val = int(m.group(1))
-                    minutes = val * 60 if m.group(2).startswith('h') else val
-                    if minutes < 10:
-                        tc_class = "Blitz"
-                    elif minutes < 60:
-                        tc_class = "Rapid"
-                    else:
-                        tc_class = "Classical"
+                # FIDE 60-move formula: total = base_minutes + increment_seconds
+                # Blitz: total ≤ 10 min; Rapid: 10 < total < 60; Classical: ≥ 60
+                tc_class = self._classify_by_fide_formula(tc_lower)
 
         if tc_class:
             category_parts.append(tc_class)

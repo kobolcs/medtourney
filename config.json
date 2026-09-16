@@ -323,137 +323,60 @@
     "monte carlo"
   ],
   "countryCodes": {
-    "ESP": {
-      "name": "Spain",
-      "keywords": ["spain", "españa", "esp"]
-    },
-    "FRA": {
-      "name": "France",
-      "keywords": ["france", "francia", "fra"]
-    },
-    "ITA": {
-      "name": "Italy",
-      "keywords": ["italy", "italia", "ita"]
-    },
-    "GER": {
-      "name": "Germany",
-      "keywords": ["germany", "deutschland", "ger", "deu"]
-    },
-    "GRE": {
-      "name": "Greece",
-      "keywords": ["greece", "grecia", "gre", "grc"]
-    },
-    "CRO": {
-      "name": "Croatia",
-      "keywords": ["croatia", "hrvatska", "cro", "hrv"]
-    },
-    "POR": {
-      "name": "Portugal",
-      "keywords": ["portugal", "por", "prt"]
-    },
-    "NED": {
-      "name": "Netherlands",
-      "keywords": ["netherlands", "holland", "ned", "nld"]
-    },
-    "SUI": {
-      "name": "Switzerland",
-      "keywords": ["switzerland", "schweiz", "sui", "che"]
-    },
-    "AUT": {
-      "name": "Austria",
-      "keywords": ["austria", "osterreich", "aut"]
-    },
-    "BEL": {
-      "name": "Belgium",
-      "keywords": ["belgium", "belgique", "bel"]
-    },
-    "CZE": {
-      "name": "Czech Republic",
-      "keywords": ["czech", "czechia", "cze"]
-    },
-    "HUN": {
-      "name": "Hungary",
-      "keywords": ["hungary", "magyarorszag", "hun"]
-    },
-    "POL": {
-      "name": "Poland",
-      "keywords": ["poland", "polska", "pol"]
-    },
-    "SRB": {
-      "name": "Serbia",
-      "keywords": ["serbia", "srbija", "srb"]
-    },
-    "ROU": {
-      "name": "Romania",
-      "keywords": ["romania", "rou", "rom"]
-    },
-    "UKR": {
-      "name": "Ukraine",
-      "keywords": ["ukraine", "ukr"]
-    },
-    "SVK": {
-      "name": "Slovakia",
-      "keywords": ["slovakia", "svk"]
-    },
-    "SLO": {
-      "name": "Slovenia",
-      "keywords": ["slovenia", "slo", "svn"]
-    },
-    "DEN": {
-      "name": "Denmark",
-      "keywords": ["denmark", "danmark", "den", "dnk"]
-    },
-    "NOR": {
-      "name": "Norway",
-      "keywords": ["norway", "norge", "nor"]
-    },
-    "SWE": {
-      "name": "Sweden",
-      "keywords": ["sweden", "sverige", "swe"]
-    },
-    "FIN": {
-      "name": "Finland",
-      "keywords": ["finland", "suomi", "fin"]
-    },
-    "MLT": {
-      "name": "Malta",
-      "keywords": ["malta", "mlt"]
-    },
-    "CYP": {
-      "name": "Cyprus",
-      "keywords": ["cyprus", "cyp"]
-    },
-    "MON": {
-      "name": "Monaco",
-      "keywords": ["monaco", "mon", "mco"]
-    },
-    "MNE": {
-      "name": "Montenegro",
-      "keywords": ["montenegro", "mne"]
-    },
-    "ALB": {
-      "name": "Albania",
-      "keywords": ["albania", "alb"]
-    },
-    "AND": {
-      "name": "Andorra",
-      "keywords": ["andorra", "and"]
-    },
-    "BLR": {
-      "name": "Belarus",
-      "keywords": ["belarus", "blr"]
-    },
-    "BIH": {
-      "name": "Bosnia and Herzegovina",
-      "keywords": ["bosnia", "bih"]
-    },
-    "GIB": {
-      "name": "Gibraltar",
-      "keywords": ["gibraltar", "gib"]
-    },
-    "GBR": {
-      "name": "United Kingdom",
-      "keywords": ["united kingdom", "england", "scotland", "wales", "uk", "gbr"]
-    }
+    "ALB": { "name": "Albania", "keywords": ["albania", "alb"] },
+    "AND": { "name": "Andorra", "keywords": ["andorra", "and"] },
+    "ARM": { "name": "Armenia", "keywords": ["armenia", "arm"] },
+    "AUT": { "name": "Austria", "keywords": ["austria", "osterreich", "aut"] },
+    "AZE": { "name": "Azerbaijan", "keywords": ["azerbaijan", "aze"] },
+    "BEL": { "name": "Belgium", "keywords": ["belgium", "belgique", "bel"] },
+    "BIH": { "name": "Bosnia and Herzegovina", "keywords": ["bosnia", "bih"] },
+    "BUL": { "name": "Bulgaria", "keywords": ["bulgaria", "bul"] },
+    "CRO": { "name": "Croatia", "keywords": ["croatia", "hrvatska", "cro"] },
+    "CYP": { "name": "Cyprus", "keywords": ["cyprus", "cyp"] },
+    "CZE": { "name": "Czech Republic", "keywords": ["czech", "czechia", "cze"] },
+    "DEN": { "name": "Denmark", "keywords": ["denmark", "danmark", "den"] },
+    "ENG": { "name": "England", "keywords": ["england", "eng"] },
+    "EST": { "name": "Estonia", "keywords": ["estonia", "est"] },
+    "FAI": { "name": "Faroe Islands", "keywords": ["faroe", "fai"] },
+    "FIN": { "name": "Finland", "keywords": ["finland", "suomi", "fin"] },
+    "FRA": { "name": "France", "keywords": ["france", "fra"] },
+    "GEO": { "name": "Georgia", "keywords": ["georgia", "geo"] },
+    "GER": { "name": "Germany", "keywords": ["germany", "deutschland", "ger"] },
+    "GCI": { "name": "Guernsey", "keywords": ["guernsey", "gci"] },
+    "GIB": { "name": "Gibraltar", "keywords": ["gibraltar", "gib"] },
+    "GBR": { "name": "Great Britain", "keywords": ["great britain", "gbr", "united kingdom", "uk"] },
+    "GRE": { "name": "Greece", "keywords": ["greece", "grecia", "gre"] },
+    "HUN": { "name": "Hungary", "keywords": ["hungary", "magyarorszag", "hun"] },
+    "IRL": { "name": "Ireland", "keywords": ["ireland", "irl"] },
+    "ISL": { "name": "Iceland", "keywords": ["iceland", "island", "isl"] },
+    "IOM": { "name": "Isle of Man", "keywords": ["isle of man", "iom"] },
+    "ITA": { "name": "Italy", "keywords": ["italy", "italia", "ita"] },
+    "JCI": { "name": "Jersey", "keywords": ["jersey", "jci"] },
+    "KOS": { "name": "Kosovo", "keywords": ["kosovo", "kos"] },
+    "LAT": { "name": "Latvia", "keywords": ["latvia", "lat"] },
+    "LIE": { "name": "Liechtenstein", "keywords": ["liechtenstein", "lie"] },
+    "LTU": { "name": "Lithuania", "keywords": ["lithuania", "lietuva", "ltu"] },
+    "LUX": { "name": "Luxembourg", "keywords": ["luxembourg", "lux"] },
+    "MLT": { "name": "Malta", "keywords": ["malta", "mlt"] },
+    "MDA": { "name": "Moldova", "keywords": ["moldova", "mda"] },
+    "MNC": { "name": "Monaco", "keywords": ["monaco", "mnc"] },
+    "MNE": { "name": "Montenegro", "keywords": ["montenegro", "mne"] },
+    "NED": { "name": "Netherlands", "keywords": ["netherlands", "holland", "ned"] },
+    "MKD": { "name": "North Macedonia", "keywords": ["north macedonia", "macedonia", "mkd"] },
+    "NOR": { "name": "Norway", "keywords": ["norway", "norge", "nor"] },
+    "POL": { "name": "Poland", "keywords": ["poland", "polska", "pol"] },
+    "POR": { "name": "Portugal", "keywords": ["portugal", "por"] },
+    "ROU": { "name": "Romania", "keywords": ["romania", "rou"] },
+    "SMR": { "name": "San Marino", "keywords": ["san marino", "smr"] },
+    "SCO": { "name": "Scotland", "keywords": ["scotland", "sco"] },
+    "SRB": { "name": "Serbia", "keywords": ["serbia", "srbija", "srb"] },
+    "SVK": { "name": "Slovakia", "keywords": ["slovakia", "svk"] },
+    "SLO": { "name": "Slovenia", "keywords": ["slovenia", "slo"] },
+    "ESP": { "name": "Spain", "keywords": ["spain", "españa", "esp"] },
+    "SWE": { "name": "Sweden", "keywords": ["sweden", "sverige", "swe"] },
+    "SUI": { "name": "Switzerland", "keywords": ["switzerland", "schweiz", "sui"] },
+    "TUR": { "name": "Turkey", "keywords": ["turkey", "turkiye", "tur"] },
+    "UKR": { "name": "Ukraine", "keywords": ["ukraine", "ukr"] },
+    "WLS": { "name": "Wales", "keywords": ["wales", "wls"] }
   }
 }
