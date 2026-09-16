@@ -71,7 +71,31 @@
     "fin",
     "bel",
     "sui",
-    "por"
+    "por",
+    "mne",
+    "alb",
+    "bih",
+    "mlt",
+    "cyp",
+    "bul",
+    "mkd",
+    "kos",
+    "eng",
+    "sco",
+    "wls",
+    "irl",
+    "isl",
+    "ltu",
+    "lva",
+    "est",
+    "arm",
+    "geo",
+    "aze",
+    "mon",
+    "and",
+    "lux",
+    "lie",
+    "fid"
   ],
   "nonEuropeanCountries": [
     "russia",
@@ -255,7 +279,26 @@
     "limassol",
     "larnaca",
     "paphos",
-    "cyprus"
+    "cyprus",
+    "trieste",
+    "venezia",
+    "venice",
+    "taranto",
+    "lecce",
+    "reggio calabria",
+    "koper",
+    "piran",
+    "izola",
+    "portoroz",
+    "lucija",
+    "herceg novi",
+    "ulcinj",
+    "neum",
+    "kavala",
+    "volos",
+    "kalamata",
+    "alexandroupoli",
+    "igoumenitsa"
   ],
   "countryCodes": {
     "ESP": {
@@ -361,6 +404,10 @@
     "MON": {
       "name": "Monaco",
       "keywords": ["monaco", "mon", "mco"]
+    },
+    "MNE": {
+      "name": "Montenegro",
+      "keywords": ["montenegro", "mne"]
     },
     "ALB": {
       "name": "Albania",

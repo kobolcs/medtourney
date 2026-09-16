@@ -139,7 +139,10 @@ class TournamentProcessor:
             "switzerland", "ukraine", "united kingdom", "england", "scotland",
             "wales", "northern ireland", "gbr", "ger", "fra", "esp", "ita", "ned",
             "aut", "cze", "hun", "pol", "cro", "gre", "srb", "rou", "ukr",
-            "svk", "slo", "den", "nor", "swe", "fin", "bel", "sui", "por"
+            "svk", "slo", "den", "nor", "swe", "fin", "bel", "sui", "por",
+            "mne", "alb", "bih", "mlt", "cyp", "bul", "mkd", "kos",
+            "eng", "sco", "wls", "irl", "isl", "ltu", "lva", "est",
+            "arm", "geo", "aze", "mon", "and", "lux", "lie", "fid"
         }
         self.non_european_countries = {
             "russia", "moscow", "petersburg", "malaysia", "uae", "dubai", "qatar",
@@ -162,8 +165,15 @@ class TournamentProcessor:
             "barcelona", "valencia", "alicante", "malaga", "marbella",
             "nice", "cannes", "monaco", "marseille", "montpellier",
             "genoa", "genova", "naples", "napoli", "sicily", "sicilia", "rome", "roma",
-            "athens", "thessaloniki", "split", "dubrovnik", "rijeka",
-            "malta", "valletta", "sliema", "limassol", "larnaca", "cyprus"
+            "athens", "thessaloniki", "patras", "heraklion", "chania",
+            "rhodes", "corfu", "crete", "kavala", "volos", "kalamata",
+            "split", "dubrovnik", "rijeka", "zadar", "sibenik", "pula",
+            "kotor", "budva", "tivat", "bar", "herceg novi", "ulcinj",
+            "durres", "vlore", "saranda",
+            "trieste", "venezia", "venice", "taranto", "lecce",
+            "koper", "piran", "izola", "portoroz", "lucija",
+            "malta", "valletta", "sliema", "limassol", "larnaca",
+            "paphos", "cyprus", "neum"
         }
 
     def _extract_row_data(
