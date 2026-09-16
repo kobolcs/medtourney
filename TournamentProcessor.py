@@ -142,7 +142,8 @@ class TournamentProcessor:
             "svk", "slo", "den", "nor", "swe", "fin", "bel", "sui", "por",
             "mne", "alb", "bih", "mlt", "cyp", "bul", "mkd", "kos",
             "eng", "sco", "wls", "irl", "isl", "ltu", "lva", "est",
-            "arm", "geo", "aze", "mon", "and", "lux", "lie", "fid"
+            "arm", "geo", "aze", "mon", "and", "lux", "lie", "fid",
+            "gib", "gibraltar"
         }
         self.non_european_countries = {
             "russia", "moscow", "petersburg", "malaysia", "uae", "dubai", "qatar",
@@ -173,7 +174,12 @@ class TournamentProcessor:
             "trieste", "venezia", "venice", "taranto", "lecce",
             "koper", "piran", "izola", "portoroz", "lucija",
             "malta", "valletta", "sliema", "limassol", "larnaca",
-            "paphos", "cyprus", "neum"
+            "paphos", "cyprus", "neum",
+            "sitges", "badalona", "formentera", "gibraltar",
+            "bastia", "corsica", "agde", "sanremo",
+            "porto san giorgio", "cattolica", "palau", "opatija",
+            "hvar", "hersonissos", "ikaria", "paleochora", "agria",
+            "neos marmaras", "petrovac", "monte carlo"
         }
 
     def _extract_row_data(

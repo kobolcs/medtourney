@@ -95,7 +95,9 @@
     "and",
     "lux",
     "lie",
-    "fid"
+    "fid",
+    "gibraltar",
+    "gib"
   ],
   "nonEuropeanCountries": [
     "russia",
@@ -298,7 +300,27 @@
     "volos",
     "kalamata",
     "alexandroupoli",
-    "igoumenitsa"
+    "igoumenitsa",
+    "sitges",
+    "badalona",
+    "formentera",
+    "gibraltar",
+    "bastia",
+    "corsica",
+    "agde",
+    "sanremo",
+    "porto san giorgio",
+    "cattolica",
+    "palau",
+    "opatija",
+    "hvar",
+    "hersonissos",
+    "ikaria",
+    "paleochora",
+    "agria",
+    "neos marmaras",
+    "petrovac",
+    "monte carlo"
   ],
   "countryCodes": {
     "ESP": {
@@ -424,6 +446,10 @@
     "BIH": {
       "name": "Bosnia and Herzegovina",
       "keywords": ["bosnia", "bih"]
+    },
+    "GIB": {
+      "name": "Gibraltar",
+      "keywords": ["gibraltar", "gib"]
     },
     "GBR": {
       "name": "United Kingdom",
