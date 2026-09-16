@@ -19,7 +19,8 @@ export const TournamentSchema = z.object({
     }),
     category: z.string(),
     description: z.string(),
-    timeControl: z.string().optional()
+    timeControl: z.string().optional(),
+    dateTo: z.string().optional()
 });
 
 /**

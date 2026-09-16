@@ -141,8 +141,9 @@ class TournamentFinder {
             // Initialize keyboard navigation
             this.initKeyboardNavigation();
 
-            // Display last updated time from cache
+            // Display last updated time from cache, then refine from meta file
             this.displayLastUpdated();
+            void this.checkDataStaleness();
 
         } catch (error) {
             this.logger.error('Application initialization failed', error);
@@ -892,6 +893,42 @@ class TournamentFinder {
         }
 
         lastUpdatedTime.textContent = 'Never (no cached data)';
+    }
+
+    /**
+     * Check if tournament data is stale (>48h since last scrape).
+     * Updates the footer timestamp from the authoritative meta file and
+     * shows a warning banner if the data is too old.
+     */
+    private async checkDataStaleness(): Promise<void> {
+        try {
+            const response = await fetch('tournaments_data_meta.json');
+            if (!response.ok) return;
+            const meta = await response.json() as { generatedAt?: string };
+            if (!meta.generatedAt) return;
+
+            const generatedAt = new Date(meta.generatedAt);
+            if (isNaN(generatedAt.getTime())) return;
+
+            // Overwrite footer with the authoritative generation timestamp
+            const lastUpdatedTime = document.getElementById('lastUpdatedTime');
+            if (lastUpdatedTime) {
+                lastUpdatedTime.textContent = generatedAt.toLocaleString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            }
+
+            const hoursSince = (Date.now() - generatedAt.getTime()) / (1000 * 60 * 60);
+            if (hoursSince > 48) {
+                const daysAgo = Math.round(hoursSince / 24);
+                this.uiManager.showStalenessBanner(
+                    `⚠️ Tournament data is ${daysAgo} day${daysAgo !== 1 ? 's' : ''} old — the daily update may have failed. Some recent tournaments may be missing.`
+                );
+            }
+        } catch (_e) {
+            // Non-critical — silently ignore
+        }
     }
 }
 

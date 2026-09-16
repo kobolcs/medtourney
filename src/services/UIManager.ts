@@ -190,15 +190,44 @@ export class UIManager {
     /**
      * Create tournament card element
      */
+    private formatDateRange(dateFrom: Date, dateTo?: string): string {
+        const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+        if (!dateTo) return dateFrom.toLocaleDateString('en-GB', opts);
+
+        const to = new Date(dateTo);
+        if (isNaN(to.getTime()) || to.getTime() <= dateFrom.getTime()) {
+            return dateFrom.toLocaleDateString('en-GB', opts);
+        }
+
+        const sameYear = dateFrom.getFullYear() === to.getFullYear();
+        const sameMonth = sameYear && dateFrom.getMonth() === to.getMonth();
+
+        if (sameMonth) {
+            const fromDay = dateFrom.toLocaleDateString('en-GB', { day: 'numeric' });
+            const toFull = to.toLocaleDateString('en-GB', opts);
+            return `${fromDay}–${toFull}`;
+        }
+        if (sameYear) {
+            const fromShort = dateFrom.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            const toFull = to.toLocaleDateString('en-GB', opts);
+            return `${fromShort}–${toFull}`;
+        }
+        return `${dateFrom.toLocaleDateString('en-GB', opts)}–${to.toLocaleDateString('en-GB', opts)}`;
+    }
+
+    showStalenessBanner(message: string): void {
+        const banner = document.getElementById('staleness-banner');
+        if (banner) {
+            banner.textContent = message;
+            banner.style.display = 'block';
+        }
+    }
+
     private createTournamentCard(tournament: Tournament): HTMLElement {
         const card = document.createElement('div');
         card.className = 'tournament-card';
 
-        const dateStr = tournament.date.toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        });
+        const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
 
         const isShortlisted = this.shortlistedUrls.has(tournament.url);
         const tags = tournament.travelTags ?? [];

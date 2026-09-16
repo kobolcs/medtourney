@@ -200,6 +200,7 @@ class TournamentProcessor:
         location_col: Optional[int],
         fed_col: Optional[int],
         date_from_col: Optional[int],
+        date_to_col: Optional[int],
         time_control_col: Optional[int],
         db_key_col: Optional[int],
         event_id_col: Optional[int],
@@ -217,6 +218,7 @@ class TournamentProcessor:
                    if fed_col is not None and row[fed_col]
                    else ""),
             "date_value": row[date_from_col] if date_from_col is not None else None,
+            "date_to_value": row[date_to_col] if date_to_col is not None else None,
             "time_control": (str(row[time_control_col]).strip()
                            if time_control_col is not None and row[time_control_col]
                            else ""),
@@ -364,7 +366,7 @@ class TournamentProcessor:
         header_row, headers = self._detect_header_row(sheet)
 
         # Find column indices (chess-results.com column names)
-        (name_col, location_col, date_from_col, fed_col,
+        (name_col, location_col, date_from_col, date_to_col, fed_col,
          time_control_col, db_key_col, event_id_col) = self._find_columns(headers)
 
         # Essential columns must be present, otherwise every row would be dropped
@@ -398,7 +400,7 @@ class TournamentProcessor:
             try:
                 # Extract row data
                 row_data = self._extract_row_data(
-                    row, name_col, location_col, fed_col, date_from_col,
+                    row, name_col, location_col, fed_col, date_from_col, date_to_col,
                     time_control_col, db_key_col, event_id_col, row_idx
                 )
 
@@ -432,11 +434,20 @@ class TournamentProcessor:
                 category = self._determine_category(name, location, row_data["time_control"])
                 url = self._build_tournament_url(row_data["db_key"], row_data["event_id"])
 
+                # Parse end date (best-effort, non-blocking)
+                date_to_str = ""
+                try:
+                    if row_data["date_to_value"]:
+                        date_to_str = self._parse_date(row_data["date_to_value"]).strftime("%Y-%m-%d")
+                except Exception:
+                    pass
+
                 # Build tournament dict
                 tournament: Dict[str, Any] = {
                     "name": name,
                     "location": location,
                     "date": parsed_date.strftime("%Y-%m-%d"),
+                    "dateTo": date_to_str,
                     "category": category,
                     "url": url,
                     "description": name,
@@ -811,17 +822,18 @@ class TournamentProcessor:
     def _find_columns(
         self, headers: List[str]
     ) -> Tuple[Optional[int], Optional[int], Optional[int], Optional[int],
-               Optional[int], Optional[int], Optional[int]]:
+               Optional[int], Optional[int], Optional[int], Optional[int]]:
         """Resolve the chess-results.com column indices used during parsing.
 
         Returns:
-            (name, location, date_from, fed, time_control, db_key, event_id)
+            (name, location, date_from, date_to, fed, time_control, db_key, event_id)
             column indices, each None if the column was not found.
         """
         return (
             self._find_column(headers, ["tournament", "name", "turnier"]),
             self._find_column(headers, ["location", "place", "ort"]),
             self._find_column(headers, ["from", "start", "datum"]),
+            self._find_column(headers, ["to", "end", "bis"]),
             self._find_column(headers, ["fed", "federation", "country"]),
             self._find_column(headers, ["time control", "timecontrol"]),
             self._find_column(headers, ["db-key", "dbkey", "key"]),

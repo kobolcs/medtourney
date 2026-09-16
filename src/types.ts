@@ -10,6 +10,7 @@ export interface Tournament {
     category: string;
     description: string;
     timeControl?: string;
+    dateTo?: string;
     classificationConfidence?: 'high' | 'medium' | 'low';
     classificationReasons?: string[];
     travelTags?: string[];
