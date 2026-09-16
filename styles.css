@@ -1439,6 +1439,56 @@ a:focus-visible {
     color: #ccc;
 }
 
+/* DARK MODE: hover / element fixes missing from above */
+
+/* Filter label hover: #f8f9fa (near-white) is invisible on dark card */
+.dark-theme .filter-group label:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+/* Pagination buttons have hardcoded white background */
+.dark-theme .pagination-btn {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.dark-theme .pagination-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.dark-theme .pagination-btn.active {
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.dark-theme .pagination-btn:disabled {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Sort select has hardcoded white background */
+.dark-theme .sort-select {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+/* Export button hover jumps from blue (dark base) to hardcoded green */
+.dark-theme .export-button:hover {
+    background: var(--secondary-color);
+}
+
+/* Tournament description and misc text: #666 is too dark on dark backgrounds */
+.dark-theme .tournament-description {
+    color: #aaa;
+}
+
+.dark-theme .date-presets-label {
+    color: #aaa;
+}
+
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
     .tournament-header-right {
