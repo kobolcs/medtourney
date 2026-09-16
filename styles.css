@@ -801,16 +801,38 @@ body.dark-theme .error-message.success-type {
   flex-shrink: 0;
 }
 
+.tournament-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
 .tournament-category {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: var(--sea-light);
   color: var(--sea);
   padding: 3px var(--sp-3);
   border-radius: 20px;
   font-size: var(--text-xs);
   font-weight: 600;
-  margin-bottom: var(--sp-3);
   letter-spacing: .02em;
+}
+
+.time-control-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-2);
+  color: var(--label);
+  border: 1px solid var(--border);
+  padding: 3px var(--sp-3);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .01em;
 }
 
 .tournament-description {

@@ -9,6 +9,7 @@ export interface Tournament {
     date: Date;
     category: string;
     description: string;
+    timeControl?: string;
     classificationConfidence?: 'high' | 'medium' | 'low';
     classificationReasons?: string[];
     travelTags?: string[];

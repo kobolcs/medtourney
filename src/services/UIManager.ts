@@ -209,6 +209,13 @@ export class UIManager {
             ? `<div class="travel-tags">${meaningfulTags.map(t => `<span class="travel-tag">${this.escapeHTML(t)}</span>`).join('')}</div>`
             : '';
 
+        // Show raw time control only when it adds info beyond the class label
+        const tc = (tournament.timeControl ?? '').trim();
+        const TC_CLASS_LABELS = new Set(['classical', 'rapid', 'blitz', '']);
+        const timeControlHTML = tc && !TC_CLASS_LABELS.has(tc.toLowerCase())
+            ? `<span class="time-control-badge">${this.escapeHTML(tc)}</span>`
+            : '';
+
         card.innerHTML = `
             <div class="tournament-header">
                 <h3 class="tournament-name">${this.escapeHTML(tournament.name)}</h3>
@@ -224,7 +231,10 @@ export class UIManager {
                 </div>
             </div>
             <div class="tournament-location">${this.escapeHTML(tournament.location)}</div>
-            <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
+            <div class="tournament-meta">
+                <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
+                ${timeControlHTML}
+            </div>
             ${travelTagsHTML}
             <div class="tournament-actions">
                 <a href="${tournament.url}"

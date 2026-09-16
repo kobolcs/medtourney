@@ -378,7 +378,8 @@ class TournamentProcessor:
                     "date": parsed_date.strftime("%Y-%m-%d"),
                     "category": category,
                     "url": url,
-                    "description": name
+                    "description": name,
+                    "timeControl": row_data["time_control"] or ""
                 }
 
                 tournaments.append(tournament)
