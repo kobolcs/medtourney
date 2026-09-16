@@ -193,11 +193,12 @@ export class FilterService {
     private isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
         const loc = location.toLowerCase();
         for (const place of mediterraneanLocations) {
-            // Short city names (≤5 chars, e.g. "bar", "nice", "rome") require
-            // non-alpha boundaries to avoid matching venue-name substrings like
-            // "bar" in "Lubartow" or "nice" in "Bohnice".
+            // Short city names (≤5 chars) require Unicode non-letter boundaries to
+            // avoid matching substrings: "nice" in "Tržnice" (ž is a letter but
+            // outside [a-z]), "bar" in "Lubartow", "rome" in "Promenada".
+            // \P{L} = not a Unicode letter, which correctly rejects ž/ř/ň etc.
             if (place.length <= 5) {
-                const re = new RegExp(`(?:^|[^a-z])${place}(?:[^a-z]|$)`);
+                const re = new RegExp(`(?:^|\\P{L})${place}(?:\\P{L}|$)`, 'u');
                 if (re.test(loc)) return true;
             } else {
                 if (loc.includes(place)) return true;
