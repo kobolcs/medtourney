@@ -18,8 +18,8 @@ test.describe('Tournament Search and Filter', () => {
     await expect(page.getByRole('button', { name: /search tournaments/i })).toBeVisible();
 
     // Check footer
-    await expect(page.getByText('Data source:')).toBeVisible();
-    await expect(page.getByText(/last updated/i)).toBeVisible();
+    await expect(page.locator('#lastUpdated')).toBeVisible();
+    await expect(page.locator('footer a[href*="chess-results.com"]')).toBeVisible();
   });
 
   test('should search for tournaments', async ({ page }) => {

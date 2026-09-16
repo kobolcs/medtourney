@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
 
     <!-- Primary Meta Tags -->
     <title>MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments</title>
@@ -31,7 +31,12 @@
     <meta property="twitter:image" content="https://kobolcs.github.io/medtourney/og-image.png">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♞</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spectral:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/styles.css">
 
@@ -57,14 +62,7 @@
         "Mobile-responsive design",
         "Advanced filtering options",
         "CSV export"
-      ],
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.5",
-        "ratingCount": "1",
-        "bestRating": "5",
-        "worstRating": "1"
-      }
+      ]
     }
     </script>
 </head>
@@ -72,17 +70,21 @@
     <!-- Skip Navigation Link for Accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <div class="container">
-        <header role="banner">
+    <header role="banner">
+        <div class="header-inner">
+            <div class="header-content">
+                <h1>European Chess Tournament Finder</h1>
+                <p class="subtitle">Search for chess tournaments on chess-results.com with advanced filtering</p>
+            </div>
             <div class="header-controls">
                 <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-                    🌙 Dark Mode
+                    Dark Mode
                 </button>
             </div>
-            <h1>🏆 European Chess Tournament Finder</h1>
-            <p class="subtitle">Search for chess tournaments on chess-results.com with advanced filtering</p>
-        </header>
+        </div>
+    </header>
 
+    <div class="container">
         <main role="main" id="main-content">
         <div class="filters-card" role="search" aria-label="Tournament search filters" aria-expanded="true">
             <h2>Search Filters</h2>
@@ -142,7 +144,7 @@
                 <div class="filter-group">
                     <label>
                         <input type="checkbox" id="classicalTime" checked>
-                        <span class="checkbox-label">Classical/Standard</span>
+                        <span class="checkbox-label">Classical / Standard</span>
                     </label>
                 </div>
 
@@ -163,11 +165,11 @@
 
             <div class="date-range" role="group" aria-label="Date range selection">
                 <div class="date-input">
-                    <label for="startDate">Start Date:</label>
+                    <label for="startDate">Start Date</label>
                     <input type="date" id="startDate" aria-label="Tournament start date from">
                 </div>
                 <div class="date-input">
-                    <label for="endDate">End Date:</label>
+                    <label for="endDate">End Date</label>
                     <input type="date" id="endDate" aria-label="Tournament start date until">
                 </div>
             </div>
@@ -180,7 +182,7 @@
 
             <div class="search-options">
                 <div class="country-select">
-                    <label for="countryFilter">Filter by Country:</label>
+                    <label for="countryFilter">Country</label>
                     <select id="countryFilter">
                         <option value="">All European Countries (Russia excluded)</option>
                         <option value="ESP">Spain</option>
@@ -220,13 +222,13 @@
             </div>
 
             <button id="searchBtn" class="search-button" aria-label="Search Tournaments with the selected filters">
-                <span>🔍 Search Tournaments</span>
+                Search Tournaments
             </button>
         </div>
 
         <div id="loading" class="loading" style="display: none;" role="status" aria-live="polite" aria-busy="true">
             <div class="spinner" aria-hidden="true"></div>
-            <p>Fetching tournaments from chess-results.com...</p>
+            <p>Fetching tournaments from chess-results.com…</p>
         </div>
 
         <div id="error" class="error-message" style="display: none;" role="alert" aria-live="assertive"></div>
@@ -243,24 +245,24 @@
                         <input type="search"
                                id="quickSearch"
                                class="quick-search-input"
-                               placeholder="🔍 Filter results..."
+                               placeholder="Filter results…"
                                aria-label="Search within results by name or location">
                     </div>
                     <div class="sort-controls">
-                        <label for="sortBy">Sort:</label>
+                        <label for="sortBy">Sort</label>
                         <select id="sortBy" class="sort-select" aria-label="Sort tournaments by">
                             <option value="date-asc">Date (earliest first)</option>
                             <option value="date-desc">Date (latest first)</option>
-                            <option value="name">Name (A-Z)</option>
-                            <option value="location">Location (A-Z)</option>
-                            <option value="country">Country (A-Z)</option>
+                            <option value="name">Name (A–Z)</option>
+                            <option value="location">Location (A–Z)</option>
+                            <option value="country">Country (A–Z)</option>
                         </select>
                     </div>
                     <button id="exportBtn" class="export-button" aria-label="Export CSV of the current results">
-                        📥 Export CSV
+                        Export CSV
                     </button>
                     <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar">
-                        📅 Export Shortlist
+                        Export Shortlist
                         <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
                     </button>
                 </div>
@@ -276,19 +278,10 @@
         </main>
 
         <footer role="contentinfo">
-            <p>Data source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a></p>
             <p id="lastUpdated" class="last-updated" aria-live="polite">
-                <strong>Last updated:</strong> <span id="lastUpdatedTime">Loading...</span>
-            </p>
-            <p class="note">
-                Tournament data is fetched from the repository's <code>tournaments_data.json</code> file.<br>
-                To update data: Run the Robot Framework scraper locally, then commit and push the updated JSON file.<br>
-                See <a href="https://github.com/kobolcs/medtourney#data-scraper-update-tournament-data" target="_blank" style="color: white; text-decoration: underline;">README</a> for instructions.
-            </p>
-            <p class="github-link">
-                <a href="https://github.com/kobolcs/medtourney" target="_blank">
-                    View on GitHub
-                </a>
+                Data updated <span id="lastUpdatedTime">…</span>
+                · Source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a>
+                · <a href="https://github.com/kobolcs/medtourney" target="_blank" rel="noopener noreferrer">GitHub</a>
             </p>
         </footer>
     </div>

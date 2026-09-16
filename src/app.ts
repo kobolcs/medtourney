@@ -273,7 +273,7 @@ class TournamentFinder {
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
             const isDark = document.body.classList.contains('dark-theme');
-            themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            themeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
         }
     }
 

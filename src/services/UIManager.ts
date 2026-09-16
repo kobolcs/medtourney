@@ -201,19 +201,12 @@ export class UIManager {
         });
 
         const isShortlisted = this.shortlistedUrls.has(tournament.url);
-        const confidence = tournament.classificationConfidence;
-        const reasons = tournament.classificationReasons ?? [];
         const tags = tournament.travelTags ?? [];
 
-        const travelTagsHTML = tags.length > 0
-            ? `<div class="travel-tags">${tags.map(t => `<span class="travel-tag">${this.escapeHTML(t)}</span>`).join('')}</div>`
-            : '';
-
-        const classificationHTML = confidence
-            ? `<details class="classification-details">
-                <summary>Why shown? <span class="confidence-badge confidence-${confidence}">${confidence}</span></summary>
-                <div class="classification-reasons">${reasons.map(r => `<span class="reason-chip">${this.escapeHTML(r)}</span>`).join('')}</div>
-               </details>`
+        const GEOGRAPHIC_TAGS = new Set(['Mediterranean', 'Seaside', 'Senior-friendly', "Women's"]);
+        const meaningfulTags = tags.filter(t => GEOGRAPHIC_TAGS.has(t));
+        const travelTagsHTML = meaningfulTags.length > 0
+            ? `<div class="travel-tags">${meaningfulTags.map(t => `<span class="travel-tag">${this.escapeHTML(t)}</span>`).join('')}</div>`
             : '';
 
         card.innerHTML = `
@@ -233,8 +226,6 @@ export class UIManager {
             <div class="tournament-location">${this.escapeHTML(tournament.location)}</div>
             <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
             ${travelTagsHTML}
-            ${classificationHTML}
-            <p class="tournament-description">${this.escapeHTML(tournament.description)}</p>
             <div class="tournament-actions">
                 <a href="${tournament.url}"
                    target="_blank"
