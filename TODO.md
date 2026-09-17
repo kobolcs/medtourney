@@ -7,7 +7,7 @@ Každá položka má odhad náročnosti a očakávaný prínos.
 
 ## 🟢 Rýchle výhry (do 1 dňa)
 
-### 1. Pridaj web analytiku (Plausible alebo Fathom)
+### ~~1. Pridaj web analytiku (Plausible alebo Fathom)~~ ✅ (2026-09-17)
 - **Prínos:** Zistíš za týždeň, či projekt má reálnych používateľov
 - **Náročnosť:** ~1 hodina
 - **Čo urobiť:**

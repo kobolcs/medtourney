@@ -7,6 +7,12 @@
  */
 
 import { Tournament, FilterState } from './types';
+
+declare global {
+    interface Window {
+        plausible?: (event: string, options?: { props?: Record<string, string | number | boolean> }) => void;
+    }
+}
 import { CacheManager } from './services/CacheManager';
 import { FilterService } from './services/FilterService';
 import { DataService } from './services/DataService';
@@ -458,6 +464,23 @@ class TournamentFinder {
         };
     }
 
+    private trackEvent(event: string, props?: Record<string, string | number | boolean>): void {
+        window.plausible?.(event, props ? { props } : undefined);
+    }
+
+    private activeFilterSummary(): string {
+        const s = this.getFilterState();
+        const parts: string[] = [];
+        if (s.mediterraneanOnly) parts.push('mediterranean');
+        if (s.seniorCategory) parts.push('senior50');
+        if (s.seniorS60) parts.push('senior60');
+        if (s.womenOnly) parts.push('women');
+        if (s.youthCategory) parts.push(`youth_${s.youthCategory}`);
+        if (s.countryFilter) parts.push(`country_${s.countryFilter}`);
+        if (s.minDays !== 0) parts.push(`duration_${String(s.minDays)}`);
+        return parts.join(',') || 'none';
+    }
+
     /**
      * Search for tournaments
      */
@@ -503,6 +526,11 @@ class TournamentFinder {
             if (quickSearch) quickSearch.value = '';
 
             this.applyDisplayFilters();
+
+            this.trackEvent('Search', {
+                results: this.filteredTournaments.length,
+                filters: this.activeFilterSummary()
+            });
 
         } catch (error) {
             this.logger.error('Tournament search failed', error, {
@@ -637,6 +665,7 @@ class TournamentFinder {
                 tournamentCount: this.displayedTournaments.length
             });
             const count = this.displayedTournaments.length;
+            this.trackEvent('CSV Export', { count });
             this.uiManager.showError(
                 `Exported ${count} tournament${count !== 1 ? 's' : ''} to CSV`,
                 'success'
@@ -695,6 +724,7 @@ class TournamentFinder {
             this.shortlist.delete(url);
         } else {
             this.shortlist.add(url);
+            this.trackEvent('Shortlist Add');
         }
         this.saveShortlist();
         this.uiManager.refreshShortlistButtons(this.shortlist);
@@ -788,6 +818,7 @@ class TournamentFinder {
 
         try {
             this.exportService.exportMultipleToCalendar(shortlisted);
+            this.trackEvent('ICS Export', { type: 'shortlist', count: shortlisted.length });
             this.uiManager.showError(
                 `Exported ${shortlisted.length} shortlisted tournament${shortlisted.length !== 1 ? 's' : ''} to calendar`,
                 'success'
@@ -828,6 +859,7 @@ class TournamentFinder {
 
             try {
                 this.exportService.exportToCalendar(tournament);
+                this.trackEvent('ICS Export', { type: 'single' });
                 this.uiManager.showError(`Calendar event created for "${tournament.name}"`, 'success');
             } catch (error) {
                 this.logger.error('Calendar export failed', error);
