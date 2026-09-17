@@ -215,6 +215,40 @@ export class UIManager {
         return `${dateFrom.toLocaleDateString('en-GB', opts)}–${to.toLocaleDateString('en-GB', opts)}`;
     }
 
+    /**
+     * Render (or hide) the featured "Tournament of the Week" card.
+     */
+    renderFeaturedTournament(tournament: Tournament | null): void {
+        const container = document.getElementById('featuredTournament');
+        if (!container) return;
+
+        if (!tournament) {
+            container.style.display = 'none';
+            return;
+        }
+
+        const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
+
+        container.style.display = 'block';
+        container.innerHTML = `
+            <div class="featured-card" role="region" aria-label="Tournament of the Week">
+                <div class="featured-label">Tournament of the Week</div>
+                <h3 class="featured-name">
+                    <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
+                       class="featured-name-link"
+                       aria-label="View details for ${this.escapeHTML(tournament.name)}">
+                        ${this.escapeHTML(tournament.name)}
+                    </a>
+                </h3>
+                <div class="featured-location">${this.escapeHTML(tournament.location)}</div>
+                <div class="featured-meta">
+                    <span class="featured-date">${dateStr}</span>
+                    <span class="featured-category">${this.escapeHTML(tournament.category)}</span>
+                </div>
+            </div>
+        `;
+    }
+
     showStalenessBanner(message: string): void {
         const banner = document.getElementById('staleness-banner');
         if (banner) {

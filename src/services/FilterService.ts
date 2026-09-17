@@ -300,6 +300,33 @@ export class FilterService {
     }
 
     /**
+     * Pick the best upcoming Mediterranean tournament to feature.
+     * Criteria: Mediterranean location, starts within 30 days, dateTo present,
+     * duration > 5 days. Sorted by nearest start, then longest duration.
+     */
+    pickFeatured(tournaments: Tournament[], mediterraneanLocations: Set<string>): Tournament | null {
+        const now = new Date();
+        const cutoff = new Date(now.getTime() + 30 * 86400000);
+
+        const candidates = tournaments.filter(t => {
+            if (t.date < now || t.date > cutoff) return false;
+            if (!t.dateTo) return false;
+            if (!this.isMediterraneanLocation(t.location.toLowerCase(), mediterraneanLocations)) return false;
+            return this.getTournamentDays(t) > 5;
+        });
+
+        if (candidates.length === 0) return null;
+
+        candidates.sort((a, b) => {
+            const dateDiff = a.date.getTime() - b.date.getTime();
+            if (dateDiff !== 0) return dateDiff;
+            return this.getTournamentDays(b) - this.getTournamentDays(a);
+        });
+
+        return candidates[0] ?? null;
+    }
+
+    /**
      * Sort tournaments by specified option
      */
     sortTournaments(tournaments: Tournament[], sortBy: string): Tournament[] {

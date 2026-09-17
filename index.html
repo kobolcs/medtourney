@@ -118,22 +118,6 @@
 
                 <div class="filter-group">
                     <label>
-                        <input type="checkbox" id="seniorCategory" aria-describedby="senior-desc">
-                        <span class="checkbox-label">S50+ (Senior) Category</span>
-                    </label>
-                    <span id="senior-desc" class="sr-only">Show only tournaments for players aged 50 and above</span>
-                </div>
-
-                <div class="filter-group">
-                    <label>
-                        <input type="checkbox" id="seniorS60" aria-describedby="senior60-desc">
-                        <span class="checkbox-label">S60+ Category</span>
-                    </label>
-                    <span id="senior60-desc" class="sr-only">Show only tournaments for players aged 60 and above</span>
-                </div>
-
-                <div class="filter-group">
-                    <label>
                         <input type="checkbox" id="womenOnly" aria-describedby="women-desc">
                         <span class="checkbox-label">Women's Tournaments</span>
                     </label>
@@ -149,10 +133,26 @@
                 </div>
             </div>
 
-            <h3 class="filter-section-title">Youth Category</h3>
+            <h3 class="filter-section-title">Age Group</h3>
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label for="youthCategory">Age group</label>
+                    <label>
+                        <input type="checkbox" id="seniorCategory" aria-describedby="senior-desc">
+                        <span class="checkbox-label">S50+ (Senior) Category</span>
+                    </label>
+                    <span id="senior-desc" class="sr-only">Show only tournaments for players aged 50 and above</span>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="seniorS60" aria-describedby="senior60-desc">
+                        <span class="checkbox-label">S60+ Category</span>
+                    </label>
+                    <span id="senior60-desc" class="sr-only">Show only tournaments for players aged 60 and above</span>
+                </div>
+
+                <div class="filter-group">
+                    <label for="youthCategory">Youth age group</label>
                     <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
                         <option value="">None (use exclude filter above)</option>
                         <option value="U8">U8</option>
@@ -298,6 +298,8 @@
         </div>
 
         <div id="error" class="error-message" style="display: none;" role="alert" aria-live="assertive"></div>
+
+        <div id="featuredTournament" style="display: none;" aria-live="polite"></div>
 
         <div id="results" class="results-container" style="display: none;" role="region" aria-label="Tournament search results">
             <div class="results-header">

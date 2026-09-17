@@ -527,6 +527,11 @@ class TournamentFinder {
 
             this.applyDisplayFilters();
 
+            // Featured tournament (always computed from full unfiltered set)
+            this.uiManager.renderFeaturedTournament(
+                this.filterService.pickFeatured(this.allTournaments, this.mediterraneanLocations)
+            );
+
             this.trackEvent('Search', {
                 results: this.filteredTournaments.length,
                 filters: this.activeFilterSummary()
@@ -689,6 +694,9 @@ class TournamentFinder {
             this.logger.info('Preloaded tournament data for shortlist export', {
                 count: this.allTournaments.length
             });
+            this.uiManager.renderFeaturedTournament(
+                this.filterService.pickFeatured(this.allTournaments, this.mediterraneanLocations)
+            );
         } catch (error) {
             this.logger.warn('Background preload of tournament data failed', {
                 error: error instanceof Error ? error.message : 'Unknown error'
