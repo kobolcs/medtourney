@@ -318,10 +318,12 @@ export class FilterService {
      */
     pickFeatured(tournaments: Tournament[], mediterraneanLocations: Set<string>): Tournament | null {
         const now = new Date();
-        const cutoff = new Date(now.getTime() + 30 * 86400000);
+        // Compare at day granularity (tournament dates are stored as UTC midnight)
+        const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+        const cutoff = new Date(todayUtc.getTime() + 30 * 86400000);
 
         const candidates = tournaments.filter(t => {
-            if (t.date < now || t.date > cutoff) return false;
+            if (t.date < todayUtc || t.date > cutoff) return false;
             if (!t.dateTo) return false;
             if (!this.isMediterraneanLocation(t.location.toLowerCase(), mediterraneanLocations)) return false;
             return this.getTournamentDays(t) > 5;

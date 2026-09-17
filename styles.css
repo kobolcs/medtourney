@@ -263,7 +263,8 @@ header h1 {
 .filters-card.collapsed .filter-grid,
 .filters-card.collapsed .filter-section-title,
 .filters-card.collapsed .date-range,
-.filters-card.collapsed .search-options,
+.filters-card.collapsed .country-filter-section,
+.filters-card.collapsed .date-presets,
 .filters-card.collapsed .search-button {
   display: none;
 }
@@ -341,6 +342,26 @@ header h1 {
   font-size: var(--text-sm);
   color: var(--text);
   font-weight: 500;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  min-height: 38px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color .15s;
+  margin-top: var(--sp-1);
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--sea);
 }
 
 /* DATE RANGE */

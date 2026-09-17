@@ -36,12 +36,10 @@ interface FilterElements {
     blitzTime: HTMLInputElement | null;
     startDate: HTMLInputElement | null;
     endDate: HTMLInputElement | null;
-    countryFilter: HTMLSelectElement | null;
     minDays: HTMLSelectElement | null;
     seniorS60: HTMLInputElement | null;
     youthCategory: HTMLSelectElement | null;
     ratingCategory: HTMLSelectElement | null;
-    // countryFilter: handled via name="countryFilter" checkboxes, not a single element
 }
 
 /**
@@ -427,7 +425,6 @@ class TournamentFinder {
         const countryList = document.getElementById('countryList');
         if (countryList) {
             countryList.addEventListener('change', () => {
-                this.updateCountryFilterSummary();
                 this.updateFilterCompatibility();
                 this.saveFilterPreferences();
             });
@@ -450,12 +447,10 @@ class TournamentFinder {
             blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
             startDate: document.getElementById('startDate') as HTMLInputElement | null,
             endDate: document.getElementById('endDate') as HTMLInputElement | null,
-            countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null,
             minDays: document.getElementById('minDays') as HTMLSelectElement | null,
             seniorS60: document.getElementById('seniorS60') as HTMLInputElement | null,
             youthCategory: document.getElementById('youthCategory') as HTMLSelectElement | null,
             ratingCategory: document.getElementById('ratingCategory') as HTMLSelectElement | null,
-            // Note: countryFilter checkboxes are queried dynamically by name
         };
     }
 
@@ -598,6 +593,7 @@ class TournamentFinder {
      * - Mediterranean checked → disable country options that have no Med tournaments.
      */
     private updateFilterCompatibility(): void {
+        this.updateCountryFilterSummary();
         if (this.allTournaments.length === 0) return;
 
         const medCheckbox = document.getElementById('mediterraneanOnly') as HTMLInputElement | null;
@@ -637,8 +633,6 @@ class TournamentFinder {
                 ? ''
                 : 'No Mediterranean tournaments in the selected countries';
         }
-
-        this.updateCountryFilterSummary();
     }
 
     private updateCountryFilterSummary(): void {
