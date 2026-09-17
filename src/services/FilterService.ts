@@ -110,6 +110,14 @@ export class FilterService {
                 }
             }
 
+            // Minimum duration filter
+            if (filterState.minDays > 0) {
+                const days = this.getTournamentDays(tournament);
+                if (days < filterState.minDays) {
+                    return false;
+                }
+            }
+
             return true;
         });
 
@@ -142,7 +150,8 @@ export class FilterService {
             blitz: filterState.blitzTime,
             start: filterState.startDate?.toISOString(),
             end: filterState.endDate?.toISOString(),
-            country: filterState.countryFilter
+            country: filterState.countryFilter,
+            minDays: filterState.minDays
         });
     }
 
@@ -220,6 +229,13 @@ export class FilterService {
     private isTeamTournament(name: string, category: string): boolean {
         const teamPattern = /\b(team|mannschaft|équipe|equipo|squadra|drużyn|družstv)\b/i;
         return teamPattern.test(name) || teamPattern.test(category);
+    }
+
+    private getTournamentDays(tournament: Tournament): number {
+        if (!tournament.dateTo) return 1;
+        const to = new Date(tournament.dateTo);
+        if (isNaN(to.getTime())) return 1;
+        return Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
     }
 
     private isClassicalTime(category: string): boolean {

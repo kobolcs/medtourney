@@ -85,6 +85,14 @@ class FilterService {
                 }
             }
 
+            // Minimum duration filter
+            if (filterState.minDays > 0) {
+                const days = this.getTournamentDays(tournament);
+                if (days < filterState.minDays) {
+                    return false;
+                }
+            }
+
             return true;
         });
 
@@ -113,7 +121,8 @@ class FilterService {
             blitz: filterState.blitzTime,
             start: filterState.startDate?.toISOString(),
             end: filterState.endDate?.toISOString(),
-            country: filterState.countryFilter
+            country: filterState.countryFilter,
+            minDays: filterState.minDays
         });
     }
 
@@ -148,6 +157,13 @@ class FilterService {
     isTeamTournament(name, category) {
         const teamPattern = /\b(team|mannschaft|équipe|equipo|squadra)\b/i;
         return teamPattern.test(name) || teamPattern.test(category);
+    }
+
+    getTournamentDays(tournament) {
+        if (!tournament.dateTo) return 1;
+        const to = new Date(tournament.dateTo);
+        if (isNaN(to.getTime())) return 1;
+        return Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
     }
 
     isClassicalTime(category) {
@@ -275,7 +291,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -297,7 +314,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -319,7 +337,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -341,7 +360,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -363,7 +383,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -385,7 +406,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -407,7 +429,8 @@ function runTests() {
             blitzTime: true,
             startDate: new Date('2025-07-01'),
             endDate: new Date('2025-07-31'),
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -429,7 +452,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: 'ESP'
+            countryFilter: 'ESP',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -483,7 +507,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered1 = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -508,7 +533,8 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         service.filterTournaments(tournaments, filterState, mediterraneanLocations);
@@ -533,11 +559,57 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: ''
+            countryFilter: '',
+            minDays: 0
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
         assertEqual(filtered.length, 2); // Barcelona Open and Athens Senior (both open, not youth, Mediterranean)
+    });
+
+    // Test 16: Duration filter — minDays=0 passes everything through
+    test('minDays=0 does not filter any tournaments', () => {
+        const service = new FilterService();
+        const all = [
+            { name: 'A', location: 'X', date: new Date('2025-06-01'), category: 'Open', description: '' },
+            { name: 'B', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-03', category: 'Open', description: '' },
+        ];
+        const filtered = service.filterTournaments(all, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: '', minDays: 0
+        }, new Set());
+        assertEqual(filtered.length, 2);
+    });
+
+    // Test 17: Duration filter — long weekend (3+ days) excludes short/unknown
+    test('minDays=3 keeps only tournaments with dateTo spanning 3+ days', () => {
+        const service = new FilterService();
+        const tourns = [
+            { name: 'single', location: 'X', date: new Date('2025-06-01'), category: 'Open', description: '' },
+            { name: 'two-day', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-02', category: 'Open', description: '' },
+            { name: 'three-day', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-03', category: 'Open', description: '' },
+            { name: 'nine-day', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-09', category: 'Open', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: '', minDays: 3
+        }, new Set());
+        assertEqual(filtered.length, 2, 'only 3-day and 9-day pass');
+        assertEqual(filtered[0].name, 'three-day');
+        assertEqual(filtered[1].name, 'nine-day');
+    });
+
+    // Test 18: Duration filter — getTournamentDays handles missing/invalid dateTo as 1
+    test('getTournamentDays returns 1 for missing or invalid dateTo', () => {
+        const service = new FilterService();
+        const base = { name: 'X', location: 'X', date: new Date('2025-06-01'), category: 'Open', description: '' };
+        assertEqual(service.getTournamentDays(base), 1, 'no dateTo → 1');
+        assertEqual(service.getTournamentDays({ ...base, dateTo: 'not-a-date' }), 1, 'invalid dateTo → 1');
+        assertEqual(service.getTournamentDays({ ...base, dateTo: '2025-06-05' }), 5, '5-day span');
     });
 
     console.log('='.repeat(60));

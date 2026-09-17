@@ -29,6 +29,7 @@ export interface FilterState {
     startDate: Date | null;
     endDate: Date | null;
     countryFilter: string;
+    minDays: number;
 }
 
 export interface AppConfig {

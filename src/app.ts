@@ -31,6 +31,7 @@ interface FilterElements {
     startDate: HTMLInputElement | null;
     endDate: HTMLInputElement | null;
     countryFilter: HTMLSelectElement | null;
+    minDays: HTMLSelectElement | null;
 }
 
 /**
@@ -366,6 +367,9 @@ class TournamentFinder {
         if (preferences.countryFilter && filterElements.countryFilter) {
             filterElements.countryFilter.value = preferences.countryFilter;
         }
+        if (preferences.minDays !== undefined && filterElements.minDays) {
+            filterElements.minDays.value = String(preferences.minDays);
+        }
     }
 
     /**
@@ -413,6 +417,7 @@ class TournamentFinder {
             startDate: document.getElementById('startDate') as HTMLInputElement | null,
             endDate: document.getElementById('endDate') as HTMLInputElement | null,
             countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null,
+            minDays: document.getElementById('minDays') as HTMLSelectElement | null,
         };
     }
 
@@ -435,6 +440,7 @@ class TournamentFinder {
             startDate: elements.startDate?.valueAsDate ?? null,
             endDate: elements.endDate?.valueAsDate ?? null,
             countryFilter: elements.countryFilter?.value ?? '',
+            minDays: parseInt(elements.minDays?.value ?? '0', 10) || 0,
         };
     }
 
