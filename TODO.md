@@ -23,7 +23,7 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - CookieBot overlay blokuje klik na Excel tlačidlo; `dismiss_cookies()` helper v `run_scraper.py` treba debugovať pre tieto federácie
   - Zvážiť `page.evaluate()` na priame odstránenie `#CybotCookiebotDialog` pred klikom
 
-### 3. Pridaj `sitemap.xml` a `robots.txt`
+### ~~3. Pridaj `sitemap.xml` a `robots.txt`~~ ✅ (2026-09-17)
 - **Prínos:** Google indexácia, SEO
 - **Náročnosť:** 30 minút
 - **Čo urobiť:**
