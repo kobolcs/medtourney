@@ -239,11 +239,14 @@ export class FilterService {
         return Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
     }
 
-    // True when the tournament is exactly Sat+Sun (2 days starting on Saturday).
+    // True when every day of the tournament falls on a Saturday or Sunday:
+    // 1-day on Sat, 1-day on Sun, or 2-day Sat+Sun.
     private isJustWeekend(tournament: Tournament): boolean {
         const days = this.getTournamentDays(tournament);
-        if (days !== 2) return false;
-        return tournament.date.getUTCDay() === 6; // starts on Saturday → ends Sunday
+        if (days > 2) return false;
+        const startDay = tournament.date.getUTCDay();
+        if (days === 1) return startDay === 6 || startDay === 0;
+        return startDay === 6; // 2-day must start Saturday (→ ends Sunday)
     }
 
     // True when the tournament spans ≤5 days AND its date range includes

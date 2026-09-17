@@ -169,8 +169,10 @@ class FilterService {
 
     isJustWeekend(tournament) {
         const days = this.getTournamentDays(tournament);
-        if (days !== 2) return false;
-        return tournament.date.getUTCDay() === 6;
+        if (days > 2) return false;
+        const startDay = tournament.date.getUTCDay();
+        if (days === 1) return startDay === 6 || startDay === 0;
+        return startDay === 6; // 2-day must start Saturday (→ ends Sunday)
     }
 
     isLongWeekend(tournament) {
@@ -683,18 +685,18 @@ function runTests() {
         assertEqual(filtered[0].name, 'fri-sun');
     });
 
-    // Test 24: Just a weekend — exactly Sat+Sun (2 days)
-    test('just-weekend filter keeps only exact Sat+Sun 2-day events', () => {
+    // Test 24: Just a weekend — Sat/Sun single-day and Sat+Sun 2-day all qualify
+    test('just-weekend: 1-day Sat, 1-day Sun, and 2-day Sat+Sun all qualify', () => {
         const service = new FilterService();
+        // 2025-09-20 = Saturday, 2025-09-21 = Sunday
         const tourns = [
-            // 2025-09-20 Saturday — dateTo 2025-09-21 Sunday: qualifies
-            { name: 'sat-sun', location: 'X', date: new Date('2025-09-20'), dateTo: '2025-09-21', category: 'Open', description: '' },
-            // 2025-09-19 Friday — dateTo 2025-09-21 Sunday: 3-day, not just weekend
-            { name: 'fri-sun', location: 'X', date: new Date('2025-09-19'), dateTo: '2025-09-21', category: 'Open', description: '' },
-            // 2025-09-21 Sunday — dateTo 2025-09-22 Monday: 2-day but starts Sunday, not Sat
-            { name: 'sun-mon', location: 'X', date: new Date('2025-09-21'), dateTo: '2025-09-22', category: 'Open', description: '' },
-            // No dateTo (1 day on Saturday): excluded
             { name: 'single-sat', location: 'X', date: new Date('2025-09-20'), category: 'Open', description: '' },
+            { name: 'single-sun', location: 'X', date: new Date('2025-09-21'), category: 'Open', description: '' },
+            { name: 'sat-sun',    location: 'X', date: new Date('2025-09-20'), dateTo: '2025-09-21', category: 'Open', description: '' },
+            // non-qualifying:
+            { name: 'single-fri', location: 'X', date: new Date('2025-09-19'), category: 'Open', description: '' },
+            { name: 'fri-sun',    location: 'X', date: new Date('2025-09-19'), dateTo: '2025-09-21', category: 'Open', description: '' },
+            { name: 'sun-mon',    location: 'X', date: new Date('2025-09-21'), dateTo: '2025-09-22', category: 'Open', description: '' },
         ];
         const filtered = service.filterTournaments(tourns, {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
@@ -702,8 +704,8 @@ function runTests() {
             classicalTime: false, rapidTime: false, blitzTime: false,
             startDate: null, endDate: null, countryFilter: '', minDays: 'just-weekend'
         }, new Set());
-        assertEqual(filtered.length, 1);
-        assertEqual(filtered[0].name, 'sat-sun');
+        assertEqual(filtered.length, 3, 'single-sat, single-sun, sat-sun qualify');
+        assertEqual(filtered.map(t => t.name).join(','), 'single-sat,single-sun,sat-sun');
     });
 
     console.log('='.repeat(60));
