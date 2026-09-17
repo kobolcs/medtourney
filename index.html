@@ -125,6 +125,14 @@
 
                 <div class="filter-group">
                     <label>
+                        <input type="checkbox" id="seniorS60" aria-describedby="senior60-desc">
+                        <span class="checkbox-label">S60+ Category</span>
+                    </label>
+                    <span id="senior60-desc" class="sr-only">Show only tournaments for players aged 60 and above</span>
+                </div>
+
+                <div class="filter-group">
+                    <label>
                         <input type="checkbox" id="womenOnly" aria-describedby="women-desc">
                         <span class="checkbox-label">Women's Tournaments</span>
                     </label>
@@ -137,6 +145,24 @@
                         <span class="checkbox-label">Include Team Tournaments</span>
                     </label>
                     <span id="team-desc" class="sr-only">Include team tournaments (normally excluded)</span>
+                </div>
+            </div>
+
+            <h3 class="filter-section-title">Youth Category</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="youthCategory">Age group</label>
+                    <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
+                        <option value="">None (use exclude filter above)</option>
+                        <option value="U8">U8</option>
+                        <option value="U10">U10</option>
+                        <option value="U12">U12</option>
+                        <option value="U14">U14</option>
+                        <option value="U16">U16</option>
+                        <option value="U18">U18</option>
+                        <option value="U20">U20</option>
+                    </select>
+                    <span id="youth-cat-desc" class="sr-only">Selecting an age group overrides the exclude-youth filter and shows only that age group</span>
                 </div>
             </div>
 

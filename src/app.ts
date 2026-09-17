@@ -32,6 +32,8 @@ interface FilterElements {
     endDate: HTMLInputElement | null;
     countryFilter: HTMLSelectElement | null;
     minDays: HTMLSelectElement | null;
+    seniorS60: HTMLInputElement | null;
+    youthCategory: HTMLSelectElement | null;
 }
 
 /**
@@ -370,6 +372,12 @@ class TournamentFinder {
         if (preferences.minDays !== undefined && filterElements.minDays) {
             filterElements.minDays.value = String(preferences.minDays);
         }
+        if (preferences.seniorS60 !== undefined && filterElements.seniorS60) {
+            filterElements.seniorS60.checked = preferences.seniorS60;
+        }
+        if (preferences.youthCategory !== undefined && filterElements.youthCategory) {
+            filterElements.youthCategory.value = preferences.youthCategory;
+        }
     }
 
     /**
@@ -418,6 +426,8 @@ class TournamentFinder {
             endDate: document.getElementById('endDate') as HTMLInputElement | null,
             countryFilter: document.getElementById('countryFilter') as HTMLSelectElement | null,
             minDays: document.getElementById('minDays') as HTMLSelectElement | null,
+            seniorS60: document.getElementById('seniorS60') as HTMLInputElement | null,
+            youthCategory: document.getElementById('youthCategory') as HTMLSelectElement | null,
         };
     }
 
@@ -443,6 +453,8 @@ class TournamentFinder {
             minDays: elements.minDays?.value === 'weekend' ? 'weekend'
                 : elements.minDays?.value === 'just-weekend' ? 'just-weekend'
                 : (parseInt(elements.minDays?.value ?? '0', 10) || 0),
+            seniorS60: elements.seniorS60?.checked ?? false,
+            youthCategory: elements.youthCategory?.value ?? '',
         };
     }
 

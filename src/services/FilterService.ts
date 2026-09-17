@@ -73,8 +73,8 @@ export class FilterService {
                 return false;
             }
 
-            // Exclude youth filter
-            if (filterState.excludeYouth && this.isYouthTournament(nameLower, categoryLower)) {
+            // Exclude youth filter (bypassed when a specific U-category is targeted)
+            if (filterState.excludeYouth && !filterState.youthCategory && this.isYouthTournament(nameLower, categoryLower)) {
                 return false;
             }
 
@@ -83,8 +83,16 @@ export class FilterService {
                 return false;
             }
 
-            // Senior category filter
-            if (filterState.seniorCategory && !this.isSeniorCategory(categoryLower, nameLower)) {
+            // Senior category filter (S50+ and/or S60+ — OR logic when both checked)
+            if (filterState.seniorCategory || filterState.seniorS60) {
+                const matches =
+                    (filterState.seniorCategory && this.isSeniorCategory(categoryLower, nameLower)) ||
+                    (filterState.seniorS60 && this.isSeniorS60Category(categoryLower, nameLower));
+                if (!matches) return false;
+            }
+
+            // Youth category filter (e.g. 'U14' shows only that age group)
+            if (filterState.youthCategory && !this.matchesYouthCategory(nameLower, categoryLower, filterState.youthCategory)) {
                 return false;
             }
 
@@ -152,7 +160,9 @@ export class FilterService {
             start: filterState.startDate?.toISOString(),
             end: filterState.endDate?.toISOString(),
             country: filterState.countryFilter,
-            minDays: filterState.minDays
+            minDays: filterState.minDays,
+            s60: filterState.seniorS60,
+            youthCat: filterState.youthCategory
         });
     }
 
@@ -220,6 +230,19 @@ export class FilterService {
     private isSeniorCategory(category: string, name: string): boolean {
         const seniorPattern = /\b(s50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50)\b/i;
         return seniorPattern.test(category) || seniorPattern.test(name);
+    }
+
+    private isSeniorS60Category(category: string, name: string): boolean {
+        // No trailing \b — the + character is non-word so word boundary after it never fires
+        const s60Pattern = /\b(s60\+?|s\s*60\+?|60\+|60\s*\+|over\s*60|o60)/i;
+        return s60Pattern.test(category) || s60Pattern.test(name);
+    }
+
+    matchesYouthCategory(name: string, category: string, target: string): boolean {
+        // target is like 'U12' — match U12, U-12, U 12 (case-insensitive)
+        const age = target.replace(/^u/i, '');
+        const re = new RegExp(`\\bu[-\\s]?${age}\\b`, 'i');
+        return re.test(name) || re.test(category);
     }
 
     private isWomenTournament(category: string, name: string): boolean {

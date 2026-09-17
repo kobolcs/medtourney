@@ -30,6 +30,8 @@ export interface FilterState {
     endDate: Date | null;
     countryFilter: string;
     minDays: number | 'weekend' | 'just-weekend';
+    seniorS60: boolean;
+    youthCategory: string;
 }
 
 export interface AppConfig {
