@@ -245,6 +245,18 @@ export class UIManager {
                     <span class="featured-date">${dateStr}</span>
                     <span class="featured-category">${this.escapeHTML(tournament.category)}</span>
                 </div>
+                <div class="tournament-actions">
+                    <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
+                       class="tournament-link"
+                       aria-label="View details for ${this.escapeHTML(tournament.name)}">
+                        View Tournament
+                    </a>
+                    <button class="calendar-export-btn"
+                            data-tournament-url="${this.escapeHTML(tournament.url)}"
+                            aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
+                        📅 Add to Calendar
+                    </button>
+                </div>
             </div>
         `;
     }

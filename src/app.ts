@@ -888,10 +888,7 @@ class TournamentFinder {
      * (data-tournament-url) rather than a DOM/array position.
      */
     private initCalendarExportDelegation(): void {
-        const tournamentList = document.getElementById('tournamentList');
-        if (!tournamentList) return;
-
-        tournamentList.addEventListener('click', (e) => {
+        document.addEventListener('click', (e) => {
             const btn = (e.target as Element).closest('.calendar-export-btn');
             if (!btn) return;
             e.preventDefault();
