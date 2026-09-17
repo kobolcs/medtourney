@@ -78,7 +78,7 @@ Scrape Federation
     END
     ${downloaded}=    Run Keyword And Return Status    Download Tournament Data For Fed    ${fed}
     IF    not ${downloaded}
-        Log    Federation ${fed}: no download (0 results or transient failure), skipping    level=WARN
+        Log    Federation ${fed}: Excel download failed after ${DOWNLOAD_RETRIES} attempts (0 results or site error)    level=WARN
         RETURN
     END
     ${new_count}=    Accumulate Fed Tournaments    ${DOWNLOAD_DIR}/TournamentSearch.xlsx
@@ -102,7 +102,7 @@ Fill Search Form
         END
         Set Browser Timeout    ${BROWSER_TIMEOUT}
         IF    not ${fed_applied}
-            Log    Could not set federation filter for ${fed}    level=WARN
+            Log    Federation ${fed}: no option with value="${fed}" in #P1_combo_land dropdown — skipping    level=WARN
             RETURN    ${fed_applied}
         END
     END
