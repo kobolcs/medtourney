@@ -55,11 +55,10 @@ export class FilterService {
                 return false;
             }
 
-            // Country filter
-            if (filterState.countryFilter && filterState.countryFilter !== 'all') {
+            // Country filter — OR logic across selected codes
+            if (filterState.countryFilter.length > 0) {
                 const locationLower = tournament.location.toLowerCase();
-                const countryLower = filterState.countryFilter.toLowerCase();
-                if (!locationLower.includes(countryLower)) {
+                if (!filterState.countryFilter.some(code => locationLower.includes(code.toLowerCase()))) {
                     return false;
                 }
             }
@@ -93,6 +92,11 @@ export class FilterService {
 
             // Youth category filter (e.g. 'U14' shows only that age group)
             if (filterState.youthCategory && !this.matchesYouthCategory(nameLower, categoryLower, filterState.youthCategory)) {
+                return false;
+            }
+
+            // Rating category filter (e.g. 'U1800' shows only that rating ceiling)
+            if (filterState.ratingCategory && !this.matchesRatingCategory(nameLower, categoryLower, filterState.ratingCategory)) {
                 return false;
             }
 
@@ -159,10 +163,11 @@ export class FilterService {
             blitz: filterState.blitzTime,
             start: filterState.startDate?.toISOString(),
             end: filterState.endDate?.toISOString(),
-            country: filterState.countryFilter,
+            country: filterState.countryFilter.join(','),
             minDays: filterState.minDays,
             s60: filterState.seniorS60,
-            youthCat: filterState.youthCategory
+            youthCat: filterState.youthCategory,
+            ratingCat: filterState.ratingCategory
         });
     }
 
@@ -242,6 +247,13 @@ export class FilterService {
         // target is like 'U12' — match U12, U-12, U 12 (case-insensitive)
         const age = target.replace(/^u/i, '');
         const re = new RegExp(`\\bu[-\\s]?${age}\\b`, 'i');
+        return re.test(name) || re.test(category);
+    }
+
+    matchesRatingCategory(name: string, category: string, target: string): boolean {
+        // target is like 'U1800' — match U1800, U-1800, U 1800 (case-insensitive)
+        const rating = target.replace(/^u/i, '');
+        const re = new RegExp(`\\bu[-\\s]?${rating}\\b`, 'i');
         return re.test(name) || re.test(category);
     }
 

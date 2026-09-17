@@ -28,10 +28,11 @@ export interface FilterState {
     blitzTime: boolean;
     startDate: Date | null;
     endDate: Date | null;
-    countryFilter: string;
+    countryFilter: string[];
     minDays: number | 'weekend' | 'just-weekend';
     seniorS60: boolean;
     youthCategory: string;
+    ratingCategory: string;
 }
 
 export interface AppConfig {

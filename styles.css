@@ -417,13 +417,18 @@ header h1 {
 }
 
 /* COUNTRY FILTER */
-.search-options {
+.country-filter-section {
   margin-bottom: var(--sp-6);
 }
 
-.country-select label {
-  display: block;
-  margin-bottom: var(--sp-2);
+.country-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+
+.country-filter-label {
   font-size: var(--text-xs);
   font-weight: 600;
   color: var(--label);
@@ -431,24 +436,30 @@ header h1 {
   letter-spacing: .06em;
 }
 
-.country-select select {
-  width: 100%;
-  max-width: 380px;
-  padding: var(--sp-3) var(--sp-4);
-  min-height: 44px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
-  font-size: var(--text-base);
-  font-family: inherit;
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color .15s;
+.country-filter-summary {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--sea);
+  background: var(--sea-light);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-sm);
+  border: 1px solid color-mix(in srgb, var(--sea) 25%, transparent);
 }
 
-.country-select select:focus {
-  outline: none;
-  border-color: var(--sea);
+.country-checkbox-list {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-2);
+  background: var(--surface);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.country-checkbox-list .filter-grid {
+  margin-bottom: 0;
+  gap: 0;
 }
 
 /* SEARCH BUTTON */
@@ -1551,8 +1562,8 @@ footer a:hover {
     font-size: 1.4rem;
   }
 
-  .country-select select {
-    max-width: 100%;
+  .country-checkbox-list {
+    max-height: 180px;
   }
 }
 

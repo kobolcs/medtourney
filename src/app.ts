@@ -40,6 +40,8 @@ interface FilterElements {
     minDays: HTMLSelectElement | null;
     seniorS60: HTMLInputElement | null;
     youthCategory: HTMLSelectElement | null;
+    ratingCategory: HTMLSelectElement | null;
+    // countryFilter: handled via name="countryFilter" checkboxes, not a single element
 }
 
 /**
@@ -372,8 +374,14 @@ class TournamentFinder {
         if (preferences.blitzTime !== undefined && filterElements.blitzTime) {
             filterElements.blitzTime.checked = preferences.blitzTime;
         }
-        if (preferences.countryFilter && filterElements.countryFilter) {
-            filterElements.countryFilter.value = preferences.countryFilter;
+        if (Array.isArray(preferences.countryFilter) && preferences.countryFilter.length > 0) {
+            preferences.countryFilter.forEach((code: string) => {
+                const cb = document.querySelector<HTMLInputElement>(
+                    `input[name="countryFilter"][value="${code}"]`
+                );
+                if (cb) cb.checked = true;
+            });
+            this.updateCountryFilterSummary();
         }
         if (preferences.minDays !== undefined && filterElements.minDays) {
             filterElements.minDays.value = String(preferences.minDays);
@@ -383,6 +391,9 @@ class TournamentFinder {
         }
         if (preferences.youthCategory !== undefined && filterElements.youthCategory) {
             filterElements.youthCategory.value = preferences.youthCategory;
+        }
+        if (preferences.ratingCategory !== undefined && filterElements.ratingCategory) {
+            filterElements.ratingCategory.value = preferences.ratingCategory;
         }
     }
 
@@ -410,8 +421,17 @@ class TournamentFinder {
         });
 
         // Keep country ↔ Mediterranean mutually compatible in real-time
-        filterElements.countryFilter?.addEventListener('change', () => this.updateFilterCompatibility());
         filterElements.mediterraneanOnly?.addEventListener('change', () => this.updateFilterCompatibility());
+
+        // Country checkboxes — delegated on their container
+        const countryList = document.getElementById('countryList');
+        if (countryList) {
+            countryList.addEventListener('change', () => {
+                this.updateCountryFilterSummary();
+                this.updateFilterCompatibility();
+                this.saveFilterPreferences();
+            });
+        }
     }
 
     /**
@@ -434,6 +454,8 @@ class TournamentFinder {
             minDays: document.getElementById('minDays') as HTMLSelectElement | null,
             seniorS60: document.getElementById('seniorS60') as HTMLInputElement | null,
             youthCategory: document.getElementById('youthCategory') as HTMLSelectElement | null,
+            ratingCategory: document.getElementById('ratingCategory') as HTMLSelectElement | null,
+            // Note: countryFilter checkboxes are queried dynamically by name
         };
     }
 
@@ -455,12 +477,15 @@ class TournamentFinder {
             blitzTime: elements.blitzTime?.checked ?? true,
             startDate: elements.startDate?.valueAsDate ?? null,
             endDate: elements.endDate?.valueAsDate ?? null,
-            countryFilter: elements.countryFilter?.value ?? '',
+            countryFilter: Array.from(
+                document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
+            ).map(cb => cb.value),
             minDays: elements.minDays?.value === 'weekend' ? 'weekend'
                 : elements.minDays?.value === 'just-weekend' ? 'just-weekend'
                 : (parseInt(elements.minDays?.value ?? '0', 10) || 0),
             seniorS60: elements.seniorS60?.checked ?? false,
             youthCategory: elements.youthCategory?.value ?? '',
+            ratingCategory: elements.ratingCategory?.value ?? '',
         };
     }
 
@@ -476,7 +501,7 @@ class TournamentFinder {
         if (s.seniorS60) parts.push('senior60');
         if (s.womenOnly) parts.push('women');
         if (s.youthCategory) parts.push(`youth_${s.youthCategory}`);
-        if (s.countryFilter) parts.push(`country_${s.countryFilter}`);
+        if (s.countryFilter.length > 0) parts.push(`country_${s.countryFilter.join('+')}`)
         if (s.minDays !== 0) parts.push(`duration_${String(s.minDays)}`);
         return parts.join(',') || 'none';
     }
@@ -576,33 +601,58 @@ class TournamentFinder {
         if (this.allTournaments.length === 0) return;
 
         const medCheckbox = document.getElementById('mediterraneanOnly') as HTMLInputElement | null;
-        const countrySelect = document.getElementById('countryFilter') as HTMLSelectElement | null;
-        if (!medCheckbox || !countrySelect) return;
+        if (!medCheckbox) return;
 
-        const selectedCountry = countrySelect.value.toUpperCase();
         const medChecked = medCheckbox.checked;
 
-        // --- Direction 1: country → Mediterranean ---
-        const countryHasMed = !selectedCountry || this.mediterraneanCountries.has(selectedCountry);
-        medCheckbox.disabled = !countryHasMed;
-        if (!countryHasMed && medChecked) {
-            medCheckbox.checked = false;
-        }
+        // --- Direction 1: Med checked → remove countries with no Med tournaments ---
+        document.querySelectorAll<HTMLElement>('.country-item').forEach(item => {
+            const code = item.dataset.country?.toUpperCase();
+            if (!code) return;
+            const hasMed = this.mediterraneanCountries.has(code);
+            if (medChecked && !hasMed) {
+                item.style.display = 'none';
+                const cb = item.querySelector<HTMLInputElement>('input[type="checkbox"]');
+                if (cb?.checked) cb.checked = false;
+            } else {
+                item.style.display = '';
+            }
+        });
+
+        // --- Direction 2: country selection → Mediterranean ---
+        const selectedCodes = Array.from(
+            document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
+        ).map(cb => cb.value.toUpperCase());
+
+        // Med is compatible when no countries are selected, or at least one has Med tournaments
+        const medCompatible = selectedCodes.length === 0 ||
+            selectedCodes.some(code => this.mediterraneanCountries.has(code));
+
+        medCheckbox.disabled = !medCompatible;
+        if (!medCompatible && medChecked) medCheckbox.checked = false;
+
         const medLabel = document.querySelector('label[for="mediterraneanOnly"]') as HTMLElement | null;
         if (medLabel) {
-            medLabel.title = countryHasMed
+            medLabel.title = medCompatible
                 ? ''
-                : 'No Mediterranean tournaments in the selected country';
+                : 'No Mediterranean tournaments in the selected countries';
         }
 
-        // --- Direction 2: Mediterranean → country options ---
-        for (const option of countrySelect.options) {
-            if (!option.value) { option.disabled = false; continue; }
-            option.disabled = medChecked && !this.mediterraneanCountries.has(option.value.toUpperCase());
-        }
-        // If the currently-selected country is now incompatible, reset to "all"
-        if (selectedCountry && medChecked && !this.mediterraneanCountries.has(selectedCountry)) {
-            countrySelect.value = '';
+        this.updateCountryFilterSummary();
+    }
+
+    private updateCountryFilterSummary(): void {
+        const summary = document.getElementById('countryFilterSummary');
+        if (!summary) return;
+        const checked = Array.from(
+            document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
+        );
+        if (checked.length === 0) {
+            summary.textContent = 'All';
+        } else if (checked.length <= 2) {
+            summary.textContent = checked.map(cb => cb.value).join(', ');
+        } else {
+            summary.textContent = `${checked.length} countries`;
         }
     }
 

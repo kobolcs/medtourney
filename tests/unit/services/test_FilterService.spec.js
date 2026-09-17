@@ -30,11 +30,10 @@ class FilterService {
                 return false;
             }
 
-            // Country filter
-            if (filterState.countryFilter && filterState.countryFilter !== 'all') {
+            // Country filter — OR logic across selected codes
+            if (filterState.countryFilter && filterState.countryFilter.length > 0) {
                 const locationLower = tournament.location.toLowerCase();
-                const countryLower = filterState.countryFilter.toLowerCase();
-                if (!locationLower.includes(countryLower)) {
+                if (!filterState.countryFilter.some(code => locationLower.includes(code.toLowerCase()))) {
                     return false;
                 }
             }
@@ -68,6 +67,11 @@ class FilterService {
 
             // Youth category filter
             if (filterState.youthCategory && !this.matchesYouthCategory(nameLower, categoryLower, filterState.youthCategory)) {
+                return false;
+            }
+
+            // Rating category filter
+            if (filterState.ratingCategory && !this.matchesRatingCategory(nameLower, categoryLower, filterState.ratingCategory)) {
                 return false;
             }
 
@@ -130,10 +134,11 @@ class FilterService {
             blitz: filterState.blitzTime,
             start: filterState.startDate?.toISOString(),
             end: filterState.endDate?.toISOString(),
-            country: filterState.countryFilter,
             minDays: filterState.minDays,
             s60: filterState.seniorS60,
-            youthCat: filterState.youthCategory
+            youthCat: filterState.youthCategory,
+            ratingCat: filterState.ratingCategory,
+            country: (filterState.countryFilter || []).join(',')
         });
     }
 
@@ -168,6 +173,12 @@ class FilterService {
     matchesYouthCategory(name, category, target) {
         const age = target.replace(/^u/i, '');
         const re = new RegExp(`\\bu[-\\s]?${age}\\b`, 'i');
+        return re.test(name) || re.test(category);
+    }
+
+    matchesRatingCategory(name, category, target) {
+        const rating = target.replace(/^u/i, '');
+        const re = new RegExp(`\\bu[-\\s]?${rating}\\b`, 'i');
         return re.test(name) || re.test(category);
     }
 
@@ -334,7 +345,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -359,7 +370,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -384,7 +395,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -409,7 +420,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -434,7 +445,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -459,7 +470,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -484,7 +495,7 @@ function runTests() {
             blitzTime: true,
             startDate: new Date('2025-07-01'),
             endDate: new Date('2025-07-31'),
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -494,29 +505,47 @@ function runTests() {
         assertEqual(filtered.length, 2); // Athens Senior and Paris Women
     });
 
-    // Test 8: Filter by country
+    // Test 8: Filter by single country
     test('Filter by country', () => {
         const service = new FilterService();
         const filterState = {
-            openOnly: false,
-            excludeYouth: false,
-            mediterraneanOnly: false,
-            seniorCategory: false,
-            womenOnly: false,
-            includeTeamTournaments: true,
-            classicalTime: true,
-            rapidTime: true,
-            blitzTime: true,
-            startDate: null,
-            endDate: null,
-            countryFilter: 'ESP',
-            minDays: 0,
-            seniorS60: false,
-            youthCategory: ''
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: true, rapidTime: true, blitzTime: true,
+            startDate: null, endDate: null,
+            countryFilter: ['ESP'],
+            minDays: 0, seniorS60: false, youthCategory: '', ratingCategory: ''
         };
-
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
         assertEqual(filtered.length, 2); // Barcelona and Madrid
+    });
+
+    // Test 8b: Multi-country OR logic
+    test('Multi-country OR: Spain + Greece returns both', () => {
+        const service = new FilterService();
+        const filtered = service.filterTournaments(tournaments, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: true, rapidTime: true, blitzTime: true,
+            startDate: null, endDate: null,
+            countryFilter: ['ESP', 'GRE'],
+            minDays: 0, seniorS60: false, youthCategory: '', ratingCategory: ''
+        }, mediterraneanLocations);
+        assertEqual(filtered.length, 3); // Barcelona, Madrid (ESP), Athens (GRE)
+    });
+
+    // Test 8c: Empty array = no country filter
+    test('Empty countryFilter array shows all tournaments', () => {
+        const service = new FilterService();
+        const filtered = service.filterTournaments(tournaments, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: true, rapidTime: true, blitzTime: true,
+            startDate: null, endDate: null,
+            countryFilter: [],
+            minDays: 0, seniorS60: false, youthCategory: '', ratingCategory: ''
+        }, mediterraneanLocations);
+        assertEqual(filtered.length, 5); // all tournaments
     });
 
     // Test 9: Sort by date ascending
@@ -566,7 +595,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -594,7 +623,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -622,7 +651,7 @@ function runTests() {
             blitzTime: true,
             startDate: null,
             endDate: null,
-            countryFilter: '',
+            countryFilter: [],
             minDays: 0,
             seniorS60: false,
             youthCategory: ''
@@ -643,7 +672,7 @@ function runTests() {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 0
+            startDate: null, endDate: null, countryFilter: [], minDays: 0
         }, new Set());
         assertEqual(filtered.length, 2);
     });
@@ -661,7 +690,7 @@ function runTests() {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 5, seniorS60: false, youthCategory: ''
+            startDate: null, endDate: null, countryFilter: [], minDays: 5, seniorS60: false, youthCategory: ''
         }, new Set());
         assertEqual(filtered.length, 2, 'only 5-day and 9-day pass');
         assertEqual(filtered[0].name, 'five-day');
@@ -722,7 +751,7 @@ function runTests() {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 'weekend', seniorS60: false, youthCategory: ''
+            startDate: null, endDate: null, countryFilter: [], minDays: 'weekend', seniorS60: false, youthCategory: ''
         }, new Set());
         assertEqual(filtered.length, 1);
         assertEqual(filtered[0].name, 'fri-sun');
@@ -745,7 +774,7 @@ function runTests() {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 'just-weekend', seniorS60: false, youthCategory: ''
+            startDate: null, endDate: null, countryFilter: [], minDays: 'just-weekend', seniorS60: false, youthCategory: ''
         }, new Set());
         assertEqual(filtered.length, 3, 'single-sat, single-sun, sat-sun qualify');
         assertEqual(filtered.map(t => t.name).join(','), 'single-sat,single-sun,sat-sun');
@@ -765,7 +794,7 @@ function runTests() {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 0,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
             seniorS60: true, youthCategory: ''
         };
         const filtered = service.filterTournaments(tourns, filterState, new Set());
@@ -784,7 +813,7 @@ function runTests() {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
             seniorCategory: true, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 0,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
             seniorS60: true, youthCategory: ''
         }, new Set());
         assertEqual(filtered.length, 2, 'Both S50+ and S60+ events returned');
@@ -803,7 +832,7 @@ function runTests() {
             openOnly: false, excludeYouth: true, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 0,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
             seniorS60: false, youthCategory: 'U14'
         }, new Set());
         assertEqual(filtered.length, 2, 'U14 and U-14 both match; excludeYouth overridden');
@@ -823,11 +852,67 @@ function runTests() {
             openOnly: false, excludeYouth: true, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 0,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
             seniorS60: false, youthCategory: 'U12'
         }, new Set());
         assertEqual(filtered.length, 1, 'U12 tournament passes despite excludeYouth=true');
         assertEqual(filtered[0].name, 'U12 Rapid');
+    });
+
+    // Test 29: Rating category filter — exact band match
+    test('U1800 filter shows only U1800 tournaments', () => {
+        const service = new FilterService();
+        const tourns = [
+            { name: 'Open U1600', location: 'X', date: new Date('2025-06-01'), category: 'Classical Open', description: '' },
+            { name: 'Open U1800', location: 'X', date: new Date('2025-06-01'), category: 'Classical Open', description: '' },
+            { name: 'Championship U-1800', location: 'X', date: new Date('2025-06-01'), category: 'Rapid Open U1800', description: '' },
+            { name: 'Open U2000', location: 'X', date: new Date('2025-06-01'), category: 'Classical Open', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
+            seniorS60: false, youthCategory: '', ratingCategory: 'U1800'
+        }, new Set());
+        assertEqual(filtered.length, 2, 'U1800 and U-1800 both match; U1600 and U2000 excluded');
+        assertEqual(filtered[0].name, 'Open U1800');
+        assertEqual(filtered[1].name, 'Championship U-1800');
+    });
+
+    // Test 30: Rating filter does not match a different band
+    test('U1800 filter does not match U1600 or U2000', () => {
+        const service = new FilterService();
+        const tourns = [
+            { name: 'Festival U1600', location: 'X', date: new Date('2025-06-01'), category: 'Classical Open', description: '' },
+            { name: 'Festival U2000', location: 'X', date: new Date('2025-06-01'), category: 'Classical Open U2000', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
+            seniorS60: false, youthCategory: '', ratingCategory: 'U1800'
+        }, new Set());
+        assertEqual(filtered.length, 0, 'neither U1600 nor U2000 should match U1800');
+    });
+
+    // Test 31: Empty ratingCategory passes everything
+    test('Empty ratingCategory does not filter', () => {
+        const service = new FilterService();
+        const tourns = [
+            { name: 'Open U1400', location: 'X', date: new Date('2025-06-01'), category: 'Classical Open', description: '' },
+            { name: 'Open U2200', location: 'X', date: new Date('2025-06-01'), category: 'Rapid Open', description: '' },
+            { name: 'No Rating Class', location: 'X', date: new Date('2025-06-01'), category: 'Classical Open', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
+            seniorS60: false, youthCategory: '', ratingCategory: ''
+        }, new Set());
+        assertEqual(filtered.length, 3, 'no filtering when ratingCategory is empty');
     });
 
     console.log('='.repeat(60));
