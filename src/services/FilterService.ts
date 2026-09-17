@@ -111,11 +111,12 @@ export class FilterService {
             }
 
             // Minimum duration filter
-            if (filterState.minDays > 0) {
-                const days = this.getTournamentDays(tournament);
-                if (days < filterState.minDays) {
-                    return false;
-                }
+            if (filterState.minDays === 'just-weekend') {
+                if (!this.isJustWeekend(tournament)) return false;
+            } else if (filterState.minDays === 'weekend') {
+                if (!this.isLongWeekend(tournament)) return false;
+            } else if (filterState.minDays > 0) {
+                if (this.getTournamentDays(tournament) < filterState.minDays) return false;
             }
 
             return true;
@@ -236,6 +237,28 @@ export class FilterService {
         const to = new Date(tournament.dateTo);
         if (isNaN(to.getTime())) return 1;
         return Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
+    }
+
+    // True when the tournament is exactly Sat+Sun (2 days starting on Saturday).
+    private isJustWeekend(tournament: Tournament): boolean {
+        const days = this.getTournamentDays(tournament);
+        if (days !== 2) return false;
+        return tournament.date.getUTCDay() === 6; // starts on Saturday → ends Sunday
+    }
+
+    // True when the tournament spans ≤5 days AND its date range includes
+    // at least one Saturday (day 6) and one Sunday (day 0).
+    private isLongWeekend(tournament: Tournament): boolean {
+        const days = this.getTournamentDays(tournament);
+        if (days < 2 || days > 5) return false;
+        let hasSat = false;
+        let hasSun = false;
+        for (let i = 0; i < days; i++) {
+            const dow = new Date(tournament.date.getTime() + i * 86400000).getUTCDay();
+            if (dow === 6) hasSat = true;
+            if (dow === 0) hasSun = true;
+        }
+        return hasSat && hasSun;
     }
 
     private isClassicalTime(category: string): boolean {

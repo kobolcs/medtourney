@@ -86,11 +86,12 @@ class FilterService {
             }
 
             // Minimum duration filter
-            if (filterState.minDays > 0) {
-                const days = this.getTournamentDays(tournament);
-                if (days < filterState.minDays) {
-                    return false;
-                }
+            if (filterState.minDays === 'just-weekend') {
+                if (!this.isJustWeekend(tournament)) return false;
+            } else if (filterState.minDays === 'weekend') {
+                if (!this.isLongWeekend(tournament)) return false;
+            } else if (filterState.minDays > 0) {
+                if (this.getTournamentDays(tournament) < filterState.minDays) return false;
             }
 
             return true;
@@ -164,6 +165,25 @@ class FilterService {
         const to = new Date(tournament.dateTo);
         if (isNaN(to.getTime())) return 1;
         return Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
+    }
+
+    isJustWeekend(tournament) {
+        const days = this.getTournamentDays(tournament);
+        if (days !== 2) return false;
+        return tournament.date.getUTCDay() === 6;
+    }
+
+    isLongWeekend(tournament) {
+        const days = this.getTournamentDays(tournament);
+        if (days < 2 || days > 5) return false;
+        let hasSat = false;
+        let hasSun = false;
+        for (let i = 0; i < days; i++) {
+            const dow = new Date(tournament.date.getTime() + i * 86400000).getUTCDay();
+            if (dow === 6) hasSat = true;
+            if (dow === 0) hasSun = true;
+        }
+        return hasSat && hasSun;
     }
 
     isClassicalTime(category) {
@@ -583,23 +603,23 @@ function runTests() {
         assertEqual(filtered.length, 2);
     });
 
-    // Test 17: Duration filter — long weekend (3+ days) excludes short/unknown
-    test('minDays=3 keeps only tournaments with dateTo spanning 3+ days', () => {
+    // Test 17: Duration filter — numeric minDays excludes short tournaments
+    test('minDays=5 keeps only tournaments spanning 5+ days', () => {
         const service = new FilterService();
         const tourns = [
             { name: 'single', location: 'X', date: new Date('2025-06-01'), category: 'Open', description: '' },
-            { name: 'two-day', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-02', category: 'Open', description: '' },
             { name: 'three-day', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-03', category: 'Open', description: '' },
+            { name: 'five-day', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-05', category: 'Open', description: '' },
             { name: 'nine-day', location: 'X', date: new Date('2025-06-01'), dateTo: '2025-06-09', category: 'Open', description: '' },
         ];
         const filtered = service.filterTournaments(tourns, {
             openOnly: false, excludeYouth: false, mediterraneanOnly: false,
             seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
             classicalTime: false, rapidTime: false, blitzTime: false,
-            startDate: null, endDate: null, countryFilter: '', minDays: 3
+            startDate: null, endDate: null, countryFilter: '', minDays: 5
         }, new Set());
-        assertEqual(filtered.length, 2, 'only 3-day and 9-day pass');
-        assertEqual(filtered[0].name, 'three-day');
+        assertEqual(filtered.length, 2, 'only 5-day and 9-day pass');
+        assertEqual(filtered[0].name, 'five-day');
         assertEqual(filtered[1].name, 'nine-day');
     });
 
@@ -610,6 +630,80 @@ function runTests() {
         assertEqual(service.getTournamentDays(base), 1, 'no dateTo → 1');
         assertEqual(service.getTournamentDays({ ...base, dateTo: 'not-a-date' }), 1, 'invalid dateTo → 1');
         assertEqual(service.getTournamentDays({ ...base, dateTo: '2025-06-05' }), 5, '5-day span');
+    });
+
+    // Test 19: Long weekend — must include both Sat and Sun, and be ≤5 days
+    test('isLongWeekend: Fri-Sun (3 days) qualifies', () => {
+        const service = new FilterService();
+        // 2025-09-19 is a Friday
+        const t = { name: 'X', location: 'X', date: new Date('2025-09-19'), dateTo: '2025-09-21', category: 'Open', description: '' };
+        assertEqual(service.isLongWeekend(t), true, 'Fri–Sun includes Sat+Sun');
+    });
+
+    test('isLongWeekend: Mon-Wed (3 days) does not qualify', () => {
+        const service = new FilterService();
+        // 2025-09-22 is a Monday
+        const t = { name: 'X', location: 'X', date: new Date('2025-09-22'), dateTo: '2025-09-24', category: 'Open', description: '' };
+        assertEqual(service.isLongWeekend(t), false, 'Mon–Wed has no Sat or Sun');
+    });
+
+    test('isLongWeekend: Sat-Wed (5 days) qualifies', () => {
+        const service = new FilterService();
+        // 2025-09-20 is a Saturday
+        const t = { name: 'X', location: 'X', date: new Date('2025-09-20'), dateTo: '2025-09-24', category: 'Open', description: '' };
+        assertEqual(service.isLongWeekend(t), true, 'Sat–Wed includes Sat+Sun');
+    });
+
+    test('isLongWeekend: 6-day event does not qualify (too long)', () => {
+        const service = new FilterService();
+        // 2025-09-19 is a Friday — Fri to Wed = 6 days, includes Sat+Sun but > 5 days
+        const t = { name: 'X', location: 'X', date: new Date('2025-09-19'), dateTo: '2025-09-24', category: 'Open', description: '' };
+        assertEqual(service.isLongWeekend(t), false, '6-day is not a long weekend');
+    });
+
+    test('long weekend filter via filterTournaments', () => {
+        const service = new FilterService();
+        const tourns = [
+            // Fri–Sun 2025-09-19–21: qualifies
+            { name: 'fri-sun', location: 'X', date: new Date('2025-09-19'), dateTo: '2025-09-21', category: 'Open', description: '' },
+            // Mon–Wed: no weekend
+            { name: 'mon-wed', location: 'X', date: new Date('2025-09-22'), dateTo: '2025-09-24', category: 'Open', description: '' },
+            // No dateTo (1 day): excluded
+            { name: 'single', location: 'X', date: new Date('2025-09-20'), category: 'Open', description: '' },
+            // 6 days starting Fri: too long
+            { name: 'too-long', location: 'X', date: new Date('2025-09-19'), dateTo: '2025-09-24', category: 'Open', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: '', minDays: 'weekend'
+        }, new Set());
+        assertEqual(filtered.length, 1);
+        assertEqual(filtered[0].name, 'fri-sun');
+    });
+
+    // Test 24: Just a weekend — exactly Sat+Sun (2 days)
+    test('just-weekend filter keeps only exact Sat+Sun 2-day events', () => {
+        const service = new FilterService();
+        const tourns = [
+            // 2025-09-20 Saturday — dateTo 2025-09-21 Sunday: qualifies
+            { name: 'sat-sun', location: 'X', date: new Date('2025-09-20'), dateTo: '2025-09-21', category: 'Open', description: '' },
+            // 2025-09-19 Friday — dateTo 2025-09-21 Sunday: 3-day, not just weekend
+            { name: 'fri-sun', location: 'X', date: new Date('2025-09-19'), dateTo: '2025-09-21', category: 'Open', description: '' },
+            // 2025-09-21 Sunday — dateTo 2025-09-22 Monday: 2-day but starts Sunday, not Sat
+            { name: 'sun-mon', location: 'X', date: new Date('2025-09-21'), dateTo: '2025-09-22', category: 'Open', description: '' },
+            // No dateTo (1 day on Saturday): excluded
+            { name: 'single-sat', location: 'X', date: new Date('2025-09-20'), category: 'Open', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: '', minDays: 'just-weekend'
+        }, new Set());
+        assertEqual(filtered.length, 1);
+        assertEqual(filtered[0].name, 'sat-sun');
     });
 
     console.log('='.repeat(60));

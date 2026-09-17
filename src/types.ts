@@ -29,7 +29,7 @@ export interface FilterState {
     startDate: Date | null;
     endDate: Date | null;
     countryFilter: string;
-    minDays: number;
+    minDays: number | 'weekend' | 'just-weekend';
 }
 
 export interface AppConfig {

@@ -440,7 +440,9 @@ class TournamentFinder {
             startDate: elements.startDate?.valueAsDate ?? null,
             endDate: elements.endDate?.valueAsDate ?? null,
             countryFilter: elements.countryFilter?.value ?? '',
-            minDays: parseInt(elements.minDays?.value ?? '0', 10) || 0,
+            minDays: elements.minDays?.value === 'weekend' ? 'weekend'
+                : elements.minDays?.value === 'just-weekend' ? 'just-weekend'
+                : (parseInt(elements.minDays?.value ?? '0', 10) || 0),
         };
     }
 
