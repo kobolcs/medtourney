@@ -39,6 +39,7 @@ htmlcov/
 # Robot Framework
 robot_results/
 *.xml
+!public/sitemap.xml
 output.xml
 log.html
 report.html
