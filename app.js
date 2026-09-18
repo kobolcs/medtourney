@@ -10,6 +10,7 @@ class TournamentFinder {
         this.SHORTLIST_KEY = 'medtourney_shortlist';
         this.showShortlistOnly = false;
         this.currentQuickSearch = '';
+        this.deepLinkUrl = null;
         this.cacheManager = new CacheManager();
         this.filterService = new FilterService();
         this.dataService = new DataService(this.cacheManager);
@@ -49,6 +50,11 @@ class TournamentFinder {
             this.initKeyboardNavigation();
             this.displayLastUpdated();
             void this.checkDataStaleness();
+            const linkedUrl = new URLSearchParams(location.search).get('t');
+            if (linkedUrl) {
+                this.deepLinkUrl = linkedUrl;
+                void this.searchTournaments();
+            }
         }
         catch (error) {
             this.logger.error('Application initialization failed', error);
@@ -85,6 +91,12 @@ class TournamentFinder {
         this.attachFilterChangeListeners();
         this.initCalendarExportDelegation();
         this.initShortlistDelegation();
+        this.initCopyLinkDelegation();
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#resetFiltersBtn')) {
+                this.resetFilters();
+            }
+        });
         this.initDatePresets();
         const showShortlistOnlyEl = document.getElementById('showShortlistOnly');
         if (showShortlistOnlyEl) {
@@ -103,6 +115,11 @@ class TournamentFinder {
         const modal = document.getElementById('helpModal');
         if (!modal)
             return;
+        Array.from(document.body.children).forEach(el => {
+            if (el.id !== 'helpModal' && el.tagName !== 'SCRIPT') {
+                el.inert = true;
+            }
+        });
         modal.style.display = 'flex';
         modal.removeAttribute('hidden');
         document.getElementById('helpModalClose')?.focus();
@@ -113,12 +130,39 @@ class TournamentFinder {
         if (!modal)
             return;
         modal.style.display = 'none';
+        Array.from(document.body.children).forEach(el => {
+            el.inert = false;
+        });
         document.getElementById('helpBtn')?.focus();
     }
     initHelpModal() {
         document.getElementById('helpBtn')?.addEventListener('click', () => this.openHelpModal());
         document.getElementById('helpModalClose')?.addEventListener('click', () => this.closeHelpModal());
         document.getElementById('helpModalBackdrop')?.addEventListener('click', () => this.closeHelpModal());
+        document.getElementById('helpModal')?.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab')
+                return;
+            const dialog = document.querySelector('.help-modal-dialog');
+            if (!dialog)
+                return;
+            const focusable = Array.from(dialog.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el => el.getBoundingClientRect().width > 0);
+            if (focusable.length === 0)
+                return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            }
+            else {
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        });
     }
     async loadConfig() {
         try {
@@ -326,6 +370,75 @@ class TournamentFinder {
             parts.push(`duration_${String(s.minDays)}`);
         return parts.join(',') || 'none';
     }
+    buildEmptySuggestions() {
+        const s = this.getFilterState();
+        const tips = [];
+        if (s.mediterraneanOnly)
+            tips.push('Uncheck "Mediterranean Seaside Only"');
+        if (s.seniorCategory)
+            tips.push('Uncheck the S50+ Senior filter');
+        if (s.seniorS60)
+            tips.push('Uncheck the S60+ filter');
+        if (s.womenOnly)
+            tips.push('Uncheck "Women\'s Tournaments Only"');
+        if (!s.openOnly)
+            tips.push('Re-enable "Open Category Only" — it broadens results');
+        if (s.countryFilter.length > 0)
+            tips.push(`Clear the country filter (${s.countryFilter.length} selected)`);
+        if (s.ratingCategory)
+            tips.push(`Remove the ${s.ratingCategory} rating ceiling filter`);
+        if (s.youthCategory)
+            tips.push(`Remove the ${s.youthCategory} youth age group filter`);
+        if (!s.classicalTime || !s.rapidTime || !s.blitzTime)
+            tips.push('Check all time control options');
+        if (s.minDays !== 0)
+            tips.push(`Reduce minimum duration (currently "${s.minDays} days")`);
+        tips.push('Expand your date range');
+        return tips.slice(0, 5);
+    }
+    resetFilters() {
+        const el = this.getFilterElements();
+        if (el.openOnly)
+            el.openOnly.checked = true;
+        if (el.excludeYouth)
+            el.excludeYouth.checked = true;
+        if (el.mediterraneanOnly)
+            el.mediterraneanOnly.checked = false;
+        if (el.seniorCategory)
+            el.seniorCategory.checked = false;
+        if (el.seniorS60)
+            el.seniorS60.checked = false;
+        if (el.womenOnly)
+            el.womenOnly.checked = false;
+        if (el.includeTeamTournaments)
+            el.includeTeamTournaments.checked = false;
+        if (el.classicalTime)
+            el.classicalTime.checked = true;
+        if (el.rapidTime)
+            el.rapidTime.checked = true;
+        if (el.blitzTime)
+            el.blitzTime.checked = true;
+        if (el.minDays)
+            el.minDays.value = '0';
+        if (el.youthCategory)
+            el.youthCategory.value = '';
+        if (el.ratingCategory)
+            el.ratingCategory.value = '';
+        document.querySelectorAll('input[name="countryFilter"]:checked').forEach(cb => {
+            cb.checked = false;
+        });
+        this.updateCountryFilterSummary();
+        const today = new Date();
+        const sixMonths = new Date(today);
+        sixMonths.setMonth(sixMonths.getMonth() + 6);
+        if (el.startDate)
+            el.startDate.valueAsDate = today;
+        if (el.endDate)
+            el.endDate.valueAsDate = sixMonths;
+        this.saveFilterPreferences();
+        void this.searchTournaments();
+        this.trackEvent('Reset Filters');
+    }
     async searchTournaments() {
         try {
             this.uiManager.showLoadingSkeletons();
@@ -444,7 +557,15 @@ class TournamentFinder {
         }
         this.displayedTournaments = toDisplay;
         this.uiManager.setShortlistedUrls(this.shortlist);
+        if (toDisplay.length === 0) {
+            this.uiManager.prepareEmptyState(this.allTournaments.length, this.buildEmptySuggestions());
+        }
         this.uiManager.displayTournaments(toDisplay);
+        if (this.deepLinkUrl) {
+            const target = this.deepLinkUrl;
+            this.deepLinkUrl = null;
+            setTimeout(() => this.uiManager.highlightTournament(target), 100);
+        }
     }
     exportToCSV() {
         if (this.displayedTournaments.length === 0) {
@@ -607,6 +728,24 @@ class TournamentFinder {
                 this.logger.error('Calendar export failed', error);
                 this.uiManager.showError('Failed to create calendar event. Please try again.');
             }
+        });
+    }
+    initCopyLinkDelegation() {
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.copy-link-btn');
+            if (!btn)
+                return;
+            e.preventDefault();
+            const url = btn.dataset.tournamentUrl;
+            if (!url)
+                return;
+            const shareUrl = `${location.origin}${location.pathname}?t=${encodeURIComponent(url)}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                this.uiManager.showCopyLinkFeedback(btn);
+                this.trackEvent('Share Link Copied');
+            }).catch(() => {
+                this.uiManager.showError('Could not copy to clipboard. Please copy the URL manually.', 'warning');
+            });
         });
     }
     initKeyboardNavigation() {

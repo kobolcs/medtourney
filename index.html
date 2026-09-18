@@ -90,7 +90,10 @@
         <main role="main" id="main-content">
         <div id="staleness-banner" class="error-message warning-type" style="display:none;" role="alert" aria-live="polite"></div>
         <div class="filters-card" role="search" aria-label="Tournament search filters" aria-expanded="true">
-            <h2>Search Filters</h2>
+            <div class="filters-title-row">
+                <h2>Search Filters</h2>
+                <button type="button" id="clearFiltersBtn" class="clear-filters-btn" aria-label="Clear all filters">Clear all</button>
+            </div>
 
             <div class="filter-grid">
                 <div class="filter-group">
@@ -240,7 +243,10 @@
             <div class="country-filter-section">
                 <div class="country-filter-header">
                     <span class="country-filter-label">Country</span>
-                    <span id="countryFilterSummary" class="country-filter-summary">All</span>
+                    <div class="country-filter-header-right">
+                        <span id="countryFilterSummary" class="country-filter-summary">All</span>
+                        <button type="button" id="clearCountriesBtn" class="clear-countries-btn" aria-label="Clear all country filters" hidden>Clear</button>
+                    </div>
                 </div>
                 <span id="country-scroll-hint" class="sr-only">Scrollable list — use arrow keys or scroll to see all countries</span>
                 <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country" aria-describedby="country-scroll-hint">

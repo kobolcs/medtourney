@@ -116,6 +116,7 @@ test.describe('Keyboard Navigation', () => {
     await page.keyboard.press('Tab'); // Help button
     await page.keyboard.press('Tab'); // Theme toggle
     await page.keyboard.press('Tab'); // Filter heading
+    await page.keyboard.press('Tab'); // Clear all filters button
     await page.keyboard.press('Tab'); // First checkbox
 
     const firstCheckbox = page.getByLabel('Open Category Only');

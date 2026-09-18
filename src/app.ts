@@ -226,6 +226,22 @@ class TournamentFinder {
             }
         });
 
+        // Clear all filters button (always-visible in filter panel header)
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
+            this.resetFilters();
+        });
+
+        // Clear countries button (shown only when ≥1 country is checked)
+        document.getElementById('clearCountriesBtn')?.addEventListener('click', () => {
+            document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked').forEach(cb => {
+                cb.checked = false;
+            });
+            this.updateCountryFilterSummary();
+            this.saveFilterPreferences();
+            void this.searchTournaments();
+            this.trackEvent('Clear Countries');
+        });
+
         // Date preset buttons
         this.initDatePresets();
 
@@ -500,13 +516,17 @@ class TournamentFinder {
         });
 
         // Keep country ↔ Mediterranean mutually compatible in real-time
-        filterElements.mediterraneanOnly?.addEventListener('change', () => this.updateFilterCompatibility());
+        filterElements.mediterraneanOnly?.addEventListener('change', () => {
+            this.updateFilterCompatibility();
+            this.updateAvailableCountries();
+        });
 
         // Country checkboxes — delegated on their container
         const countryList = document.getElementById('countryList');
         if (countryList) {
             countryList.addEventListener('change', () => {
                 this.updateFilterCompatibility();
+                this.updateAvailableCountries();
                 this.saveFilterPreferences();
             });
         }
@@ -653,6 +673,7 @@ class TournamentFinder {
             // Recompute which countries have Mediterranean tournaments and update UI constraints
             this.mediterraneanCountries = this.computeMediterraneanCountries();
             this.updateFilterCompatibility();
+            this.updateAvailableCountries();
 
             // Invalidate the filter cache: results are keyed only on filter
             // state, so a fresh data set must not reuse stale cached results.
@@ -703,6 +724,51 @@ class TournamentFinder {
                 error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.'
             );
         }
+    }
+
+    /**
+     * After a search, grey out / re-enable country checkboxes based on whether
+     * any tournaments pass all current filters when that country is the only
+     * country filter active.  Countries with zero results become visually muted
+     * and their checkboxes are disabled so users cannot pick dead-end combos.
+     *
+     * Unchecked-but-disabled countries are shown so users can see what exists;
+     * already-checked countries are never disabled (the user may want to widen).
+     */
+    private updateAvailableCountries(): void {
+        if (this.allTournaments.length === 0) return;
+
+        // Filter with no country restriction to get the "available" pool
+        const stateNoCountry = { ...this.getFilterState(), countryFilter: [] };
+        const pool = this.filterService.filterTournaments(
+            this.allTournaments,
+            stateNoCountry,
+            this.mediterraneanLocations
+        );
+
+        // Build set of country codes that appear in the pool
+        const available = new Set<string>();
+        for (const t of pool) {
+            const parts = t.location.split(',');
+            const last = parts[parts.length - 1];
+            if (last) available.add(last.trim().toUpperCase());
+        }
+
+        document.querySelectorAll<HTMLElement>('.country-item').forEach(item => {
+            const code = item.dataset.country?.toUpperCase();
+            if (!code) return;
+            const cb = item.querySelector<HTMLInputElement>('input[type="checkbox"]');
+            if (!cb) return;
+            const isAvailable = available.has(code);
+            // Never disable an already-checked country (user chose it intentionally)
+            if (!cb.checked) {
+                cb.disabled = !isAvailable;
+                item.classList.toggle('country-unavailable', !isAvailable);
+            } else {
+                cb.disabled = false;
+                item.classList.remove('country-unavailable');
+            }
+        });
     }
 
     /**
@@ -774,16 +840,20 @@ class TournamentFinder {
 
     private updateCountryFilterSummary(): void {
         const summary = document.getElementById('countryFilterSummary');
+        const clearBtn = document.getElementById('clearCountriesBtn') as HTMLButtonElement | null;
         if (!summary) return;
         const checked = Array.from(
             document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
         );
         if (checked.length === 0) {
             summary.textContent = 'All';
+            if (clearBtn) clearBtn.hidden = true;
         } else if (checked.length <= 2) {
             summary.textContent = checked.map(cb => cb.value).join(', ');
+            if (clearBtn) clearBtn.hidden = false;
         } else {
             summary.textContent = `${checked.length} countries`;
+            if (clearBtn) clearBtn.hidden = false;
         }
     }
 
