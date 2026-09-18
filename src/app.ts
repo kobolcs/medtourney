@@ -231,6 +231,12 @@ class TournamentFinder {
     private openHelpModal(): void {
         const modal = document.getElementById('helpModal');
         if (!modal) return;
+        // Inert all sibling body children so background is unreachable (A2)
+        Array.from(document.body.children).forEach(el => {
+            if (el.id !== 'helpModal' && el.tagName !== 'SCRIPT') {
+                (el as HTMLElement).inert = true;
+            }
+        });
         modal.style.display = 'flex';
         modal.removeAttribute('hidden');
         document.getElementById('helpModalClose')?.focus();
@@ -241,6 +247,10 @@ class TournamentFinder {
         const modal = document.getElementById('helpModal');
         if (!modal) return;
         modal.style.display = 'none';
+        // Restore background interactivity (A2)
+        Array.from(document.body.children).forEach(el => {
+            (el as HTMLElement).inert = false;
+        });
         document.getElementById('helpBtn')?.focus();
     }
 
@@ -248,6 +258,32 @@ class TournamentFinder {
         document.getElementById('helpBtn')?.addEventListener('click', () => this.openHelpModal());
         document.getElementById('helpModalClose')?.addEventListener('click', () => this.closeHelpModal());
         document.getElementById('helpModalBackdrop')?.addEventListener('click', () => this.closeHelpModal());
+
+        // Focus trap: keep Tab/Shift+Tab inside the modal dialog (A1)
+        document.getElementById('helpModal')?.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (e.key !== 'Tab') return;
+            const dialog = document.querySelector('.help-modal-dialog');
+            if (!dialog) return;
+            const focusable = Array.from(
+                dialog.querySelectorAll<HTMLElement>(
+                    'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                )
+            ).filter(el => el.getBoundingClientRect().width > 0);
+            if (focusable.length === 0) return;
+            const first = focusable[0]!;
+            const last = focusable[focusable.length - 1]!;
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        });
     }
 
     /**

@@ -134,8 +134,8 @@
                 </div>
             </div>
 
-            <h3 class="filter-section-title">Age Group</h3>
-            <div class="filter-grid">
+            <h3 id="age-group-heading" class="filter-section-title">Age Group</h3>
+            <div class="filter-grid" role="group" aria-labelledby="age-group-heading">
                 <div class="filter-group">
                     <label>
                         <input type="checkbox" id="seniorCategory" aria-describedby="senior-desc">
@@ -181,8 +181,8 @@
                 </div>
             </div>
 
-            <h3 class="filter-section-title">Time Control</h3>
-            <div class="filter-grid">
+            <h3 id="time-control-heading" class="filter-section-title">Time Control</h3>
+            <div class="filter-grid" role="group" aria-labelledby="time-control-heading">
                 <div class="filter-group">
                     <label>
                         <input type="checkbox" id="classicalTime" checked>
@@ -242,7 +242,8 @@
                     <span class="country-filter-label">Country</span>
                     <span id="countryFilterSummary" class="country-filter-summary">All</span>
                 </div>
-                <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country">
+                <span id="country-scroll-hint" class="sr-only">Scrollable list — use arrow keys or scroll to see all countries</span>
+                <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country" aria-describedby="country-scroll-hint">
                     <div class="filter-grid">
                         <div class="country-item filter-group" data-country="ALB"><label><input type="checkbox" name="countryFilter" value="ALB"><span class="checkbox-label">Albania</span></label></div>
                         <div class="country-item filter-group" data-country="AND"><label><input type="checkbox" name="countryFilter" value="AND"><span class="checkbox-label">Andorra</span></label></div>

@@ -78,8 +78,8 @@ test.describe('Tournament Search and Filter', () => {
   });
 
   test('should filter by country', async ({ page }) => {
-    // Select a country
-    await page.selectOption('#countryFilter', 'ESP'); // Spain
+    // Country filter is now a checkbox list — check Spain's checkbox
+    await page.locator('#countryList input[value="ESP"]').check();
 
     // Search with country filter
     await page.getByRole('button', { name: /search tournaments/i }).click();

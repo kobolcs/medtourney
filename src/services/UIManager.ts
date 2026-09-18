@@ -270,8 +270,9 @@ export class UIManager {
     }
 
     private createTournamentCard(tournament: Tournament): HTMLElement {
-        const card = document.createElement('div');
+        const card = document.createElement('article');
         card.className = 'tournament-card';
+        card.setAttribute('aria-label', tournament.name);
 
         const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
 
@@ -344,7 +345,7 @@ export class UIManager {
         const endIndex = Math.min(this.currentPage * this.itemsPerPage, this.filteredTournaments.length);
 
         paginationDiv.innerHTML = `
-            <div class="pagination-info">
+            <div class="pagination-info" aria-live="polite" aria-atomic="true">
                 Showing ${startIndex}-${endIndex} of ${this.filteredTournaments.length} tournaments
             </div>
             <div class="pagination-controls" role="navigation" aria-label="Tournament pagination">
@@ -455,7 +456,7 @@ export class UIManager {
     private showEmptyState(container: HTMLElement): void {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">🔍</div>
+                <div class="empty-state-icon" aria-hidden="true">🔍</div>
                 <h3 class="empty-state-title">No Tournaments Found</h3>
                 <p class="empty-state-message">
                     We couldn't find any tournaments matching your current filters.
@@ -471,7 +472,7 @@ export class UIManager {
                 </div>
                 <div class="empty-state-actions">
                     <button class="reset-filters-btn" id="resetFiltersBtn">
-                        🔄 Reset All Filters
+                        <span aria-hidden="true">🔄</span> Reset All Filters
                     </button>
                 </div>
                 <p class="empty-state-info">
