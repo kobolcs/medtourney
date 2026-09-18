@@ -7,15 +7,22 @@ import { Logger } from './utils/Logger';
 class TournamentFinder {
     constructor() {
         this.logger = Logger.createScoped('TournamentFinder');
+        this.SHORTLIST_KEY = 'medtourney_shortlist';
+        this.showShortlistOnly = false;
+        this.currentQuickSearch = '';
         this.cacheManager = new CacheManager();
         this.filterService = new FilterService();
         this.dataService = new DataService(this.cacheManager);
         this.exportService = new ExportService();
         this.uiManager = new UIManager();
+        this.allTournaments = [];
         this.filteredTournaments = [];
+        this.displayedTournaments = [];
         this.currentSort = 'date-asc';
+        this.shortlist = new Set();
         this.europeanCountries = {};
         this.mediterraneanLocations = new Set();
+        this.mediterraneanCountries = new Set();
         void this.initAsync();
     }
     async initAsync() {
@@ -33,9 +40,15 @@ class TournamentFinder {
             if (endDateElement)
                 endDateElement.valueAsDate = sixMonthsLater;
             this.loadFilterPreferences();
+            this.loadShortlist();
+            this.uiManager.updateShortlistCount(this.shortlist.size);
+            if (this.shortlist.size > 0) {
+                void this.preloadTournamentData();
+            }
             this.attachEventListeners();
             this.initKeyboardNavigation();
             this.displayLastUpdated();
+            void this.checkDataStaleness();
         }
         catch (error) {
             this.logger.error('Application initialization failed', error);
@@ -71,6 +84,41 @@ class TournamentFinder {
         }
         this.attachFilterChangeListeners();
         this.initCalendarExportDelegation();
+        this.initShortlistDelegation();
+        this.initDatePresets();
+        const showShortlistOnlyEl = document.getElementById('showShortlistOnly');
+        if (showShortlistOnlyEl) {
+            showShortlistOnlyEl.addEventListener('change', () => {
+                this.showShortlistOnly = showShortlistOnlyEl.checked;
+                this.applyDisplayFilters();
+            });
+        }
+        const exportShortlistBtn = document.getElementById('exportShortlistBtn');
+        if (exportShortlistBtn) {
+            exportShortlistBtn.addEventListener('click', () => void this.exportShortlistToCalendar());
+        }
+        this.initHelpModal();
+    }
+    openHelpModal() {
+        const modal = document.getElementById('helpModal');
+        if (!modal)
+            return;
+        modal.style.display = 'flex';
+        modal.removeAttribute('hidden');
+        document.getElementById('helpModalClose')?.focus();
+        this.trackEvent('Help Opened');
+    }
+    closeHelpModal() {
+        const modal = document.getElementById('helpModal');
+        if (!modal)
+            return;
+        modal.style.display = 'none';
+        document.getElementById('helpBtn')?.focus();
+    }
+    initHelpModal() {
+        document.getElementById('helpBtn')?.addEventListener('click', () => this.openHelpModal());
+        document.getElementById('helpModalClose')?.addEventListener('click', () => this.closeHelpModal());
+        document.getElementById('helpModalBackdrop')?.addEventListener('click', () => this.closeHelpModal());
     }
     async loadConfig() {
         try {
@@ -107,7 +155,7 @@ class TournamentFinder {
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
             const isDark = document.body.classList.contains('dark-theme');
-            themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            themeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
         }
     }
     initCollapsibleFilters() {
@@ -120,10 +168,23 @@ class TournamentFinder {
         const filterTitle = document.querySelector('.filters-card h2');
         if (filterTitle && filtersCard) {
             filterTitle.style.cursor = 'pointer';
-            filterTitle.addEventListener('click', () => {
+            filterTitle.setAttribute('role', 'button');
+            filterTitle.setAttribute('tabindex', '0');
+            const startCollapsed = filtersCard.classList.contains('collapsed');
+            filterTitle.setAttribute('aria-expanded', startCollapsed ? 'false' : 'true');
+            const toggleFilters = () => {
                 const isCollapsed = filtersCard.classList.toggle('collapsed');
-                filtersCard.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+                const expanded = isCollapsed ? 'false' : 'true';
+                filtersCard.setAttribute('aria-expanded', expanded);
+                filterTitle.setAttribute('aria-expanded', expanded);
                 this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED, isCollapsed ? 'collapsed' : 'expanded');
+            };
+            filterTitle.addEventListener('click', toggleFilters);
+            filterTitle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    toggleFilters();
+                }
             });
         }
     }
@@ -159,8 +220,25 @@ class TournamentFinder {
         if (preferences.blitzTime !== undefined && filterElements.blitzTime) {
             filterElements.blitzTime.checked = preferences.blitzTime;
         }
-        if (preferences.countryFilter && filterElements.countryFilter) {
-            filterElements.countryFilter.value = preferences.countryFilter;
+        if (Array.isArray(preferences.countryFilter) && preferences.countryFilter.length > 0) {
+            preferences.countryFilter.forEach((code) => {
+                const cb = document.querySelector(`input[name="countryFilter"][value="${code}"]`);
+                if (cb)
+                    cb.checked = true;
+            });
+            this.updateCountryFilterSummary();
+        }
+        if (preferences.minDays !== undefined && filterElements.minDays) {
+            filterElements.minDays.value = String(preferences.minDays);
+        }
+        if (preferences.seniorS60 !== undefined && filterElements.seniorS60) {
+            filterElements.seniorS60.checked = preferences.seniorS60;
+        }
+        if (preferences.youthCategory !== undefined && filterElements.youthCategory) {
+            filterElements.youthCategory.value = preferences.youthCategory;
+        }
+        if (preferences.ratingCategory !== undefined && filterElements.ratingCategory) {
+            filterElements.ratingCategory.value = preferences.ratingCategory;
         }
     }
     saveFilterPreferences() {
@@ -175,6 +253,14 @@ class TournamentFinder {
                 element.addEventListener('change', savePrefs);
             }
         });
+        filterElements.mediterraneanOnly?.addEventListener('change', () => this.updateFilterCompatibility());
+        const countryList = document.getElementById('countryList');
+        if (countryList) {
+            countryList.addEventListener('change', () => {
+                this.updateFilterCompatibility();
+                this.saveFilterPreferences();
+            });
+        }
     }
     getFilterElements() {
         return {
@@ -189,7 +275,10 @@ class TournamentFinder {
             blitzTime: document.getElementById('blitzTime'),
             startDate: document.getElementById('startDate'),
             endDate: document.getElementById('endDate'),
-            countryFilter: document.getElementById('countryFilter'),
+            minDays: document.getElementById('minDays'),
+            seniorS60: document.getElementById('seniorS60'),
+            youthCategory: document.getElementById('youthCategory'),
+            ratingCategory: document.getElementById('ratingCategory'),
         };
     }
     getFilterState() {
@@ -206,17 +295,59 @@ class TournamentFinder {
             blitzTime: elements.blitzTime?.checked ?? true,
             startDate: elements.startDate?.valueAsDate ?? null,
             endDate: elements.endDate?.valueAsDate ?? null,
-            countryFilter: elements.countryFilter?.value ?? '',
+            countryFilter: Array.from(document.querySelectorAll('input[name="countryFilter"]:checked')).map(cb => cb.value),
+            minDays: elements.minDays?.value === 'weekend' ? 'weekend'
+                : elements.minDays?.value === 'just-weekend' ? 'just-weekend'
+                    : (parseInt(elements.minDays?.value ?? '0', 10) || 0),
+            seniorS60: elements.seniorS60?.checked ?? false,
+            youthCategory: elements.youthCategory?.value ?? '',
+            ratingCategory: elements.ratingCategory?.value ?? '',
         };
+    }
+    trackEvent(event, props) {
+        window.plausible?.(event, props ? { props } : undefined);
+    }
+    activeFilterSummary() {
+        const s = this.getFilterState();
+        const parts = [];
+        if (s.mediterraneanOnly)
+            parts.push('mediterranean');
+        if (s.seniorCategory)
+            parts.push('senior50');
+        if (s.seniorS60)
+            parts.push('senior60');
+        if (s.womenOnly)
+            parts.push('women');
+        if (s.youthCategory)
+            parts.push(`youth_${s.youthCategory}`);
+        if (s.countryFilter.length > 0)
+            parts.push(`country_${s.countryFilter.join('+')}`);
+        if (s.minDays !== 0)
+            parts.push(`duration_${String(s.minDays)}`);
+        return parts.join(',') || 'none';
     }
     async searchTournaments() {
         try {
             this.uiManager.showLoadingSkeletons();
             const tournaments = await this.dataService.fetchTournaments();
+            this.allTournaments = tournaments;
+            this.mediterraneanCountries = this.computeMediterraneanCountries();
+            this.updateFilterCompatibility();
+            this.filterService.clearCache();
             const filterState = this.getFilterState();
             this.filteredTournaments = this.filterService.filterTournaments(tournaments, filterState, this.mediterraneanLocations);
             this.filteredTournaments = this.filterService.sortTournaments(this.filteredTournaments, this.currentSort);
-            this.uiManager.displayTournaments(this.filteredTournaments);
+            this.filteredTournaments = this.filteredTournaments.map(t => this.filterService.annotate(t, this.mediterraneanLocations));
+            this.currentQuickSearch = '';
+            const quickSearch = document.getElementById('quickSearch');
+            if (quickSearch)
+                quickSearch.value = '';
+            this.applyDisplayFilters();
+            this.uiManager.renderFeaturedTournament(this.filterService.pickFeatured(this.allTournaments, this.mediterraneanLocations));
+            this.trackEvent('Search', {
+                results: this.filteredTournaments.length,
+                filters: this.activeFilterSummary()
+            });
         }
         catch (error) {
             this.logger.error('Tournament search failed', error, {
@@ -226,60 +357,287 @@ class TournamentFinder {
             this.uiManager.showError(error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.');
         }
     }
+    computeMediterraneanCountries() {
+        const result = new Set();
+        for (const t of this.allTournaments) {
+            if (this.filterService.isMediterraneanLocation(t.location.toLowerCase(), this.mediterraneanLocations)) {
+                const parts = t.location.split(',');
+                const last = parts[parts.length - 1];
+                const code = last ? last.trim().toUpperCase() : '';
+                if (code)
+                    result.add(code);
+            }
+        }
+        return result;
+    }
+    updateFilterCompatibility() {
+        this.updateCountryFilterSummary();
+        if (this.allTournaments.length === 0)
+            return;
+        const medCheckbox = document.getElementById('mediterraneanOnly');
+        if (!medCheckbox)
+            return;
+        const medChecked = medCheckbox.checked;
+        document.querySelectorAll('.country-item').forEach(item => {
+            const code = item.dataset.country?.toUpperCase();
+            if (!code)
+                return;
+            const hasMed = this.mediterraneanCountries.has(code);
+            if (medChecked && !hasMed) {
+                item.style.display = 'none';
+                const cb = item.querySelector('input[type="checkbox"]');
+                if (cb?.checked)
+                    cb.checked = false;
+            }
+            else {
+                item.style.display = '';
+            }
+        });
+        const selectedCodes = Array.from(document.querySelectorAll('input[name="countryFilter"]:checked')).map(cb => cb.value.toUpperCase());
+        const medCompatible = selectedCodes.length === 0 ||
+            selectedCodes.some(code => this.mediterraneanCountries.has(code));
+        medCheckbox.disabled = !medCompatible;
+        if (!medCompatible && medChecked)
+            medCheckbox.checked = false;
+        const medLabel = document.querySelector('label[for="mediterraneanOnly"]');
+        if (medLabel) {
+            medLabel.title = medCompatible
+                ? ''
+                : 'No Mediterranean tournaments in the selected countries';
+        }
+    }
+    updateCountryFilterSummary() {
+        const summary = document.getElementById('countryFilterSummary');
+        if (!summary)
+            return;
+        const checked = Array.from(document.querySelectorAll('input[name="countryFilter"]:checked'));
+        if (checked.length === 0) {
+            summary.textContent = 'All';
+        }
+        else if (checked.length <= 2) {
+            summary.textContent = checked.map(cb => cb.value).join(', ');
+        }
+        else {
+            summary.textContent = `${checked.length} countries`;
+        }
+    }
     handleSortChange(sortBy) {
         this.currentSort = sortBy;
         if (this.filteredTournaments.length > 0) {
             this.filteredTournaments = this.filterService.sortTournaments(this.filteredTournaments, sortBy);
-            this.uiManager.updateDisplayedTournaments(this.filteredTournaments);
+            this.applyDisplayFilters();
         }
     }
     searchWithinResults(query) {
-        if (!query.trim()) {
-            this.uiManager.updateDisplayedTournaments(this.filteredTournaments);
+        this.currentQuickSearch = query;
+        this.applyDisplayFilters();
+    }
+    applyDisplayFilters() {
+        let toDisplay = this.filteredTournaments;
+        if (this.showShortlistOnly) {
+            toDisplay = toDisplay.filter(t => this.shortlist.has(t.url));
         }
-        else {
-            const lowerQuery = query.toLowerCase();
-            const searchResults = this.filteredTournaments.filter(tournament => tournament.name.toLowerCase().includes(lowerQuery) ||
-                tournament.location.toLowerCase().includes(lowerQuery));
-            this.uiManager.updateDisplayedTournaments(searchResults);
+        if (this.currentQuickSearch.trim()) {
+            const q = this.currentQuickSearch.toLowerCase();
+            toDisplay = toDisplay.filter(t => t.name.toLowerCase().includes(q) ||
+                t.location.toLowerCase().includes(q));
         }
+        this.displayedTournaments = toDisplay;
+        this.uiManager.setShortlistedUrls(this.shortlist);
+        this.uiManager.displayTournaments(toDisplay);
     }
     exportToCSV() {
-        if (this.filteredTournaments.length === 0) {
-            this.uiManager.showError('No tournaments to export');
+        if (this.displayedTournaments.length === 0) {
+            this.uiManager.showError('No tournaments to export. Adjust your filters or search first.', 'warning');
             return;
         }
         try {
-            this.exportService.exportToCSV(this.filteredTournaments);
+            this.exportService.exportToCSV(this.displayedTournaments);
             this.logger.info('CSV export successful', {
-                tournamentCount: this.filteredTournaments.length
+                tournamentCount: this.displayedTournaments.length
             });
+            const count = this.displayedTournaments.length;
+            this.trackEvent('CSV Export', { count });
+            this.uiManager.showError(`Exported ${count} tournament${count !== 1 ? 's' : ''} to CSV`, 'success');
         }
         catch (error) {
             this.logger.error('CSV export failed', error, {
-                tournamentCount: this.filteredTournaments.length
+                tournamentCount: this.displayedTournaments.length
             });
             this.uiManager.showError('Failed to export CSV. Please try again.');
         }
     }
-    initCalendarExportDelegation() {
+    async preloadTournamentData() {
+        if (this.allTournaments.length > 0)
+            return;
+        try {
+            this.allTournaments = await this.dataService.fetchTournaments();
+            this.logger.info('Preloaded tournament data for shortlist export', {
+                count: this.allTournaments.length
+            });
+            this.uiManager.renderFeaturedTournament(this.filterService.pickFeatured(this.allTournaments, this.mediterraneanLocations));
+        }
+        catch (error) {
+            this.logger.warn('Background preload of tournament data failed', {
+                error: error instanceof Error ? error.message : 'Unknown error'
+            });
+        }
+    }
+    loadShortlist() {
+        try {
+            const saved = localStorage.getItem(this.SHORTLIST_KEY);
+            if (saved) {
+                const urls = JSON.parse(saved);
+                this.shortlist = new Set(urls);
+            }
+        }
+        catch {
+            this.shortlist = new Set();
+        }
+    }
+    saveShortlist() {
+        try {
+            localStorage.setItem(this.SHORTLIST_KEY, JSON.stringify([...this.shortlist]));
+        }
+        catch {
+        }
+    }
+    toggleShortlist(url) {
+        if (this.shortlist.has(url)) {
+            this.shortlist.delete(url);
+        }
+        else {
+            this.shortlist.add(url);
+            this.trackEvent('Shortlist Add');
+        }
+        this.saveShortlist();
+        this.uiManager.refreshShortlistButtons(this.shortlist);
+        this.uiManager.updateShortlistCount(this.shortlist.size);
+        if (this.showShortlistOnly) {
+            this.applyDisplayFilters();
+        }
+    }
+    initShortlistDelegation() {
         const tournamentList = document.getElementById('tournamentList');
         if (!tournamentList)
             return;
         tournamentList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.shortlist-btn');
+            if (!btn)
+                return;
+            e.preventDefault();
+            const url = btn.dataset.tournamentUrl;
+            if (url) {
+                this.toggleShortlist(url);
+            }
+        });
+    }
+    initDatePresets() {
+        const startDateEl = document.getElementById('startDate');
+        const endDateEl = document.getElementById('endDate');
+        if (!startDateEl || !endDateEl)
+            return;
+        document.querySelectorAll('.date-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = btn.dataset.preset;
+                const today = new Date();
+                const end = new Date(today);
+                if (preset === 'month')
+                    end.setMonth(end.getMonth() + 1);
+                else if (preset === '3months')
+                    end.setMonth(end.getMonth() + 3);
+                else if (preset === '6months')
+                    end.setMonth(end.getMonth() + 6);
+                else
+                    return;
+                startDateEl.valueAsDate = today;
+                endDateEl.valueAsDate = end;
+            });
+        });
+    }
+    async exportShortlistToCalendar() {
+        if (this.shortlist.size === 0) {
+            this.uiManager.showError('Star tournaments to add them to your shortlist first', 'warning');
+            return;
+        }
+        if (this.allTournaments.length === 0) {
+            await this.preloadTournamentData();
+        }
+        if (this.allTournaments.length === 0) {
+            this.uiManager.showError('Could not load tournament data. Please run a search first, then export your shortlist.', 'warning');
+            return;
+        }
+        const shortlisted = this.allTournaments.filter(t => this.shortlist.has(t.url));
+        if (shortlisted.length === 0) {
+            this.uiManager.showError('Your shortlisted tournaments are not in the current data set (they may have passed or been removed).', 'warning');
+            return;
+        }
+        try {
+            this.exportService.exportMultipleToCalendar(shortlisted);
+            this.trackEvent('ICS Export', { type: 'shortlist', count: shortlisted.length });
+            this.uiManager.showError(`Exported ${shortlisted.length} shortlisted tournament${shortlisted.length !== 1 ? 's' : ''} to calendar`, 'success');
+        }
+        catch (error) {
+            this.logger.error('Shortlist calendar export failed', error);
+            this.uiManager.showError('Failed to export shortlist. Please try again.');
+        }
+    }
+    initCalendarExportDelegation() {
+        document.addEventListener('click', (e) => {
             const btn = e.target.closest('.calendar-export-btn');
             if (!btn)
                 return;
             e.preventDefault();
-            const index = parseInt(btn.dataset.tournamentIndex ?? '-1', 10);
-            const tournament = this.uiManager.getTournamentByIndex(index);
-            if (tournament) {
+            const url = btn.dataset.tournamentUrl;
+            if (!url)
+                return;
+            const tournament = this.displayedTournaments.find(t => t.url === url) ??
+                this.filteredTournaments.find(t => t.url === url) ??
+                this.allTournaments.find(t => t.url === url);
+            if (!tournament) {
+                this.uiManager.showError('Could not find that tournament to export.', 'warning');
+                return;
+            }
+            try {
                 this.exportService.exportToCalendar(tournament);
+                this.trackEvent('ICS Export', { type: 'single' });
+                this.uiManager.showError(`Calendar event created for "${tournament.name}"`, 'success');
+            }
+            catch (error) {
+                this.logger.error('Calendar export failed', error);
+                this.uiManager.showError('Failed to create calendar event. Please try again.');
             }
         });
     }
     initKeyboardNavigation() {
         document.addEventListener('keydown', (e) => {
+            if (e.key === 'F1') {
+                e.preventDefault();
+                const modal = document.getElementById('helpModal');
+                if (modal && modal.style.display !== 'none') {
+                    this.closeHelpModal();
+                }
+                else {
+                    this.openHelpModal();
+                }
+                return;
+            }
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('helpModal');
+                if (modal && modal.style.display !== 'none') {
+                    this.closeHelpModal();
+                    return;
+                }
+                const quickSearch = document.getElementById('quickSearch');
+                if (quickSearch && quickSearch.value) {
+                    quickSearch.value = '';
+                    this.searchWithinResults('');
+                }
+                return;
+            }
+            const tag = e.target.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')
+                return;
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 const searchBtn = document.getElementById('searchBtn');
@@ -296,11 +654,11 @@ class TournamentFinder {
                 e.preventDefault();
                 this.toggleTheme();
             }
-            if (e.key === 'Escape') {
-                const quickSearch = document.getElementById('quickSearch');
-                if (quickSearch && quickSearch.value) {
-                    quickSearch.value = '';
-                    this.searchWithinResults('');
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                const exportShortlistBtn = document.getElementById('exportShortlistBtn');
+                if (exportShortlistBtn && exportShortlistBtn.style.display !== 'none') {
+                    e.preventDefault();
+                    void this.exportShortlistToCalendar();
                 }
             }
         });
@@ -329,6 +687,33 @@ class TournamentFinder {
             }
         }
         lastUpdatedTime.textContent = 'Never (no cached data)';
+    }
+    async checkDataStaleness() {
+        try {
+            const response = await fetch('tournaments_data_meta.json');
+            if (!response.ok)
+                return;
+            const meta = await response.json();
+            if (!meta.generatedAt)
+                return;
+            const generatedAt = new Date(meta.generatedAt);
+            if (isNaN(generatedAt.getTime()))
+                return;
+            const lastUpdatedTime = document.getElementById('lastUpdatedTime');
+            if (lastUpdatedTime) {
+                lastUpdatedTime.textContent = generatedAt.toLocaleString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            }
+            const hoursSince = (Date.now() - generatedAt.getTime()) / (1000 * 60 * 60);
+            if (hoursSince > 48) {
+                const daysAgo = Math.round(hoursSince / 24);
+                this.uiManager.showStalenessBanner(`⚠️ Tournament data is ${daysAgo} day${daysAgo !== 1 ? 's' : ''} old — the daily update may have failed. Some recent tournaments may be missing.`);
+            }
+        }
+        catch (_e) {
+        }
     }
 }
 if (document.readyState === 'loading') {

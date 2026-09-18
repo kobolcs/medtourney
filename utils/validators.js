@@ -7,7 +7,9 @@ export const TournamentSchema = z.object({
         message: 'Invalid date format'
     }),
     category: z.string(),
-    description: z.string()
+    description: z.string(),
+    timeControl: z.string().optional(),
+    dateTo: z.string().optional()
 });
 export const TournamentsArraySchema = z.array(TournamentSchema);
 export const CountryCodeSchema = z.object({

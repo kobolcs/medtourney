@@ -78,6 +78,7 @@
                 <p class="subtitle">Search for chess tournaments on chess-results.com with advanced filtering</p>
             </div>
             <div class="header-controls">
+                <button id="helpBtn" class="help-btn" aria-label="Open help (F1)">?</button>
                 <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
                     Dark Mode
                 </button>
@@ -367,6 +368,65 @@
                 · <a href="https://github.com/kobolcs/medtourney" target="_blank" rel="noopener noreferrer">GitHub</a>
             </p>
         </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="help-modal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle" style="display:none;">
+        <div class="help-modal-backdrop" id="helpModalBackdrop"></div>
+        <div class="help-modal-dialog">
+            <div class="help-modal-header">
+                <h2 id="helpModalTitle" class="help-modal-title">How to use MedTourney</h2>
+                <button class="help-modal-close" id="helpModalClose" aria-label="Close help">&#x2715;</button>
+            </div>
+            <div class="help-modal-body">
+                <div class="help-section">
+                    <h3>What is this?</h3>
+                    <p>MedTourney is a search tool for European chess tournaments, with a focus on Mediterranean seaside locations and senior-friendly events. Data is fetched daily from <strong>chess-results.com</strong>.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Getting started</h3>
+                    <p>Set your filters, then click <strong>Search</strong>. Click any tournament name to open its page on chess-results.com. Your filter settings are saved automatically.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Key filters</h3>
+                    <ul>
+                        <li><strong>Open Category</strong><span>Shows only tournaments open to all skill levels — not invitation-only or club-only events.</span></li>
+                        <li><strong>Exclude Youth</strong><span>Hides tournaments aimed at players under 18.</span></li>
+                        <li><strong>Mediterranean</strong><span>Limits results to coastal Mediterranean cities: Barcelona, Nice, Athens, Malta, Split, and more.</span></li>
+                        <li><strong>S50+ / S60+</strong><span>Senior age categories. Checking both shows all senior events (OR logic).</span></li>
+                        <li><strong>Rating ceiling</strong><span>U1400–U2200 — shows only club-level tournaments below a rating limit.</span></li>
+                        <li><strong>Youth age group</strong><span>Targets a specific under-age group (overrides the exclude-youth filter).</span></li>
+                        <li><strong>Time Control</strong><span>Classical, Rapid, or Blitz. All three checked = show everything.</span></li>
+                        <li><strong>Duration</strong><span>Weekend-only to multi-week vacations — useful for travel planning.</span></li>
+                        <li><strong>Country</strong><span>Tick one or more countries for OR filtering. When Mediterranean is active, only Med-compatible countries are shown.</span></li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Featured card</h3>
+                    <p>When a qualifying Mediterranean tournament starts within 30 days and lasts more than 5 days, it appears highlighted in amber above the results — independently of your active filters.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Shortlist &amp; export</h3>
+                    <p>Click <strong>★</strong> on any card to save it. Use <strong>Export Shortlist</strong> to download all starred tournaments as a single <code class="help-code">.ics</code> file for Google Calendar, Apple Calendar, or Outlook. Each card also has <strong>&#x1F4C5; Add to Calendar</strong> for a single-tournament export.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Keyboard shortcuts</h3>
+                    <ul>
+                        <li><kbd class="help-kbd">F1</kbd><span>Open / close this help</span></li>
+                        <li><kbd class="help-kbd">Ctrl+K</kbd><span>Focus the Search button</span></li>
+                        <li><kbd class="help-kbd">Ctrl+E</kbd><span>Export results to CSV</span></li>
+                        <li><kbd class="help-kbd">Ctrl+D</kbd><span>Toggle dark / light mode</span></li>
+                        <li><kbd class="help-kbd">Ctrl+S</kbd><span>Export shortlist to calendar</span></li>
+                        <li><kbd class="help-kbd">Escape</kbd><span>Close this dialog (or clear the quick-search)</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script defer data-domain="kobolcs.github.io/medtourney" src="https://plausible.io/js/script.js"></script>

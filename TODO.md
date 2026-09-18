@@ -15,7 +15,7 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - Pridať `<script defer data-domain="kobolcs.github.io/medtourney" src="https://plausible.io/js/script.js"></script>` do `index.html`
   - Nastaviť custom events pre: Search click, Filter usage, CSV export, ICS export, Shortlist add
 
-### 2. Oprav zlyhávajúce federácie v scraperi
+### ~~2. Oprav zlyhávajúce federácie v scraperi~~ ✅ (2026-09-17)
 - **Prínos:** WLS (Wales), MLT (Malta), MNE (Montenegro) a ďalšie chýbajú v dátach
 - **Náročnosť:** 2–3 hodiny
 - **Čo urobiť:**
@@ -30,11 +30,7 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - Vytvoriť `/public/sitemap.xml` s jednou URL (SPA)
   - Vytvoriť `/public/robots.txt` s `Allow: /` a odkazom na sitemap
 
----
-
-## 🟡 Stredné (do 2 týždňov)
-
-### 4. "Turnaj týždňa" sekcia
+### ~~4. "Turnaj týždňa" sekcia~~ ✅ (2026-09-17)
 - **Prínos:** Kurátorský obsah, zdieľateľné na chess fórach, zvyšuje návrat používateľov
 - **Náročnosť:** ~1 deň
 - **Čo urobiť:**
@@ -42,6 +38,34 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - Zobraziť ako highlighted card nad výsledkami
   - Logika výberu: `mediterraneanOnly=true`, najbližší štart, najdlhšie trvanie ako tiebreaker
   - Pridať do `UIManager.ts` metódu `renderFeaturedTournament(tournament)`
+
+### ~~6. Ratingový filter pre dospelých~~ ✅ (2026-09-17)
+- **Prínos:** Veľká časť hráčov hľadá turnaje vo svojom ratingovom pásme
+- **Náročnosť:** ~4 hodiny
+- **Čo urobiť:**
+  - Pridať `ratingCategory: string` do `FilterState`
+  - Pridať `ratingCategory` select do `index.html` (vedľa Youth Category)
+  - Vzor matching: `\bU1400\b`, `\bU[-\s]?1400\b` atď. v name + category
+
+### ~~7. Multi-country výber~~ ✅ (2026-09-17)
+- **Prínos:** Používatelia plánujúci cestu po viacerých krajinách (napr. Španielsko + Taliansko)
+- **Náročnosť:** ~1 deň
+- **Čo urobiť:**
+  - Zmeniť `countryFilter: string` na `countryFilter: string[]` v `FilterState`
+  - Nahradiť `<select>` checkboxlist
+  - OR logika + dynamické skrývanie krajín keď je Mediterranean aktívny
+
+### ~~F1 help button~~ ✅ (2026-09-18)
+- **Prínos:** Prvý používateľ pochopí nástroj bez guessing
+- **Náročnosť:** ~2 hodiny
+- **Čo urobiť:**
+  - Pridať `?` button do header vedľa Dark Mode
+  - Modal overlay s popisom filtrov, skratiek, shortlistu, featured card
+  - F1 toggle, Escape zatvára, klik na backdrop zatvára
+
+---
+
+## 🟡 Stredné (do 2 týždňov)
 
 ### 5. Email notifikácie na nové turnaje
 - **Prínos:** Aktívni používatelia sa vrátia bez opakovania manuálneho vyhľadávania
@@ -52,29 +76,35 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - Weekly digest: nové turnaje pridané za posledný týždeň podľa uložených preferencií
   - Keďže ide o statickú stránku, potrebné serverless function (napr. Cloudflare Workers free)
 
-### 6. Ratingový filter pre dospelých (U1400, U1600, U1800, U2000, U2200)
-- **Prínos:** Veľká časť hráčov hľadá turnaje vo svojom ratingovom pásme
-- **Náročnosť:** ~4 hodiny (podobná implementácia ako U-kategórie)
+### 8. Zdieľanie odkazu na konkrétny turnaj
+- **Prínos:** Používatelia môžu poslať priamy odkaz na turnaj bez navigovania cez chess-results.com
+- **Náročnosť:** ~2 hodiny
 - **Čo urobiť:**
-  - Pridať `ratingCategory: string` do `FilterState`
-  - Pridať `ratingCategory` select do `index.html` (vedľa Youth Category)
-  - Vzor matching: `\bU1400\b`, `\bU[-\s]?1400\b` atď. v name + category
-  - Vzorové hodnoty v dátach: U1400, U1500, U1600, U1750, U1800, U1900, U2000, U2100, U2200, U2400
+  - Pridať "Copy link" button na každú kartu
+  - URL schéma: `?t=<chess-results-id>` alebo priamo chess-results URL ako anchor
+  - Klik na odkaz → auto-vyhľadá a scrolluje na turnaj
 
-### 7. Multi-country výber
-- **Prínos:** Používatelia plánujúci cestu po viacerých krajinách (napr. Španielsko + Taliansko)
-- **Náročnosť:** ~1 deň
+### 9. Vylepšenie "no results" stavu
+- **Prínos:** Používateľ vie, čo robiť, keď nič nenájde
+- **Náročnosť:** ~3 hodiny
 - **Čo urobiť:**
-  - Zmeniť `countryFilter: string` na `countryFilter: string[]` v `FilterState`
-  - Nahradiť `<select>` checkboxlist alebo multi-select komponentom
-  - OR logika: turnaj prejde ak jeho lokácia obsahuje niektorú z vybraných krajín
-  - Aktualizovať `FilterService`, `app.ts`, testy
+  - Pridať "Did you mean?" návrhy: uvoľni filter, skús iný dátum
+  - Zobraziť počet turnajov pred filtrom (napr. "Nič nenašlo z 3 200 turnajov")
+  - Tlačidlo "Reset filters" priamo v prázdnom stave (existuje, ale málo viditeľné)
 
 ---
 
 ## 🔴 Strategické (mení smer alebo rozsah)
 
-### 8. Používateľské profily s ELO a odporúčaniami
+### 10. Announce the tool
+- **Prínos:** Bez používateľov nie sú dáta o tom, čo skutočne treba; SEO a komunita
+- **Náročnosť:** ~1 deň (čas, nie kód)
+- **Čo urobiť:**
+  - Post na r/chess, r/chesstournaments, šachové FB skupiny
+  - Zdieľať na ChessTalk fórum, FIDE community
+  - Počkať 4 týždne na analytiku (bod 1) – ak < 50 unikátnych/týždeň, osobný nástroj
+
+### 11. Používateľské profily s ELO a odporúčaniami
 - **Prínos:** Skutočná diferenciácia od chess-results.com; personalizovaný feed
 - **Náročnosť:** Veľká zmena architektúry (potrebný backend)
 - **Čo urobiť:**
@@ -83,7 +113,7 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - Automatické odporúčania: "Toto by sa ti mohlo páčiť" na základe profilu
   - **Pozor:** Zásadne mení charakter projektu zo statickej stránky na app
 
-### 9. Eliminácia rizika scrapingu – officiálny zdroj dát
+### 12. Eliminácia rizika scrapingu – officiálny zdroj dát
 - **Prínos:** Eliminuje krehkosť celého pipeline
 - **Náročnosť:** Neistý výsledok (závisí od chess-results.com / FIDE)
 - **Čo urobiť:**
@@ -91,7 +121,7 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - Skontrolovať FIDE calendar API (existuje, ale obmedzený)
   - Alternatíva: pridať druhý zdroj dát (napr. Schachbund pre GER, USET pre ESP) ako fallback
 
-### 10. Rozšírenie na ďalšie deskové hry
+### 13. Rozšírenie na ďalšie deskové hry
 - **Prínos:** Väčšia cieľová skupina pri rovnakom kóde
 - **Náročnosť:** 2–3 týždne
 - **Čo urobiť:**
@@ -104,7 +134,7 @@ Každá položka má odhad náročnosti a očakávaný prínos.
 ## ⛔ Čo nerobiť / zastaviť
 
 - **Ďalšie checkbox filtre bez analytiky** – nevieš, ktoré filtre reálni používatelia používajú. Počkaj na dáta z bodu 1.
-- **iCalendar export pre jednotlivý turnaj** – pravdepodobne nulové použitie; shortlist export áno
+- **iCalendar export pre jednotlivý turnaj** – pravdepodobne nulové použitie; shortlist export áno *(poznámka: single-tournament export bol pridaný ako súčasť featured card — monitoruj analytics)*
 - **Komplexnejší Playwright scraping pipeline** – každé pridanie zvyšuje krehkosť. Stabilizovať existujúce pred rozširovaním.
 
 ---
@@ -118,4 +148,4 @@ Pred ďalším vývojom overiť:
 
 ---
 
-*Posudok: Claude Sonnet 4.6, 2026-09-17*
+*Posudok: Claude Sonnet 4.6, 2026-09-17 · Aktualizácia: 2026-09-18*

@@ -223,6 +223,31 @@ class TournamentFinder {
         if (exportShortlistBtn) {
             exportShortlistBtn.addEventListener('click', () => void this.exportShortlistToCalendar());
         }
+
+        // Help modal
+        this.initHelpModal();
+    }
+
+    private openHelpModal(): void {
+        const modal = document.getElementById('helpModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        modal.removeAttribute('hidden');
+        document.getElementById('helpModalClose')?.focus();
+        this.trackEvent('Help Opened');
+    }
+
+    private closeHelpModal(): void {
+        const modal = document.getElementById('helpModal');
+        if (!modal) return;
+        modal.style.display = 'none';
+        document.getElementById('helpBtn')?.focus();
+    }
+
+    private initHelpModal(): void {
+        document.getElementById('helpBtn')?.addEventListener('click', () => this.openHelpModal());
+        document.getElementById('helpModalClose')?.addEventListener('click', () => this.closeHelpModal());
+        document.getElementById('helpModalBackdrop')?.addEventListener('click', () => this.closeHelpModal());
     }
 
     /**
@@ -922,6 +947,37 @@ class TournamentFinder {
      */
     private initKeyboardNavigation(): void {
         document.addEventListener('keydown', (e: KeyboardEvent) => {
+            // F1: Toggle help modal
+            if (e.key === 'F1') {
+                e.preventDefault();
+                const modal = document.getElementById('helpModal');
+                if (modal && modal.style.display !== 'none') {
+                    this.closeHelpModal();
+                } else {
+                    this.openHelpModal();
+                }
+                return;
+            }
+
+            // Escape: Close help modal first, then clear quick search
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('helpModal');
+                if (modal && modal.style.display !== 'none') {
+                    this.closeHelpModal();
+                    return;
+                }
+                const quickSearch = document.getElementById('quickSearch') as HTMLInputElement;
+                if (quickSearch && quickSearch.value) {
+                    quickSearch.value = '';
+                    this.searchWithinResults('');
+                }
+                return;
+            }
+
+            // Remaining shortcuts — skip when typing in an input/textarea
+            const tag = (e.target as HTMLElement).tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
             // Ctrl/Cmd + K: Focus search button
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
@@ -950,15 +1006,6 @@ class TournamentFinder {
                 if (exportShortlistBtn && exportShortlistBtn.style.display !== 'none') {
                     e.preventDefault();
                     void this.exportShortlistToCalendar();
-                }
-            }
-
-            // Escape: Clear quick search
-            if (e.key === 'Escape') {
-                const quickSearch = document.getElementById('quickSearch') as HTMLInputElement;
-                if (quickSearch && quickSearch.value) {
-                    quickSearch.value = '';
-                    this.searchWithinResults('');
                 }
             }
         });
