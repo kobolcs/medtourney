@@ -97,6 +97,18 @@ class TournamentFinder {
                 this.resetFilters();
             }
         });
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
+            this.resetFilters();
+        });
+        document.getElementById('clearCountriesBtn')?.addEventListener('click', () => {
+            document.querySelectorAll('input[name="countryFilter"]:checked').forEach(cb => {
+                cb.checked = false;
+            });
+            this.updateCountryFilterSummary();
+            this.saveFilterPreferences();
+            void this.searchTournaments();
+            this.trackEvent('Clear Countries');
+        });
         this.initDatePresets();
         const showShortlistOnlyEl = document.getElementById('showShortlistOnly');
         if (showShortlistOnlyEl) {
@@ -297,11 +309,15 @@ class TournamentFinder {
                 element.addEventListener('change', savePrefs);
             }
         });
-        filterElements.mediterraneanOnly?.addEventListener('change', () => this.updateFilterCompatibility());
+        filterElements.mediterraneanOnly?.addEventListener('change', () => {
+            this.updateFilterCompatibility();
+            this.updateAvailableCountries();
+        });
         const countryList = document.getElementById('countryList');
         if (countryList) {
             countryList.addEventListener('change', () => {
                 this.updateFilterCompatibility();
+                this.updateAvailableCountries();
                 this.saveFilterPreferences();
             });
         }
@@ -446,6 +462,7 @@ class TournamentFinder {
             this.allTournaments = tournaments;
             this.mediterraneanCountries = this.computeMediterraneanCountries();
             this.updateFilterCompatibility();
+            this.updateAvailableCountries();
             this.filterService.clearCache();
             const filterState = this.getFilterState();
             this.filteredTournaments = this.filterService.filterTournaments(tournaments, filterState, this.mediterraneanLocations);
@@ -469,6 +486,36 @@ class TournamentFinder {
             });
             this.uiManager.showError(error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.');
         }
+    }
+    updateAvailableCountries() {
+        if (this.allTournaments.length === 0)
+            return;
+        const stateNoCountry = { ...this.getFilterState(), countryFilter: [] };
+        const pool = this.filterService.filterTournaments(this.allTournaments, stateNoCountry, this.mediterraneanLocations);
+        const available = new Set();
+        for (const t of pool) {
+            const parts = t.location.split(',');
+            const last = parts[parts.length - 1];
+            if (last)
+                available.add(last.trim().toUpperCase());
+        }
+        document.querySelectorAll('.country-item').forEach(item => {
+            const code = item.dataset.country?.toUpperCase();
+            if (!code)
+                return;
+            const cb = item.querySelector('input[type="checkbox"]');
+            if (!cb)
+                return;
+            const isAvailable = available.has(code);
+            if (!cb.checked) {
+                cb.disabled = !isAvailable;
+                item.classList.toggle('country-unavailable', !isAvailable);
+            }
+            else {
+                cb.disabled = false;
+                item.classList.remove('country-unavailable');
+            }
+        });
     }
     computeMediterraneanCountries() {
         const result = new Set();
@@ -518,20 +565,41 @@ class TournamentFinder {
                 ? ''
                 : 'No Mediterranean tournaments in the selected countries';
         }
+        const elements = this.getFilterElements();
+        const youthSelect = elements.youthCategory;
+        if (youthSelect) {
+            const excludeYouth = elements.excludeYouth?.checked ?? false;
+            const isSenior = (elements.seniorCategory?.checked ?? false) || (elements.seniorS60?.checked ?? false);
+            const shouldDisable = excludeYouth || isSenior;
+            youthSelect.disabled = shouldDisable;
+            const youthGroup = youthSelect.closest('.filter-group');
+            if (youthGroup)
+                youthGroup.style.opacity = shouldDisable ? '0.4' : '';
+            if (shouldDisable && youthSelect.value !== '') {
+                youthSelect.value = '';
+            }
+        }
     }
     updateCountryFilterSummary() {
         const summary = document.getElementById('countryFilterSummary');
+        const clearBtn = document.getElementById('clearCountriesBtn');
         if (!summary)
             return;
         const checked = Array.from(document.querySelectorAll('input[name="countryFilter"]:checked'));
         if (checked.length === 0) {
             summary.textContent = 'All';
+            if (clearBtn)
+                clearBtn.hidden = true;
         }
         else if (checked.length <= 2) {
             summary.textContent = checked.map(cb => cb.value).join(', ');
+            if (clearBtn)
+                clearBtn.hidden = false;
         }
         else {
             summary.textContent = `${checked.length} countries`;
+            if (clearBtn)
+                clearBtn.hidden = false;
         }
     }
     handleSortChange(sortBy) {

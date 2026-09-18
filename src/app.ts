@@ -836,6 +836,21 @@ class TournamentFinder {
                 ? ''
                 : 'No Mediterranean tournaments in the selected countries';
         }
+
+        // --- Youth category selector: disable when exclude-youth or any senior filter is active ---
+        const elements = this.getFilterElements();
+        const youthSelect = elements.youthCategory;
+        if (youthSelect) {
+            const excludeYouth = elements.excludeYouth?.checked ?? false;
+            const isSenior = (elements.seniorCategory?.checked ?? false) || (elements.seniorS60?.checked ?? false);
+            const shouldDisable = excludeYouth || isSenior;
+            youthSelect.disabled = shouldDisable;
+            const youthGroup = youthSelect.closest('.filter-group') as HTMLElement | null;
+            if (youthGroup) youthGroup.style.opacity = shouldDisable ? '0.4' : '';
+            if (shouldDisable && youthSelect.value !== '') {
+                youthSelect.value = '';
+            }
+        }
     }
 
     private updateCountryFilterSummary(): void {
