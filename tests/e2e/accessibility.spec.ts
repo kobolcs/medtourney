@@ -20,20 +20,16 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should have skip navigation link', async ({ page }) => {
-    // Skip link should be in DOM
+    // Skip link should exist in DOM (CSS positions it at top:-48px until focused)
     const skipLink = page.getByRole('link', { name: /skip to main content/i });
-    await expect(skipLink).toBeInViewport({ ratio: 0 }); // May be off-screen initially
+    await expect(skipLink).toBeAttached();
 
-    // Focus skip link with Tab
+    // Focus skip link with Tab — it moves into view (top: 0)
     await page.keyboard.press('Tab');
-
-    // Skip link should now be visible
     await expect(skipLink).toBeVisible();
 
     // Clicking skip link should move focus to main content
     await skipLink.click();
-
-    // Main content should have focus (or focus should be within main)
     const mainContent = page.locator('#main-content');
     await expect(mainContent).toBeVisible();
   });
@@ -93,10 +89,9 @@ test.describe('Accessibility Tests', () => {
     const endLabel = page.locator('label[for="endDate"]');
     await expect(endLabel).toBeVisible();
 
-    // Country filter should have label
-    const countryFilter = page.locator('#countryFilter');
-    const countryLabel = page.locator('label[for="countryFilter"]');
-    await expect(countryLabel).toBeVisible();
+    // Country filter section should have a visible label
+    const countryFilterLabel = page.locator('.country-filter-label');
+    await expect(countryFilterLabel).toBeVisible();
   });
 
   test('should have sufficient color contrast', async ({ page }) => {
@@ -171,8 +166,9 @@ test.describe('Accessibility Tests', () => {
 
     // Tabbing through the interactive elements must eventually reach the
     // search button (robust to exact element count/order).
+    // Limit is high because the country checkbox list has 54 entries.
     let reached = false;
-    for (let i = 0; i < 40 && !reached; i++) {
+    for (let i = 0; i < 200 && !reached; i++) {
       await page.keyboard.press('Tab');
       reached = await searchBtn.evaluate((el) => el === document.activeElement).catch(() => false);
     }

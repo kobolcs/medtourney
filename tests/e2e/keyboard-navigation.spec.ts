@@ -13,6 +13,10 @@ test.describe('Keyboard Navigation', () => {
     const skipLink = page.getByRole('link', { name: /skip to main content/i });
     await expect(skipLink).toBeVisible();
 
+    await page.keyboard.press('Tab'); // Help button
+    const helpBtn = page.getByRole('button', { name: /open help/i });
+    await expect(helpBtn).toBeFocused();
+
     await page.keyboard.press('Tab'); // Theme toggle
     const themeToggle = page.getByRole('button', { name: /dark mode/i });
     await expect(themeToggle).toBeFocused();
@@ -22,9 +26,10 @@ test.describe('Keyboard Navigation', () => {
     await page.keyboard.press('Tab'); // First checkbox
     await page.keyboard.press('Tab'); // Second checkbox
 
-    // All tabs should eventually reach search button
+    // All tabs should eventually reach search button.
+    // Limit is high because the country checkbox list has 54 entries.
     let foundSearchButton = false;
-    for (let i = 0; i < 30 && !foundSearchButton; i++) {
+    for (let i = 0; i < 200 && !foundSearchButton; i++) {
       await page.keyboard.press('Tab');
       const searchBtn = page.getByRole('button', { name: /search tournaments/i });
       foundSearchButton = await searchBtn.evaluate((el) => el === document.activeElement).catch(() => false);
@@ -108,6 +113,7 @@ test.describe('Keyboard Navigation', () => {
   test('should activate checkboxes with Space key', async ({ page }) => {
     // Tab to first checkbox
     await page.keyboard.press('Tab'); // Skip link
+    await page.keyboard.press('Tab'); // Help button
     await page.keyboard.press('Tab'); // Theme toggle
     await page.keyboard.press('Tab'); // Filter heading
     await page.keyboard.press('Tab'); // First checkbox
@@ -134,9 +140,9 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('should activate buttons with Enter key', async ({ page }) => {
-    // Tab to search button
+    // Tab to search button (limit is high due to 54 country checkboxes)
     let foundSearchButton = false;
-    for (let i = 0; i < 30 && !foundSearchButton; i++) {
+    for (let i = 0; i < 200 && !foundSearchButton; i++) {
       await page.keyboard.press('Tab');
       const searchBtn = page.getByRole('button', { name: /search tournaments/i });
       foundSearchButton = await searchBtn.evaluate((el) => el === document.activeElement).catch(() => false);
@@ -154,6 +160,7 @@ test.describe('Keyboard Navigation', () => {
   test('should navigate through filter collapse with Enter and Space', async ({ page }) => {
     // Tab to filter heading
     await page.keyboard.press('Tab'); // Skip link
+    await page.keyboard.press('Tab'); // Help button
     await page.keyboard.press('Tab'); // Theme toggle
     await page.keyboard.press('Tab'); // Filter heading
 
@@ -238,21 +245,16 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('should support keyboard navigation in dropdowns', async ({ page }) => {
-    // Focus country filter dropdown
-    const countryFilter = page.locator('#countryFilter');
-    await countryFilter.focus();
-    await expect(countryFilter).toBeFocused();
+    // Focus the duration (minDays) dropdown — country filter is now a checkbox list
+    const minDays = page.locator('#minDays');
+    await minDays.focus();
+    await expect(minDays).toBeFocused();
 
-    // Press arrow down to select option
+    // Arrow-down moves to next option
+    const before = await minDays.inputValue();
     await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('ArrowDown');
-
-    // Press Enter to confirm selection
-    await page.keyboard.press('Enter');
-
-    // Value should have changed
-    const value = await countryFilter.inputValue();
-    expect(value).toBeTruthy();
+    const after = await minDays.inputValue();
+    expect(after).not.toBe(before);
   });
 
   test('should support keyboard navigation in date inputs', async ({ page }) => {
