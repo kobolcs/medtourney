@@ -566,15 +566,6 @@ header h1 {
   gap: 0;
 }
 
-.country-item.country-unavailable label {
-  opacity: .35;
-  cursor: not-allowed;
-}
-
-.country-item.country-unavailable label:hover {
-  background: transparent;
-}
-
 /* SEARCH BUTTON */
 .search-button {
   width: 100%;

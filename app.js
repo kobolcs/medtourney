@@ -508,12 +508,12 @@ class TournamentFinder {
                 return;
             const isAvailable = available.has(code);
             if (!cb.checked) {
-                cb.disabled = !isAvailable;
-                item.classList.toggle('country-unavailable', !isAvailable);
+                item.style.display = isAvailable ? '' : 'none';
+                if (!isAvailable && cb.checked)
+                    cb.checked = false;
             }
             else {
-                cb.disabled = false;
-                item.classList.remove('country-unavailable');
+                item.style.display = '';
             }
         });
     }
@@ -567,6 +567,7 @@ class TournamentFinder {
         }
         const elements = this.getFilterElements();
         const youthSelect = elements.youthCategory;
+        const youthSelected = (youthSelect?.value ?? '') !== '';
         if (youthSelect) {
             const excludeYouth = elements.excludeYouth?.checked ?? false;
             const isSenior = (elements.seniorCategory?.checked ?? false) || (elements.seniorS60?.checked ?? false);
@@ -578,6 +579,17 @@ class TournamentFinder {
             if (shouldDisable && youthSelect.value !== '') {
                 youthSelect.value = '';
             }
+        }
+        const seniorFields = [elements.seniorCategory, elements.seniorS60];
+        for (const cb of seniorFields) {
+            if (!cb)
+                continue;
+            cb.disabled = youthSelected;
+            const grp = cb.closest('label');
+            if (grp)
+                grp.style.opacity = youthSelected ? '0.4' : '';
+            if (youthSelected && cb.checked)
+                cb.checked = false;
         }
     }
     updateCountryFilterSummary() {

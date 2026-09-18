@@ -760,13 +760,13 @@ class TournamentFinder {
             const cb = item.querySelector<HTMLInputElement>('input[type="checkbox"]');
             if (!cb) return;
             const isAvailable = available.has(code);
-            // Never disable an already-checked country (user chose it intentionally)
             if (!cb.checked) {
-                cb.disabled = !isAvailable;
-                item.classList.toggle('country-unavailable', !isAvailable);
+                // Hide countries that have no results under current filters
+                item.style.display = isAvailable ? '' : 'none';
+                if (!isAvailable && cb.checked) cb.checked = false;
             } else {
-                cb.disabled = false;
-                item.classList.remove('country-unavailable');
+                // Always keep checked countries visible
+                item.style.display = '';
             }
         });
     }
@@ -837,9 +837,12 @@ class TournamentFinder {
                 : 'No Mediterranean tournaments in the selected countries';
         }
 
-        // --- Youth category selector: disable when exclude-youth or any senior filter is active ---
+        // --- Youth / Senior mutual exclusion ---
         const elements = this.getFilterElements();
         const youthSelect = elements.youthCategory;
+        const youthSelected = (youthSelect?.value ?? '') !== '';
+
+        // Youth selector: disable when exclude-youth or any senior filter is active
         if (youthSelect) {
             const excludeYouth = elements.excludeYouth?.checked ?? false;
             const isSenior = (elements.seniorCategory?.checked ?? false) || (elements.seniorS60?.checked ?? false);
@@ -850,6 +853,16 @@ class TournamentFinder {
             if (shouldDisable && youthSelect.value !== '') {
                 youthSelect.value = '';
             }
+        }
+
+        // Senior checkboxes: disable when a youth age group is selected
+        const seniorFields = [elements.seniorCategory, elements.seniorS60];
+        for (const cb of seniorFields) {
+            if (!cb) continue;
+            cb.disabled = youthSelected;
+            const grp = cb.closest('label') as HTMLElement | null;
+            if (grp) grp.style.opacity = youthSelected ? '0.4' : '';
+            if (youthSelected && cb.checked) cb.checked = false;
         }
     }
 
