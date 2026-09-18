@@ -58,6 +58,7 @@ function filterState(overrides = {}) {
         excludeYouth: false,
         mediterraneanOnly: false,
         seniorCategory: false,
+        seniorS60: false,
         womenOnly: false,
         includeTeamTournaments: true,
         classicalTime: false,
@@ -65,7 +66,10 @@ function filterState(overrides = {}) {
         blitzTime: false,
         startDate: null,
         endDate: null,
-        countryFilter: '',
+        countryFilter: [],
+        minDays: 0,
+        youthCategory: '',
+        ratingCategory: '',
         ...overrides,
     };
 }
