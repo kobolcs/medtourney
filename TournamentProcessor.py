@@ -76,6 +76,10 @@ class TournamentProcessor:
     # scrape_tournaments.robot ${DATE_RANGE_MONTHS}).
     RANGE_MONTHS: ClassVar[int] = 6
 
+    # FIDE 60-move formula thresholds (minutes)
+    _BLITZ_MAX_MINUTES: ClassVar[int] = 10
+    _RAPID_MAX_MINUTES: ClassVar[int] = 60
+
     def __init__(self) -> None:
         """Initialize the TournamentProcessor with empty tournament list."""
         self.logger = logging.getLogger(__name__)
@@ -243,47 +247,41 @@ class TournamentProcessor:
             return city
         return "Unknown"
 
+    def _total_to_class(self, total: int) -> str:
+        """Map a total-minutes value to Blitz / Rapid / Classical."""
+        if total <= self._BLITZ_MAX_MINUTES:
+            return "Blitz"
+        if total < self._RAPID_MAX_MINUTES:
+            return "Rapid"
+        return "Classical"
+
     def _classify_by_fide_formula(self, tc_lower: str) -> Optional[str]:
         """Classify time control using the official FIDE 60-move formula.
 
         FIDE formula: total = base_minutes + increment_seconds
-        (60 moves × inc_sec / 60 sec = inc_sec minutes contribution)
-        Blitz: ≤ 10 min; Rapid: 10 < total < 60; Classical: ≥ 60.
+        (60 moves x inc_sec / 60 sec = inc_sec minutes contribution)
+        Blitz: <= 10 min; Rapid: 10 < total < 60; Classical: >= 60.
         """
         # N+M bare format: "8+3", "90+30", "10+5'" etc.
-        m = re.search(r'(\d+)\s*\+\s*(\d+)', tc_lower)
+        m = re.search(r"(\d+)\s*\+\s*(\d+)", tc_lower)
         if m:
-            base = int(m.group(1))
-            inc = int(m.group(2))
-            total = base + inc
-            if total <= 10:
-                return "Blitz"
-            elif total < 60:
-                return "Rapid"
-            else:
-                return "Classical"
+            return self._total_to_class(int(m.group(1)) + int(m.group(2)))
 
         # "N unit [+ M sec-unit]" format: "10min plus 3sec", "90 minutes + 30 seconds"
-        m = re.search(r'(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|\')', tc_lower)
+        m = re.search(r"(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|')", tc_lower)
         if m:
             val = int(m.group(1))
-            base = val * 60 if m.group(2).startswith('h') else val
+            base = val * 60 if m.group(2).startswith("h") else val
             # Look for increment in seconds (handles "+" or "plus" as separator)
-            m2 = re.search(r'(?:\+|plus)\s*(\d+)\s*s(?:ec|ek|eg|ekunde|econds?|ekundy)?', tc_lower)
+            m2 = re.search(r"(?:\+|plus)\s*(\d+)\s*s(?:ec|ek|eg|ekunde|econds?|ekundy)?", tc_lower)
             inc = int(m2.group(1)) if m2 else 0
-            total = base + inc
-            if total <= 10:
-                return "Blitz"
-            elif total < 60:
-                return "Rapid"
-            else:
-                return "Classical"
+            return self._total_to_class(base + inc)
 
         return None
 
     def _determine_category(self, name: str, location: str, time_control: str) -> str:
         """Determine tournament category from time control and name."""
-        TIME_CLASSES = {"Classical", "Rapid", "Blitz"}
+        time_classes = {"Classical", "Rapid", "Blitz"}
         category_parts: List[str] = []
         tc_class: Optional[str] = None
 
@@ -298,7 +296,7 @@ class TournamentProcessor:
                 tc_class = "Classical"
             else:
                 # FIDE 60-move formula: total = base_minutes + increment_seconds
-                # Blitz: total ≤ 10 min; Rapid: 10 < total < 60; Classical: ≥ 60
+                # Blitz: total <= 10 min; Rapid: 10 < total < 60; Classical: >= 60
                 tc_class = self._classify_by_fide_formula(tc_lower)
 
         if tc_class:
@@ -307,13 +305,22 @@ class TournamentProcessor:
         # Extract format labels from name; skip time-class labels when tc_class is authoritative
         name_category: str = self._extract_category(name + " " + location)
         for cat in name_category.split(", "):
-            if cat in TIME_CLASSES:
+            if cat in time_classes:
                 if tc_class is None and cat not in category_parts:
                     category_parts.append(cat)
             elif cat not in category_parts:
                 category_parts.append(cat)
 
         return ", ".join(category_parts) if category_parts else "Open"
+
+    def _safe_date_to_str(self, date_value: Any) -> str:
+        """Parse an end-date cell value to YYYY-MM-DD string; returns '' on any failure."""
+        try:
+            if date_value:
+                return self._parse_date(date_value).strftime("%Y-%m-%d")
+        except Exception:
+            pass
+        return ""
 
     def _build_tournament_url(self, db_key: Any, event_id: Any) -> str:
         """Build tournament URL from DB-Key or EventID."""
@@ -437,12 +444,7 @@ class TournamentProcessor:
                 url = self._build_tournament_url(row_data["db_key"], row_data["event_id"])
 
                 # Parse end date (best-effort, non-blocking)
-                date_to_str = ""
-                try:
-                    if row_data["date_to_value"]:
-                        date_to_str = self._parse_date(row_data["date_to_value"]).strftime("%Y-%m-%d")
-                except Exception:
-                    pass
+                date_to_str = self._safe_date_to_str(row_data["date_to_value"])
 
                 # Build tournament dict
                 tournament: Dict[str, Any] = {
@@ -511,7 +513,7 @@ class TournamentProcessor:
         """Reset the multi-federation accumulator for a fresh collection run."""
         self._accumulated = []
         self._seen_urls = set()
-        self._accum_stats = {k: 0 for k in self._accum_stats}
+        self._accum_stats = dict.fromkeys(self._accum_stats, 0)
 
     @keyword("Accumulate Fed Tournaments")
     def accumulate_fed_tournaments(self, excel_file: str) -> int:

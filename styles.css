@@ -117,6 +117,7 @@ body {
   color: var(--text);
   background-color: var(--bg);
   min-height: 100vh;
+  min-height: 100svh;
   transition: background-color .25s, color .25s;
 }
 
@@ -213,7 +214,7 @@ header {
 
 header h1 {
   font-family: 'Spectral', Georgia, 'Times New Roman', serif;
-  font-size: var(--text-4xl);
+  font-size: clamp(1.1rem, 5.5vw, 2.5rem);
   font-weight: 700;
   letter-spacing: -.025em;
   line-height: 1.12;
@@ -1692,10 +1693,6 @@ footer a:hover {
     padding-top: 0;
   }
 
-  header h1 {
-    font-size: var(--text-3xl);
-  }
-
   .filters-card,
   .results-container {
     padding: var(--sp-5);
@@ -1811,13 +1808,92 @@ footer a:hover {
   }
 }
 
+/* Landscape phone — undo sticky search button to reclaim vertical space */
+@media (orientation: landscape) and (max-height: 500px) {
+  body {
+    padding-bottom: 0;
+  }
+
+  .filters-card {
+    margin-bottom: var(--sp-6);
+  }
+
+  .search-button {
+    position: static;
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-sm);
+    min-height: 52px;
+    font-size: var(--text-base);
+    padding: var(--sp-4) var(--sp-8);
+  }
+
+  .search-button:hover {
+    transform: translateY(-1px);
+  }
+}
+
 @media (max-width: 320px) {
-  header h1 {
-    font-size: 1.4rem;
+  .country-checkbox-list {
+    max-height: 180px;
+  }
+}
+
+/* Z Fold inner screen (~280 px) */
+@media (max-width: 280px) {
+  .header-inner {
+    padding: var(--sp-4) var(--sp-3);
+  }
+
+  .container {
+    padding: var(--sp-4) var(--sp-3);
+  }
+
+  .filters-card,
+  .results-container {
+    padding: var(--sp-4);
+    border-radius: var(--r-md);
   }
 
   .country-checkbox-list {
-    max-height: 180px;
+    max-height: 140px;
+  }
+
+  .tournament-card {
+    padding: var(--sp-4);
+  }
+}
+
+/* Wide desktop — 2-column card layout */
+@media (min-width: 1400px) {
+  .container,
+  .header-inner {
+    max-width: 1320px;
+  }
+
+  .tournament-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+  }
+
+  .pagination-container {
+    grid-column: 1 / -1;
+  }
+}
+
+/* TV / ultra-wide — scale up base size and widen container */
+@media (min-width: 1920px) {
+  html {
+    font-size: 112.5%;
+  }
+
+  .container,
+  .header-inner {
+    max-width: 1600px;
+  }
+
+  .help-modal-dialog {
+    max-width: 680px;
   }
 }
 
