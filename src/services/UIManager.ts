@@ -323,7 +323,12 @@ export class UIManager {
                 <button class="calendar-export-btn"
                         data-tournament-url="${this.escapeHTML(tournament.url)}"
                         aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
-                    📅 Add to Calendar
+                    <span aria-hidden="true">📅</span> Add to Calendar
+                </button>
+                <button class="copy-link-btn"
+                        data-tournament-url="${this.escapeHTML(tournament.url)}"
+                        aria-label="Copy share link for ${this.escapeHTML(tournament.name)}">
+                    Copy link
                 </button>
             </div>
         `;
@@ -499,6 +504,38 @@ export class UIManager {
                 error.style.display = 'none';
             }, 5000);
         }
+    }
+
+    /**
+     * Show brief "Copied!" feedback on a copy-link button.
+     */
+    showCopyLinkFeedback(btn: HTMLElement): void {
+        const original = btn.textContent ?? 'Copy link';
+        btn.textContent = 'Copied!';
+        btn.classList.add('copy-link-btn--copied');
+        setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove('copy-link-btn--copied');
+        }, 2000);
+    }
+
+    /**
+     * Scroll to and briefly highlight the tournament card matching the given URL.
+     * Called after a deep-link search (?t= param) completes rendering.
+     */
+    highlightTournament(url: string): void {
+        // Find the card that contains a .tournament-link pointing to this URL
+        const link = document.querySelector<HTMLAnchorElement>(
+            `.tournament-link[href="${CSS.escape(url)}"]`
+        ) ?? document.querySelector<HTMLAnchorElement>(
+            `.tournament-link[href*="${CSS.escape(encodeURIComponent(url))}"]`
+        );
+        const target = link?.closest<HTMLElement>('.tournament-card') ?? null;
+        if (!target) return;
+
+        target.classList.add('highlighted');
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => target.classList.remove('highlighted'), 3000);
     }
 
     /**

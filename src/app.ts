@@ -81,6 +81,9 @@ class TournamentFinder {
     private showShortlistOnly = false;
     private currentQuickSearch = '';
 
+    // Deep-link: URL of tournament to highlight after next search (?t= param)
+    private deepLinkUrl: string | null = null;
+
     constructor() {
         // Initialize service modules
         this.cacheManager = new CacheManager();
@@ -154,6 +157,13 @@ class TournamentFinder {
             this.displayLastUpdated();
             void this.checkDataStaleness();
 
+            // Handle deep-link: ?t=<encoded tournament URL>
+            const linkedUrl = new URLSearchParams(location.search).get('t');
+            if (linkedUrl) {
+                this.deepLinkUrl = linkedUrl;
+                void this.searchTournaments();
+            }
+
         } catch (error) {
             this.logger.error('Application initialization failed', error);
             this.uiManager.showError('Failed to initialize application. Please refresh the page.');
@@ -205,6 +215,9 @@ class TournamentFinder {
 
         // Delegated shortlist toggle
         this.initShortlistDelegation();
+
+        // Delegated copy-link button
+        this.initCopyLinkDelegation();
 
         // Date preset buttons
         this.initDatePresets();
@@ -756,6 +769,13 @@ class TournamentFinder {
         this.displayedTournaments = toDisplay;
         this.uiManager.setShortlistedUrls(this.shortlist);
         this.uiManager.displayTournaments(toDisplay);
+
+        if (this.deepLinkUrl) {
+            const target = this.deepLinkUrl;
+            this.deepLinkUrl = null;
+            // Defer so the DOM has been painted before we scroll
+            setTimeout(() => this.uiManager.highlightTournament(target), 100);
+        }
     }
 
     /**
@@ -975,6 +995,29 @@ class TournamentFinder {
                 this.logger.error('Calendar export failed', error);
                 this.uiManager.showError('Failed to create calendar event. Please try again.');
             }
+        });
+    }
+
+    /**
+     * Delegated click handler for copy-link buttons on tournament cards.
+     * Copies a deep-link URL (?t=<encoded>) to the clipboard and shows brief feedback.
+     */
+    private initCopyLinkDelegation(): void {
+        document.addEventListener('click', (e) => {
+            const btn = (e.target as Element).closest('.copy-link-btn');
+            if (!btn) return;
+            e.preventDefault();
+
+            const url = (btn as HTMLElement).dataset.tournamentUrl;
+            if (!url) return;
+
+            const shareUrl = `${location.origin}${location.pathname}?t=${encodeURIComponent(url)}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                this.uiManager.showCopyLinkFeedback(btn as HTMLElement);
+                this.trackEvent('Share Link Copied');
+            }).catch(() => {
+                this.uiManager.showError('Could not copy to clipboard. Please copy the URL manually.', 'warning');
+            });
         });
     }
 

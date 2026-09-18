@@ -76,13 +76,13 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - Weekly digest: nové turnaje pridané za posledný týždeň podľa uložených preferencií
   - Keďže ide o statickú stránku, potrebné serverless function (napr. Cloudflare Workers free)
 
-### 8. Zdieľanie odkazu na konkrétny turnaj
+### ~~8. Zdieľanie odkazu na konkrétny turnaj~~ ✅ (2026-09-18)
 - **Prínos:** Používatelia môžu poslať priamy odkaz na turnaj bez navigovania cez chess-results.com
 - **Náročnosť:** ~2 hodiny
 - **Čo urobiť:**
-  - Pridať "Copy link" button na každú kartu
-  - URL schéma: `?t=<chess-results-id>` alebo priamo chess-results URL ako anchor
-  - Klik na odkaz → auto-vyhľadá a scrolluje na turnaj
+  - Pridať "Copy link" button na každú kartu ✅
+  - URL schéma: `?t=<encoded-url>` ✅
+  - Klik na odkaz → auto-vyhľadá a scrolluje (highlight pulse) na turnaj ✅
 
 ### 9. Vylepšenie "no results" stavu
 - **Prínos:** Používateľ vie, čo robiť, keď nič nenájde
