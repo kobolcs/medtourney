@@ -1256,6 +1256,13 @@ body.dark-theme .confidence-medium {
   line-height: 1.7;
 }
 
+.empty-state-count {
+  color: var(--label);
+  font-size: var(--text-sm);
+  margin-bottom: var(--sp-6);
+  font-variant-numeric: tabular-nums;
+}
+
 .empty-state-suggestions {
   background: var(--surface-2);
   border-radius: var(--r-lg);

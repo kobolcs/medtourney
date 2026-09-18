@@ -219,6 +219,13 @@ class TournamentFinder {
         // Delegated copy-link button
         this.initCopyLinkDelegation();
 
+        // Delegated reset-filters button (rendered inside empty state)
+        document.addEventListener('click', (e) => {
+            if ((e.target as Element).closest('#resetFiltersBtn')) {
+                this.resetFilters();
+            }
+        });
+
         // Date preset buttons
         this.initDatePresets();
 
@@ -575,6 +582,62 @@ class TournamentFinder {
         return parts.join(',') || 'none';
     }
 
+    /** Build human-readable filter suggestions for the empty state. */
+    private buildEmptySuggestions(): string[] {
+        const s = this.getFilterState();
+        const tips: string[] = [];
+
+        if (s.mediterraneanOnly) tips.push('Uncheck "Mediterranean Seaside Only"');
+        if (s.seniorCategory)    tips.push('Uncheck the S50+ Senior filter');
+        if (s.seniorS60)         tips.push('Uncheck the S60+ filter');
+        if (s.womenOnly)         tips.push('Uncheck "Women\'s Tournaments Only"');
+        if (!s.openOnly)         tips.push('Re-enable "Open Category Only" — it broadens results');
+        if (s.countryFilter.length > 0) tips.push(`Clear the country filter (${s.countryFilter.length} selected)`);
+        if (s.ratingCategory)    tips.push(`Remove the ${s.ratingCategory} rating ceiling filter`);
+        if (s.youthCategory)     tips.push(`Remove the ${s.youthCategory} youth age group filter`);
+        if (!s.classicalTime || !s.rapidTime || !s.blitzTime) tips.push('Check all time control options');
+        if (s.minDays !== 0)     tips.push(`Reduce minimum duration (currently "${s.minDays} days")`);
+
+        tips.push('Expand your date range');
+
+        return tips.slice(0, 5);
+    }
+
+    /** Reset all filter inputs to their default values and re-run the search. */
+    private resetFilters(): void {
+        const el = this.getFilterElements();
+        if (el.openOnly)              el.openOnly.checked              = true;
+        if (el.excludeYouth)          el.excludeYouth.checked          = true;
+        if (el.mediterraneanOnly)     el.mediterraneanOnly.checked     = false;
+        if (el.seniorCategory)        el.seniorCategory.checked        = false;
+        if (el.seniorS60)             el.seniorS60.checked             = false;
+        if (el.womenOnly)             el.womenOnly.checked             = false;
+        if (el.includeTeamTournaments) el.includeTeamTournaments.checked = false;
+        if (el.classicalTime)         el.classicalTime.checked         = true;
+        if (el.rapidTime)             el.rapidTime.checked             = true;
+        if (el.blitzTime)             el.blitzTime.checked             = true;
+        if (el.minDays)               el.minDays.value                 = '0';
+        if (el.youthCategory)         el.youthCategory.value           = '';
+        if (el.ratingCategory)        el.ratingCategory.value          = '';
+
+        // Clear country checkboxes
+        document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked').forEach(cb => {
+            cb.checked = false;
+        });
+        this.updateCountryFilterSummary();
+
+        // Reset dates to today → 6 months
+        const today = new Date();
+        const sixMonths = new Date(today);
+        sixMonths.setMonth(sixMonths.getMonth() + 6);
+        if (el.startDate) el.startDate.valueAsDate = today;
+        if (el.endDate)   el.endDate.valueAsDate   = sixMonths;
+
+        this.saveFilterPreferences();
+        void this.searchTournaments();
+        this.trackEvent('Reset Filters');
+    }
+
     /**
      * Search for tournaments
      */
@@ -768,6 +831,14 @@ class TournamentFinder {
 
         this.displayedTournaments = toDisplay;
         this.uiManager.setShortlistedUrls(this.shortlist);
+
+        if (toDisplay.length === 0) {
+            this.uiManager.prepareEmptyState(
+                this.allTournaments.length,
+                this.buildEmptySuggestions()
+            );
+        }
+
         this.uiManager.displayTournaments(toDisplay);
 
         if (this.deepLinkUrl) {

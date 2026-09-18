@@ -17,6 +17,12 @@ export class UIManager {
     private itemsPerPage = 10;
     private filteredTournaments: Tournament[] = [];
     private shortlistedUrls: Set<string> = new Set();
+    private emptyStateContext: { totalCount: number; suggestions: string[] } | null = null;
+
+    /** Called before displayTournaments when the result set will be empty. */
+    prepareEmptyState(totalCount: number, suggestions: string[]): void {
+        this.emptyStateContext = { totalCount, suggestions };
+    }
 
     setShortlistedUrls(urls: Set<string>): void {
         this.shortlistedUrls = new Set(urls);
@@ -456,24 +462,32 @@ export class UIManager {
     }
 
     /**
-     * Show empty state
+     * Show empty state, using any context set by prepareEmptyState().
      */
     private showEmptyState(container: HTMLElement): void {
+        const ctx = this.emptyStateContext;
+        this.emptyStateContext = null;
+
+        const countLine = ctx && ctx.totalCount > 0
+            ? `<p class="empty-state-message empty-state-count">0 of ${ctx.totalCount.toLocaleString()} tournaments match your filters.</p>`
+            : `<p class="empty-state-message">We couldn't find any tournaments matching your current filters.</p>`;
+
+        const suggestions = ctx?.suggestions.length
+            ? ctx.suggestions
+            : ['Expand the date range', 'Remove some filter criteria', 'Try a different country or location'];
+
+        const suggestionItems = suggestions
+            .map(s => `<li>${this.escapeHTML(s)}</li>`)
+            .join('');
+
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon" aria-hidden="true">🔍</div>
                 <h3 class="empty-state-title">No Tournaments Found</h3>
-                <p class="empty-state-message">
-                    We couldn't find any tournaments matching your current filters.
-                </p>
+                ${countLine}
                 <div class="empty-state-suggestions">
                     <h4>Try adjusting your filters:</h4>
-                    <ul>
-                        <li>Expand the date range</li>
-                        <li>Remove some filter criteria</li>
-                        <li>Try a different country or location</li>
-                        <li>Include more tournament categories</li>
-                    </ul>
+                    <ul>${suggestionItems}</ul>
                 </div>
                 <div class="empty-state-actions">
                     <button class="reset-filters-btn" id="resetFiltersBtn">

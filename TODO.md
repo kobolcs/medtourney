@@ -84,13 +84,13 @@ Každá položka má odhad náročnosti a očakávaný prínos.
   - URL schéma: `?t=<encoded-url>` ✅
   - Klik na odkaz → auto-vyhľadá a scrolluje (highlight pulse) na turnaj ✅
 
-### 9. Vylepšenie "no results" stavu
+### ~~9. Vylepšenie "no results" stavu~~ ✅ (2026-09-18)
 - **Prínos:** Používateľ vie, čo robiť, keď nič nenájde
 - **Náročnosť:** ~3 hodiny
 - **Čo urobiť:**
-  - Pridať "Did you mean?" návrhy: uvoľni filter, skús iný dátum
-  - Zobraziť počet turnajov pred filtrom (napr. "Nič nenašlo z 3 200 turnajov")
-  - Tlačidlo "Reset filters" priamo v prázdnom stave (existuje, ale málo viditeľné)
+  - Pridať smart "Did you mean?" návrhy na základe aktívnych filtrov ✅
+  - Zobraziť počet turnajov pred filtrom ("0 of N match") ✅
+  - Reset filters button wirings + skutočný reset všetkých filtrov ✅
 
 ---
 
