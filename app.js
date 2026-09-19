@@ -303,23 +303,19 @@ class TournamentFinder {
     }
     attachFilterChangeListeners() {
         const filterElements = this.getFilterElements();
-        const savePrefs = () => this.saveFilterPreferences();
-        Object.values(filterElements).forEach(element => {
-            if (element) {
-                element.addEventListener('change', savePrefs);
-            }
-        });
-        filterElements.mediterraneanOnly?.addEventListener('change', () => {
+        const onFilterChange = () => {
+            this.saveFilterPreferences();
             this.updateFilterCompatibility();
             this.updateAvailableCountries();
+        };
+        Object.values(filterElements).forEach(element => {
+            if (element) {
+                element.addEventListener('change', onFilterChange);
+            }
         });
         const countryList = document.getElementById('countryList');
         if (countryList) {
-            countryList.addEventListener('change', () => {
-                this.updateFilterCompatibility();
-                this.updateAvailableCountries();
-                this.saveFilterPreferences();
-            });
+            countryList.addEventListener('change', onFilterChange);
         }
     }
     getFilterElements() {

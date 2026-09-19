@@ -506,29 +506,23 @@ class TournamentFinder {
     private attachFilterChangeListeners(): void {
         const filterElements = this.getFilterElements();
 
-        const savePrefs = () => this.saveFilterPreferences();
-
-        // Attach to all filter inputs
-        Object.values(filterElements).forEach(element => {
-            if (element) {
-                element.addEventListener('change', savePrefs);
-            }
-        });
-
-        // Keep country ↔ Mediterranean mutually compatible in real-time
-        filterElements.mediterraneanOnly?.addEventListener('change', () => {
+        const onFilterChange = () => {
+            this.saveFilterPreferences();
             this.updateFilterCompatibility();
             this.updateAvailableCountries();
+        };
+
+        // Attach to all filter inputs so country list updates on every filter change
+        Object.values(filterElements).forEach(element => {
+            if (element) {
+                element.addEventListener('change', onFilterChange);
+            }
         });
 
         // Country checkboxes — delegated on their container
         const countryList = document.getElementById('countryList');
         if (countryList) {
-            countryList.addEventListener('change', () => {
-                this.updateFilterCompatibility();
-                this.updateAvailableCountries();
-                this.saveFilterPreferences();
-            });
+            countryList.addEventListener('change', onFilterChange);
         }
     }
 
