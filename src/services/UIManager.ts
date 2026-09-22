@@ -11,6 +11,7 @@
  */
 
 import { Tournament } from '../types';
+import { formatLocation } from '../utils/countries';
 
 export class UIManager {
     private currentPage = 1;
@@ -221,6 +222,43 @@ export class UIManager {
         return `${dateFrom.toLocaleDateString('en-GB', opts)}–${to.toLocaleDateString('en-GB', opts)}`;
     }
 
+    /** Day number + 3-letter month for the card's left-hand date badge. */
+    private formatDateBadge(date: Date): { day: string; month: string } {
+        const day = date.toLocaleDateString('en-GB', { day: 'numeric' });
+        // en-GB renders September as "Sept" (4 chars) - slice to a consistent 3.
+        const month = date.toLocaleDateString('en-GB', { month: 'short' }).slice(0, 3);
+        return { day, month };
+    }
+
+    /**
+     * Condense a verbose time control into "base'+increment"" (e.g. "90 minutes
+     * with 30 second increment from move 1" -> 90'+30"). Values that are
+     * already short (bare "N+M" format like "8+3") are left unchanged.
+     */
+    private condenseTimeControl(tc: string): string {
+        if (/^\d+\s*['"]?\s*\+\s*\d+\s*['"]?$/.test(tc)) return tc;
+
+        const lower = tc.toLowerCase();
+        const baseMatch = lower.match(/(\d+)\s*(h(?:our)?s?|min(?:ute)?s?)/);
+        if (!baseMatch) return tc;
+
+        const value = parseInt(baseMatch[1]!, 10);
+        const baseMinutes = baseMatch[2]!.startsWith('h') ? value * 60 : value;
+        const incMatch = lower.match(/(\d+)\s*sec(?:ond)?s?/);
+        const increment = incMatch ? parseInt(incMatch[1]!, 10) : 0;
+
+        return `${baseMinutes}'+${increment}"`;
+    }
+
+    /** Inclusive day count when dateTo is present and later than the start date. */
+    private tournamentDurationDays(tournament: Tournament): number | null {
+        if (!tournament.dateTo) return null;
+        const to = new Date(tournament.dateTo);
+        if (isNaN(to.getTime())) return null;
+        const days = Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
+        return days > 1 ? days : null;
+    }
+
     /**
      * Render (or hide) the featured "Tournament of the Week" card.
      */
@@ -280,6 +318,7 @@ export class UIManager {
         card.className = 'tournament-card';
         card.setAttribute('aria-label', tournament.name);
 
+        const { day, month } = this.formatDateBadge(tournament.date);
         const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
 
         const isShortlisted = this.shortlistedUrls.has(tournament.url);
@@ -295,47 +334,60 @@ export class UIManager {
         const tc = (tournament.timeControl ?? '').trim();
         const TC_CLASS_LABELS = new Set(['classical', 'rapid', 'blitz', '']);
         const timeControlHTML = tc && !TC_CLASS_LABELS.has(tc.toLowerCase())
-            ? `<span class="time-control-badge">${this.escapeHTML(tc)}</span>`
+            ? `<span class="time-control-badge" title="${this.escapeHTML(tc)}">${this.escapeHTML(this.condenseTimeControl(tc))}</span>`
+            : '';
+
+        const durationDays = this.tournamentDurationDays(tournament);
+        const durationHTML = durationDays !== null
+            ? `<span class="duration-pill">${durationDays} days</span>`
             : '';
 
         card.innerHTML = `
-            <div class="tournament-header">
-                <h3 class="tournament-name">${this.escapeHTML(tournament.name)}</h3>
-                <div class="tournament-header-right">
-                    <span class="tournament-date">${dateStr}</span>
-                    <button class="shortlist-btn${isShortlisted ? ' shortlisted' : ''}"
+            <div class="tournament-date-badge" aria-hidden="true">
+                <span class="tournament-date-badge-day">${day}</span>
+                <span class="tournament-date-badge-month">${month}</span>
+            </div>
+            <div class="tournament-body">
+                <div class="tournament-header">
+                    <h3 class="tournament-name">
+                        <a href="${tournament.url}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="tournament-link"
+                           aria-label="View details for ${this.escapeHTML(tournament.name)}">
+                            ${this.escapeHTML(tournament.name)}
+                        </a>
+                    </h3>
+                    <div class="tournament-header-right">
+                        <span class="tournament-date">${dateStr}</span>
+                        <button class="shortlist-btn${isShortlisted ? ' shortlisted' : ''}"
+                                data-tournament-url="${this.escapeHTML(tournament.url)}"
+                                data-tournament-name="${this.escapeHTML(tournament.name)}"
+                                aria-pressed="${isShortlisted}"
+                                aria-label="${isShortlisted ? 'Remove from' : 'Add to'} shortlist: ${this.escapeHTML(tournament.name)}">
+                            <span class="shortlist-star">${isShortlisted ? '★' : '☆'}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="tournament-location">${this.escapeHTML(formatLocation(tournament.location))}</div>
+                <div class="tournament-meta">
+                    <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
+                    ${timeControlHTML}
+                    ${durationHTML}
+                </div>
+                ${travelTagsHTML}
+                <div class="tournament-actions">
+                    <button class="calendar-export-btn"
                             data-tournament-url="${this.escapeHTML(tournament.url)}"
-                            data-tournament-name="${this.escapeHTML(tournament.name)}"
-                            aria-pressed="${isShortlisted}"
-                            aria-label="${isShortlisted ? 'Remove from' : 'Add to'} shortlist: ${this.escapeHTML(tournament.name)}">
-                        <span class="shortlist-star">${isShortlisted ? '★' : '☆'}</span>
+                            aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
+                        <span aria-hidden="true">📅</span> Add to Calendar
+                    </button>
+                    <button class="copy-link-btn"
+                            data-tournament-url="${this.escapeHTML(tournament.url)}"
+                            aria-label="Copy share link for ${this.escapeHTML(tournament.name)}">
+                        Copy link
                     </button>
                 </div>
-            </div>
-            <div class="tournament-location">${this.escapeHTML(tournament.location)}</div>
-            <div class="tournament-meta">
-                <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
-                ${timeControlHTML}
-            </div>
-            ${travelTagsHTML}
-            <div class="tournament-actions">
-                <a href="${tournament.url}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="tournament-link"
-                   aria-label="View details for ${this.escapeHTML(tournament.name)}">
-                    View Tournament
-                </a>
-                <button class="calendar-export-btn"
-                        data-tournament-url="${this.escapeHTML(tournament.url)}"
-                        aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
-                    <span aria-hidden="true">📅</span> Add to Calendar
-                </button>
-                <button class="copy-link-btn"
-                        data-tournament-url="${this.escapeHTML(tournament.url)}"
-                        aria-label="Copy share link for ${this.escapeHTML(tournament.name)}">
-                    Copy link
-                </button>
             </div>
         `;
 
@@ -639,5 +691,34 @@ export class UIManager {
                 themeToggle.setAttribute('aria-label', 'Switch to dark mode');
             }
         }
+    }
+
+    /**
+     * On phones, the fixed-position Search button is pinned to
+     * `window.innerHeight` (the layout viewport), which Chrome for Android
+     * sizes as if its toolbar were hidden even while it's showing. That
+     * leaves the button positioned below the actually-visible visual
+     * viewport by the toolbar's height. Track the gap via the
+     * visualViewport API and expose it as a CSS custom property so
+     * `.search-button`'s `bottom` offset can compensate; see styles.css.
+     */
+    initViewportOffsetFix(): void {
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+
+        const update = (): void => {
+            const gap = Math.max(0, window.innerHeight - (viewport.height + viewport.offsetTop));
+            document.documentElement.style.setProperty('--viewport-toolbar-gap', `${gap}px`);
+        };
+
+        viewport.addEventListener('resize', update);
+        viewport.addEventListener('scroll', update);
+        window.addEventListener('resize', update);
+        // window.innerHeight itself is unreliable immediately after
+        // navigation (observed ~800ms of drift before it reflects Chrome's
+        // real toolbar-adjusted value, with no resize/visualViewport event
+        // marking the change) — re-measure once the page has settled.
+        window.addEventListener('load', update);
+        update();
     }
 }

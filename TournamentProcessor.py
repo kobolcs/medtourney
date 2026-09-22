@@ -443,8 +443,12 @@ class TournamentProcessor:
                 category = self._determine_category(name, location, row_data["time_control"])
                 url = self._build_tournament_url(row_data["db_key"], row_data["event_id"])
 
-                # Parse end date (best-effort, non-blocking)
+                # Parse end date (best-effort, non-blocking). Discard values earlier
+                # than the start date - a misidentified column or broken source cell
+                # produces a bogus end date, which is worse than publishing none.
                 date_to_str = self._safe_date_to_str(row_data["date_to_value"])
+                if date_to_str and date_to_str < parsed_date.strftime("%Y-%m-%d"):
+                    date_to_str = ""
 
                 # Build tournament dict
                 tournament: Dict[str, Any] = {
@@ -862,6 +866,13 @@ class TournamentProcessor:
             >>> processor._find_column(headers, ['name', 'tournament'])
             0
         """
+        # Exact matches first: a substring pass alone lets a short candidate like
+        # "to" match inside an unrelated header like "tournament" before it ever
+        # reaches the real "to" (end date) column.
+        for idx, header in enumerate(headers):
+            if header in possible_names:
+                return idx
+
         for idx, header in enumerate(headers):
             for name in possible_names:
                 if name in header:

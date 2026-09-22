@@ -59,7 +59,7 @@ export class Logger {
     /**
      * Log errors (always logged, even in production)
      */
-    static error(message: string, error?: Error | unknown, metadata?: Record<string, unknown>): void {
+    static error(message: string, error?: unknown, metadata?: Record<string, unknown>): void {
         const errorObj = error instanceof Error ? error : undefined;
         this.log('error', message, metadata, errorObj);
 
@@ -174,7 +174,7 @@ class ScopedLogger {
         Logger.warn(message, { ...metadata, scope: this.scope });
     }
 
-    error(message: string, error?: Error | unknown, metadata?: Record<string, unknown>): void {
+    error(message: string, error?: unknown, metadata?: Record<string, unknown>): void {
         Logger.error(message, error, { ...metadata, scope: this.scope });
     }
 }

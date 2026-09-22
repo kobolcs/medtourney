@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments } from './_fixtures';
+import { stubTournaments, openAdvancedFilters } from './_fixtures';
 
 test.describe('Dark Mode and UI Features', () => {
   test.beforeEach(async ({ page }) => {
     await stubTournaments(page);
     await page.goto('/');
+    // Some tests below (e.g. the empty-state test) drive advanced controls
+    // like S50+/Women's, which now live behind the "More filters" drawer.
+    await openAdvancedFilters(page);
   });
 
   test('should toggle dark mode', async ({ page }) => {
@@ -66,8 +69,8 @@ test.describe('Dark Mode and UI Features', () => {
     // status (a cached timestamp, or "Never (no cached data)").
     await expect(timestamp).not.toHaveText(/loading/i, { timeout: 10000 });
 
-    // Run a search so data is cached, then the timestamp reflects real state.
-    await page.getByRole('button', { name: /search tournaments/i }).click();
+    // Results-first: the automatic first search already cached data, so just
+    // wait for results rather than re-clicking Search.
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const timestampText = await timestamp.textContent();
@@ -121,8 +124,9 @@ test.describe('Dark Mode and UI Features', () => {
   });
 
   test('should display proper tournament card structure', async ({ page }) => {
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
@@ -207,17 +211,24 @@ test.describe('Dark Mode and UI Features', () => {
       const searchBtn = page.getByRole('button', { name: /search tournaments/i });
       await expect(searchBtn).toBeVisible();
 
-      // Check if search button is at bottom (fixed position)
+      // Check if search button is at bottom (fixed position), and that its
+      // real screen position tracks the visual viewport rather than the
+      // (usually taller, toolbar-inflated) layout viewport — see
+      // UIManager.initViewportOffsetFix(). A plain `bottom: 0` would leave
+      // the button below the actually-visible/tappable area on real
+      // Chrome for Android.
       const position = await searchBtn.evaluate((el) => {
         const style = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
         return {
           position: style.position,
-          bottom: style.bottom,
+          rectBottom: rect.bottom,
+          visualViewportHeight: window.visualViewport?.height ?? window.innerHeight,
         };
       });
 
       expect(position.position).toBe('fixed');
-      expect(position.bottom).toBe('0px');
+      expect(position.rectBottom).toBeCloseTo(position.visualViewportHeight, 0);
 
       // Filters should be collapsible
       const filterHeading = page.locator('h2', { hasText: 'Search Filters' });
@@ -244,8 +255,9 @@ test.describe('Dark Mode and UI Features', () => {
   });
 
   test('should highlight active sort option', async ({ page }) => {
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible && await page.locator('.tournament-card').count() > 0) {

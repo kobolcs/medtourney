@@ -91,6 +91,7 @@ class TournamentFinder {
         this.dataService = new DataService(this.cacheManager);
         this.exportService = new ExportService();
         this.uiManager = new UIManager();
+        this.uiManager.initViewportOffsetFix();
 
         this.allTournaments = [];
         this.filteredTournaments = [];
@@ -136,6 +137,10 @@ class TournamentFinder {
             // Load saved filter preferences
             this.loadFilterPreferences();
 
+            // Reflect any non-default advanced filters in the drawer badge,
+            // and auto-open the drawer if a saved preference narrows results.
+            this.updateAdvancedFilterCount();
+
             // Load shortlist from localStorage
             this.loadShortlist();
             this.uiManager.updateShortlistCount(this.shortlist.size);
@@ -161,6 +166,10 @@ class TournamentFinder {
             const linkedUrl = new URLSearchParams(location.search).get('t');
             if (linkedUrl) {
                 this.deepLinkUrl = linkedUrl;
+                void this.searchTournaments();
+            } else {
+                // Results-first: run the default 6-month search immediately
+                // instead of waiting for the user to find and click Search.
                 void this.searchTournaments();
             }
 
@@ -510,6 +519,7 @@ class TournamentFinder {
             this.saveFilterPreferences();
             this.updateFilterCompatibility();
             this.updateAvailableCountries();
+            this.updateAdvancedFilterCount();
         };
 
         // Attach to all filter inputs so country list updates on every filter change
@@ -547,6 +557,40 @@ class TournamentFinder {
             youthCategory: document.getElementById('youthCategory') as HTMLSelectElement | null,
             ratingCategory: document.getElementById('ratingCategory') as HTMLSelectElement | null,
         };
+    }
+
+    /**
+     * Count the "More filters" drawer controls that differ from their
+     * defaults, show it in the summary badge, and auto-open the drawer when
+     * the count is > 0 so an active advanced filter never narrows the
+     * results invisibly behind a collapsed disclosure.
+     */
+    private updateAdvancedFilterCount(): void {
+        const el = this.getFilterElements();
+        let count = 0;
+
+        // openOnly and excludeYouth ship checked, so "active" means unchecked.
+        if (el.openOnly && !el.openOnly.checked) count++;
+        if (el.excludeYouth && !el.excludeYouth.checked) count++;
+        if (el.womenOnly?.checked) count++;
+        if (el.includeTeamTournaments?.checked) count++;
+        if (el.seniorCategory?.checked) count++;
+        if (el.seniorS60?.checked) count++;
+        if (el.ratingCategory?.value) count++;
+        if (el.youthCategory?.value) count++;
+        if (el.minDays && el.minDays.value !== '0') count++;
+        if (document.querySelectorAll('input[name="countryFilter"]:checked').length > 0) count++;
+
+        const badge = document.getElementById('advancedFilterCount');
+        if (badge) {
+            badge.textContent = String(count);
+            badge.hidden = count === 0;
+        }
+
+        const details = document.getElementById('advancedFilters') as HTMLDetailsElement | null;
+        if (details && count > 0) {
+            details.open = true;
+        }
     }
 
     /**

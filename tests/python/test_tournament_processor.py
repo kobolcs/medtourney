@@ -839,6 +839,58 @@ class TestTournamentProcessor:
         result = processor._find_column(headers, ["name", "tournament"])
         assert result == 0
 
+    def test_find_column_exact_match_precedes_substring(self, processor):
+        """Exact header matches win over substrings.
+
+        Regression test: "to" is a substring of "tournament", so a pure
+        substring search resolved the end-date column to the tournament name
+        column whenever "tournament" appeared earlier in the header row.
+        """
+        headers = ["tournament", "from", "to", "fed"]
+        result = processor._find_column(headers, ["to", "end", "bis"])
+        assert result == 2
+
+    def test_find_columns_matches_real_chess_results_headers(self, processor):
+        """The live chess-results.com header row resolves date_to correctly.
+
+        Regression test: with the real export headers, date_to_col used to
+        collapse onto name_col (both resolved to 0) because "to" matched
+        inside "tournament" first.
+        """
+        headers = [
+            "tournament", "from", "to", "eventid", "organizer(s)",
+            "tournament director", "chief arbiter", "deputy chief arbiter",
+            "arbiter", "location", "time control", "fed", "state",
+            "last update ", "teams", "n", "rd", "rd-akt", "db-key", "system",
+        ]
+        name_col, _location_col, _date_from_col, date_to_col, *_ = processor._find_columns(headers)
+        assert date_to_col == 2
+        assert date_to_col != name_col
+
+    def test_load_drops_end_date_before_start_date(self, processor, tmp_path):
+        """A bogus end date earlier than the start date is dropped, not published.
+
+        Regression test: `_parse_date` falls back to "now" on any parse
+        failure, so a misidentified end-date column used to silently publish
+        today's date as a plausible-looking dateTo for every row. Dropping any
+        end date earlier than the start date keeps that garbage out of
+        tournaments_data.json even if a column is misidentified again.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        # Headers in row 1 - no metadata preamble above them, since the header
+        # detector would latch onto any earlier row containing "tournament".
+        ws.append(["Tournament", "from", "to", "Location", "FED"])
+        future_start = (datetime.now() + timedelta(days=30)).strftime("%Y%m%d")
+        earlier_end = (datetime.now() + timedelta(days=10)).strftime("%Y%m%d")
+        ws.append(["Valencia Open", future_start, earlier_end, "Valencia", "ESP"])
+        excel_file = tmp_path / "bad_end_date.xlsx"
+        wb.save(excel_file)
+
+        tournaments = processor.load_and_filter_tournaments(str(excel_file))
+        assert len(tournaments) == 1
+        assert tournaments[0]["dateTo"] == ""
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

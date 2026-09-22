@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments } from './_fixtures';
+import { stubTournaments, openAdvancedFilters } from './_fixtures';
 
 test.describe('Keyboard Navigation', () => {
   test.beforeEach(async ({ page }) => {
@@ -76,8 +76,8 @@ test.describe('Keyboard Navigation', () => {
   test('should support keyboard shortcut - Ctrl/Cmd+E for CSV export', async ({ page }) => {
     const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
 
-    // Search first so the export button is available.
-    await page.locator('#searchBtn').click();
+    // Results-first: the export button is already available from the
+    // automatic first search, so just wait for it rather than re-clicking.
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const [download] = await Promise.all([
@@ -88,9 +88,9 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('should support Escape key to clear quick search', async ({ page }) => {
-    // Search first
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
@@ -111,15 +111,12 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('should activate checkboxes with Space key', async ({ page }) => {
-    // Tab to first checkbox
-    await page.keyboard.press('Tab'); // Skip link
-    await page.keyboard.press('Tab'); // Help button
-    await page.keyboard.press('Tab'); // Theme toggle
-    await page.keyboard.press('Tab'); // Filter heading
-    await page.keyboard.press('Tab'); // Clear all filters button
-    await page.keyboard.press('Tab'); // First checkbox
-
+    // #openOnly now lives in the "More filters" drawer, and its Tab position
+    // shifts with any filter reordering, so focus it directly rather than
+    // counting Tab presses.
+    await openAdvancedFilters(page);
     const firstCheckbox = page.getByLabel('Open Category Only');
+    await firstCheckbox.focus();
     await expect(firstCheckbox).toBeFocused();
 
     // Check initial state
@@ -190,6 +187,7 @@ test.describe('Keyboard Navigation', () => {
 
   test('should navigate pagination with keyboard', async ({ page }) => {
     // Get many results
+    await openAdvancedFilters(page);
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
     await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
@@ -226,8 +224,9 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('should navigate tournament links with keyboard', async ({ page }) => {
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
@@ -247,6 +246,7 @@ test.describe('Keyboard Navigation', () => {
 
   test('should support keyboard navigation in dropdowns', async ({ page }) => {
     // Focus the duration (minDays) dropdown — country filter is now a checkbox list
+    await openAdvancedFilters(page);
     const minDays = page.locator('#minDays');
     await minDays.focus();
     await expect(minDays).toBeFocused();
