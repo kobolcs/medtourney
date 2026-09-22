@@ -692,4 +692,33 @@ export class UIManager {
             }
         }
     }
+
+    /**
+     * On phones, the fixed-position Search button is pinned to
+     * `window.innerHeight` (the layout viewport), which Chrome for Android
+     * sizes as if its toolbar were hidden even while it's showing. That
+     * leaves the button positioned below the actually-visible visual
+     * viewport by the toolbar's height. Track the gap via the
+     * visualViewport API and expose it as a CSS custom property so
+     * `.search-button`'s `bottom` offset can compensate; see styles.css.
+     */
+    initViewportOffsetFix(): void {
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+
+        const update = (): void => {
+            const gap = Math.max(0, window.innerHeight - (viewport.height + viewport.offsetTop));
+            document.documentElement.style.setProperty('--viewport-toolbar-gap', `${gap}px`);
+        };
+
+        viewport.addEventListener('resize', update);
+        viewport.addEventListener('scroll', update);
+        window.addEventListener('resize', update);
+        // window.innerHeight itself is unreliable immediately after
+        // navigation (observed ~800ms of drift before it reflects Chrome's
+        // real toolbar-adjusted value, with no resize/visualViewport event
+        // marking the change) — re-measure once the page has settled.
+        window.addEventListener('load', update);
+        update();
+    }
 }

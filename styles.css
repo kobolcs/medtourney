@@ -1961,7 +1961,13 @@ footer a:hover {
 
   .search-button {
     position: fixed;
-    bottom: 0;
+    /* Chrome for Android's layout viewport (window.innerHeight) is taller
+       than the actually-visible visual viewport by the toolbar's height, so
+       `bottom: 0` alone leaves this button sitting partly below the visible
+       screen. UIManager.initViewportOffsetFix() measures the gap via the
+       visualViewport API and exposes it here; 0px until that JS runs matches
+       the previous (imperfect) behavior as a no-JS fallback. */
+    bottom: var(--viewport-toolbar-gap, 0px);
     left: 0;
     right: 0;
     border-radius: 0;

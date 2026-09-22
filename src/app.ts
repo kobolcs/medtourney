@@ -91,6 +91,7 @@ class TournamentFinder {
         this.dataService = new DataService(this.cacheManager);
         this.exportService = new ExportService();
         this.uiManager = new UIManager();
+        this.uiManager.initViewportOffsetFix();
 
         this.allTournaments = [];
         this.filteredTournaments = [];
