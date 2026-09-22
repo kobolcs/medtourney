@@ -219,17 +219,24 @@ test.describe('Dark Mode and UI Features', () => {
       const searchBtn = page.getByRole('button', { name: /search tournaments/i });
       await expect(searchBtn).toBeVisible();
 
-      // Check if search button is at bottom (fixed position)
+      // Check if search button is at bottom (fixed position), and that its
+      // real screen position tracks the visual viewport rather than the
+      // (usually taller, toolbar-inflated) layout viewport — see
+      // UIManager.initViewportOffsetFix(). A plain `bottom: 0` would leave
+      // the button below the actually-visible/tappable area on real
+      // Chrome for Android.
       const position = await searchBtn.evaluate((el) => {
         const style = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
         return {
           position: style.position,
-          bottom: style.bottom,
+          rectBottom: rect.bottom,
+          visualViewportHeight: window.visualViewport?.height ?? window.innerHeight,
         };
       });
 
       expect(position.position).toBe('fixed');
-      expect(position.bottom).toBe('0px');
+      expect(position.rectBottom).toBeCloseTo(position.visualViewportHeight, 0);
 
       // Filters should be collapsible
       const filterHeading = page.locator('h2', { hasText: 'Search Filters' });
