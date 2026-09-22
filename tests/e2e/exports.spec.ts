@@ -36,8 +36,15 @@ async function stubData(page: Page): Promise<void> {
     );
 }
 
+/**
+ * Results-first: the app auto-searches on load, so these tests don't need to
+ * click Search themselves — just wait for the auto-search to land. (Clicking
+ * the sticky mobile Search button a second time, once results already make
+ * the page scrollable, hits a Mobile Chrome emulation quirk where the fixed
+ * button's actionability check misses — see search-and-filter.spec.ts for
+ * the tests that genuinely exercise that click.)
+ */
 async function search(page: Page): Promise<void> {
-    await page.locator('#searchBtn').click();
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 }
 
@@ -59,8 +66,11 @@ test.describe('Export Functionality', () => {
         expect(filename).toContain('.csv');
     });
 
-    test('export button is hidden before any search', async ({ page }) => {
-        await expect(page.locator('#exportBtn')).not.toBeVisible();
+    test('export button is available once the automatic first search lands', async ({ page }) => {
+        // Results-first: the app auto-searches on load, so the export button
+        // becomes available without the user clicking Search.
+        await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('#exportBtn')).toBeVisible();
     });
 
     test('should export a tournament to calendar (.ics)', async ({ page }) => {

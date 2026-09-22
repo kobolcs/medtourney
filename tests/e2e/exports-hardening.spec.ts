@@ -70,8 +70,16 @@ async function readDownload(download: Download): Promise<string> {
     return fs.readFileSync(filePath, 'utf-8');
 }
 
+/**
+ * Results-first: the app auto-searches on load with the default filters, and
+ * none of these tests change filters beforehand, so just wait for that
+ * auto-search rather than re-clicking Search. (Re-clicking the sticky mobile
+ * Search button once results already make the page scrollable hits a Mobile
+ * Chrome emulation quirk where the fixed button's actionability check
+ * misses — see search-and-filter.spec.ts for tests that genuinely need a
+ * real click after changing filters.)
+ */
 async function search(page: Page): Promise<void> {
-    await page.locator('#searchBtn').click();
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 }
 

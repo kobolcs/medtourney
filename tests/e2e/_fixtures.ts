@@ -71,3 +71,19 @@ export async function runSearch(page: Page): Promise<void> {
     await page.locator('#searchBtn').click();
     await page.locator('.tournament-card').first().waitFor({ state: 'visible', timeout: 10000 });
 }
+
+/**
+ * Open the "More filters" drawer so advanced controls (Open Category Only,
+ * Exclude Youth, Women's, Include Team, Age Group, Duration, Country) become
+ * visible and interactable. Blurs the newly-focused summary afterwards so
+ * keyboard specs that Tab from the top of the document aren't left starting
+ * mid-page (and so the skip-link test still sees an unfocused document).
+ */
+export async function openAdvancedFilters(page: Page): Promise<void> {
+    const details = page.locator('#advancedFilters');
+    const isOpen = await details.evaluate((el) => (el as HTMLDetailsElement).open);
+    if (!isOpen) {
+        await page.locator('.advanced-summary').click();
+    }
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+}

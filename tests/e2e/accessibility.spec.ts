@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { stubTournaments } from './_fixtures';
+import { stubTournaments, openAdvancedFilters } from './_fixtures';
 
 test.describe('Accessibility Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -64,6 +64,9 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should have proper form labels', async ({ page }) => {
+    // The country filter (and its label) live in the "More filters" drawer.
+    await openAdvancedFilters(page);
+
     // All checkboxes should have labels
     const checkboxes = await page.locator('input[type="checkbox"]').all();
 
@@ -116,9 +119,9 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should support screen readers with ARIA live regions', async ({ page }) => {
-    // Check for aria-live on results count
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible) {
@@ -136,8 +139,9 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should have accessible tournament cards', async ({ page }) => {
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
@@ -176,9 +180,9 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should announce dynamic content changes', async ({ page }) => {
-    // Search for tournaments
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     // Loading should have proper ARIA
     const loading = page.locator('#loading');

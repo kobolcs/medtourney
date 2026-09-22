@@ -1,0 +1,100 @@
+/**
+ * FED code -> country name/flag helpers for tournament location display.
+ *
+ * Mirrors the 55 FED codes used by the country filter checkboxes in
+ * index.html (see config.json's `countryCodes`), but is kept as a static
+ * local map rather than loaded from config so card rendering never has to
+ * wait on the async config fetch.
+ */
+
+interface CountryInfo {
+    name: string;
+    iso2: string;
+}
+
+// FED (chess-results.com) code -> { display name, ISO 3166-1 alpha-2 for the
+// flag emoji }. The British home nations and Crown dependencies have no ISO2
+// of their own, so they fall back to the closest recognizable flag (GB).
+export const COUNTRY_CODES: Record<string, CountryInfo> = {
+    ALB: { name: 'Albania', iso2: 'AL' },
+    AND: { name: 'Andorra', iso2: 'AD' },
+    ARM: { name: 'Armenia', iso2: 'AM' },
+    AUT: { name: 'Austria', iso2: 'AT' },
+    AZE: { name: 'Azerbaijan', iso2: 'AZ' },
+    BEL: { name: 'Belgium', iso2: 'BE' },
+    BIH: { name: 'Bosnia and Herzegovina', iso2: 'BA' },
+    BUL: { name: 'Bulgaria', iso2: 'BG' },
+    CRO: { name: 'Croatia', iso2: 'HR' },
+    CYP: { name: 'Cyprus', iso2: 'CY' },
+    CZE: { name: 'Czech Republic', iso2: 'CZ' },
+    DEN: { name: 'Denmark', iso2: 'DK' },
+    ENG: { name: 'England', iso2: 'GB' },
+    EST: { name: 'Estonia', iso2: 'EE' },
+    FAI: { name: 'Faroe Islands', iso2: 'FO' },
+    FIN: { name: 'Finland', iso2: 'FI' },
+    FRA: { name: 'France', iso2: 'FR' },
+    GEO: { name: 'Georgia', iso2: 'GE' },
+    GER: { name: 'Germany', iso2: 'DE' },
+    GCI: { name: 'Guernsey', iso2: 'GG' },
+    GIB: { name: 'Gibraltar', iso2: 'GI' },
+    GBR: { name: 'Great Britain', iso2: 'GB' },
+    GRE: { name: 'Greece', iso2: 'GR' },
+    HUN: { name: 'Hungary', iso2: 'HU' },
+    IRL: { name: 'Ireland', iso2: 'IE' },
+    ISL: { name: 'Iceland', iso2: 'IS' },
+    IOM: { name: 'Isle of Man', iso2: 'IM' },
+    ITA: { name: 'Italy', iso2: 'IT' },
+    JCI: { name: 'Jersey', iso2: 'JE' },
+    KOS: { name: 'Kosovo', iso2: 'XK' },
+    LAT: { name: 'Latvia', iso2: 'LV' },
+    LIE: { name: 'Liechtenstein', iso2: 'LI' },
+    LTU: { name: 'Lithuania', iso2: 'LT' },
+    LUX: { name: 'Luxembourg', iso2: 'LU' },
+    MLT: { name: 'Malta', iso2: 'MT' },
+    MDA: { name: 'Moldova', iso2: 'MD' },
+    MNC: { name: 'Monaco', iso2: 'MC' },
+    MNE: { name: 'Montenegro', iso2: 'ME' },
+    NED: { name: 'Netherlands', iso2: 'NL' },
+    MKD: { name: 'North Macedonia', iso2: 'MK' },
+    NOR: { name: 'Norway', iso2: 'NO' },
+    POL: { name: 'Poland', iso2: 'PL' },
+    POR: { name: 'Portugal', iso2: 'PT' },
+    ROU: { name: 'Romania', iso2: 'RO' },
+    SMR: { name: 'San Marino', iso2: 'SM' },
+    SCO: { name: 'Scotland', iso2: 'GB' },
+    SRB: { name: 'Serbia', iso2: 'RS' },
+    SVK: { name: 'Slovakia', iso2: 'SK' },
+    SLO: { name: 'Slovenia', iso2: 'SI' },
+    ESP: { name: 'Spain', iso2: 'ES' },
+    SWE: { name: 'Sweden', iso2: 'SE' },
+    SUI: { name: 'Switzerland', iso2: 'CH' },
+    TUR: { name: 'Turkey', iso2: 'TR' },
+    UKR: { name: 'Ukraine', iso2: 'UA' },
+    WLS: { name: 'Wales', iso2: 'GB' },
+};
+
+/** Convert an ISO 3166-1 alpha-2 code into its regional-indicator flag emoji. */
+export function flagEmoji(iso2: string): string {
+    return Array.from(iso2.toUpperCase())
+        .map(ch => String.fromCodePoint(0x1F1E6 + ch.charCodeAt(0) - 65))
+        .join('');
+}
+
+/**
+ * Format a "City, FED" (or bare "FED") location string with a flag and the
+ * spelled-out country name, e.g. "Chatham, ENG" -> "🇬🇧 Chatham · England".
+ * Unknown FED codes fall back to the raw location string unchanged.
+ */
+export function formatLocation(location: string): string {
+    const parts = location.split(',');
+    const code = (parts.length > 1 ? parts[1] : parts[0])!.trim().toUpperCase();
+    const info = COUNTRY_CODES[code];
+    if (!info) return location;
+
+    const flag = flagEmoji(info.iso2);
+    if (parts.length > 1) {
+        const city = parts[0]!.trim();
+        return city ? `${flag} ${city} · ${info.name}` : `${flag} ${info.name}`;
+    }
+    return `${flag} ${info.name}`;
+}

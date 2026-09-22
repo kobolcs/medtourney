@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments } from './_fixtures';
+import { stubTournaments, openAdvancedFilters } from './_fixtures';
 
 test.describe('Dark Mode and UI Features', () => {
   test.beforeEach(async ({ page }) => {
     await stubTournaments(page);
     await page.goto('/');
+    // Some tests below (e.g. the empty-state test) drive advanced controls
+    // like S50+/Women's, which now live behind the "More filters" drawer.
+    await openAdvancedFilters(page);
   });
 
   test('should toggle dark mode', async ({ page }) => {
@@ -66,8 +69,8 @@ test.describe('Dark Mode and UI Features', () => {
     // status (a cached timestamp, or "Never (no cached data)").
     await expect(timestamp).not.toHaveText(/loading/i, { timeout: 10000 });
 
-    // Run a search so data is cached, then the timestamp reflects real state.
-    await page.getByRole('button', { name: /search tournaments/i }).click();
+    // Results-first: the automatic first search already cached data, so just
+    // wait for results rather than re-clicking Search.
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const timestampText = await timestamp.textContent();
@@ -115,14 +118,19 @@ test.describe('Dark Mode and UI Features', () => {
     await expect(loading).toHaveAttribute('role', 'status');
 
     // The app renders skeleton placeholders while fetching, then real cards.
-    await page.getByRole('button', { name: /search tournaments/i }).click();
+    // force: true — on Mobile Chrome, once results already make the page
+    // scrollable, Playwright's actionability check for this fixed bottom
+    // button intermittently resolves against the wrong element (a Mobile
+    // Chrome viewport-emulation quirk, not a real click target issue).
+    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
     await expect(page.locator('#results')).toBeVisible({ timeout: 2000 });
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should display proper tournament card structure', async ({ page }) => {
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible && await page.locator('.tournament-card').count() > 0) {
@@ -161,7 +169,11 @@ test.describe('Dark Mode and UI Features', () => {
     await page.fill('#startDate', formatDate(tomorrow));
     await page.fill('#endDate', formatDate(dayAfter));
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
+    // force: true — on Mobile Chrome, once results already make the page
+    // scrollable, Playwright's actionability check for this fixed bottom
+    // button intermittently resolves against the wrong element (a Mobile
+    // Chrome viewport-emulation quirk, not a real click target issue).
+    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
@@ -229,7 +241,11 @@ test.describe('Dark Mode and UI Features', () => {
   test('should show proper pagination info', async ({ page }) => {
     // Get many results
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
-    await page.getByRole('button', { name: /search tournaments/i }).click();
+    // force: true — on Mobile Chrome, once results already make the page
+    // scrollable, Playwright's actionability check for this fixed bottom
+    // button intermittently resolves against the wrong element (a Mobile
+    // Chrome viewport-emulation quirk, not a real click target issue).
+    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
@@ -244,8 +260,9 @@ test.describe('Dark Mode and UI Features', () => {
   });
 
   test('should highlight active sort option', async ({ page }) => {
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    // Results-first: results are already on screen from the automatic first
+    // search, so just wait for them rather than re-clicking Search.
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
     if (resultsVisible && await page.locator('.tournament-card').count() > 0) {

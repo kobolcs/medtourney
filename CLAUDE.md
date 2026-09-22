@@ -417,13 +417,32 @@ chore: Update dependencies to latest versions
 
 ### Task 1: Adding a New Filter
 
+**Which level does it belong in?**
+
+The filters-card is two levels: `.filter-primary` (always visible — date
+range, Time Control, Mediterranean Seaside Only) and `<details id="advancedFilters">`
+(the "More filters" drawer — everything else). Default new filters to the
+drawer unless the filter is as fundamental to the product as the three
+primary ones above; the primary bar is deliberately small so the first
+tournament card stays near the top of the page.
+
 **Steps:**
 1. Update `FilterState` interface in `src/types.ts`
 2. Add filter logic in `FilterService.filterTournaments()` method
-3. Add checkbox/input in `index.html`
+3. Add checkbox/input in `index.html`, inside `.filter-primary` or inside
+   `<details id="advancedFilters">` per the rule above
 4. Wire up event listener in `app.ts`
-5. Add unit tests in `tests/unit/services/test_FilterService.spec.js`
-6. Add E2E test in `tests/e2e/search-and-filter.spec.ts`
+5. If it lives in the drawer, add it to `updateAdvancedFilterCount()` in
+   `app.ts` (compare against its default; `openOnly`/`excludeYouth` ship
+   checked, so for those "active" means *unchecked*) — otherwise a filter
+   that narrows results won't show up in the drawer's badge or auto-open it
+6. Add unit tests in `tests/unit/services/test_FilterService.spec.js`
+7. Add E2E test in `tests/e2e/search-and-filter.spec.ts`. If the new control
+   lives in the drawer, call `openAdvancedFilters(page)` (from
+   `tests/e2e/_fixtures.ts`) before interacting with it — either in the
+   spec's `beforeEach`, or inline in just the tests that drive it if the spec
+   asserts keyboard tab order (see `accessibility.spec.ts` /
+   `keyboard-navigation.spec.ts` for that pattern)
 
 **Example:**
 ```typescript
