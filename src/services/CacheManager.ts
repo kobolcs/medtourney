@@ -58,7 +58,7 @@ export class CacheManager {
             const item = localStorage.getItem(key);
             if (!item) return null;
 
-            const cachedData: CachedData<T> = JSON.parse(item);
+            const cachedData = JSON.parse(item) as CachedData<T>;
 
             // Version check
             if (cachedData.version !== this.CACHE_VERSION) {

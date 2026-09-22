@@ -58,7 +58,7 @@ export class DataService {
             });
 
             if (response.ok) {
-                const rawData = await response.json();
+                const rawData: unknown = await response.json();
 
                 // Validate data structure with Zod
                 const validation = safeValidateTournaments(rawData);
@@ -104,7 +104,7 @@ export class DataService {
             });
 
             if (response.ok) {
-                const rawData = await response.json();
+                const rawData: unknown = await response.json();
 
                 // Validate data structure
                 const validation = safeValidateTournaments(rawData);
@@ -148,7 +148,7 @@ export class DataService {
             });
 
             if (response.ok) {
-                const rawData = await response.json();
+                const rawData: unknown = await response.json();
 
                 // Validate data structure
                 const validation = safeValidateTournaments(rawData);
@@ -213,7 +213,7 @@ export class DataService {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            const rawData = await response.json();
+            const rawData: unknown = await response.json();
 
             // Validate config structure
             const validation = safeValidateAppConfig(rawData);
