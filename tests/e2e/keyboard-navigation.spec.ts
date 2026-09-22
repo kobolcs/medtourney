@@ -189,12 +189,7 @@ test.describe('Keyboard Navigation', () => {
     // Get many results
     await openAdvancedFilters(page);
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
-    // force: true — on Mobile Chrome, once auto-search results already make
-    // the page scrollable, Playwright's actionability check for this fixed
-    // bottom button intermittently resolves against the wrong element (a
-    // Mobile Chrome viewport-emulation quirk, not a real click target issue
-    // — see search-and-filter.spec.ts for more).
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();

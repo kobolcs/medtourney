@@ -26,13 +26,7 @@ test.describe('Tournament Search and Filter', () => {
   });
 
   test('should search for tournaments', async ({ page }) => {
-    // Click search button. force: true — on Mobile Chrome, once results
-    // already make the page scrollable (they already do here, from the
-    // automatic first search), Playwright's actionability check for this
-    // fixed bottom button intermittently resolves against the wrong element
-    // (a Mobile Chrome viewport-emulation quirk, not a real click target
-    // issue — a raw click at the button's true position works every time).
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
 
     // Wait for loading to disappear
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
@@ -64,8 +58,7 @@ test.describe('Tournament Search and Filter', () => {
     await expect(page.getByLabel('Mediterranean Seaside Only')).toBeChecked();
     await expect(page.getByLabel(/S50\+.*Senior/i)).toBeChecked();
 
-    // Search with filters. force: true — see the Mobile Chrome note above.
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
   });
 
@@ -80,8 +73,7 @@ test.describe('Tournament Search and Filter', () => {
     await page.fill('#startDate', formatDate(today));
     await page.fill('#endDate', formatDate(nextMonth));
 
-    // Search with date filter. force: true — see the Mobile Chrome note above.
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
   });
 
@@ -89,8 +81,7 @@ test.describe('Tournament Search and Filter', () => {
     // Country filter is now a checkbox list — check Spain's checkbox
     await page.locator('#countryList input[value="ESP"]').check();
 
-    // Search with country filter. force: true — see the Mobile Chrome note above.
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     // If results are shown, verify they contain Spanish tournaments
@@ -124,8 +115,7 @@ test.describe('Tournament Search and Filter', () => {
     await page.fill('#startDate', formatDate(tomorrow));
     await page.fill('#endDate', formatDate(dayAfter));
 
-    // force: true — see the Mobile Chrome note above.
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     // Should show empty state (or results - depending on data)
@@ -148,8 +138,7 @@ test.describe('Tournament Search and Filter', () => {
     await page.getByLabel('Open Category Only').uncheck();
     await page.getByLabel('Mediterranean Seaside Only').check();
 
-    // Search first. force: true — see the Mobile Chrome note above.
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     // Look for empty state and reset button
@@ -221,8 +210,7 @@ test.describe('Tournament Search and Filter', () => {
     // Ensure we have many results by unchecking filters
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
 
-    // force: true — see the Mobile Chrome note above.
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();

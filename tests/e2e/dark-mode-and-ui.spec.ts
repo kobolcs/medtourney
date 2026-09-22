@@ -118,11 +118,7 @@ test.describe('Dark Mode and UI Features', () => {
     await expect(loading).toHaveAttribute('role', 'status');
 
     // The app renders skeleton placeholders while fetching, then real cards.
-    // force: true — on Mobile Chrome, once results already make the page
-    // scrollable, Playwright's actionability check for this fixed bottom
-    // button intermittently resolves against the wrong element (a Mobile
-    // Chrome viewport-emulation quirk, not a real click target issue).
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#results')).toBeVisible({ timeout: 2000 });
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
   });
@@ -169,11 +165,7 @@ test.describe('Dark Mode and UI Features', () => {
     await page.fill('#startDate', formatDate(tomorrow));
     await page.fill('#endDate', formatDate(dayAfter));
 
-    // force: true — on Mobile Chrome, once results already make the page
-    // scrollable, Playwright's actionability check for this fixed bottom
-    // button intermittently resolves against the wrong element (a Mobile
-    // Chrome viewport-emulation quirk, not a real click target issue).
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
@@ -248,11 +240,7 @@ test.describe('Dark Mode and UI Features', () => {
   test('should show proper pagination info', async ({ page }) => {
     // Get many results
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
-    // force: true — on Mobile Chrome, once results already make the page
-    // scrollable, Playwright's actionability check for this fixed bottom
-    // button intermittently resolves against the wrong element (a Mobile
-    // Chrome viewport-emulation quirk, not a real click target issue).
-    await page.getByRole('button', { name: /search tournaments/i }).click({ force: true });
+    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
