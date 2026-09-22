@@ -111,7 +111,7 @@ Fill Search Form
     ${start_iso}=    Get Current Date    result_format=%Y-%m-%d
     ${days}=    Evaluate    ${DATE_RANGE_MONTHS} * 30
     ${end_iso}=    Add Time To Date    ${start_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
-    Log    Date range: ${start_iso} to ${end_iso}, fed=${fed}
+    Log    Date range: ${start_iso} to ${end_iso} (${DATE_RANGE_MONTHS} months), fed=${fed}
     Set Browser Timeout    10s
     Run Keyword And Return Status    Fill Text    input[type="date"] >> nth=0    ${start_iso}
     Run Keyword And Return Status    Fill Text    input[type="date"] >> nth=1    ${end_iso}
