@@ -1720,6 +1720,16 @@
     "timeControl": "60 minutes + 30 seconds increment starting from move 1"
   },
   {
+    "name": "VARNA BLITZ SUCCES REAL ESTATE 17.10.2026г",
+    "location": "Varna, BUL",
+    "date": "2026-10-17",
+    "dateTo": "2026-10-17",
+    "category": "Blitz",
+    "url": "https://chess-results.com/tnr1478576.aspx?lan=1",
+    "description": "VARNA BLITZ SUCCES REAL ESTATE 17.10.2026г",
+    "timeControl": "3мин+2 сек"
+  },
+  {
     "name": "Шахматна есен 2026 -  Б Турнир - U13 и U16 - Шумен - 04.10.2026",
     "location": "Shumen  SCC Shumen, BUL",
     "date": "2026-10-04",
@@ -1888,16 +1898,6 @@
     "url": "https://chess-results.com/tnr1501979.aspx?lan=1",
     "description": "Детски шахматен турнир \"Училище, здравей\" - Казанлък, НОВА ДАТА: 03.10.2026 г.",
     "timeControl": "15+5"
-  },
-  {
-    "name": "VARNA BLITZ SUCCES REAL ESTATE 17.10.2026г",
-    "location": "Varna, BUL",
-    "date": "2026-10-17",
-    "dateTo": "2026-10-17",
-    "category": "Blitz",
-    "url": "https://chess-results.com/tnr1478576.aspx?lan=1",
-    "description": "VARNA BLITZ SUCCES REAL ESTATE 17.10.2026г",
-    "timeControl": "3мин+2 сек"
   },
   {
     "name": "Варна Класик 17-18 октомври 2026",
@@ -9810,6 +9810,16 @@
     "timeControl": "5 minuti so 3 sekundi dodavka po potez"
   },
   {
+    "name": "XXXI Międzynarodowy Całoroczny Festiwal Szachowy im. Józefa Dominika T1 Gr B",
+    "location": "Dobczyce, POL",
+    "date": "2026-10-03",
+    "dateTo": "2026-10-04",
+    "category": "Classical",
+    "url": "https://chess-results.com/tnr1478779.aspx?lan=1",
+    "description": "XXXI Międzynarodowy Całoroczny Festiwal Szachowy im. Józefa Dominika T1 Gr B",
+    "timeControl": "Standard: 30min +30sec increment per move starting from move 1"
+  },
+  {
     "name": "XXXIII edycja Suwalskiej Szkolnej Ligi Szachowej - Turniej 1 - OPEN",
     "location": "Suwałki, POL",
     "date": "2026-09-26",
@@ -9838,16 +9848,6 @@
     "url": "https://chess-results.com/tnr1499926.aspx?lan=1",
     "description": "ArtefactumGames Bitwa o Białą, Grupa B (juniorzy do lat 16) #2",
     "timeControl": "Rapid: 10min +5sec increment per move starting from move 1"
-  },
-  {
-    "name": "XXXI Międzynarodowy Całoroczny Festiwal Szachowy im. Józefa Dominika T1 Gr B",
-    "location": "Dobczyce, POL",
-    "date": "2026-10-03",
-    "dateTo": "2026-10-04",
-    "category": "Classical",
-    "url": "https://chess-results.com/tnr1478779.aspx?lan=1",
-    "description": "XXXI Międzynarodowy Całoroczny Festiwal Szachowy im. Józefa Dominika T1 Gr B",
-    "timeControl": "Standard: 30min +30sec increment per move starting from move 1"
   },
   {
     "name": "XX Memoriał im. Henryka Karnówki FIDE OPEN",
@@ -11440,6 +11440,56 @@
     "timeControl": "10minutos + 0 segundos de incremento"
   },
   {
+    "name": "Turneul Familiei - Echipe, Sibiu, 4 oct, ora 17",
+    "location": "Shopping City Sibiu, ROU",
+    "date": "2026-10-03",
+    "dateTo": "2026-10-03",
+    "category": "Blitz",
+    "url": "https://chess-results.com/tnr1488015.aspx?lan=1",
+    "description": "Turneul Familiei - Echipe, Sibiu, 4 oct, ora 17",
+    "timeControl": "5 min+5 sec.KO"
+  },
+  {
+    "name": "Open The Square Blitz II",
+    "location": "Aurrum Palace, ROU",
+    "date": "2026-11-15",
+    "dateTo": "2026-11-15",
+    "category": "Blitz, Open",
+    "url": "https://chess-results.com/tnr1482731.aspx?lan=1",
+    "description": "Open The Square Blitz II",
+    "timeControl": "3'+2\"/move"
+  },
+  {
+    "name": "ZIUA MONDIALA A EDUCATIEI - OPEN BLITZ, SIBIU, 3 oct, ora 10:30",
+    "location": "Shopping City Sibiu, ROU",
+    "date": "2026-10-03",
+    "dateTo": "2026-10-03",
+    "category": "Blitz, Open",
+    "url": "https://chess-results.com/tnr1488005.aspx?lan=1",
+    "description": "ZIUA MONDIALA A EDUCATIEI - OPEN BLITZ, SIBIU, 3 oct, ora 10:30",
+    "timeControl": "3 min+2 sec.KO"
+  },
+  {
+    "name": "Open The Square Rapid II",
+    "location": "Soseaua Electronicii 19, ROU",
+    "date": "2026-11-14",
+    "dateTo": "2026-11-15",
+    "category": "Rapid, Open",
+    "url": "https://chess-results.com/tnr1482719.aspx?lan=1",
+    "description": "Open The Square Rapid II",
+    "timeControl": "15'+10\"/move"
+  },
+  {
+    "name": "Ziua Mondiala a Educatiei U8, Sibiu, 4 oct., ora 10:30",
+    "location": "Shopping City Sibiu, ROU",
+    "date": "2026-10-04",
+    "dateTo": "2026-10-04",
+    "category": "Blitz, Youth",
+    "url": "https://chess-results.com/tnr1488033.aspx?lan=1",
+    "description": "Ziua Mondiala a Educatiei U8, Sibiu, 4 oct., ora 10:30",
+    "timeControl": "5 min+5 sec. KO"
+  },
+  {
     "name": "Trofeul Cavalerii Marii Negre ed a III-a Navodari Nelegitimati U10 77 PREMII!FARA TAXE!",
     "location": "Centrul de Afaceri Năvodari, ROU",
     "date": "2026-10-28",
@@ -11910,46 +11960,6 @@
     "timeControl": "90min+30sec"
   },
   {
-    "name": "Open The Square Rapid II",
-    "location": "Soseaua Electronicii 19, ROU",
-    "date": "2026-11-14",
-    "dateTo": "2026-11-15",
-    "category": "Rapid, Open",
-    "url": "https://chess-results.com/tnr1482719.aspx?lan=1",
-    "description": "Open The Square Rapid II",
-    "timeControl": "15'+10\"/move"
-  },
-  {
-    "name": "Open The Square Blitz II",
-    "location": "Aurrum Palace, ROU",
-    "date": "2026-11-15",
-    "dateTo": "2026-11-15",
-    "category": "Blitz, Open",
-    "url": "https://chess-results.com/tnr1482731.aspx?lan=1",
-    "description": "Open The Square Blitz II",
-    "timeControl": "3'+2\"/move"
-  },
-  {
-    "name": "Turneul Familiei - Echipe, Sibiu, 4 oct, ora 17",
-    "location": "Shopping City Sibiu, ROU",
-    "date": "2026-10-03",
-    "dateTo": "2026-10-03",
-    "category": "Blitz",
-    "url": "https://chess-results.com/tnr1488015.aspx?lan=1",
-    "description": "Turneul Familiei - Echipe, Sibiu, 4 oct, ora 17",
-    "timeControl": "5 min+5 sec.KO"
-  },
-  {
-    "name": "Ziua Mondiala a Educatiei U8, Sibiu, 4 oct., ora 10:30",
-    "location": "Shopping City Sibiu, ROU",
-    "date": "2026-10-04",
-    "dateTo": "2026-10-04",
-    "category": "Blitz, Youth",
-    "url": "https://chess-results.com/tnr1488033.aspx?lan=1",
-    "description": "Ziua Mondiala a Educatiei U8, Sibiu, 4 oct., ora 10:30",
-    "timeControl": "5 min+5 sec. KO"
-  },
-  {
     "name": "Ziua Mondiala a Educatiei U12, Sibiu, 4 oct., ora 10:30",
     "location": "Shopping City Sibiu, ROU",
     "date": "2026-10-04",
@@ -11958,16 +11968,6 @@
     "url": "https://chess-results.com/tnr1488032.aspx?lan=1",
     "description": "Ziua Mondiala a Educatiei U12, Sibiu, 4 oct., ora 10:30",
     "timeControl": "5 min+5 sec. KO"
-  },
-  {
-    "name": "ZIUA MONDIALA A EDUCATIEI - OPEN BLITZ, SIBIU, 3 oct, ora 10:30",
-    "location": "Shopping City Sibiu, ROU",
-    "date": "2026-10-03",
-    "dateTo": "2026-10-03",
-    "category": "Blitz, Open",
-    "url": "https://chess-results.com/tnr1488005.aspx?lan=1",
-    "description": "ZIUA MONDIALA A EDUCATIEI - OPEN BLITZ, SIBIU, 3 oct, ora 10:30",
-    "timeControl": "3 min+2 sec.KO"
   },
   {
     "name": "Festivalul Mihail Breaz 2026 - Turneul B - Șah Rapid - 17 octombrie, Alba Iulia",
