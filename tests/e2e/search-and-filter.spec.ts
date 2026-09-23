@@ -281,3 +281,61 @@ test.describe('Filter state in the URL', () => {
     await expect(page).not.toHaveURL(/[?&]med=/);
   });
 });
+
+test.describe('Seaside/Senior mode switch and live filtering', () => {
+  test.beforeEach(async ({ page }) => {
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+  });
+
+  test('clicking a mode switch button checks the matching checkbox and filters live, with no Search click', async ({ page }) => {
+    const before = await page.locator('#resultsCount').textContent();
+
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click();
+
+    await expect(page.locator('#mediterraneanOnly')).toBeChecked();
+    await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.mode-switch-btn[data-mode="all"]')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page).toHaveURL(/[?&]med=1(&|$)/);
+
+    // Results updated without touching the Search button.
+    await expect(page.locator('#resultsCount')).not.toHaveText(before ?? '');
+  });
+
+  test('"Both" mode checks Mediterranean and Senior 50+ together', async ({ page }) => {
+    await page.locator('.mode-switch-btn[data-mode="both"]').click();
+
+    await expect(page.locator('#mediterraneanOnly')).toBeChecked();
+    await openAdvancedFilters(page);
+    await expect(page.locator('#seniorCategory')).toBeChecked();
+  });
+
+  test('checking the drawer Senior checkbox directly updates the mode switch', async ({ page }) => {
+    await openAdvancedFilters(page);
+    await page.locator('#seniorCategory').check();
+
+    await expect(page.locator('.mode-switch-btn[data-mode="senior"]')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('active-filter chips appear for narrowing filters and remove them on click', async ({ page }) => {
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click();
+
+    const chip = page.locator('.active-filter-chip', { hasText: 'Seaside' });
+    await expect(chip).toBeVisible();
+
+    await chip.click();
+    await expect(page.locator('#mediterraneanOnly')).not.toBeChecked();
+    await expect(page.locator('#activeFilterChips')).toBeHidden();
+  });
+
+  test('"Clear all" in the chip row resets every filter', async ({ page }) => {
+    await page.locator('.mode-switch-btn[data-mode="both"]').click();
+    await expect(page.locator('.active-filter-clear-all')).toBeVisible();
+
+    await page.locator('.active-filter-clear-all').click();
+    await expect(page.locator('#mediterraneanOnly')).not.toBeChecked();
+    await expect(page.locator('.mode-switch-btn[data-mode="all"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#activeFilterChips')).toBeHidden();
+  });
+});

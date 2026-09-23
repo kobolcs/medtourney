@@ -500,6 +500,89 @@ header h1 {
   margin-bottom: var(--sp-2);
 }
 
+/* Seaside/Senior mode switch — the front door onto the site's two USPs */
+.mode-switch {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: var(--sp-4);
+}
+
+.mode-switch-btn {
+  flex: 1;
+  text-align: center;
+  font: 600 var(--text-sm)/1 'Inter', sans-serif;
+  padding: var(--sp-2) var(--sp-3);
+  border: none;
+  border-radius: calc(var(--r-md) - 3px);
+  background: transparent;
+  color: var(--label);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+
+.mode-switch-btn:hover {
+  color: var(--text);
+}
+
+.mode-switch-btn.is-active {
+  background: var(--sea);
+  color: #fff;
+}
+
+body.dark-theme .mode-switch-btn.is-active {
+  /* --sea is a lighter blue in dark mode - needs dark text, not white */
+  color: var(--ink);
+}
+
+/* Active-filter chips — shows why the list is short, each removable in one tap */
+.active-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.active-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  background: var(--sea-light);
+  color: var(--sea);
+  border: none;
+  padding: 4px var(--sp-2) 4px var(--sp-3);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.active-filter-chip span[aria-hidden] {
+  font-size: 1rem;
+  line-height: 1;
+  opacity: .7;
+}
+
+.active-filter-chip:hover span[aria-hidden] {
+  opacity: 1;
+}
+
+.active-filter-clear-all {
+  background: none;
+  border: none;
+  color: var(--label);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px var(--sp-1);
+}
+
 .filter-grid-compact {
   margin-bottom: var(--sp-3);
 }

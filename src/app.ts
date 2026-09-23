@@ -19,6 +19,7 @@ import { DataService } from './services/DataService';
 import { ExportService } from './services/ExportService';
 import { UIManager } from './services/UIManager';
 import { Logger } from './utils/Logger';
+import { escapeHTML } from './utils/html';
 
 /** Sort options for tournaments */
 type SortOption = 'date-asc' | 'date-desc' | 'name' | 'location' | 'country';
@@ -220,6 +221,10 @@ class TournamentFinder {
 
         // Attach filter change listeners to save preferences
         this.attachFilterChangeListeners();
+
+        // Seaside/Senior mode switch — the review's "front door" control
+        this.initModeSwitch();
+        this.syncModeSwitch();
 
         // Delegated calendar export — one listener handles all pages/re-renders
         this.initCalendarExportDelegation();
@@ -639,14 +644,7 @@ class TournamentFinder {
      */
     private attachFilterChangeListeners(): void {
         const filterElements = this.getFilterElements();
-
-        const onFilterChange = () => {
-            this.saveFilterPreferences();
-            this.syncFilterStateToURL();
-            this.updateFilterCompatibility();
-            this.updateAvailableCountries();
-            this.updateAdvancedFilterCount();
-        };
+        const onFilterChange = () => this.handleFilterChange();
 
         // Attach to all filter inputs so country list updates on every filter change
         Object.values(filterElements).forEach(element => {
@@ -660,6 +658,150 @@ class TournamentFinder {
         if (countryList) {
             countryList.addEventListener('change', onFilterChange);
         }
+    }
+
+    /**
+     * Runs on every filter input's change event, and on a mode-switch click:
+     * persist, reflect in the URL, keep the drawer badge and mode switch in
+     * sync, and re-render live (no Search click needed) once data exists.
+     */
+    private handleFilterChange(): void {
+        this.saveFilterPreferences();
+        this.syncFilterStateToURL();
+        this.updateAdvancedFilterCount();
+        this.syncModeSwitch();
+        if (this.allTournaments.length > 0) this.applyFiltersAndRender();
+    }
+
+    /**
+     * The "All Europe / Seaside / Senior 50+ / Both" segmented control is a
+     * convenience front door onto the existing mediterraneanOnly + seniorCategory
+     * checkboxes (which stay the source of truth, still directly reachable -
+     * seniorCategory lives in the "More filters" drawer for anyone who wants
+     * just that one control). Clicking a mode sets both checkboxes at once;
+     * syncModeSwitch() keeps the segmented control's active state honest when
+     * the checkboxes change some other way (drawer, URL load, reset).
+     */
+    private initModeSwitch(): void {
+        document.querySelectorAll<HTMLButtonElement>('.mode-switch-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode ?? 'all';
+                this.setCheckbox('mediterraneanOnly', mode === 'seaside' || mode === 'both');
+                this.setCheckbox('seniorCategory', mode === 'senior' || mode === 'both');
+                this.handleFilterChange();
+                this.trackEvent('Mode Switch', { mode });
+            });
+        });
+    }
+
+    private syncModeSwitch(): void {
+        const med = (document.getElementById('mediterraneanOnly') as HTMLInputElement | null)?.checked ?? false;
+        const senior = (document.getElementById('seniorCategory') as HTMLInputElement | null)?.checked ?? false;
+        const mode = med && senior ? 'both' : med ? 'seaside' : senior ? 'senior' : 'all';
+
+        document.querySelectorAll<HTMLButtonElement>('.mode-switch-btn').forEach(btn => {
+            const isActive = btn.dataset.mode === mode;
+            btn.classList.toggle('is-active', isActive);
+            btn.setAttribute('aria-pressed', String(isActive));
+        });
+    }
+
+    private setCheckbox(id: string, checked: boolean): void {
+        const el = document.getElementById(id) as HTMLInputElement | null;
+        if (el) el.checked = checked;
+    }
+
+    private setSelectValue(id: string, value: string): void {
+        const el = document.getElementById(id) as HTMLSelectElement | null;
+        if (el) el.value = value;
+    }
+
+    private minDaysChipLabel(minDays: FilterState['minDays']): string {
+        switch (minDays) {
+            case 'just-weekend': return 'Weekend only';
+            case 'weekend': return 'Long weekend';
+            case 5: return '5+ days';
+            case 7: return '1+ week';
+            case 14: return '2+ weeks';
+            default: return `${minDays}+ days`;
+        }
+    }
+
+    /** Build removable active-filter chip descriptors from the current filter state. */
+    private buildActiveFilterChips(): { label: string; clear: () => void }[] {
+        const s = this.getFilterState();
+        const chips: { label: string; clear: () => void }[] = [];
+
+        if (s.mediterraneanOnly) chips.push({ label: '🌊 Seaside', clear: () => this.setCheckbox('mediterraneanOnly', false) });
+        if (s.seniorCategory) chips.push({ label: 'Senior 50+', clear: () => this.setCheckbox('seniorCategory', false) });
+        if (s.seniorS60) chips.push({ label: 'Senior 60+', clear: () => this.setCheckbox('seniorS60', false) });
+        if (s.womenOnly) chips.push({ label: "Women's", clear: () => this.setCheckbox('womenOnly', false) });
+        if (s.includeTeamTournaments) chips.push({ label: 'Team tournaments', clear: () => this.setCheckbox('includeTeamTournaments', false) });
+        if (!s.openOnly) chips.push({ label: 'Open category off', clear: () => this.setCheckbox('openOnly', true) });
+        if (!s.excludeYouth) chips.push({ label: 'Youth-only included', clear: () => this.setCheckbox('excludeYouth', true) });
+
+        const tcOff = [!s.classicalTime && 'Classical', !s.rapidTime && 'Rapid', !s.blitzTime && 'Blitz']
+            .filter((v): v is string => Boolean(v));
+        if (tcOff.length > 0) {
+            chips.push({
+                label: `${tcOff.join('/')} off`,
+                clear: () => {
+                    this.setCheckbox('classicalTime', true);
+                    this.setCheckbox('rapidTime', true);
+                    this.setCheckbox('blitzTime', true);
+                }
+            });
+        }
+
+        if (s.countryFilter.length > 0) {
+            const count = s.countryFilter.length;
+            chips.push({
+                label: `${count} ${count === 1 ? 'country' : 'countries'}`,
+                clear: () => {
+                    document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
+                        .forEach(cb => { cb.checked = false; });
+                    this.updateCountryFilterSummary();
+                }
+            });
+        }
+
+        if (s.minDays !== 0) {
+            chips.push({ label: this.minDaysChipLabel(s.minDays), clear: () => this.setSelectValue('minDays', '0') });
+        }
+        if (s.youthCategory) chips.push({ label: s.youthCategory, clear: () => this.setSelectValue('youthCategory', '') });
+        if (s.ratingCategory) chips.push({ label: s.ratingCategory, clear: () => this.setSelectValue('ratingCategory', '') });
+
+        return chips;
+    }
+
+    /** Render (or hide) the active-filter chip row above the results, wiring each chip's one-tap removal. */
+    private renderActiveFilterChips(): void {
+        const container = document.getElementById('activeFilterChips');
+        if (!container) return;
+
+        const chips = this.buildActiveFilterChips();
+        if (chips.length === 0) {
+            container.innerHTML = '';
+            container.hidden = true;
+            return;
+        }
+
+        container.hidden = false;
+        container.innerHTML = chips.map((chip, i) => `
+            <button type="button" class="active-filter-chip" data-chip-index="${i}">
+                ${escapeHTML(chip.label)}
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Remove filter: ${escapeHTML(chip.label)}</span>
+            </button>
+        `).join('') + '<button type="button" class="active-filter-clear-all">Clear all</button>';
+
+        container.querySelectorAll<HTMLButtonElement>('.active-filter-chip').forEach((btn, i) => {
+            btn.addEventListener('click', () => {
+                chips[i]!.clear();
+                this.handleFilterChange();
+            });
+        });
+        container.querySelector('.active-filter-clear-all')?.addEventListener('click', () => this.resetFilters());
     }
 
     /**
@@ -819,6 +961,7 @@ class TournamentFinder {
 
         this.saveFilterPreferences();
         this.syncFilterStateToURL();
+        this.syncModeSwitch();
         void this.searchTournaments();
         this.trackEvent('Reset Filters');
     }
@@ -836,45 +979,17 @@ class TournamentFinder {
             this.allTournaments = tournaments;
             this.updateHeaderLiveStatus();
 
-            // Recompute which countries have Mediterranean tournaments and update UI constraints
-            this.mediterraneanCountries = this.computeMediterraneanCountries();
-            this.updateFilterCompatibility();
-            this.updateAvailableCountries();
-
             // Invalidate the filter cache: results are keyed only on filter
             // state, so a fresh data set must not reuse stale cached results.
             this.filterService.clearCache();
 
-            // Apply filters
-            const filterState = this.getFilterState();
-            this.filteredTournaments = this.filterService.filterTournaments(
-                tournaments,
-                filterState,
-                this.mediterraneanLocations
-            );
-
-            // Apply sorting
-            this.filteredTournaments = this.filterService.sortTournaments(
-                this.filteredTournaments,
-                this.currentSort
-            );
-
-            // Annotate with confidence, reasons, and travel tags
-            this.filteredTournaments = this.filteredTournaments.map(t =>
-                this.filterService.annotate(t, this.mediterraneanLocations)
-            );
-
-            // Reset display filters and render
+            // Reset the "filter within results" box - a fresh fetch (new date
+            // range, or the initial load) is a new context for it.
             this.currentQuickSearch = '';
             const quickSearch = document.getElementById('quickSearch') as HTMLInputElement | null;
             if (quickSearch) quickSearch.value = '';
 
-            this.applyDisplayFilters();
-
-            // Featured tournament (always computed from full unfiltered set)
-            this.uiManager.renderFeaturedTournament(
-                this.filterService.pickFeatured(this.allTournaments, this.mediterraneanLocations)
-            );
+            this.applyFiltersAndRender();
 
             this.trackEvent('Search', {
                 results: this.filteredTournaments.length,
@@ -890,6 +1005,45 @@ class TournamentFinder {
                 error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.'
             );
         }
+    }
+
+    /**
+     * Re-run filter -> sort -> annotate -> render against the already-fetched
+     * this.allTournaments, without re-fetching or touching the quick-search
+     * box. This is what makes filtering "live": every checkbox/select change
+     * calls this directly instead of requiring a Search click, and because
+     * DataService's fetch is cache-backed anyway, searchTournaments() itself
+     * is just this plus a (usually free) fetch and analytics event.
+     */
+    private applyFiltersAndRender(): void {
+        // Recompute which countries have Mediterranean tournaments and update UI constraints
+        this.mediterraneanCountries = this.computeMediterraneanCountries();
+        this.updateFilterCompatibility();
+        this.updateAvailableCountries();
+
+        const filterState = this.getFilterState();
+        this.filteredTournaments = this.filterService.filterTournaments(
+            this.allTournaments,
+            filterState,
+            this.mediterraneanLocations
+        );
+
+        this.filteredTournaments = this.filterService.sortTournaments(
+            this.filteredTournaments,
+            this.currentSort
+        );
+
+        this.filteredTournaments = this.filteredTournaments.map(t =>
+            this.filterService.annotate(t, this.mediterraneanLocations)
+        );
+
+        this.applyDisplayFilters();
+        this.renderActiveFilterChips();
+
+        // Featured tournament (always computed from full unfiltered set)
+        this.uiManager.renderFeaturedTournament(
+            this.filterService.pickFeatured(this.allTournaments, this.mediterraneanLocations)
+        );
     }
 
     /**

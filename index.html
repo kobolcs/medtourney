@@ -113,6 +113,15 @@
             </div>
 
             <div class="filter-primary">
+                <div class="mode-switch" role="group" aria-label="Quick filter: seaside and senior tournaments">
+                    <button type="button" class="mode-switch-btn is-active" data-mode="all" aria-pressed="true">All Europe</button>
+                    <button type="button" class="mode-switch-btn" data-mode="seaside" aria-pressed="false">&#127754; Seaside</button>
+                    <button type="button" class="mode-switch-btn" data-mode="senior" aria-pressed="false">Senior 50+</button>
+                    <button type="button" class="mode-switch-btn" data-mode="both" aria-pressed="false">Both</button>
+                </div>
+
+                <div id="activeFilterChips" class="active-filter-chips" aria-live="polite" hidden></div>
+
                 <div class="date-range" role="group" aria-label="Date range selection">
                     <div class="date-input">
                         <label for="startDate">Start Date</label>
