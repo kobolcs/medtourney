@@ -409,8 +409,9 @@ export class UIManager {
         // Show raw time control only when it adds info beyond the class label
         const tc = (tournament.timeControl ?? '').trim();
         const TC_CLASS_LABELS = new Set(['classical', 'rapid', 'blitz', '']);
-        const timeControlHTML = tc && !TC_CLASS_LABELS.has(tc.toLowerCase())
-            ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(formatTimeControl(tc))}</span>`
+        const tcDisplay = TC_CLASS_LABELS.has(tc.toLowerCase()) ? '' : formatTimeControl(tc);
+        const timeControlHTML = tcDisplay
+            ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(tcDisplay)}</span>`
             : '';
 
         const timeControlClassHTML = this.timeControlClassHTML(tournament);
