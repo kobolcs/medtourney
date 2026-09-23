@@ -317,6 +317,7 @@ export class UIManager {
         const card = document.createElement('article');
         card.className = 'tournament-card';
         card.setAttribute('aria-label', tournament.name);
+        card.dataset.tournamentUrl = tournament.url;
 
         const { day, month } = this.formatDateBadge(tournament.date);
         const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
@@ -329,6 +330,14 @@ export class UIManager {
         const travelTagsHTML = meaningfulTags.length > 0
             ? `<div class="travel-tags">${meaningfulTags.map(t => `<span class="travel-tag">${this.escapeHTML(t)}</span>`).join('')}</div>`
             : '';
+
+        // Card accent color encodes category — Mediterranean/seaside takes
+        // priority over senior when a tournament carries both tags.
+        if (tags.includes('Mediterranean') || tags.includes('Seaside')) {
+            card.classList.add('tournament-card--mediterranean');
+        } else if (tags.includes('Senior-friendly')) {
+            card.classList.add('tournament-card--senior');
+        }
 
         // Show raw time control only when it adds info beyond the class label
         const tc = (tournament.timeControl ?? '').trim();

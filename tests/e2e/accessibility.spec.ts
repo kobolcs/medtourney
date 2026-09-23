@@ -157,7 +157,8 @@ test.describe('Accessibility Tests', () => {
       await expect(tournamentLink).toHaveAttribute('aria-label', /.+/);
       await expect(tournamentLink).toHaveAttribute('rel', 'noopener noreferrer');
 
-      // Calendar button should have proper label
+      // Calendar button is a hover-revealed secondary action on the card.
+      await firstCard.hover();
       const calendarBtn = firstCard.locator('.calendar-export-btn');
       if (await calendarBtn.isVisible()) {
         await expect(calendarBtn).toHaveAttribute('aria-label', /.+/);

@@ -228,6 +228,10 @@ class TournamentFinder {
         // Delegated copy-link button
         this.initCopyLinkDelegation();
 
+        // Delegated whole-card click — opens the tournament's chess-results.com
+        // page, matching users' expectation that the card itself is clickable
+        this.initTournamentCardClickDelegation();
+
         // Delegated reset-filters button (rendered inside empty state)
         document.addEventListener('click', (e) => {
             if ((e.target as Element).closest('#resetFiltersBtn')) {
@@ -1225,6 +1229,28 @@ class TournamentFinder {
             }).catch(() => {
                 this.uiManager.showError('Could not copy to clipboard. Please copy the URL manually.', 'warning');
             });
+        });
+    }
+
+    /**
+     * Delegated click handler that makes the whole tournament card open the
+     * tournament's chess-results.com page in a new tab, not just the name
+     * text. Ignores clicks on any link/button inside the card (the name
+     * link, shortlist star, calendar export, copy link) so those keep their
+     * own behavior instead of also triggering this.
+     */
+    private initTournamentCardClickDelegation(): void {
+        const tournamentList = document.getElementById('tournamentList');
+        if (!tournamentList) return;
+
+        tournamentList.addEventListener('click', (e) => {
+            if ((e.target as Element).closest('a, button')) return;
+
+            const card = (e.target as Element).closest<HTMLElement>('.tournament-card');
+            const url = card?.dataset.tournamentUrl;
+            if (url) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
         });
     }
 
