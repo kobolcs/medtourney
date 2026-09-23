@@ -166,6 +166,47 @@ test.describe('Accessibility Tests', () => {
     }
   });
 
+  test('a tournament name with a literal double quote cannot break out of an attribute', async ({ page }) => {
+    // Regression: escapeHTML() only escaped &, <, > (the textContent/innerHTML
+    // round-trip), never " - safe between tags but not once spliced into a
+    // double-quoted attribute like aria-label="...". A name with a real "
+    // (common in several languages' tournament-title conventions, e.g. a
+    // quoted subtitle) would close the attribute early and let the rest of
+    // the string inject a new one.
+    // beforeEach already loaded the default fixtures once, which the app
+    // caches in localStorage - a plain reload would replay that cache
+    // instead of re-fetching, masking this fixture. Clear it first.
+    await page.evaluate(() => localStorage.clear());
+    const maliciousName = 'Festival Chess "Nadwiślański" onmouseover="window.__xss=true"';
+    await stubTournaments(page, [{
+      name: maliciousName,
+      location: 'Warsaw, POL',
+      date: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+      category: 'Open, Classical',
+      url: 'https://chess-results.com/tnr999.aspx?lan=1',
+      description: maliciousName,
+    }]);
+    await page.reload();
+
+    const card = page.locator('.tournament-card').first();
+    await expect(card).toBeVisible({ timeout: 10000 });
+
+    // The full name (quote included) must render as real text content.
+    await expect(card.locator('.tournament-name')).toContainText(maliciousName);
+
+    // The injected attribute must never actually exist on the element -
+    // if escapeHTML let the " close the aria-label early, this would be
+    // a real, live attribute the browser parsed.
+    const hasInjectedAttr = await card.locator('.tournament-link').evaluate(
+      (el) => el.hasAttribute('onmouseover')
+    );
+    expect(hasInjectedAttr).toBe(false);
+
+    // And the hover handler must never have actually fired.
+    const xssFired = await page.evaluate(() => (window as unknown as { __xss?: boolean }).__xss);
+    expect(xssFired).toBeUndefined();
+  });
+
   test('should be keyboard navigable', async ({ page }) => {
     const searchBtn = page.getByRole('button', { name: /search tournaments/i });
 

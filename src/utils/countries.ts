@@ -7,6 +7,8 @@
  * wait on the async config fetch.
  */
 
+import { escapeHTML } from './html';
+
 interface CountryInfo {
     name: string;
     iso2: string;
@@ -72,12 +74,6 @@ export const COUNTRY_CODES: Record<string, CountryInfo> = {
     UKR: { name: 'Ukraine', iso2: 'UA' },
     WLS: { name: 'Wales', iso2: 'GB' },
 };
-
-function escapeHTML(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
 
 /**
  * Small fixed-size (20x15, @3x source for retina) flag icons, not emoji -

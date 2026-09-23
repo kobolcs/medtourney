@@ -12,6 +12,7 @@
 
 import { Tournament } from '../types';
 import { formatLocation } from '../utils/countries';
+import { escapeHTML } from '../utils/html';
 
 export class UIManager {
     private currentPage = 1;
@@ -280,24 +281,24 @@ export class UIManager {
                 <h3 class="featured-name">
                     <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
                        class="featured-name-link"
-                       aria-label="View details for ${this.escapeHTML(tournament.name)}">
-                        ${this.escapeHTML(tournament.name)}
+                       aria-label="View details for ${escapeHTML(tournament.name)}">
+                        ${escapeHTML(tournament.name)}
                     </a>
                 </h3>
                 <div class="featured-location">${formatLocation(tournament.location)}</div>
                 <div class="featured-meta">
                     <span class="featured-date">${dateStr}</span>
-                    <span class="featured-category">${this.escapeHTML(tournament.category)}</span>
+                    <span class="featured-category">${escapeHTML(tournament.category)}</span>
                 </div>
                 <div class="tournament-actions">
                     <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
                        class="tournament-link"
-                       aria-label="View details for ${this.escapeHTML(tournament.name)}">
+                       aria-label="View details for ${escapeHTML(tournament.name)}">
                         View Tournament
                     </a>
                     <button class="calendar-export-btn"
-                            data-tournament-url="${this.escapeHTML(tournament.url)}"
-                            aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
+                            data-tournament-url="${escapeHTML(tournament.url)}"
+                            aria-label="Add ${escapeHTML(tournament.name)} to calendar">
                         📅 Add to Calendar
                     </button>
                 </div>
@@ -328,7 +329,7 @@ export class UIManager {
         const GEOGRAPHIC_TAGS = new Set(['Mediterranean', 'Seaside', 'Senior-friendly', "Women's"]);
         const meaningfulTags = tags.filter(t => GEOGRAPHIC_TAGS.has(t));
         const travelTagsHTML = meaningfulTags.length > 0
-            ? `<div class="travel-tags">${meaningfulTags.map(t => `<span class="travel-tag">${this.escapeHTML(t)}</span>`).join('')}</div>`
+            ? `<div class="travel-tags">${meaningfulTags.map(t => `<span class="travel-tag">${escapeHTML(t)}</span>`).join('')}</div>`
             : '';
 
         // Card accent color encodes category — Mediterranean/seaside takes
@@ -343,7 +344,7 @@ export class UIManager {
         const tc = (tournament.timeControl ?? '').trim();
         const TC_CLASS_LABELS = new Set(['classical', 'rapid', 'blitz', '']);
         const timeControlHTML = tc && !TC_CLASS_LABELS.has(tc.toLowerCase())
-            ? `<span class="time-control-badge" title="${this.escapeHTML(tc)}">${this.escapeHTML(this.condenseTimeControl(tc))}</span>`
+            ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(this.condenseTimeControl(tc))}</span>`
             : '';
 
         const durationDays = this.tournamentDurationDays(tournament);
@@ -363,37 +364,37 @@ export class UIManager {
                            target="_blank"
                            rel="noopener noreferrer"
                            class="tournament-link"
-                           aria-label="View details for ${this.escapeHTML(tournament.name)}">
-                            ${this.escapeHTML(tournament.name)}
+                           aria-label="View details for ${escapeHTML(tournament.name)}">
+                            ${escapeHTML(tournament.name)}
                         </a>
                     </h3>
                     <div class="tournament-header-right">
                         <span class="tournament-date">${dateStr}</span>
                         <button class="shortlist-btn${isShortlisted ? ' shortlisted' : ''}"
-                                data-tournament-url="${this.escapeHTML(tournament.url)}"
-                                data-tournament-name="${this.escapeHTML(tournament.name)}"
+                                data-tournament-url="${escapeHTML(tournament.url)}"
+                                data-tournament-name="${escapeHTML(tournament.name)}"
                                 aria-pressed="${isShortlisted}"
-                                aria-label="${isShortlisted ? 'Remove from' : 'Add to'} shortlist: ${this.escapeHTML(tournament.name)}">
+                                aria-label="${isShortlisted ? 'Remove from' : 'Add to'} shortlist: ${escapeHTML(tournament.name)}">
                             <span class="shortlist-star">${isShortlisted ? '★' : '☆'}</span>
                         </button>
                     </div>
                 </div>
                 <div class="tournament-location">${formatLocation(tournament.location)}</div>
                 <div class="tournament-meta">
-                    <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
+                    <span class="tournament-category">${escapeHTML(tournament.category)}</span>
                     ${timeControlHTML}
                     ${durationHTML}
                 </div>
                 ${travelTagsHTML}
                 <div class="tournament-actions">
                     <button class="calendar-export-btn"
-                            data-tournament-url="${this.escapeHTML(tournament.url)}"
-                            aria-label="Add ${this.escapeHTML(tournament.name)} to calendar">
+                            data-tournament-url="${escapeHTML(tournament.url)}"
+                            aria-label="Add ${escapeHTML(tournament.name)} to calendar">
                         <span aria-hidden="true">📅</span> Add to Calendar
                     </button>
                     <button class="copy-link-btn"
-                            data-tournament-url="${this.escapeHTML(tournament.url)}"
-                            aria-label="Copy share link for ${this.escapeHTML(tournament.name)}">
+                            data-tournament-url="${escapeHTML(tournament.url)}"
+                            aria-label="Copy share link for ${escapeHTML(tournament.name)}">
                         Copy link
                     </button>
                 </div>
@@ -538,7 +539,7 @@ export class UIManager {
             : ['Expand the date range', 'Remove some filter criteria', 'Try a different country or location'];
 
         const suggestionItems = suggestions
-            .map(s => `<li>${this.escapeHTML(s)}</li>`)
+            .map(s => `<li>${escapeHTML(s)}</li>`)
             .join('');
 
         container.innerHTML = `
@@ -656,15 +657,6 @@ export class UIManager {
      */
     getTournamentByUrl(url: string): Tournament | null {
         return this.filteredTournaments.find(t => t.url === url) ?? null;
-    }
-
-    /**
-     * Escape HTML to prevent XSS
-     */
-    private escapeHTML(text: string): string {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     /**

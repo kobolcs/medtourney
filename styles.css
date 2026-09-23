@@ -1289,6 +1289,23 @@ body.dark-theme .error-message.success-type {
   opacity: 1;
 }
 
+/* The featured "Tournament of the Week" card is a single, always-prominent
+   callout, not a dense list item competing for space - unlike the results
+   list, there's no "cards too big" problem to solve here, so its actions
+   (including the primary "View Tournament" CTA, which isn't even part of
+   the opacity-fade above) should just stay visible, not hover-gated. */
+.featured-card .tournament-actions {
+  max-height: none;
+  overflow: visible;
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top-color: var(--mist-light);
+}
+
+.featured-card .tournament-actions .calendar-export-btn {
+  opacity: 1;
+}
+
 /* No hover capability (touch): keep the actions visible and expanded at all times. */
 @media (hover: none) {
   .tournament-actions {
