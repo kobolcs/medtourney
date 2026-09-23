@@ -352,6 +352,18 @@ class TestTournamentProcessor:
         assert processor._classify_by_fide_formula("25 minutes") == "Rapid"
         assert processor._classify_by_fide_formula("90 minutes") == "Classical"
 
+    def test_classify_by_fide_formula_prime_notation(self, processor):
+        """Regression: chess-results.com's own compact "N' + M''" notation
+        (prime = minutes, double prime = seconds) was falling through to
+        Blitz because the increment regex only recognized a literal 's...'
+        word for seconds, never a bare quote/prime marker - e.g. "10' + 2''"
+        (10+2=12, actually Rapid) was coming out as Blitz. Real example:
+        chess-results.com/tnr1470230.aspx, timeControl "10' + 2''"."""
+        assert processor._classify_by_fide_formula("10' + 2''") == "Rapid"
+        assert processor._classify_by_fide_formula("10'+5\"") == "Rapid"
+        assert processor._classify_by_fide_formula("10'05''") == "Rapid"
+        assert processor._classify_by_fide_formula("30'+30\"") == "Classical"
+
     def test_determine_category_keyword_overrides_formula(self, processor):
         """An explicit 'Rapid'/'Classical' label in the source data is
         trusted even where the formula would (in isolation) agree or
