@@ -167,13 +167,11 @@
                     </div>
                 </div>
 
-                <div class="filter-group filter-group-featured">
-                    <label>
-                        <input type="checkbox" id="mediterraneanOnly" aria-describedby="mediterranean-desc">
-                        <span class="checkbox-label">Mediterranean Seaside Only</span>
-                    </label>
-                    <span id="mediterranean-desc" class="sr-only">Show only tournaments in Mediterranean coastal cities</span>
-                </div>
+                <!-- The Seaside / Both mode switch buttons above are the only visible
+                     control for this; the hidden checkbox stays as the single source
+                     of truth that preferences, the URL, chips and the empty-state
+                     relaxations read and write (see app.ts initModeSwitch). -->
+                <input type="checkbox" id="mediterraneanOnly" hidden>
             </div>
 
             <details id="advancedFilters">
@@ -291,7 +289,7 @@
                     <input type="search" id="countrySearch" class="country-search-input" placeholder="Type to filter countries…">
                     <p id="noCountriesMessage" class="no-countries-message" hidden>No countries match your other filters.</p>
                     <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country" aria-describedby="country-scroll-hint">
-                        <div class="country-group-label">Mediterranean</div>
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Mediterranean countries"> Mediterranean</label>
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="ALB"><label><input type="checkbox" name="countryFilter" value="ALB"><span class="checkbox-label">Albania</span></label></div>
                             <div class="country-item filter-group" data-country="AND"><label><input type="checkbox" name="countryFilter" value="AND"><span class="checkbox-label">Andorra</span></label></div>
@@ -312,7 +310,7 @@
                             <div class="country-item filter-group" data-country="TUR"><label><input type="checkbox" name="countryFilter" value="TUR"><span class="checkbox-label">Turkey</span></label></div>
                         </div>
 
-                        <div class="country-group-label">Central Europe</div>
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Central Europe countries"> Central Europe</label>
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="AUT"><label><input type="checkbox" name="countryFilter" value="AUT"><span class="checkbox-label">Austria</span></label></div>
                             <div class="country-item filter-group" data-country="BEL"><label><input type="checkbox" name="countryFilter" value="BEL"><span class="checkbox-label">Belgium</span></label></div>
@@ -327,7 +325,7 @@
                             <div class="country-item filter-group" data-country="SUI"><label><input type="checkbox" name="countryFilter" value="SUI"><span class="checkbox-label">Switzerland</span></label></div>
                         </div>
 
-                        <div class="country-group-label">Balkans &amp; Eastern Europe</div>
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Balkans &amp; Eastern Europe countries"> Balkans &amp; Eastern Europe</label>
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="ARM"><label><input type="checkbox" name="countryFilter" value="ARM"><span class="checkbox-label">Armenia</span></label></div>
                             <div class="country-item filter-group" data-country="AZE"><label><input type="checkbox" name="countryFilter" value="AZE"><span class="checkbox-label">Azerbaijan</span></label></div>
@@ -341,7 +339,7 @@
                             <div class="country-item filter-group" data-country="UKR"><label><input type="checkbox" name="countryFilter" value="UKR"><span class="checkbox-label">Ukraine</span></label></div>
                         </div>
 
-                        <div class="country-group-label">Nordic &amp; Baltic</div>
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Nordic &amp; Baltic countries"> Nordic &amp; Baltic</label>
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="DEN"><label><input type="checkbox" name="countryFilter" value="DEN"><span class="checkbox-label">Denmark</span></label></div>
                             <div class="country-item filter-group" data-country="EST"><label><input type="checkbox" name="countryFilter" value="EST"><span class="checkbox-label">Estonia</span></label></div>
@@ -354,7 +352,7 @@
                             <div class="country-item filter-group" data-country="SWE"><label><input type="checkbox" name="countryFilter" value="SWE"><span class="checkbox-label">Sweden</span></label></div>
                         </div>
 
-                        <div class="country-group-label">British Isles</div>
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all British Isles countries"> British Isles</label>
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="ENG"><label><input type="checkbox" name="countryFilter" value="ENG"><span class="checkbox-label">England</span></label></div>
                             <div class="country-item filter-group" data-country="GBR"><label><input type="checkbox" name="countryFilter" value="GBR"><span class="checkbox-label">Great Britain</span></label></div>

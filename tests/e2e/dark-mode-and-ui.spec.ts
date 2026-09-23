@@ -160,7 +160,7 @@ test.describe('Dark Mode and UI Features', () => {
 
   test('should display empty state with suggestions', async ({ page }) => {
     // Set very restrictive filters to trigger empty state
-    await page.getByLabel('Mediterranean Seaside Only').check();
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
     await page.getByLabel(/S50\+.*Senior/i).check();
     await page.getByLabel(/Women's Tournaments/i).check();
 
@@ -289,7 +289,7 @@ test.describe('Dark Mode and UI Features', () => {
   test('should persist filter preferences', async ({ page, context }) => {
     // Change some filters
     await page.getByLabel('Open Category Only').uncheck();
-    await page.getByLabel('Mediterranean Seaside Only').check();
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
 
     // Wait for filter preferences to be saved (happens on change)
     await page.waitForTimeout(500);
@@ -300,6 +300,6 @@ test.describe('Dark Mode and UI Features', () => {
 
     // Filters should be restored
     await expect(page.getByLabel('Open Category Only')).not.toBeChecked();
-    await expect(page.getByLabel('Mediterranean Seaside Only')).toBeChecked();
+    await expect(page.locator('#mediterraneanOnly')).toBeChecked();
   });
 });

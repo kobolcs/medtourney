@@ -589,7 +589,14 @@ class TournamentFinder {
         // Country checkboxes — delegated on their container
         const countryList = document.getElementById('countryList');
         if (countryList) {
-            countryList.addEventListener('change', onFilterChange);
+            countryList.addEventListener('change', (e) => {
+                const target = e.target as HTMLInputElement;
+                if (target.classList.contains('country-group-toggle')) {
+                    this.applyCountryGroupToggle(target);
+                }
+                onFilterChange();
+                this.syncCountryGroupToggles();
+            });
         }
     }
 
@@ -1162,6 +1169,8 @@ class TournamentFinder {
             if (visible) anyVisible = true;
         });
 
+        this.syncCountryGroupToggles();
+
         // Hide a region heading when every country under it is hidden.
         document.querySelectorAll<HTMLElement>('.country-group-label').forEach(label => {
             const grid = label.nextElementSibling;
@@ -1243,12 +1252,14 @@ class TournamentFinder {
         medCheckbox.disabled = !medCompatible;
         if (!medCompatible && medChecked) medCheckbox.checked = false;
 
-        const medLabel = document.querySelector('label[for="mediterraneanOnly"]') as HTMLElement | null;
-        if (medLabel) {
-            medLabel.title = medCompatible
-                ? ''
-                : 'No Mediterranean tournaments in the selected countries';
-        }
+        // The checkbox itself is hidden - the mode switch's Seaside/Both
+        // buttons are its visible control, so they carry the disabled state.
+        document.querySelectorAll<HTMLButtonElement>(
+            '.mode-switch-btn[data-mode="seaside"], .mode-switch-btn[data-mode="both"]'
+        ).forEach(btn => {
+            btn.disabled = !medCompatible;
+            btn.title = medCompatible ? '' : 'No Mediterranean tournaments in the selected countries';
+        });
 
         // --- Youth / Senior mutual exclusion ---
         const elements = this.getFilterElements();
@@ -1277,6 +1288,37 @@ class TournamentFinder {
             if (grp) grp.style.opacity = youthSelected ? '0.4' : '';
             if (youthSelected && cb.checked) cb.checked = false;
         }
+    }
+
+    /** Visible country checkboxes in the region grid that follows a group label. */
+    private countryGroupCheckboxes(toggle: HTMLInputElement): HTMLInputElement[] {
+        const grid = toggle.closest('.country-group-label')?.nextElementSibling;
+        if (!grid) return [];
+        return Array.from(grid.querySelectorAll<HTMLElement>('.country-item'))
+            .filter(item => item.style.display !== 'none')
+            .map(item => item.querySelector<HTMLInputElement>('input[name="countryFilter"]'))
+            .filter((cb): cb is HTMLInputElement => cb !== null);
+    }
+
+    /**
+     * A region's "select all" tick: (un)check every country currently shown
+     * in that region. Countries hidden by the type-to-filter box or by having
+     * no results under the other filters are left alone.
+     */
+    private applyCountryGroupToggle(toggle: HTMLInputElement): void {
+        this.countryGroupCheckboxes(toggle).forEach(cb => { cb.checked = toggle.checked; });
+        this.updateCountryFilterSummary();
+        this.trackEvent('Country Group Toggle', { checked: toggle.checked });
+    }
+
+    /** Reflect each region's shown countries in its tick: all, none, or some (indeterminate). */
+    private syncCountryGroupToggles(): void {
+        document.querySelectorAll<HTMLInputElement>('.country-group-toggle').forEach(toggle => {
+            const boxes = this.countryGroupCheckboxes(toggle);
+            const checkedCount = boxes.filter(cb => cb.checked).length;
+            toggle.checked = boxes.length > 0 && checkedCount === boxes.length;
+            toggle.indeterminate = checkedCount > 0 && checkedCount < boxes.length;
+        });
     }
 
     private updateCountryFilterSummary(): void {

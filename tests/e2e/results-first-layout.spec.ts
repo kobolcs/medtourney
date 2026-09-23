@@ -27,7 +27,10 @@ test.describe('Results-First Layout', () => {
     await expect(page.locator('#startDate')).toBeVisible();
     await expect(page.locator('#endDate')).toBeVisible();
     await expect(page.getByLabel('Classical / Standard')).toBeVisible();
-    await expect(page.getByLabel('Mediterranean Seaside Only')).toBeVisible();
+    await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toBeVisible();
+    // The old "Mediterranean Seaside Only" checkbox is gone from view - the
+    // mode switch is its only visible control.
+    await expect(page.locator('#mediterraneanOnly')).toBeHidden();
 
     // Advanced-only controls are not visible until the drawer opens.
     await expect(page.getByLabel('Open Category Only')).toBeHidden();

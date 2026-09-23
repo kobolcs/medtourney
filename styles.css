@@ -539,6 +539,11 @@ header h1 {
   color: var(--text);
 }
 
+.mode-switch-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
 .mode-switch-btn.is-active {
   background: var(--sea);
   color: #fff;
@@ -595,18 +600,6 @@ body.dark-theme .mode-switch-btn.is-active {
 
 .filter-grid-compact {
   margin-bottom: var(--sp-3);
-}
-
-.filter-group-featured {
-  margin: var(--sp-4) 0 var(--sp-2);
-  padding: var(--sp-1) var(--sp-3);
-  border: 1.5px solid var(--sea);
-  border-radius: var(--r-md);
-  background: var(--sea-light);
-}
-
-.filter-group-featured .checkbox-label {
-  font-weight: 700;
 }
 
 details#advancedFilters {
@@ -834,6 +827,10 @@ details#advancedFilters[open] > .advanced-summary::before {
    Europe makes the Mediterranean set (this site's own niche) fast to find
    without hunting through Central/Nordic countries first. */
 .country-group-label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  cursor: pointer;
   font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: .04em;

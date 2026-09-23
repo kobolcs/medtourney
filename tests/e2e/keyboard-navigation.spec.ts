@@ -156,7 +156,7 @@ test.describe('Keyboard Navigation', () => {
     // Press Enter to activate it - filtering is live, results re-render.
     await page.keyboard.press('Enter');
     await expect(seaside).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByLabel('Mediterranean Seaside Only')).toBeChecked();
+    await expect(page.locator('#mediterraneanOnly')).toBeChecked();
   });
 
   test('should navigate through filter collapse with Enter and Space', async ({ page }) => {

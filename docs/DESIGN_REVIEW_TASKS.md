@@ -29,15 +29,18 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
   - [x] Remove the Search button. Desktop: gone. Below 1024px (filters above
     results) it's now "Show N tournaments ↓", jumping to the results with the
     live count; a failed data load offers its own "Try again".
-  - [ ] `tests/e2e/test_phase2_ui.robot` still clicks `id=searchBtn` - that
-    Robot suite isn't run by CI or any npm script, so it was left as-is.
+  - [x] Ported the stale Robot UI suite (`test_phase2_ui.robot`, not run by CI)
+    to Playwright `tests/e2e/site-basics.spec.ts` and removed it.
+  - [x] Removed the "Mediterranean Seaside Only" checkbox from the primary bar -
+    the mode switch is its only visible control now (hidden input kept as state).
 - [x] **7. Sticky filter sidebar on desktop** (≥1024px) (`2cd6664`).
 - [ ] **8. Filters in a bottom sheet on phones** – results first, a "Filters (3)" button
   opens the same filter markup as a sheet with a "Show N tournaments" button.
 - [~] **9. Country list that fits the niche** (`027ecd7`).
   - [x] Grouped by region (Mediterranean, Central, Balkans & Eastern, Nordic & Baltic, British Isles)
   - [x] Type-to-filter input; empty groups hidden; "no match" message echoes the query
-  - [ ] Group-level "select all" tick (deliberately skipped to limit extra Tab stops)
+  - [x] Group-level "select all" tick per region (ticks shown countries; partly
+    selected shows as indeterminate)
   - [ ] In Seaside mode, show only the Mediterranean group expanded
 
 ## Bigger additions
@@ -54,6 +57,9 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 - [x] Footer shows "Data updated …" until the JSON loads. Now hidden until a real
   timestamp is known (scrape time from `tournaments_data_meta.json`, or this
   browser's cache time as a first-paint fallback) - no "…" or "Never (no cached data)".
+
+- [ ] `og:image` points at `og-image.png`, which doesn't exist (404 live) - link
+  previews have no image. Test in `site-basics.spec.ts` is marked `fixme`.
 
 ## Known test issue (pre-existing, not from the review work)
 

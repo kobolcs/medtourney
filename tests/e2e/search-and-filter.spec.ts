@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments, openAdvancedFilters } from './_fixtures';
+import { stubTournaments, openAdvancedFilters, isoInDays, TournamentFixture } from './_fixtures';
 
 test.describe('Tournament Search and Filter', () => {
   test.beforeEach(async ({ page }) => {
@@ -46,15 +46,15 @@ test.describe('Tournament Search and Filter', () => {
     // Uncheck "Open Category Only"
     await page.getByLabel('Open Category Only').uncheck();
 
-    // Check "Mediterranean Seaside Only"
-    await page.getByLabel('Mediterranean Seaside Only').check();
+    // Seaside mode (mediterraneanOnly)
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
 
     // Check "S50+ (Senior) Category"
     await page.getByLabel(/S50\+.*Senior/i).check();
 
     // Verify checkboxes are in correct state
     await expect(page.getByLabel('Open Category Only')).not.toBeChecked();
-    await expect(page.getByLabel('Mediterranean Seaside Only')).toBeChecked();
+    await expect(page.locator('#mediterraneanOnly')).toBeChecked();
     await expect(page.getByLabel(/S50\+.*Senior/i)).toBeChecked();
 
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
@@ -121,7 +121,7 @@ test.describe('Tournament Search and Filter', () => {
 
   test('should display empty state when no results', async ({ page }) => {
     // Set very restrictive filters
-    await page.getByLabel('Mediterranean Seaside Only').check();
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
     await page.getByLabel(/S50\+.*Senior/i).check();
     await page.getByLabel(/Women's Tournaments/i).check();
 
@@ -173,7 +173,7 @@ test.describe('Tournament Search and Filter', () => {
   test('should reset filters', async ({ page }) => {
     // Change some filters
     await page.getByLabel('Open Category Only').uncheck();
-    await page.getByLabel('Mediterranean Seaside Only').check();
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
 
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
@@ -189,7 +189,7 @@ test.describe('Tournament Search and Filter', () => {
 
       // Verify filters are reset
       await expect(page.getByLabel('Open Category Only')).toBeChecked();
-      await expect(page.getByLabel('Mediterranean Seaside Only')).not.toBeChecked();
+      await expect(page.locator('#mediterraneanOnly')).not.toBeChecked();
     }
   });
 
@@ -289,7 +289,7 @@ test.describe('Filter state in the URL', () => {
     await page.goto('/');
     await expect(page.locator('h1')).toContainText('MedTourney');
 
-    await page.locator('#mediterraneanOnly').check();
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click();
     await expect(page).toHaveURL(/[?&]med=1(&|$)/);
 
     await openAdvancedFilters(page);
@@ -411,5 +411,61 @@ test.describe('No Search button - live results', () => {
     await page.goto('/');
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
     await expect(page.locator('#showResultsBtn')).toBeHidden();
+  });
+});
+
+test.describe('Country list region ticks', () => {
+  // Two Mediterranean countries (ESP, ITA) so a region can be partly ticked,
+  // plus one Central European (AUT).
+  const fixtures: TournamentFixture[] = [
+    ['Barcelona, ESP', 'Barcelona Open'], ['Rome, ITA', 'Roma Open'], ['Vienna, AUT', 'Vienna Open'],
+  ].map(([location, name], i) => ({
+    name, location, date: isoInDays(7 * (i + 1)), category: 'Open, Classical',
+    url: `https://chess-results.com/tnr9${i}.aspx?lan=1`, description: '',
+  }));
+
+  test.beforeEach(async ({ page }) => {
+    await stubTournaments(page, fixtures);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+    await openAdvancedFilters(page);
+  });
+
+  test('a region tick selects every shown country in that region', async ({ page }) => {
+    const med = page.getByRole('checkbox', { name: 'Select all Mediterranean countries' });
+    // Tap the region row (the label wraps the tick), as a user would
+    const medRow = page.locator('label.country-group-label', { hasText: 'Mediterranean' });
+    await medRow.click();
+    await expect(med).toBeChecked();
+
+    await expect(page.locator('#countryList input[value="ESP"]')).toBeChecked();
+    await expect(page.locator('#countryList input[value="ITA"]')).toBeChecked();
+    await expect(page.locator('#countryList input[value="AUT"]')).not.toBeChecked();
+    await expect(page.locator('.tournament-card')).toHaveCount(2);
+
+    await medRow.click();
+    await expect(med).not.toBeChecked();
+    await expect(page.locator('#countryList input[value="ESP"]')).not.toBeChecked();
+    await expect(page.locator('.tournament-card')).toHaveCount(3);
+  });
+
+  test('a region tick shows partly-selected as indeterminate', async ({ page }) => {
+    const med = page.getByRole('checkbox', { name: 'Select all Mediterranean countries' });
+    await page.locator('#countryList input[value="ESP"]').check();
+    await expect(med).not.toBeChecked();
+    await expect(med).toHaveJSProperty('indeterminate', true);
+
+    await page.locator('#countryList input[value="ITA"]').check();
+    await expect(med).toBeChecked();
+    await expect(med).toHaveJSProperty('indeterminate', false);
+  });
+
+  test('Seaside mode is disabled when only non-seaside countries are picked', async ({ page }) => {
+    await page.locator('#countryList input[value="AUT"]').check();
+    await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toBeDisabled();
+    await expect(page.locator('.mode-switch-btn[data-mode="both"]')).toBeDisabled();
+
+    await page.locator('#countryList input[value="AUT"]').uncheck();
+    await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toBeEnabled();
   });
 });
