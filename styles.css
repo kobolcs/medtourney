@@ -2385,6 +2385,34 @@ footer a:hover {
   }
 }
 
+/* Desktop — sticky filters sidebar beside results, so results are visible
+   without scrolling past the whole filter panel. Pure layout: same markup,
+   same #main-content children, just arranged as two grid columns instead of
+   stacked. #staleness-banner spans both columns as a full-width top banner. */
+@media (min-width: 1024px) {
+  main {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    align-items: start;
+    gap: var(--sp-6);
+  }
+
+  #staleness-banner {
+    grid-column: 1 / -1;
+  }
+
+  .filters-card {
+    position: sticky;
+    top: var(--sp-6);
+    max-height: calc(100vh - var(--sp-10));
+    overflow-y: auto;
+  }
+
+  .results-column {
+    min-width: 0;
+  }
+}
+
 /* Wide desktop — 2-column card layout */
 @media (min-width: 1400px) {
   .container,
