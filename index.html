@@ -229,7 +229,7 @@
                     <div class="filter-group">
                         <label for="youthCategory">Youth age group</label>
                         <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
-                            <option value="">None (use exclude filter above)</option>
+                            <option value="" title="Use the Exclude Youth-Only Tournaments filter above instead">None</option>
                             <option value="U8">U8</option>
                             <option value="U10">U10</option>
                             <option value="U12">U12</option>
@@ -266,6 +266,7 @@
                         </div>
                     </div>
                     <span id="country-scroll-hint" class="sr-only">Scrollable list — use arrow keys or scroll to see all countries</span>
+                    <p id="noCountriesMessage" class="no-countries-message" hidden>No countries match your other filters.</p>
                     <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country" aria-describedby="country-scroll-hint">
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="ALB"><label><input type="checkbox" name="countryFilter" value="ALB"><span class="checkbox-label">Albania</span></label></div>

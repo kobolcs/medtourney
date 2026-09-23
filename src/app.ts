@@ -796,6 +796,7 @@ class TournamentFinder {
             if (last) available.add(last.trim().toUpperCase());
         }
 
+        let anyVisible = false;
         document.querySelectorAll<HTMLElement>('.country-item').forEach(item => {
             const code = item.dataset.country?.toUpperCase();
             if (!code) return;
@@ -810,7 +811,16 @@ class TournamentFinder {
                 // Always keep checked countries visible
                 item.style.display = '';
             }
+            if (item.style.display !== 'none') anyVisible = true;
         });
+
+        // Every other filter can already narrow results to zero on its own
+        // (an empty results list explains itself below); an empty country
+        // checklist with no message of its own just looks broken.
+        const countryList = document.getElementById('countryList');
+        const noCountriesMessage = document.getElementById('noCountriesMessage');
+        if (countryList) countryList.style.display = anyVisible ? '' : 'none';
+        if (noCountriesMessage) noCountriesMessage.hidden = anyVisible;
     }
 
     /**

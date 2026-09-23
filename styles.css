@@ -441,6 +441,9 @@ header h1 {
   cursor: pointer;
   transition: border-color .15s;
   margin-top: var(--sp-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .filter-group select:focus {
@@ -652,6 +655,13 @@ details#advancedFilters[open] > .advanced-summary::before {
   color: var(--sea);
   border-color: var(--sea);
   background: var(--sea-light);
+}
+
+.no-countries-message {
+  color: var(--label);
+  font-size: var(--text-sm);
+  font-style: italic;
+  padding: var(--sp-3) 0;
 }
 
 .country-checkbox-list {
