@@ -80,9 +80,11 @@ export class MapView {
     /** Show the map for these tournaments (all pages of the filtered list). */
     async show(tournaments: Tournament[]): Promise<void> {
         await this.ensureLoaded();
-        this.render(tournaments, true);
-        // The container was display:none until now - Leaflet must re-measure.
+        // The container was display:none until now (and the layout may have
+        // changed meanwhile, e.g. a phone rotated) - re-measure before
+        // fitting the markers, or fitBounds uses the stale size.
         this.map?.invalidateSize();
+        this.render(tournaments, true);
     }
 
     /** Re-render after a filter change, keeping the user's current view. */

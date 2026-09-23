@@ -70,16 +70,34 @@ jobs:
       # (OpenStreetMap Nominatim, 1 req/s, capped per run - the rest follow on
       # the next run), with a GeoNames offline fallback for town names buried
       # in venue text. Never allowed to fail the data update.
-      - name: Download GeoNames towns (geocoding fallback)
+      #
+      # The GeoNames file is kept in the Actions cache and refreshed weekly:
+      # if a download fails, the previous copy is used, so the fallback (and
+      # the ~250 pins that depend on it) never silently drops out for a day.
+      - name: Week key for the GeoNames cache
+        id: geonames-week
+        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore GeoNames towns (geocoding fallback)
+        id: geonames-cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/geonames
+          key: geonames-cities1000-${{ steps.geonames-week.outputs.week }}
+          restore-keys: geonames-cities1000-
+
+      - name: Download GeoNames towns (weekly refresh)
+        if: steps.geonames-cache.outputs.cache-hit != 'true'
         continue-on-error: true
         run: |
-          curl -sSfL -o /tmp/cities1000.zip https://download.geonames.org/export/dump/cities1000.zip
-          unzip -o -q /tmp/cities1000.zip -d /tmp
+          mkdir -p /tmp/geonames
+          curl -sSfL -o /tmp/geonames/cities1000.zip https://download.geonames.org/export/dump/cities1000.zip
+          unzip -o -q /tmp/geonames/cities1000.zip -d /tmp/geonames
 
       - name: Geocode new tournament locations
         continue-on-error: true
         run: |
-          python3 geocode_tournaments.py --geonames /tmp/cities1000.txt --max-lookups 300 2>&1 | tee /tmp/geocode.log
+          python3 geocode_tournaments.py --geonames /tmp/geonames/cities1000.txt --max-lookups 300 2>&1 | tee /tmp/geocode.log
 
       - name: Check if tournaments_data.json was updated
         id: check_changes

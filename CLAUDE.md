@@ -1,7 +1,7 @@
 # CLAUDE.md - AI Assistant Guide for MedTourney
 
-**Last Updated:** 2026-09-23
-**Version:** 3.0.0
+**Last Updated:** 2026-09-24
+**Version:** 3.1.0
 **Purpose:** Comprehensive guide for AI assistants (like Claude) working on the MedTourney codebase
 
 ---
@@ -34,9 +34,9 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 
 ### Key Statistics
 
-- **Version:** 3.0.0
+- **Version:** 3.1.0
 - **Total Tests:** 290+ (100 service unit, 8 service integration, 68 Playwright E2E per browser, 87 Python backend, 27 Python integration) — all currently passing; see Testing Strategy
-- **Bundle Size:** ~30KB gzipped JS + ~6.5KB gzipped CSS (grown from the original 25KB as the results-first redesign, mobile fixes, and flag-icon system landed — still deliberately small; see Performance Considerations)
+- **Bundle Size:** ~36KB gzipped JS + ~7.6KB gzipped CSS for the main bundle (grown from the original 25KB as the results-first redesign, mobile fixes, flag icons, live filtering and the map toggle landed — still deliberately small; see Performance Considerations). The map view (MapView + Leaflet + markercluster, ~54KB gzipped) is lazy-loaded on first use and not part of it
 - **Architecture:** Modular service-oriented (5 specialized services + focused utils)
 - **Technologies:** TypeScript (strict mode), Vite, Playwright, Robot Framework, Python
 
@@ -882,7 +882,7 @@ npm run preview
 ### Performance Considerations
 
 1. **Bundle size**
-   - Current: ~30KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~6.5KB gzipped CSS - verify with `npm run build:vite` after any change that feels like it could be heavy
+   - Current: ~36KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~7.6KB gzipped CSS; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `app.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
    - Flag icons (`public/flags/*.png`) are static assets served on demand, not part of this bundle - kept to ~4KB average per flag (rasterized small; several countries' full-detail SVG coats of arms were 30-180KB, wasted at 20px icon size)
    - Avoid large dependencies
    - Use tree-shaking friendly imports
