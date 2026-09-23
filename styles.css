@@ -1857,6 +1857,31 @@ body.dark-theme .confidence-medium {
   font-weight: 700;
 }
 
+.empty-state-relaxation-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--sea);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.empty-state-relaxation-btn:hover {
+  color: var(--sea-hover);
+}
+
+.empty-state-relaxation-count {
+  color: var(--label);
+  font-weight: 600;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+
 .empty-state-actions {
   margin-bottom: var(--sp-8);
 }

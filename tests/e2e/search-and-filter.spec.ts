@@ -157,6 +157,24 @@ test.describe('Tournament Search and Filter', () => {
     }
   });
 
+  test('empty state offers a one-tap relaxation with a real result count', async ({ page }) => {
+    // The default fixture has no women's tournaments, so this alone empties
+    // the list - and filtering is live, so no Search click is needed.
+    await page.getByLabel(/Women's Tournaments/i).check();
+
+    const emptyState = page.locator('.empty-state');
+    await expect(emptyState).toBeVisible();
+
+    const relaxBtn = page.locator('.empty-state-relaxation-btn').first();
+    await expect(relaxBtn).toBeVisible();
+    await expect(relaxBtn).toContainText('(24)'); // full fixture set, once women-only is lifted
+
+    await relaxBtn.click();
+    await expect(page.getByLabel(/Women's Tournaments/i)).not.toBeChecked();
+    await expect(page.locator('.tournament-card').first()).toBeVisible();
+    await expect(emptyState).toBeHidden();
+  });
+
   test('should reset filters', async ({ page }) => {
     // Change some filters
     await page.getByLabel('Open Category Only').uncheck();

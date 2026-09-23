@@ -87,6 +87,7 @@ class TournamentFinder {
     private deepLinkUrl: string | null = null;
     private headerDateLabel: string | null = null;
     private countrySearchQuery = '';
+    private lastEmptyStateRelaxations: { label: string; count: number; apply: () => void }[] = [];
 
     constructor() {
         // Initialize service modules
@@ -250,6 +251,9 @@ class TournamentFinder {
         // Delegated whole-card click — opens the tournament's chess-results.com
         // page, matching users' expectation that the card itself is clickable
         this.initTournamentCardClickDelegation();
+
+        // Delegated one-tap relaxation buttons (rendered inside empty state)
+        this.initEmptyStateRelaxationDelegation();
 
         // Delegated reset-filters button (rendered inside empty state)
         document.addEventListener('click', (e) => {
@@ -840,25 +844,141 @@ class TournamentFinder {
         return parts.join(',') || 'none';
     }
 
-    /** Build human-readable filter suggestions for the empty state. */
-    private buildEmptySuggestions(): string[] {
-        const s = this.getFilterState();
-        const tips: string[] = [];
+    /**
+     * Build one-tap "relax this filter" options for the empty state, each
+     * with the actual result count that relaxation would produce (computed
+     * by re-running FilterService against the full unfiltered set, never the
+     * live UI) - "show 3+ days (12)" beats a plain "reduce minimum duration"
+     * tip because the number tells you whether it's worth tapping at all.
+     * Sorted biggest-win first and capped so the list stays scannable.
+     */
+    private buildEmptyStateRelaxations(): { label: string; count: number; apply: () => void }[] {
+        const base = this.getFilterState();
+        const countWith = (partial: Partial<FilterState>): number =>
+            this.filterService.filterTournaments(
+                this.allTournaments,
+                { ...base, ...partial },
+                this.mediterraneanLocations
+            ).length;
 
-        if (s.mediterraneanOnly) tips.push('Uncheck "Mediterranean Seaside Only"');
-        if (s.seniorCategory)    tips.push('Uncheck the S50+ Senior filter');
-        if (s.seniorS60)         tips.push('Uncheck the S60+ filter');
-        if (s.womenOnly)         tips.push('Uncheck "Women\'s Tournaments Only"');
-        if (!s.openOnly)         tips.push('Re-enable "Open Category Only" — it broadens results');
-        if (s.countryFilter.length > 0) tips.push(`Clear the country filter (${s.countryFilter.length} selected)`);
-        if (s.ratingCategory)    tips.push(`Remove the ${s.ratingCategory} rating ceiling filter`);
-        if (s.youthCategory)     tips.push(`Remove the ${s.youthCategory} youth age group filter`);
-        if (!s.classicalTime || !s.rapidTime || !s.blitzTime) tips.push('Check all time control options');
-        if (s.minDays !== 0)     tips.push(`Reduce minimum duration (currently "${s.minDays} days")`);
+        const relaxations: { label: string; count: number; apply: () => void }[] = [];
 
-        tips.push('Expand your date range');
+        if (base.mediterraneanOnly) {
+            relaxations.push({
+                label: 'Show all of Europe, not just seaside',
+                count: countWith({ mediterraneanOnly: false }),
+                apply: () => this.setCheckbox('mediterraneanOnly', false)
+            });
+        }
+        if (base.seniorCategory) {
+            relaxations.push({
+                label: 'Include non-senior tournaments',
+                count: countWith({ seniorCategory: false }),
+                apply: () => this.setCheckbox('seniorCategory', false)
+            });
+        }
+        if (base.seniorS60) {
+            relaxations.push({
+                label: 'Include S50+ as well as S60+',
+                count: countWith({ seniorS60: false }),
+                apply: () => this.setCheckbox('seniorS60', false)
+            });
+        }
+        if (base.womenOnly) {
+            relaxations.push({
+                label: "Include all tournaments, not just women's",
+                count: countWith({ womenOnly: false }),
+                apply: () => this.setCheckbox('womenOnly', false)
+            });
+        }
+        if (!base.openOnly) {
+            relaxations.push({
+                label: 'Re-enable Open Category Only',
+                count: countWith({ openOnly: true }),
+                apply: () => this.setCheckbox('openOnly', true)
+            });
+        }
+        if (base.countryFilter.length > 0) {
+            relaxations.push({
+                label: `Clear the country filter (${base.countryFilter.length} selected)`,
+                count: countWith({ countryFilter: [] }),
+                apply: () => {
+                    document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
+                        .forEach(cb => { cb.checked = false; });
+                    this.updateCountryFilterSummary();
+                }
+            });
+        }
+        if (base.ratingCategory) {
+            relaxations.push({
+                label: `Remove the ${base.ratingCategory} rating ceiling`,
+                count: countWith({ ratingCategory: '' }),
+                apply: () => this.setSelectValue('ratingCategory', '')
+            });
+        }
+        if (base.youthCategory) {
+            relaxations.push({
+                label: `Remove the ${base.youthCategory} youth age filter`,
+                count: countWith({ youthCategory: '' }),
+                apply: () => this.setSelectValue('youthCategory', '')
+            });
+        }
+        if (!base.classicalTime || !base.rapidTime || !base.blitzTime) {
+            relaxations.push({
+                label: 'Include all time controls',
+                count: countWith({ classicalTime: true, rapidTime: true, blitzTime: true }),
+                apply: () => {
+                    this.setCheckbox('classicalTime', true);
+                    this.setCheckbox('rapidTime', true);
+                    this.setCheckbox('blitzTime', true);
+                }
+            });
+        }
+        if (base.minDays !== 0) {
+            relaxations.push({
+                label: 'Remove the minimum-duration filter',
+                count: countWith({ minDays: 0 }),
+                apply: () => this.setSelectValue('minDays', '0')
+            });
+        }
+        if (base.endDate) {
+            const extended = new Date(base.endDate);
+            extended.setMonth(extended.getMonth() + 1);
+            relaxations.push({
+                label: 'Extend the date range by a month',
+                count: countWith({ endDate: extended }),
+                apply: () => {
+                    const endDateEl = document.getElementById('endDate') as HTMLInputElement | null;
+                    if (endDateEl) endDateEl.valueAsDate = extended;
+                }
+            });
+        }
 
-        return tips.slice(0, 5);
+        return relaxations
+            .filter(r => r.count > 0)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 4);
+    }
+
+    /**
+     * Delegated click handler for the empty state's one-tap relaxation
+     * buttons - #tournamentList is a stable container across re-renders, so
+     * this is wired once rather than re-attached every time the empty state
+     * itself is rebuilt.
+     */
+    private initEmptyStateRelaxationDelegation(): void {
+        const tournamentList = document.getElementById('tournamentList');
+        if (!tournamentList) return;
+
+        tournamentList.addEventListener('click', (e) => {
+            const btn = (e.target as Element).closest<HTMLButtonElement>('.empty-state-relaxation-btn');
+            if (!btn) return;
+            const index = Number(btn.dataset.relaxationIndex);
+            const relaxation = this.lastEmptyStateRelaxations[index];
+            if (!relaxation) return;
+            relaxation.apply();
+            this.handleFilterChange();
+        });
     }
 
     /** Reset all filter inputs to their default values and re-run the search. */
@@ -1225,9 +1345,10 @@ class TournamentFinder {
         this.uiManager.setShortlistedUrls(this.shortlist);
 
         if (toDisplay.length === 0) {
+            this.lastEmptyStateRelaxations = this.buildEmptyStateRelaxations();
             this.uiManager.prepareEmptyState(
                 this.allTournaments.length,
-                this.buildEmptySuggestions()
+                this.lastEmptyStateRelaxations.map(({ label, count }) => ({ label, count }))
             );
         }
 

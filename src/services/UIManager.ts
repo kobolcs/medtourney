@@ -19,13 +19,20 @@ export class UIManager {
     private itemsPerPage = 10;
     private filteredTournaments: Tournament[] = [];
     private shortlistedUrls: Set<string> = new Set();
-    private emptyStateContext: { totalCount: number; suggestions: string[] } | null = null;
+    private emptyStateContext: { totalCount: number; relaxations: { label: string; count: number }[] } | null = null;
     private groupByDate = false;
     private monthCounts: Map<string, number> = new Map();
 
-    /** Called before displayTournaments when the result set will be empty. */
-    prepareEmptyState(totalCount: number, suggestions: string[]): void {
-        this.emptyStateContext = { totalCount, suggestions };
+    /**
+     * Called before displayTournaments when the result set will be empty.
+     * relaxations are one-tap "relax this filter" options with the result
+     * count each would produce - app.ts computes them (it owns FilterState
+     * and FilterService) and keeps the matching apply() callbacks itself,
+     * wiring clicks via its own delegated listener since these buttons are
+     * rendered fresh into the DOM each time showEmptyState() runs.
+     */
+    prepareEmptyState(totalCount: number, relaxations: { label: string; count: number }[]): void {
+        this.emptyStateContext = { totalCount, relaxations };
     }
 
     setShortlistedUrls(urls: Set<string>): void {
@@ -616,13 +623,19 @@ export class UIManager {
             ? `<p class="empty-state-message empty-state-count">0 of ${ctx.totalCount.toLocaleString()} tournaments match your filters.</p>`
             : `<p class="empty-state-message">We couldn't find any tournaments matching your current filters.</p>`;
 
-        const suggestions = ctx?.suggestions.length
-            ? ctx.suggestions
-            : ['Expand the date range', 'Remove some filter criteria', 'Try a different country or location'];
+        const relaxations = ctx?.relaxations ?? [];
 
-        const suggestionItems = suggestions
-            .map(s => `<li>${escapeHTML(s)}</li>`)
-            .join('');
+        const relaxationItems = relaxations.length > 0
+            ? relaxations.map((r, i) => `
+                <li>
+                    <button type="button" class="empty-state-relaxation-btn" data-relaxation-index="${i}">
+                        ${escapeHTML(r.label)} <span class="empty-state-relaxation-count">(${r.count.toLocaleString()})</span>
+                    </button>
+                </li>
+            `).join('')
+            : ['Expand the date range', 'Remove some filter criteria', 'Try a different country or location']
+                .map(s => `<li>${escapeHTML(s)}</li>`)
+                .join('');
 
         container.innerHTML = `
             <div class="empty-state">
@@ -630,8 +643,8 @@ export class UIManager {
                 <h3 class="empty-state-title">No Tournaments Found</h3>
                 ${countLine}
                 <div class="empty-state-suggestions">
-                    <h4>Try adjusting your filters:</h4>
-                    <ul>${suggestionItems}</ul>
+                    <h4>${relaxations.length > 0 ? 'One-tap fixes:' : 'Try adjusting your filters:'}</h4>
+                    <ul>${relaxationItems}</ul>
                 </div>
                 <div class="empty-state-actions">
                     <button class="reset-filters-btn" id="resetFiltersBtn">
