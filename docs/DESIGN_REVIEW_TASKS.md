@@ -12,9 +12,8 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 - [~] **2. Clean up the scraped text on each card.**
   - [x] FED code → flag + country name (`utils/countries.ts`, `formatLocation`)
   - [x] Split `category` into separate chips; colour the Classical/Rapid/Blitz pill (`67915ef`)
-  - [ ] Normalise time controls: `10'05''` → `10+5`, `90'+30''` → `90+30`
-    (`UIManager.condenseTimeControl()` only handles "90 min + 30 sec" style text
-    today; `10'05''` passes through as-is)
+  - [x] Normalise time controls: `10'05''` → `10+5`, `90'+30''` → `90+30`
+    (`utils/timeControl.ts`, `bf4d01e`; 27 ambiguous strings still open with the user)
   - [x] "1 days" → avoided (duration pill only shown for 2+ days)
   - [ ] Weekday span on the card ("Fri – Sun")
 - [x] **3. Month dividers with per-month count** when sorted by date (`67915ef`, overflow fix `1b5591d`).
@@ -52,6 +51,7 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 
 ## Known test issue (pre-existing, not from the review work)
 
-- [ ] Firefox: `keyboard-navigation.spec.ts` "should navigate through filter
+- [x] Firefox: `keyboard-navigation.spec.ts` "should navigate through filter
   collapse with Enter and Space" – focus doesn't land on the "Search Filters"
-  heading after 4 Tabs. Also fails on the code before these changes.
+  heading after 4 Tabs. Cause: the sticky sidebar's `overflow-y: auto` made
+  `.filters-card` a Firefox Tab stop; fixed with `tabindex="-1"` (`67a3cd9`).
