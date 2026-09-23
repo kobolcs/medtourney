@@ -284,7 +284,7 @@ export class UIManager {
                         ${this.escapeHTML(tournament.name)}
                     </a>
                 </h3>
-                <div class="featured-location">${this.escapeHTML(tournament.location)}</div>
+                <div class="featured-location">${formatLocation(tournament.location)}</div>
                 <div class="featured-meta">
                     <span class="featured-date">${dateStr}</span>
                     <span class="featured-category">${this.escapeHTML(tournament.category)}</span>
@@ -378,7 +378,7 @@ export class UIManager {
                         </button>
                     </div>
                 </div>
-                <div class="tournament-location">${this.escapeHTML(formatLocation(tournament.location))}</div>
+                <div class="tournament-location">${formatLocation(tournament.location)}</div>
                 <div class="tournament-meta">
                     <span class="tournament-category">${this.escapeHTML(tournament.category)}</span>
                     ${timeControlHTML}

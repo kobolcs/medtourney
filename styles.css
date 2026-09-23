@@ -1004,6 +1004,9 @@ body.dark-theme .error-message.success-type {
 .featured-location {
   color: var(--text);
   margin-bottom: var(--sp-3);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
 }
 
 .featured-meta {
@@ -1177,6 +1180,12 @@ body.dark-theme .error-message.success-type {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
+}
+
+.flag-icon {
+  flex-shrink: 0;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
 }
 
 .tournament-location::before {
