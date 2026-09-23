@@ -23,10 +23,14 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 
 ## Weekend changes
 
-- [~] **6. Seaside / Senior mode switch + live filtering + active-filter chips** (`65dbc07`).
+- [x] **6. Seaside / Senior mode switch + live filtering + active-filter chips** (`65dbc07`).
   - [x] Segmented mode switch (All Europe / Seaside / Senior 50+ / Both)
   - [x] Live filtering, match count, removable chips + "Clear all"
-  - [ ] Remove the Search button (the review suggested this; it's still in `index.html`)
+  - [x] Remove the Search button. Desktop: gone. Below 1024px (filters above
+    results) it's now "Show N tournaments ↓", jumping to the results with the
+    live count; a failed data load offers its own "Try again".
+  - [ ] `tests/e2e/test_phase2_ui.robot` still clicks `id=searchBtn` - that
+    Robot suite isn't run by CI or any npm script, so it was left as-is.
 - [x] **7. Sticky filter sidebar on desktop** (≥1024px) (`2cd6664`).
 - [ ] **8. Filters in a bottom sheet on phones** – results first, a "Filters (3)" button
   opens the same filter markup as a sheet with a "Show N tournaments" button.

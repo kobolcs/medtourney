@@ -128,7 +128,6 @@ test.describe('Dark Mode and UI Features', () => {
     await expect(loading).toHaveAttribute('role', 'status');
 
     // The app renders skeleton placeholders while fetching, then real cards.
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#results')).toBeVisible({ timeout: 2000 });
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
   });
@@ -175,7 +174,6 @@ test.describe('Dark Mode and UI Features', () => {
     await page.fill('#startDate', formatDate(tomorrow));
     await page.fill('#endDate', formatDate(dayAfter));
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
@@ -217,17 +215,18 @@ test.describe('Dark Mode and UI Features', () => {
 
   test('should have responsive design on mobile', async ({ page, isMobile }) => {
     if (isMobile) {
-      // Search button should be sticky on mobile
-      const searchBtn = page.getByRole('button', { name: /search tournaments/i });
-      await expect(searchBtn).toBeVisible();
+      // The "Show N tournaments" jump button should be sticky on mobile
+      const showResultsBtn = page.locator('#showResultsBtn');
+      await expect(showResultsBtn).toBeVisible();
+      await expect(showResultsBtn).toContainText(/show \d+ tournaments?/i);
 
-      // Check if search button is at bottom (fixed position), and that its
+      // Check if the button is at bottom (fixed position), and that its
       // real screen position tracks the visual viewport rather than the
       // (usually taller, toolbar-inflated) layout viewport — see
       // UIManager.initViewportOffsetFix(). A plain `bottom: 0` would leave
       // the button below the actually-visible/tappable area on real
       // Chrome for Android.
-      const position = await searchBtn.evaluate((el) => {
+      const position = await showResultsBtn.evaluate((el) => {
         const style = window.getComputedStyle(el);
         const rect = el.getBoundingClientRect();
         return {
@@ -250,7 +249,6 @@ test.describe('Dark Mode and UI Features', () => {
   test('should show proper pagination info', async ({ page }) => {
     // Get many results
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();

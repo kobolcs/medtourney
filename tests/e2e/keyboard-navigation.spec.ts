@@ -26,16 +26,17 @@ test.describe('Keyboard Navigation', () => {
     await page.keyboard.press('Tab'); // First checkbox
     await page.keyboard.press('Tab'); // Second checkbox
 
-    // All tabs should eventually reach search button.
-    // Limit is high because the country checkbox list has 54 entries.
-    let foundSearchButton = false;
-    for (let i = 0; i < 200 && !foundSearchButton; i++) {
+    // Filtering is live (no Search button): tabbing must get all the way
+    // through the filters to the results' "Filter results..." box.
+    // Limit is high because the country checkbox list has 55 entries.
+    const quickSearch = page.locator('#quickSearch');
+    let reachedResults = false;
+    for (let i = 0; i < 200 && !reachedResults; i++) {
       await page.keyboard.press('Tab');
-      const searchBtn = page.getByRole('button', { name: /search tournaments/i });
-      foundSearchButton = await searchBtn.evaluate((el) => el === document.activeElement).catch(() => false);
+      reachedResults = await quickSearch.evaluate((el) => el === document.activeElement).catch(() => false);
     }
 
-    expect(foundSearchButton).toBe(true);
+    expect(reachedResults).toBe(true);
   });
 
   test('should support keyboard shortcut - "/" focuses quick search', async ({ page }) => {
@@ -142,21 +143,20 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('should activate buttons with Enter key', async ({ page }) => {
-    // Tab to search button (limit is high due to 54 country checkboxes)
-    let foundSearchButton = false;
-    for (let i = 0; i < 200 && !foundSearchButton; i++) {
+    // Tab to the "Seaside" mode button near the top of the filters
+    const seaside = page.locator('.mode-switch-btn[data-mode="seaside"]');
+    let focused = false;
+    for (let i = 0; i < 30 && !focused; i++) {
       await page.keyboard.press('Tab');
-      const searchBtn = page.getByRole('button', { name: /search tournaments/i });
-      foundSearchButton = await searchBtn.evaluate((el) => el === document.activeElement).catch(() => false);
+      focused = await seaside.evaluate((el) => el === document.activeElement).catch(() => false);
     }
 
-    expect(foundSearchButton).toBe(true);
+    expect(focused).toBe(true);
 
-    // Press Enter to activate the focused search button.
+    // Press Enter to activate it - filtering is live, results re-render.
     await page.keyboard.press('Enter');
-
-    // A search runs and results render.
-    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+    await expect(seaside).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByLabel('Mediterranean Seaside Only')).toBeChecked();
   });
 
   test('should navigate through filter collapse with Enter and Space', async ({ page }) => {
@@ -193,7 +193,6 @@ test.describe('Keyboard Navigation', () => {
     // Get many results
     await openAdvancedFilters(page);
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();

@@ -66,9 +66,11 @@ export async function stubTournaments(
     );
 }
 
-/** Click the search button and wait for tournament cards to render. */
+/**
+ * Wait for tournament cards to render. Results load automatically and
+ * filtering is live, so there's no Search button to click any more.
+ */
 export async function runSearch(page: Page): Promise<void> {
-    await page.locator('#searchBtn').click();
     await page.locator('.tournament-card').first().waitFor({ state: 'visible', timeout: 10000 });
 }
 

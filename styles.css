@@ -365,7 +365,7 @@ header h1 {
 .filters-card.collapsed .date-range,
 .filters-card.collapsed .country-filter-section,
 .filters-card.collapsed .date-presets,
-.filters-card.collapsed .search-button {
+.filters-card.collapsed .show-results-btn {
   display: none;
 }
 
@@ -851,8 +851,12 @@ details#advancedFilters[open] > .advanced-summary::before {
   gap: 0;
 }
 
-/* SEARCH BUTTON */
-.search-button {
+/* SHOW-RESULTS BUTTON
+   Filtering is live, so there is no Search button. Below 1024px the filters
+   sit above the results, and this jumps down to them with the live count;
+   on the desktop sidebar layout the results are already beside the filters. */
+.show-results-btn {
+  display: none;
   width: 100%;
   padding: var(--sp-4) var(--sp-8);
   min-height: 52px;
@@ -869,21 +873,33 @@ details#advancedFilters[open] > .advanced-summary::before {
   letter-spacing: .01em;
 }
 
-.search-button:hover {
+.show-results-btn:hover {
   background: var(--sea-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.search-button:active {
+.show-results-btn:active {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
 
-.search-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-  transform: none;
+@media (max-width: 1023px) {
+  .show-results-btn {
+    display: block;
+  }
+}
+
+.error-retry-btn {
+  margin-left: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid currentColor;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* ─────────────────────────────────────────
@@ -2290,7 +2306,7 @@ footer a:hover {
     grid-template-columns: 1fr 1fr;
   }
 
-  /* Sticky search button */
+  /* Sticky show-results button */
   body {
     padding-bottom: var(--sp-16);
   }
@@ -2299,7 +2315,7 @@ footer a:hover {
     margin-bottom: 80px;
   }
 
-  .search-button {
+  .show-results-btn {
     position: fixed;
     /* Chrome for Android's layout viewport (window.innerHeight) is taller
        than the actually-visible visual viewport by the toolbar's height, so
@@ -2318,7 +2334,7 @@ footer a:hover {
     box-shadow: 0 -4px 20px rgba(22,32,50,.18);
   }
 
-  .search-button:hover {
+  .show-results-btn:hover {
     transform: none;
   }
 
@@ -2410,7 +2426,7 @@ footer a:hover {
     margin-bottom: var(--sp-6);
   }
 
-  .search-button {
+  .show-results-btn {
     position: static;
     border-radius: var(--r-md);
     box-shadow: var(--shadow-sm);
@@ -2419,7 +2435,7 @@ footer a:hover {
     padding: var(--sp-4) var(--sp-8);
   }
 
-  .search-button:hover {
+  .show-results-btn:hover {
     transform: translateY(-1px);
   }
 }

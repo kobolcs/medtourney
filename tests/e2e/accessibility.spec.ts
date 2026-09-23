@@ -35,9 +35,9 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should have proper ARIA labels on interactive elements', async ({ page }) => {
-    // Check search button
-    const searchBtn = page.getByRole('button', { name: /search tournaments/i });
-    await expect(searchBtn).toHaveAttribute('aria-label', /search.*tournaments/i);
+    // Check the filters' "Clear all" button
+    const clearBtn = page.locator('#clearFiltersBtn');
+    await expect(clearBtn).toHaveAttribute('aria-label', /clear all filters/i);
 
     // Check theme toggle
     const themeToggle = page.getByRole('button', { name: /toggle dark mode/i });
@@ -208,15 +208,15 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should be keyboard navigable', async ({ page }) => {
-    const searchBtn = page.getByRole('button', { name: /search tournaments/i });
-
-    // Tabbing through the interactive elements must eventually reach the
-    // search button (robust to exact element count/order).
-    // Limit is high because the country checkbox list has 54 entries.
+    // Filtering is live (no Search button), so tab all the way through the
+    // filter panel to the results' "Filter results..." box that follows it
+    // (robust to exact element count/order).
+    // Limit is high because the country checkbox list has 55 entries.
+    const quickSearch = page.locator('#quickSearch');
     let reached = false;
     for (let i = 0; i < 200 && !reached; i++) {
       await page.keyboard.press('Tab');
-      reached = await searchBtn.evaluate((el) => el === document.activeElement).catch(() => false);
+      reached = await quickSearch.evaluate((el) => el === document.activeElement).catch(() => false);
     }
     expect(reached).toBe(true);
   });

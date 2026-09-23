@@ -635,7 +635,7 @@ export class UIManager {
     /**
      * Show error message
      */
-    showError(message: string, type: 'error' | 'warning' | 'success' = 'error'): void {
+    showError(message: string, type: 'error' | 'warning' | 'success' = 'error', onRetry?: () => void): void {
         const error = document.getElementById('error');
         if (!error) return;
 
@@ -643,12 +643,48 @@ export class UIManager {
         error.className = `error-message ${type}-type`;
         error.style.display = 'block';
 
+        // With live filtering there's no Search button to press again, so a
+        // failed load offers its own retry.
+        if (onRetry) {
+            const retry = document.createElement('button');
+            retry.type = 'button';
+            retry.className = 'error-retry-btn';
+            retry.textContent = 'Try again';
+            retry.addEventListener('click', () => {
+                error.style.display = 'none';
+                onRetry();
+            });
+            error.append(' ', retry);
+        }
+
         // Auto-hide success messages
         if (type === 'success') {
             setTimeout(() => {
                 error.style.display = 'none';
             }, 5000);
         }
+    }
+
+    /**
+     * Keep the "Show N tournaments" jump button's label in step with the
+     * live result count (the button itself is only displayed below 1024px,
+     * where the filters sit above the results - see styles.css).
+     */
+    updateShowResultsButton(count: number): void {
+        const btn = document.getElementById('showResultsBtn');
+        if (!btn) return;
+        btn.textContent = count === 0
+            ? 'No matches – see suggestions ↓'
+            : `Show ${count.toLocaleString('en-GB')} tournament${count === 1 ? '' : 's'} ↓`;
+    }
+
+    /** Scroll the results into view and move focus to their heading. */
+    scrollToResults(): void {
+        const heading = document.getElementById('resultsHeading');
+        if (!heading) return;
+        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        heading.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        heading.focus({ preventScroll: true });
     }
 
     /**
@@ -745,13 +781,13 @@ export class UIManager {
     }
 
     /**
-     * On phones, the fixed-position Search button is pinned to
+     * On phones, the fixed-position "Show N tournaments" button is pinned to
      * `window.innerHeight` (the layout viewport), which Chrome for Android
      * sizes as if its toolbar were hidden even while it's showing. That
      * leaves the button positioned below the actually-visible visual
      * viewport by the toolbar's height. Track the gap via the
      * visualViewport API and expose it as a CSS custom property so
-     * `.search-button`'s `bottom` offset can compensate; see styles.css.
+     * `.show-results-btn`'s `bottom` offset can compensate; see styles.css.
      */
     initViewportOffsetFix(): void {
         const viewport = window.visualViewport;

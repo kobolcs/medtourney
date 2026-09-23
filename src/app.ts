@@ -189,10 +189,7 @@ class TournamentFinder {
      * Attach all event listeners
      */
     private attachEventListeners(): void {
-        const searchBtn = document.getElementById('searchBtn');
-        if (searchBtn) {
-            searchBtn.addEventListener('click', () => void this.searchTournaments());
-        }
+        document.getElementById('showResultsBtn')?.addEventListener('click', () => this.uiManager.scrollToResults());
 
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
@@ -1054,7 +1051,9 @@ class TournamentFinder {
                 currentSort: this.currentSort
             });
             this.uiManager.showError(
-                error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.'
+                error instanceof Error ? error.message : 'Failed to fetch tournaments. Please try again.',
+                'error',
+                () => void this.searchTournaments()
             );
         }
     }
@@ -1353,6 +1352,7 @@ class TournamentFinder {
         }
 
         this.uiManager.displayTournaments(toDisplay, this.currentSort);
+        this.uiManager.updateShowResultsButton(toDisplay.length);
 
         if (this.deepLinkUrl) {
             const target = this.deepLinkUrl;

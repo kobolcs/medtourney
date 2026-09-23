@@ -369,8 +369,11 @@
                 </div>
             </details>
 
-            <button id="searchBtn" class="search-button" aria-label="Search Tournaments with the selected filters">
-                Search Tournaments
+            <!-- Filtering is live, so there's no Search button. Below 1024px the
+                 filters sit above the results; this jumps down to them and
+                 carries the live match count (hidden on the desktop sidebar). -->
+            <button id="showResultsBtn" class="show-results-btn" type="button">
+                Show tournaments ↓
             </button>
         </div>
 
@@ -387,7 +390,7 @@
         <div id="results" class="results-container" style="display: none;" role="region" aria-label="Tournament search results">
             <div class="results-header">
                 <div class="results-title-group">
-                    <h2>Search Results</h2>
+                    <h2 id="resultsHeading" tabindex="-1">Search Results</h2>
                     <span id="resultsCount" class="results-count" role="status" aria-live="polite"></span>
                 </div>
                 <div class="results-controls">
@@ -456,7 +459,7 @@
 
                 <div class="help-section">
                     <h3>Getting started</h3>
-                    <p>Results for the next 6 months load automatically — adjust filters and click <strong>Search</strong> to narrow them. Click anywhere on a card to open its page on chess-results.com. Your filter settings are saved automatically.</p>
+                    <p>Results for the next 6 months load automatically — results update as soon as you change a filter. Click anywhere on a card to open its page on chess-results.com. Your filter settings are saved automatically.</p>
                 </div>
 
                 <div class="help-section">

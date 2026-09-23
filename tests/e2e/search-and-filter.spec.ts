@@ -18,16 +18,15 @@ test.describe('Tournament Search and Filter', () => {
 
     // Check filter panel
     await expect(page.locator('h2', { hasText: 'Search Filters' })).toBeVisible();
-    await expect(page.getByRole('button', { name: /search tournaments/i })).toBeVisible();
+    await expect(page.locator('#quickSearch')).toBeVisible();
 
     // Check footer
     await expect(page.locator('#lastUpdated')).toBeVisible();
     await expect(page.locator('footer a[href*="chess-results.com"]')).toBeVisible();
   });
 
-  test('should search for tournaments', async ({ page }) => {
-    await page.getByRole('button', { name: /search tournaments/i }).click();
-
+  test('should load tournaments automatically', async ({ page }) => {
+    // Results-first + live filtering: no Search button, results just load.
     // Wait for loading to disappear
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
@@ -58,7 +57,6 @@ test.describe('Tournament Search and Filter', () => {
     await expect(page.getByLabel('Mediterranean Seaside Only')).toBeChecked();
     await expect(page.getByLabel(/S50\+.*Senior/i)).toBeChecked();
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
   });
 
@@ -73,7 +71,6 @@ test.describe('Tournament Search and Filter', () => {
     await page.fill('#startDate', formatDate(today));
     await page.fill('#endDate', formatDate(nextMonth));
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
   });
 
@@ -105,7 +102,6 @@ test.describe('Tournament Search and Filter', () => {
     // Country filter is now a checkbox list — check Spain's checkbox
     await page.locator('#countryList input[value="ESP"]').check();
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     // If results are shown, verify they contain Spanish tournaments
@@ -139,7 +135,6 @@ test.describe('Tournament Search and Filter', () => {
     await page.fill('#startDate', formatDate(tomorrow));
     await page.fill('#endDate', formatDate(dayAfter));
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     // Should show empty state (or results - depending on data)
@@ -180,7 +175,6 @@ test.describe('Tournament Search and Filter', () => {
     await page.getByLabel('Open Category Only').uncheck();
     await page.getByLabel('Mediterranean Seaside Only').check();
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     // Look for empty state and reset button
@@ -252,7 +246,6 @@ test.describe('Tournament Search and Filter', () => {
     // Ensure we have many results by unchecking filters
     await page.getByLabel('Exclude Youth-Only Tournaments').uncheck();
 
-    await page.getByRole('button', { name: /search tournaments/i }).click();
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
     const resultsVisible = await page.locator('#results').isVisible();
@@ -379,5 +372,44 @@ test.describe('Seaside/Senior mode switch and live filtering', () => {
     await expect(page.locator('#mediterraneanOnly')).not.toBeChecked();
     await expect(page.locator('.mode-switch-btn[data-mode="all"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#activeFilterChips')).toBeHidden();
+  });
+});
+
+test.describe('No Search button - live results', () => {
+  test('a failed load offers "Try again", which recovers', async ({ page }) => {
+    // Fail every tournament-data source (local file + remote fallbacks)
+    await page.route('**/*tournaments_data*.json*', route => route.abort());
+    await page.goto('/');
+
+    const retry = page.getByRole('button', { name: 'Try again' });
+    await expect(retry).toBeVisible({ timeout: 20000 });
+
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+    await stubTournaments(page);
+    await retry.click();
+
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('#error')).toBeHidden();
+  });
+
+  test('"Show N tournaments" jumps to the results on phones', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'The jump button is only shown below 1024px');
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+
+    const btn = page.locator('#showResultsBtn');
+    await expect(btn).toContainText(/show \d+ tournaments?/i);
+    await btn.click();
+    await expect(page.locator('#resultsHeading')).toBeFocused();
+    await expect(page.locator('#resultsHeading')).toBeInViewport();
+  });
+
+  test('the jump button is hidden on the desktop sidebar layout', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Desktop layout only');
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('#showResultsBtn')).toBeHidden();
   });
 });
