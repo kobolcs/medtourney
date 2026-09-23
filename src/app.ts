@@ -18,6 +18,7 @@ import { FilterService } from './services/FilterService';
 import { DataService } from './services/DataService';
 import { ExportService } from './services/ExportService';
 import { UIManager } from './services/UIManager';
+import type { MapView } from './services/MapView';
 import { Logger } from './utils/Logger';
 import { escapeHTML } from './utils/html';
 import { filterStateToSearchParams, filterStateFromSearchParams, FILTER_PARAM_KEYS } from './utils/filterUrl';
@@ -88,6 +89,8 @@ class TournamentFinder {
     private headerDateLabel: string | null = null;
     private countrySearchQuery = '';
     private lastEmptyStateRelaxations: { label: string; count: number; apply: () => void }[] = [];
+    private mapView: MapView | null = null;
+    private currentView: 'list' | 'map' = 'list';
 
     constructor() {
         // Initialize service modules
@@ -190,6 +193,10 @@ class TournamentFinder {
      */
     private attachEventListeners(): void {
         document.getElementById('showResultsBtn')?.addEventListener('click', () => this.uiManager.scrollToResults());
+
+        document.querySelectorAll<HTMLButtonElement>('.view-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => void this.setView(btn.dataset.view === 'map' ? 'map' : 'list'));
+        });
 
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
@@ -1395,6 +1402,10 @@ class TournamentFinder {
 
         this.uiManager.displayTournaments(toDisplay, this.currentSort);
         this.uiManager.updateShowResultsButton(toDisplay.length);
+        if (this.currentView === 'map') {
+            this.syncMapVisibility();
+            this.mapView?.update(toDisplay);
+        }
 
         if (this.deepLinkUrl) {
             const target = this.deepLinkUrl;
@@ -1402,6 +1413,48 @@ class TournamentFinder {
             // Defer so the DOM has been painted before we scroll
             setTimeout(() => this.uiManager.highlightTournament(target), 100);
         }
+    }
+
+    /**
+     * List/Map toggle. The map shows every tournament in the current results
+     * (all pages); MapView loads Leaflet on first use. With zero results the
+     * list's empty state (and its one-tap relaxations) stays on screen.
+     */
+    private async setView(view: 'list' | 'map'): Promise<void> {
+        this.currentView = view;
+        document.querySelectorAll<HTMLButtonElement>('.view-toggle-btn').forEach(btn => {
+            const active = btn.dataset.view === view;
+            btn.classList.toggle('is-active', active);
+            btn.setAttribute('aria-pressed', String(active));
+        });
+        this.syncMapVisibility();
+        if (view === 'list') return;
+
+        const canvas = document.getElementById('mapCanvas');
+        if (!canvas) return;
+        try {
+            // The map module (and Leaflet behind it) is only fetched on first use
+            if (!this.mapView) {
+                const { MapView } = await import('./services/MapView');
+                this.mapView ??= new MapView(canvas, document.getElementById('mapNote'), url => {
+                    void this.setView('list');
+                    this.uiManager.showTournamentInList(url);
+                });
+            }
+            await this.mapView.show(this.displayedTournaments);
+            this.trackEvent('Map View');
+        } catch {
+            this.uiManager.showError("The map couldn't be loaded - showing the list instead.", 'warning');
+            void this.setView('list');
+        }
+    }
+
+    private syncMapVisibility(): void {
+        const showMap = this.currentView === 'map' && this.displayedTournaments.length > 0;
+        const mapView = document.getElementById('mapView');
+        const list = document.getElementById('tournamentList');
+        if (mapView) mapView.hidden = !showMap;
+        if (list) list.hidden = showMap;
     }
 
     /**

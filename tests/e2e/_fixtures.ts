@@ -16,6 +16,8 @@ export interface TournamentFixture {
     category: string;
     url: string;
     description: string;
+    lat?: number;
+    lng?: number;
 }
 
 /** ISO YYYY-MM-DD a given number of days from today (UTC). */
@@ -43,6 +45,9 @@ export function defaultFixtures(): TournamentFixture[] {
         items.push({
             name: `${isMed ? 'Barcelona' : 'Vienna'} Open ${n}`,
             location: isMed ? 'Barcelona, ESP' : 'Vienna, AUT',
+            // Coordinates as geocode_tournaments.py would add them (map view)
+            lat: isMed ? 41.3874 : 48.2082,
+            lng: isMed ? 2.1686 : 16.3738,
             date: isoInDays(n * 7),
             category: cat.join(', '),
             url: `https://chess-results.com/tnr${n}.aspx?lan=1`,
@@ -88,4 +93,17 @@ export async function openAdvancedFilters(page: Page): Promise<void> {
         await page.locator('.advanced-summary').click();
     }
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+}
+
+/** 1x1 transparent PNG - stands in for OpenStreetMap tiles in tests. */
+const BLANK_PNG = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+    'base64'
+);
+
+/** Serve map tiles locally so map tests never hit tile.openstreetmap.org. */
+export async function stubMapTiles(page: Page): Promise<void> {
+    await page.route('https://tile.openstreetmap.org/**', route =>
+        route.fulfill({ status: 200, contentType: 'image/png', body: BLANK_PNG })
+    );
 }

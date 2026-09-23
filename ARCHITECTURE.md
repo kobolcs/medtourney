@@ -205,6 +205,34 @@ updateResultsCount(count: number): void
 
 ---
 
+### 6. **MapView** (`src/services/MapView.ts`)
+
+**Responsibility**: The results' Map view (List/Map toggle in the results header)
+
+**How it works**:
+- Loaded lazily: `app.ts` `import()`s the module on the first switch to Map,
+  and MapView `import()`s Leaflet, `leaflet.markercluster` and their CSS on
+  first show - none of it is in the main bundle
+- Shows every tournament in the current results (all pages), grouped by
+  identical coordinates (`src/utils/mapPlaces.ts`, pure and unit-tested),
+  clustered at low zoom; pins coloured seaside / senior / other
+- Tiles: OpenStreetMap's standard raster tiles (attribution shown); dark mode
+  inverts the tile pane with a CSS filter
+- Popups link to chess-results and offer "Show in list", which switches back
+  and calls `UIManager.showTournamentInList()` (jumps to the right page)
+- Tournaments without coordinates are counted in a note under the map
+
+**Where coordinates come from**: `geocode_tournaments.py` runs after every
+daily scrape (`.github/workflows/update-tournaments.yml`) and writes
+`lat`/`lng` into `tournaments_data.json`. Locations are looked up once via
+OpenStreetMap Nominatim (1 request/s, identifying User-Agent, capped per
+run) and remembered in the committed `geocode_cache.json`, so each run only
+queries places it hasn't seen; misses are retried after 30 days. Town names
+buried in venue text fall back to an offline match against GeoNames'
+`cities1000` list. The browser never calls a geocoding service.
+
+---
+
 ## Coordination Layer
 
 ### **app.ts** (573 lines, -75% from original)

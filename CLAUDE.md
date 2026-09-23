@@ -63,13 +63,17 @@ medtourney/
 │   │   ├── FilterService.ts      # Multi-criteria filtering (395 lines)
 │   │   ├── DataService.ts        # 3-tier fetch strategy (319 lines)
 │   │   ├── ExportService.ts      # CSV & iCalendar exports (330 lines)
-│   │   └── UIManager.ts          # DOM manipulation & rendering (807 lines)
+│   │   ├── UIManager.ts          # DOM manipulation & rendering (807 lines)
+│   │   └── MapView.ts            # List/Map toggle's map (Leaflet + OSM tiles, lazy-loaded)
 │   └── utils/
 │       ├── Logger.ts             # Logging utility
 │       ├── validators.ts         # Zod runtime schemas for fetched data
 │       ├── countries.ts          # FED code -> name/flag-icon HTML for location display
 │       ├── html.ts               # Shared escapeHTML() - see Security Considerations
-│       └── filterUrl.ts          # FilterState <-> URLSearchParams (shareable filtered links)
+│       ├── filterUrl.ts          # FilterState <-> URLSearchParams (shareable filtered links)
+│       ├── timeControl.ts        # Scraped time control -> "90+30" notation
+│       ├── durationLabel.ts      # Card duration pill ("Fri–Sun · 3 days")
+│       └── mapPlaces.ts          # Group tournaments into map markers (pure)
 │
 ├── tests/                        # Comprehensive test suite (290+ tests)
 │   ├── unit/                     # Service unit tests (100 tests)
@@ -104,6 +108,8 @@ medtourney/
 ├── TournamentProcessor.py        # Python backend for scraping
 ├── scrape_tournaments.robot      # Robot Framework scraper
 ├── run_scraper.py                # Scraper entry point
+├── geocode_tournaments.py        # Adds lat/lng after each scrape (Nominatim + GeoNames, cached)
+├── geocode_cache.json            # Geocoding cache - committed, so daily runs only look up new places
 │
 ├── vite.config.ts                # Vite build configuration
 ├── tsconfig.json                 # TypeScript configuration (strict mode)
@@ -262,7 +268,7 @@ ruff check .
 
 # Type checking
 npm run type-check      # TypeScript
-mypy TournamentProcessor.py run_scraper.py  # Python
+mypy TournamentProcessor.py run_scraper.py geocode_tournaments.py  # Python
 ```
 
 ---

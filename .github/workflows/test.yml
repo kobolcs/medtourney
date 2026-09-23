@@ -34,7 +34,7 @@ jobs:
 
     - name: Run mypy type checking
       run: |
-        mypy TournamentProcessor.py run_scraper.py --config-file mypy.ini
+        mypy TournamentProcessor.py run_scraper.py geocode_tournaments.py --config-file mypy.ini
       env:
         CI: true
 
@@ -271,6 +271,12 @@ jobs:
     - name: Run parity tests
       run: |
         pytest tests/python/test_frontend_backend_parity.py -v --tb=short
+      env:
+        CI: true
+
+    - name: Run geocoder tests (offline - Nominatim is faked)
+      run: |
+        pytest tests/python/test_geocode.py -v --tb=short
       env:
         CI: true
 

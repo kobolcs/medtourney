@@ -20,7 +20,11 @@ export const TournamentSchema = z.object({
     category: z.string(),
     description: z.string(),
     timeControl: z.string().optional(),
-    dateTo: z.string().optional()
+    dateTo: z.string().optional(),
+    // Map coordinates added by geocode_tournaments.py (absent when a
+    // location couldn't be placed)
+    lat: z.number().min(-90).max(90).optional(),
+    lng: z.number().min(-180).max(180).optional()
 });
 
 /**

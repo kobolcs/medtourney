@@ -704,6 +704,18 @@ export class UIManager {
      * Scroll to and briefly highlight the tournament card matching the given URL.
      * Called after a deep-link search (?t= param) completes rendering.
      */
+    /**
+     * Go to the results page that holds this tournament, then highlight its
+     * card (used by the map's "Show in list"). No-op if it isn't in the list.
+     */
+    showTournamentInList(url: string): void {
+        const index = this.filteredTournaments.findIndex(t => t.url === url);
+        if (index < 0) return;
+        this.currentPage = Math.floor(index / this.itemsPerPage) + 1;
+        this.renderResults();
+        this.highlightTournament(url);
+    }
+
     highlightTournament(url: string): void {
         // Find the card that contains a .tournament-link pointing to this URL
         const link = document.querySelector<HTMLAnchorElement>(

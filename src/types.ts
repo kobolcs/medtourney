@@ -11,6 +11,9 @@ export interface Tournament {
     description: string;
     timeControl?: string;
     dateTo?: string;
+    /** Map coordinates from geocode_tournaments.py; absent if the location couldn't be placed. */
+    lat?: number;
+    lng?: number;
     classificationConfidence?: 'high' | 'medium' | 'low';
     classificationReasons?: string[];
     travelTags?: string[];

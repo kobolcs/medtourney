@@ -45,8 +45,10 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 
 ## Bigger additions
 
-- [ ] **10. Map view** – geocode in `TournamentProcessor.py`, cache lat/lng in
-  `tournaments_data.json`, Leaflet + OSM, clustered pins, List/Map toggle.
+- [x] **10. Map view** - List/Map toggle, Leaflet + OpenStreetMap tiles (lazy-loaded),
+  clustered pins coloured seaside/senior, "Show in list" from popups. Coordinates
+  from `geocode_tournaments.py` after each daily scrape (Nominatim, cached in
+  `geocode_cache.json`, GeoNames offline fallback).
 - [ ] **11. Travel context on cards** – nearest airport / beach town vs city,
   starting with a hand-made lookup for ~60 Mediterranean host towns.
 - [x] **12. Friendlier empty state** – one-tap relaxations with real result counts,

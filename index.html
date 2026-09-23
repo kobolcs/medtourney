@@ -400,6 +400,10 @@
                                placeholder="Filter results…"
                                aria-label="Search within results by name or location">
                     </div>
+                    <div class="view-toggle" role="group" aria-label="Results view">
+                        <button type="button" class="view-toggle-btn is-active" data-view="list" aria-pressed="true">List</button>
+                        <button type="button" class="view-toggle-btn" data-view="map" aria-pressed="false">Map</button>
+                    </div>
                     <div class="sort-controls">
                         <label for="sortBy">Sort</label>
                         <select id="sortBy" class="sort-select" aria-label="Sort tournaments by">
@@ -424,6 +428,10 @@
                         <span>★ Shortlist only</span>
                     </label>
                 </div>
+            </div>
+            <div id="mapView" class="map-view" hidden>
+                <div id="mapCanvas" class="map-canvas" role="region" aria-label="Map of the tournaments in the current results"></div>
+                <p id="mapNote" class="map-note" hidden></p>
             </div>
             <div id="tournamentList" class="tournament-list"></div>
         </div>

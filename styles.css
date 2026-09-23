@@ -2538,3 +2538,151 @@ footer a:hover {
     transition-duration: .01ms !important;
   }
 }
+
+/* ─────────────────────────────────────────
+   LIST / MAP VIEW
+   The map (src/services/MapView.ts) shows every tournament in the current
+   results; Leaflet and its CSS load on first use. Pins and clusters use the
+   site's own tokens, so they follow light/dark automatically.
+────────────────────────────────────────── */
+.view-toggle {
+  display: inline-flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 3px;
+  gap: 3px;
+}
+
+.view-toggle-btn {
+  font: 600 var(--text-sm)/1 'Inter', sans-serif;
+  min-height: 36px;
+  padding: 0 var(--sp-4);
+  border: none;
+  border-radius: calc(var(--r-md) - 3px);
+  background: transparent;
+  color: var(--label);
+  cursor: pointer;
+}
+
+.view-toggle-btn:hover {
+  color: var(--text);
+}
+
+.view-toggle-btn.is-active {
+  background: var(--sea);
+  color: #fff;
+}
+
+.map-view {
+  margin-top: var(--sp-4);
+}
+
+/* The list/map swap toggles `hidden`; .tournament-list sets its own display,
+   which would otherwise win over the global [hidden] rule. */
+.tournament-list[hidden],
+.map-view[hidden] {
+  display: none;
+}
+
+.map-canvas {
+  height: min(70vh, 560px);
+  min-height: 320px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface-2);
+  z-index: 0; /* keep Leaflet's panes under the sticky mobile button */
+}
+
+.map-note {
+  margin-top: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--label);
+}
+
+/* (.leaflet-marker-icon in the selectors below: leaflet.css loads later and
+   sets display:block on it, which would un-centre the pin/cluster counts.) */
+
+/* Raster OSM tiles have no dark style - dim and invert them in dark mode. */
+body.dark-theme .map-canvas .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.9);
+}
+
+.map-pin.leaflet-marker-icon {
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+  background: var(--label);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font: 700 12px/1 'Inter', sans-serif;
+}
+
+.map-pin--sea { background: var(--sea); }
+.map-pin--senior { background: var(--amber); }
+
+.map-cluster.leaflet-marker-icon {
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sea) 85%, transparent);
+  border: 3px solid color-mix(in srgb, var(--sea) 35%, transparent);
+  background-clip: padding-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font: 700 13px/1 'Inter', sans-serif;
+}
+
+.map-popup {
+  font: var(--text-sm)/1.4 'Inter', sans-serif;
+}
+
+.map-popup-place {
+  font-weight: 600;
+  margin-bottom: var(--sp-2);
+}
+
+.map-popup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.map-popup li {
+  display: grid;
+  gap: 2px;
+}
+
+.map-popup-date {
+  color: #5C6A78;
+  font-size: var(--text-xs);
+}
+
+.map-show-in-list {
+  justify-self: start;
+  padding: 2px var(--sp-2);
+  border: 1px solid currentColor;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: #1A5E8A;
+  font: 600 var(--text-xs) 'Inter', sans-serif;
+  cursor: pointer;
+}
+
+.map-popup-more {
+  margin: var(--sp-2) 0 0;
+  color: #5C6A78;
+  font-size: var(--text-xs);
+}
+
+/* --sea is a light blue in dark mode - dark text on it, as on the mode switch */
+body.dark-theme .view-toggle-btn.is-active,
+body.dark-theme .map-pin--sea,
+body.dark-theme .map-cluster {
+  color: var(--ink);
+}
