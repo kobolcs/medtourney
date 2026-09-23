@@ -12,6 +12,7 @@
 
 import { Tournament, SortOption } from '../types';
 import { formatLocation } from '../utils/countries';
+import { formatTimeControl } from '../utils/timeControl';
 import { escapeHTML } from '../utils/html';
 
 export class UIManager {
@@ -284,26 +285,6 @@ export class UIManager {
     }
 
     /**
-     * Condense a verbose time control into "base'+increment"" (e.g. "90 minutes
-     * with 30 second increment from move 1" -> 90'+30"). Values that are
-     * already short (bare "N+M" format like "8+3") are left unchanged.
-     */
-    private condenseTimeControl(tc: string): string {
-        if (/^\d+\s*['"]?\s*\+\s*\d+\s*['"]?$/.test(tc)) return tc;
-
-        const lower = tc.toLowerCase();
-        const baseMatch = lower.match(/(\d+)\s*(h(?:our)?s?|min(?:ute)?s?)/);
-        if (!baseMatch) return tc;
-
-        const value = parseInt(baseMatch[1]!, 10);
-        const baseMinutes = baseMatch[2]!.startsWith('h') ? value * 60 : value;
-        const incMatch = lower.match(/(\d+)\s*sec(?:ond)?s?/);
-        const increment = incMatch ? parseInt(incMatch[1]!, 10) : 0;
-
-        return `${baseMinutes}'+${increment}"`;
-    }
-
-    /**
      * Colored pill for the tournament's time-control class (Classical/Rapid/
      * Blitz), derived from FilterService.annotate()'s classificationReasons
      * rather than re-parsing the category string, so it agrees with the
@@ -429,7 +410,7 @@ export class UIManager {
         const tc = (tournament.timeControl ?? '').trim();
         const TC_CLASS_LABELS = new Set(['classical', 'rapid', 'blitz', '']);
         const timeControlHTML = tc && !TC_CLASS_LABELS.has(tc.toLowerCase())
-            ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(this.condenseTimeControl(tc))}</span>`
+            ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(formatTimeControl(tc))}</span>`
             : '';
 
         const timeControlClassHTML = this.timeControlClassHTML(tournament);

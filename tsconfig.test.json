@@ -15,7 +15,8 @@
   "include": [
     "src/services/ExportService.ts",
     "src/services/FilterService.ts",
-    "src/types.ts"
+    "src/types.ts",
+    "src/utils/timeControl.ts"
   ],
   "exclude": []
 }
