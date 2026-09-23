@@ -1459,6 +1459,7 @@ body.dark-theme .error-message.success-type {
 .duration-pill {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
   background: var(--amber-light);
   color: var(--amber);
   padding: 3px var(--sp-3);

@@ -13,6 +13,7 @@
 import { Tournament, SortOption } from '../types';
 import { formatLocation } from '../utils/countries';
 import { formatTimeControl } from '../utils/timeControl';
+import { formatDurationLabel } from '../utils/durationLabel';
 import { escapeHTML } from '../utils/html';
 
 export class UIManager {
@@ -317,15 +318,6 @@ export class UIManager {
         return tokens.map(t => `<span class="category-tag">${escapeHTML(t)}</span>`).join('');
     }
 
-    /** Inclusive day count when dateTo is present and later than the start date. */
-    private tournamentDurationDays(tournament: Tournament): number | null {
-        if (!tournament.dateTo) return null;
-        const to = new Date(tournament.dateTo);
-        if (isNaN(to.getTime())) return null;
-        const days = Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
-        return days > 1 ? days : null;
-    }
-
     /**
      * Render (or hide) the featured "Tournament of the Week" card.
      */
@@ -417,9 +409,9 @@ export class UIManager {
         const timeControlClassHTML = this.timeControlClassHTML(tournament);
         const categoryTagsHTML = this.categoryTagsHTML(tournament);
 
-        const durationDays = this.tournamentDurationDays(tournament);
-        const durationHTML = durationDays !== null
-            ? `<span class="duration-pill">${durationDays} days</span>`
+        const durationLabel = formatDurationLabel(tournament.date, tournament.dateTo);
+        const durationHTML = durationLabel
+            ? `<span class="duration-pill">${escapeHTML(durationLabel)}</span>`
             : '';
 
         card.innerHTML = `

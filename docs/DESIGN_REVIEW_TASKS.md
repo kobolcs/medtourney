@@ -9,13 +9,14 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 
 - [x] **1. Brand name + live count in the header.** MedTourney name, live
   tournament count + last-updated line, icon-only dark-mode toggle (`67915ef`).
-- [~] **2. Clean up the scraped text on each card.**
+- [x] **2. Clean up the scraped text on each card.**
   - [x] FED code → flag + country name (`utils/countries.ts`, `formatLocation`)
   - [x] Split `category` into separate chips; colour the Classical/Rapid/Blitz pill (`67915ef`)
   - [x] Normalise time controls: `10'05''` → `10+5`, `90'+30''` → `90+30`
-    (`utils/timeControl.ts`, `bf4d01e`; 27 ambiguous strings still open with the user)
+    (`utils/timeControl.ts`, `bf4d01e`; compact notations checked against chess-results pages/PDFs in `75bd4e3`)
   - [x] "1 days" → avoided (duration pill only shown for 2+ days)
-  - [ ] Weekday span on the card ("Fri – Sun")
+  - [x] Weekday span on the card ("Fri–Sun · 3 days", single-day "Sat · 1 day";
+    events over 10 days show the day count only) (`utils/durationLabel.ts`)
 - [x] **3. Month dividers with per-month count** when sorted by date (`67915ef`, overflow fix `1b5591d`).
 - [x] **4. Free up browser shortcuts** – single keys `/ ? d s`, active only outside inputs (`67915ef`).
 - [x] **5. Filters in the URL** – shareable filtered links (`67915ef`, extracted to `utils/filterUrl.ts` in `1b5591d`).
