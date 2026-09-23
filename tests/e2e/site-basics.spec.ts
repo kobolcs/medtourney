@@ -38,13 +38,19 @@ test.describe('SEO metadata', () => {
     expect(data['featureList']).toBeTruthy();
   });
 
-  // og:image points at og-image.png, which doesn't exist in the repo or on
-  // the live site (404) - link previews have no image until one is added.
-  test.fixme('the og:image file is served', async ({ page, request }) => {
+  // Link previews (Facebook, WhatsApp, Slack, X) - public/og-image.png,
+  // rendered from scripts/og-image.html. It was missing (404) until 3.1.0.
+  test('the og:image file is served at its declared size', async ({ page, request }) => {
     const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
     const file = new URL(ogImage ?? '').pathname.split('/').pop() ?? '';
     const res = await request.get(`/${file}`);
     expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toContain('image/png');
+
+    // PNG header: width and height are big-endian at bytes 16-23
+    const png = await res.body();
+    expect(png.readUInt32BE(16)).toBe(Number(await page.locator('meta[property="og:image:width"]').getAttribute('content')));
+    expect(png.readUInt32BE(20)).toBe(Number(await page.locator('meta[property="og:image:height"]').getAttribute('content')));
   });
 });
 

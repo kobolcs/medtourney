@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+  Source for public/og-image.png - the 1200x630 link-preview card that
+  og:image / twitter:image point at. Uses the site's header colours, fonts,
+  logomark and board-rank stripe. Regenerate after editing with:
+
+    node scripts/render-og-image.mjs
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Spectral:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --navy: #162032; --sea: #4BA3D6; --amber: #CE8E36; --text: #F1F5FA; --sub: rgba(241, 245, 250, .72); }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    background: radial-gradient(ellipse 900px 520px at 88% 30%, #1d3552 0%, var(--navy) 70%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  .content { position: absolute; left: 88px; top: 92px; width: 700px; }
+  .brand { display: flex; align-items: center; gap: 22px; }
+  .brand svg { width: 112px; height: 112px; color: var(--text); flex-shrink: 0; }
+  h1 { font: 700 104px/1 'Spectral', serif; letter-spacing: -.01em; }
+  .tagline { margin-top: 26px; font: 600 38px/1.2 'Spectral', serif; color: var(--sea); }
+  .lede { margin-top: 22px; font-size: 27px; line-height: 1.45; color: var(--sub); }
+  .chips { margin-top: 38px; display: flex; gap: 14px; }
+  .chip { font: 600 22px/1 'Inter', sans-serif; padding: 12px 20px; border-radius: 999px; border: 2px solid rgba(241,245,250,.25); color: var(--text); }
+  .chip.sea { background: rgba(75,163,214,.18); border-color: var(--sea); }
+  .chip.senior { background: rgba(206,142,54,.18); border-color: var(--amber); }
+  /* A few pins along a stylised coastline - the map, in miniature */
+  .coast { position: absolute; right: 30px; top: 150px; width: 330px; height: 385px; }
+  .stripe {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 22px;
+    background-image: repeating-linear-gradient(90deg, var(--sea) 0 22px, var(--amber) 22px 44px);
+    opacity: .75;
+  }
+</style>
+</head>
+<body>
+  <div class="content">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M2 31c6-3 12-4 18-4s12 1 18 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".55"/>
+        <path d="M12.5 31.5v-1.7c0-1 .7-1.8 1.7-1.8h11.6c1 0 1.7.8 1.7 1.8v1.7z" fill="currentColor"/>
+        <path d="M15.3 28c-.7-4.7-.7-9.2 0-13.2.4-2.7 1.6-4.9 2.9-6.6a1 1 0 0 1 1.6 0c1.3 1.7 2.5 3.9 2.9 6.6.7 4 .7 8.5 0 13.2z" fill="currentColor"/>
+        <circle cx="20" cy="6.3" r="1.9" fill="currentColor"/>
+        <path d="M20 0v3.6M18.3 1.8h3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <h1>MedTourney</h1>
+    </div>
+    <p class="tagline">Chess by the sea · seniors welcome</p>
+    <p class="lede">European chess tournaments, with Mediterranean seaside and senior (50+) events one tap away.</p>
+    <div class="chips">
+      <span class="chip sea">🌊 Seaside</span>
+      <span class="chip senior">Senior 50+</span>
+      <span class="chip">Updated daily</span>
+    </div>
+  </div>
+
+  <svg class="coast" viewBox="0 0 360 420" aria-hidden="true">
+    <path d="M10 60 C80 40 120 110 170 120 S250 90 290 150 S330 260 300 320 S220 360 250 410"
+          fill="none" stroke="rgba(241,245,250,.28)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 10"/>
+    <g stroke="#162032" stroke-width="4">
+      <circle cx="58" cy="52" r="15" fill="#4BA3D6"/>
+      <circle cx="168" cy="118" r="21" fill="#4BA3D6"/>
+      <circle cx="286" cy="146" r="13" fill="#CE8E36"/>
+      <circle cx="308" cy="270" r="18" fill="#4BA3D6"/>
+      <circle cx="238" cy="352" r="12" fill="#CE8E36"/>
+    </g>
+    <g fill="#162032" font-family="Inter, sans-serif" font-weight="700" text-anchor="middle">
+      <text x="168" y="126" font-size="20">12</text>
+      <text x="308" y="277" font-size="17">7</text>
+    </g>
+  </svg>
+
+  <div class="stripe"></div>
+</body>
+</html>

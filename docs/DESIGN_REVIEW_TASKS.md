@@ -60,8 +60,10 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
   timestamp is known (scrape time from `tournaments_data_meta.json`, or this
   browser's cache time as a first-paint fallback) - no "…" or "Never (no cached data)".
 
-- [ ] `og:image` points at `og-image.png`, which doesn't exist (404 live) - link
-  previews have no image. Test in `site-basics.spec.ts` is marked `fixme`.
+- [x] `og:image` pointed at a missing `og-image.png` (404 live) - link previews
+  had no image. Added a 1200x630 card in the site's style (`public/og-image.png`,
+  source `scripts/og-image.html`, render with `node scripts/render-og-image.mjs`)
+  plus `og:image:width/height/alt`; the `site-basics.spec.ts` test is live.
 
 ## Known test issue (pre-existing, not from the review work)
 
