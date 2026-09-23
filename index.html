@@ -106,7 +106,11 @@
     <div class="container">
         <main role="main" id="main-content">
         <div id="staleness-banner" class="error-message warning-type" style="display:none;" role="alert" aria-live="polite"></div>
-        <div class="filters-card" role="search" aria-label="Tournament search filters" aria-expanded="true">
+        <!-- tabindex="-1": on desktop the sticky sidebar scrolls (overflow-y: auto), and
+             Firefox makes scroll containers a Tab stop of their own. Every control inside
+             is focusable anyway (focusing one scrolls it into view), so the extra stop
+             only adds noise. -->
+        <div class="filters-card" role="search" aria-label="Tournament search filters" aria-expanded="true" tabindex="-1">
             <div class="filters-title-row">
                 <h2>Search Filters</h2>
                 <button type="button" id="clearFiltersBtn" class="clear-filters-btn" aria-label="Clear all filters">Clear all</button>
