@@ -1,6 +1,6 @@
 # CLAUDE.md - AI Assistant Guide for MedTourney
 
-**Last Updated:** 2025-11-21
+**Last Updated:** 2026-09-23
 **Version:** 3.0.0
 **Purpose:** Comprehensive guide for AI assistants (like Claude) working on the MedTourney codebase
 
@@ -35,10 +35,9 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 ### Key Statistics
 
 - **Version:** 3.0.0
-- **Total Tests:** 296+ tests with 100% pass rate
-- **Code Coverage:** 70%+
-- **Bundle Size:** 25KB gzipped (70% reduction from v2.0)
-- **Architecture:** Modular service-oriented (5 specialized services)
+- **Total Tests:** 290+ (100 service unit, 8 service integration, 68 Playwright E2E per browser, 87 Python backend, 27 Python integration) — all currently passing; see Testing Strategy
+- **Bundle Size:** ~30KB gzipped JS + ~6.5KB gzipped CSS (grown from the original 25KB as the results-first redesign, mobile fixes, and flag-icon system landed — still deliberately small; see Performance Considerations)
+- **Architecture:** Modular service-oriented (5 specialized services + focused utils)
 - **Technologies:** TypeScript (strict mode), Vite, Playwright, Robot Framework, Python
 
 ### Live Application
@@ -56,31 +55,33 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 ```
 medtourney/
 ├── src/                          # TypeScript source code
-│   ├── app.ts                    # Main application coordinator (573 lines)
+│   ├── app.ts                    # Main application coordinator (1,412 lines)
 │   ├── main.ts                   # Entry point
 │   ├── types.ts                  # Shared TypeScript interfaces
 │   ├── services/                 # Service modules (modular architecture)
-│   │   ├── CacheManager.ts       # localStorage with versioning & TTL (136 lines)
-│   │   ├── FilterService.ts      # Multi-criteria filtering (246 lines)
-│   │   ├── DataService.ts        # 3-tier fetch strategy (210 lines)
-│   │   ├── ExportService.ts      # CSV & iCalendar exports (163 lines)
-│   │   └── UIManager.ts          # DOM manipulation & rendering (454 lines)
+│   │   ├── CacheManager.ts       # localStorage with versioning & TTL (168 lines)
+│   │   ├── FilterService.ts      # Multi-criteria filtering (395 lines)
+│   │   ├── DataService.ts        # 3-tier fetch strategy (319 lines)
+│   │   ├── ExportService.ts      # CSV & iCalendar exports (330 lines)
+│   │   └── UIManager.ts          # DOM manipulation & rendering (725 lines)
 │   └── utils/
 │       ├── Logger.ts             # Logging utility
-│       └── validators.ts         # Input validation
+│       ├── validators.ts         # Zod runtime schemas for fetched data
+│       ├── countries.ts          # FED code -> name/flag-icon HTML for location display
+│       └── html.ts               # Shared escapeHTML() - see Security Considerations
 │
-├── tests/                        # Comprehensive test suite (296+ tests)
-│   ├── unit/                     # Service unit tests (75 tests)
+├── tests/                        # Comprehensive test suite (290+ tests)
+│   ├── unit/                     # Service unit tests (100 tests)
 │   │   └── services/             # Isolated service testing
-│   ├── integration/              # Service integration tests (10 tests)
-│   ├── e2e/                      # Playwright E2E tests (54+ tests)
+│   ├── integration/              # Service integration tests (8 tests)
+│   ├── e2e/                      # Playwright E2E tests (68 tests)
 │   │   ├── search-and-filter.spec.ts
 │   │   ├── exports.spec.ts
 │   │   ├── accessibility.spec.ts
 │   │   ├── keyboard-navigation.spec.ts
 │   │   └── dark-mode-and-ui.spec.ts
 │   ├── performance/              # Benchmark tests (12 benchmarks)
-│   ├── python/                   # Backend tests (47 tests)
+│   ├── python/                   # Backend tests (87 tests)
 │   └── javascript/               # Legacy JS tests
 │
 ├── .github/workflows/            # GitHub Actions CI/CD
@@ -93,6 +94,11 @@ medtourney/
 ├── styles.css                    # Application styles (dark mode support)
 ├── config.json                   # App configuration (countries, locations)
 ├── tournaments_data.json         # Tournament data (updated daily)
+│
+├── public/
+│   ├── flags/                    # Self-hosted 20x15 flag icons (see countries.ts)
+│   ├── robots.txt
+│   └── sitemap.xml
 │
 ├── TournamentProcessor.py        # Python backend for scraping
 ├── scrape_tournaments.robot      # Robot Framework scraper
@@ -109,9 +115,7 @@ medtourney/
     ├── ARCHITECTURE.md           # Architecture deep-dive
     ├── TESTING.md                # Testing guide
     ├── DEPLOYMENT.md             # Deployment guide
-    ├── README.md                 # User-facing documentation
-    ├── QUICK_START_GUIDE.md      # Getting started
-    └── PRD_MEDTOURNEY_3.0.md     # Product requirements
+    └── README.md                 # User-facing documentation
 ```
 
 ### Service Modules (Core Architecture)
@@ -120,11 +124,11 @@ The application follows a **modular service-oriented architecture**. Each servic
 
 | Service | File | Lines | Responsibility |
 |---------|------|-------|----------------|
-| **CacheManager** | `src/services/CacheManager.ts` | 136 | localStorage operations with versioning & TTL |
-| **FilterService** | `src/services/FilterService.ts` | 246 | Multi-criteria filtering with FIFO cache |
-| **DataService** | `src/services/DataService.ts` | 210 | 3-tier fetch strategy (cache → local → CORS proxies) |
-| **ExportService** | `src/services/ExportService.ts` | 163 | CSV and iCalendar (RFC 5545) exports |
-| **UIManager** | `src/services/UIManager.ts` | 454 | DOM manipulation, loading skeletons, dark mode |
+| **CacheManager** | `src/services/CacheManager.ts` | 168 | localStorage operations with versioning & TTL |
+| **FilterService** | `src/services/FilterService.ts` | 395 | Multi-criteria filtering with FIFO cache |
+| **DataService** | `src/services/DataService.ts` | 319 | 3-tier fetch strategy (cache → local → CORS proxies) |
+| **ExportService** | `src/services/ExportService.ts` | 330 | CSV and iCalendar (RFC 5545) exports |
+| **UIManager** | `src/services/UIManager.ts` | 725 | DOM manipulation, loading skeletons, dark mode |
 
 ---
 
@@ -183,7 +187,7 @@ User sees results
 
 ### Prerequisites
 
-- **Node.js:** 18+ (for TypeScript, Vite, Playwright)
+- **Node.js:** 20+ (Vite 7 requires it; Node 18 also fails the UIManager unit test due to a jsdom/whatwg-url incompatibility)
 - **Python:** 3.11+ (for scraper, backend tests)
 - **npm:** 9+ (package management)
 
@@ -266,23 +270,23 @@ mypy TournamentProcessor.py run_scraper.py  # Python
 
 ### Test Coverage Summary
 
-| Test Type | Count | Coverage | Purpose |
-|-----------|-------|----------|---------|
-| **Service Unit Tests** | 75 tests | 70%+ | Isolated service testing with mocks |
-| **Integration Tests** | 10 tests | 100% | Services working together |
-| **E2E Tests (Playwright)** | 54+ tests | N/A | Full browser testing (3 browsers) |
-| **Performance Benchmarks** | 12 benchmarks | N/A | ops/sec measurement |
-| **Python Backend** | 47 tests | ~95% | Backend unit tests |
-| **Python Integration** | 108 tests | ~95% | Integration tests |
-| **Total** | **296+ tests** | **70%+** | **100% pass rate** |
+| Test Type | Count | Purpose |
+|-----------|-------|---------|
+| **Service Unit Tests** | 100 tests | Isolated service testing with mocks |
+| **Service Integration Tests** | 8 tests | Services working together |
+| **E2E Tests (Playwright)** | 68 tests per project (chromium, firefox, webkit, Mobile Chrome, Mobile Safari, Microsoft Edge - `playwright.config.ts`) | Full browser + mobile-viewport testing |
+| **Performance Benchmarks** | 12 benchmarks | ops/sec measurement |
+| **Python (scraper, meta, parity)** | 87 tests | `tests/python/` - `TournamentProcessor.py` unit tests plus scraper-metadata and frontend/backend parity checks |
+| **Python Integration** | 27 tests | `tests/integration/` - scraper file/config sanity checks (not live-network) |
+| **Total** | **290+ tests** | **100% pass rate** as of this writing - see `npm test` / `pytest` output for current truth |
 
 ### Running Tests
 
 ```bash
-# All tests (296+ tests)
+# All tests (290+ tests)
 npm test
 
-# Service unit tests (75 tests) - FAST (~5 seconds)
+# Service unit tests (100 tests) - FAST (~5 seconds)
 npm run test:services
 
 # Individual services
@@ -292,10 +296,10 @@ npm run test:services:export      # ExportService (18 tests)
 npm run test:services:data        # DataService (12 tests)
 npm run test:services:ui          # UIManager (15 tests)
 
-# Integration tests (10 tests)
+# Integration tests (8 tests)
 npm run test:integration:services
 
-# E2E tests (54+ tests)
+# E2E tests (68 tests)
 npm run test:e2e                  # Headless (all browsers)
 npm run test:e2e:headed           # See browser
 npm run test:e2e:ui               # Interactive UI mode
@@ -311,14 +315,14 @@ npm run test:coverage
 open coverage/index.html
 
 # Python tests
-npm run test:python               # Backend (47 tests)
+npm run test:python               # Backend (87 tests)
 npm run test:meta                 # Meta-tests (12 tests)
 npm run test:parity               # Parity tests (8 tests)
 ```
 
 ### Test Philosophy
 
-- **Unit Tests:** Isolated, fast (<5s), mocked dependencies, 70%+ coverage
+- **Unit Tests:** Isolated, fast (<5s), mocked dependencies (`npm run test:coverage` for the current report)
 - **Integration Tests:** Realistic workflows, services working together
 - **E2E Tests:** User-focused scenarios, cross-browser, WCAG 2.1 AA compliance
 - **Performance Tests:** Measurable metrics (ops/sec), track regressions
@@ -677,9 +681,9 @@ EOF
    - Type checking (mypy)
    - Linting (ruff, ESLint)
    - TypeScript build
-   - Unit tests (75 tests)
-   - Integration tests (10 tests)
-   - E2E tests (54+ tests)
+   - Unit tests (100 tests)
+   - Integration tests (8 tests)
+   - E2E tests (68 tests)
    - Performance benchmarks
    - Lighthouse CI
    - Runs on: push, PR, daily schedule
@@ -733,22 +737,22 @@ npm run preview
 
 | File | Purpose | Lines |
 |------|---------|-------|
-| `src/app.ts` | Main application coordinator | 573 |
-| `src/main.ts` | Entry point | ~20 |
-| `src/types.ts` | Shared TypeScript interfaces | ~100 |
-| `index.html` | Main HTML file | ~400 |
-| `styles.css` | Application styles | ~800 |
-| `config.json` | App configuration | ~200 |
+| `src/app.ts` | Main application coordinator | 1,412 |
+| `src/main.ts` | Entry point | 16 |
+| `src/types.ts` | Shared TypeScript interfaces | 50 |
+| `index.html` | Main HTML file | 461 |
+| `styles.css` | Application styles | 2,255 |
+| `config.json` | App configuration | 853 |
 
 ### Service Modules
 
 | File | Purpose | Lines |
 |------|---------|-------|
-| `src/services/CacheManager.ts` | localStorage with versioning & TTL | 136 |
-| `src/services/FilterService.ts` | Multi-criteria filtering | 246 |
-| `src/services/DataService.ts` | 3-tier fetch strategy | 210 |
-| `src/services/ExportService.ts` | CSV & iCalendar exports | 163 |
-| `src/services/UIManager.ts` | DOM manipulation & rendering | 454 |
+| `src/services/CacheManager.ts` | localStorage with versioning & TTL | 168 |
+| `src/services/FilterService.ts` | Multi-criteria filtering | 395 |
+| `src/services/DataService.ts` | 3-tier fetch strategy | 319 |
+| `src/services/ExportService.ts` | CSV & iCalendar exports | 330 |
+| `src/services/UIManager.ts` | DOM manipulation & rendering | 725 |
 
 ### Configuration Files
 
@@ -767,11 +771,11 @@ npm run preview
 
 | Directory | Purpose | Count |
 |-----------|---------|-------|
-| `tests/unit/services/` | Service unit tests | 75 tests |
-| `tests/integration/` | Integration tests | 10 tests |
-| `tests/e2e/` | Playwright E2E tests | 54+ tests |
+| `tests/unit/services/` | Service unit tests | 100 tests |
+| `tests/integration/` | JS service integration + Python scraper integration (mixed dir) | 8 + 27 tests |
+| `tests/e2e/` | Playwright E2E tests | 68 tests per browser |
 | `tests/performance/` | Benchmark tests | 12 benchmarks |
-| `tests/python/` | Backend unit tests | 47 tests |
+| `tests/python/` | Backend unit tests (`TournamentProcessor.py`, scraper meta, frontend/backend parity) | 87 tests |
 
 ### Documentation Files
 
@@ -782,8 +786,6 @@ npm run preview
 | `ARCHITECTURE.md` | Architecture deep-dive |
 | `TESTING.md` | Comprehensive testing guide |
 | `DEPLOYMENT.md` | Deployment guide |
-| `QUICK_START_GUIDE.md` | Getting started guide |
-| `PRD_MEDTOURNEY_3.0.md` | Product requirements document |
 
 ### Backend/Scraper Files
 
@@ -802,7 +804,7 @@ npm run preview
 
 1. **Always run tests before committing**
    ```bash
-   npm test  # Runs all 296+ tests
+   npm test  # Runs all 290+ tests
    ```
 
 2. **Follow TypeScript strict mode**
@@ -814,6 +816,16 @@ npm run preview
    - Don't add logic to `app.ts` - create/use services
    - Follow dependency injection pattern
    - Keep services isolated and testable
+   - **This has drifted:** `app.ts` has grown to 1,412 lines (from 573 at
+     the v3.0 refactor) as event wiring, filter-preference persistence,
+     keyboard shortcuts, deep-linking, and shortlist management all
+     accumulated there as the coordination layer. It's not yet back to the
+     2,267-line pre-refactor monolith this architecture was built to avoid,
+     but it's trending that way - when adding a new feature, prefer
+     extracting genuinely standalone logic into a service (or a focused
+     `src/utils/` module, following `countries.ts`/`html.ts`) over adding
+     another method to `app.ts`, even though that's the path of least
+     resistance for wiring up a single new control.
 
 4. **Write tests for new features**
    - Unit tests for services
@@ -854,7 +866,8 @@ npm run preview
 ### Performance Considerations
 
 1. **Bundle size**
-   - Current: 25KB gzipped (excellent)
+   - Current: ~30KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~6.5KB gzipped CSS - verify with `npm run build:vite` after any change that feels like it could be heavy
+   - Flag icons (`public/flags/*.png`) are static assets served on demand, not part of this bundle - kept to ~4KB average per flag (rasterized small; several countries' full-detail SVG coats of arms were 30-180KB, wasted at 20px icon size)
    - Avoid large dependencies
    - Use tree-shaking friendly imports
 
@@ -908,9 +921,9 @@ npm run clean                    # Clean build artifacts
 npm run rebuild                  # Clean + build
 
 # Testing
-npm test                         # All 296+ tests
-npm run test:services            # Unit tests (75 tests)
-npm run test:e2e                 # E2E tests (54+ tests)
+npm test                         # All 290+ tests
+npm run test:services            # Unit tests (100 tests)
+npm run test:e2e                 # E2E tests (68 tests)
 npm run test:benchmark           # Performance benchmarks
 npm run test:coverage            # Code coverage report
 
@@ -936,7 +949,7 @@ gh pr create                     # Create pull request
 1. **Architecture:** See `ARCHITECTURE.md` for detailed architecture
 2. **Testing:** See `TESTING.md` for comprehensive testing guide
 3. **Deployment:** See `DEPLOYMENT.md` for deployment instructions
-4. **Quick Start:** See `QUICK_START_GUIDE.md` for getting started
+4. **Getting started (users/contributors):** See `README.md`
 
 ### External Resources
 
