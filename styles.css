@@ -25,6 +25,11 @@
   --success:      #1E6840;
   --success-bg:   #DCF0E6;
 
+  /* Time-control class colors — one hue each, echoed in dark mode below */
+  --classical:    var(--sea);
+  --rapid:        #7A4E9C;
+  --blitz:        #A0461E;
+
   /* The header is always dark navy — does NOT change in dark mode */
   --header-bg:    #162032;
   --header-text:  #ffffff;
@@ -85,6 +90,10 @@ body.dark-theme {
   --label:        #8AAABF;
   --success:      #42C47A;
   --success-bg:   #0A2218;
+
+  --classical:    var(--sea);
+  --rapid:        #B48BD6;
+  --blitz:        #E58A66;
 
   /* Semantic — explicit to avoid var() chain failures */
   --bg:           #0B1827;
@@ -219,6 +228,19 @@ header::after {
   color: var(--header-text);
 }
 
+.header-brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.tagline {
+  font-size: var(--text-sm);
+  color: var(--header-sub);
+  font-weight: 500;
+}
+
 .header-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -257,19 +279,41 @@ header h1 {
   max-width: 500px;
 }
 
-.theme-toggle {
+.header-live {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--header-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+}
+
+.theme-toggle,
+.theme-toggle.icon-btn {
   background: rgba(255,255,255,.1);
   color: rgba(255,255,255,.88);
   border: 1px solid rgba(255,255,255,.2);
-  padding: var(--sp-2) var(--sp-4);
-  min-height: 38px;
-  border-radius: var(--r-md);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   cursor: pointer;
-  font-size: var(--text-sm);
+  font-size: 1.2rem;
   font-family: inherit;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background .15s, border-color .15s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .theme-toggle:hover {
@@ -968,6 +1012,34 @@ body.dark-theme .error-message.success-type {
   gap: var(--sp-4);
 }
 
+/* Month divider — only inserted when the list is sorted by date */
+.month-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+.month-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.month-divider-count {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 500;
+}
+
 /* ── Featured "Tournament of the Week" card ─────────────────────────── */
 #featuredTournament {
   margin-bottom: var(--sp-6);
@@ -1213,18 +1285,6 @@ body.dark-theme .error-message.success-type {
   margin-bottom: var(--sp-3);
 }
 
-.tournament-category {
-  display: inline-flex;
-  align-items: center;
-  background: var(--sea-light);
-  color: var(--sea);
-  padding: 3px var(--sp-3);
-  border-radius: 20px;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: .02em;
-}
-
 .time-control-badge {
   display: inline-flex;
   align-items: center;
@@ -1237,6 +1297,36 @@ body.dark-theme .error-message.success-type {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   letter-spacing: .01em;
+}
+
+/* Time-control class pill — the one chip that always carries color, so
+   Classical/Rapid/Blitz reads at a glance across the whole results list. */
+.time-control-class {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px var(--sp-3);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.time-control-class--classical { background: color-mix(in srgb, var(--classical) 14%, transparent); color: var(--classical); }
+.time-control-class--rapid     { background: color-mix(in srgb, var(--rapid) 14%, transparent);     color: var(--rapid); }
+.time-control-class--blitz     { background: color-mix(in srgb, var(--blitz) 14%, transparent);     color: var(--blitz); }
+
+/* Remaining category tokens (Open, U18, Youth…) once time control has its
+   own colored pill above — plain and quiet so the color pill still leads. */
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-2);
+  color: var(--label);
+  border: 1px solid var(--border);
+  padding: 3px var(--sp-3);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 500;
 }
 
 .duration-pill {

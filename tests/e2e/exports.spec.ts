@@ -52,7 +52,7 @@ test.describe('Export Functionality', () => {
     test.beforeEach(async ({ page }) => {
         await stubData(page);
         await page.goto('/');
-        await expect(page.locator('h1')).toContainText('European Chess Tournament Finder');
+        await expect(page.locator('h1')).toContainText('MedTourney');
     });
 
     test('should export tournaments to CSV', async ({ page }) => {

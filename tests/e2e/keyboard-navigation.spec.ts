@@ -38,51 +38,55 @@ test.describe('Keyboard Navigation', () => {
     expect(foundSearchButton).toBe(true);
   });
 
-  test('should support keyboard shortcut - Ctrl/Cmd+K focuses search', async ({ page }) => {
-    // The app's Ctrl/Cmd+K shortcut focuses the search button.
-    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
-    const searchBtn = page.locator('#searchBtn');
+  test('should support keyboard shortcut - "/" focuses quick search', async ({ page }) => {
+    // Bare "/" (not Ctrl/Cmd+K, which the browser's own address-bar search
+    // reserves) focuses the "filter results" input.
+    const quickSearch = page.locator('#quickSearch');
 
-    await page.keyboard.press(`${modifier}+KeyK`);
-    const focused = await searchBtn.evaluate((el) => el === document.activeElement);
-
-    // Some headless browsers reserve Ctrl/Cmd+K for their own "search"
-    // action and never deliver it to the page; skip rather than flake there.
-    test.skip(!focused, 'Ctrl/Cmd+K is intercepted by the browser in this environment');
-
-    expect(focused).toBe(true);
-    // Activating the focused button with Enter runs a search.
-    await page.keyboard.press('Enter');
-    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+    await page.keyboard.press('/');
+    await expect(quickSearch).toBeFocused();
   });
 
-  test('should support keyboard shortcut - Ctrl/Cmd+D for dark mode toggle', async ({ page }) => {
-    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+  test('should support keyboard shortcut - "d" for dark mode toggle', async ({ page }) => {
     const body = page.locator('body');
     const initialDarkMode = await body.evaluate((el) => el.classList.contains('dark-theme'));
 
-    await page.keyboard.press(`${modifier}+KeyD`);
+    await page.keyboard.press('d');
     await page.waitForTimeout(300);
     const newDarkMode = await body.evaluate((el) => el.classList.contains('dark-theme'));
     expect(newDarkMode).toBe(!initialDarkMode);
 
     // Toggle back
-    await page.keyboard.press(`${modifier}+KeyD`);
+    await page.keyboard.press('d');
     await page.waitForTimeout(300);
     const finalDarkMode = await body.evaluate((el) => el.classList.contains('dark-theme'));
     expect(finalDarkMode).toBe(initialDarkMode);
   });
 
-  test('should support keyboard shortcut - Ctrl/Cmd+E for CSV export', async ({ page }) => {
-    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+  test('should not toggle dark mode when "d" is typed inside an input', async ({ page }) => {
+    // Regression guard: bare-letter shortcuts must not hijack typing now that
+    // Ctrl/Cmd+D no longer does (that collided with the browser's bookmark
+    // shortcut, which is why this moved to a bare key at all).
+    const body = page.locator('body');
+    const initialDarkMode = await body.evaluate((el) => el.classList.contains('dark-theme'));
 
+    const quickSearch = page.locator('#quickSearch');
+    await quickSearch.focus();
+    await quickSearch.type('d');
+
+    const darkModeAfterTyping = await body.evaluate((el) => el.classList.contains('dark-theme'));
+    expect(darkModeAfterTyping).toBe(initialDarkMode);
+    await expect(quickSearch).toHaveValue('d');
+  });
+
+  test('should support keyboard shortcut - "e" for CSV export', async ({ page }) => {
     // Results-first: the export button is already available from the
     // automatic first search, so just wait for it rather than re-clicking.
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      page.keyboard.press(`${modifier}+KeyE`),
+      page.keyboard.press('e'),
     ]);
     expect(download.suggestedFilename()).toContain('.csv');
   });

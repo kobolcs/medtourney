@@ -82,14 +82,22 @@
                         <circle cx="20" cy="6.3" r="1.9" fill="currentColor"/>
                         <path d="M20 0v3.6M18.3 1.8h3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
                     </svg>
-                    <h1>European Chess Tournament Finder</h1>
+                    <div class="header-brand">
+                        <h1>MedTourney</h1>
+                        <p class="tagline">Chess by the sea &middot; seniors welcome</p>
+                    </div>
                 </div>
-                <p class="subtitle">Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
+                <p class="subtitle">European Chess Tournament Finder &mdash; Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
+                <p id="headerLiveStatus" class="header-live" aria-live="polite">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span id="headerTournamentCount">Loading tournament data&hellip;</span>
+                </p>
             </div>
             <div class="header-controls">
                 <button id="helpBtn" class="help-btn" aria-label="Open help (F1)">?</button>
-                <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-                    Dark Mode
+                <button id="themeToggle" class="theme-toggle icon-btn" aria-label="Toggle dark mode">
+                    <span id="themeToggleIcon" class="theme-toggle-icon" aria-hidden="true">&#9789;</span>
+                    <span id="themeToggleLabel" class="sr-only">Dark Mode</span>
                 </button>
             </div>
         </div>
@@ -442,12 +450,13 @@
 
                 <div class="help-section">
                     <h3>Keyboard shortcuts</h3>
+                    <p>These work anywhere on the page except while typing in a text field.</p>
                     <ul>
-                        <li><kbd class="help-kbd">F1</kbd><span>Open / close this help</span></li>
-                        <li><kbd class="help-kbd">Ctrl+K</kbd><span>Focus the Search button</span></li>
-                        <li><kbd class="help-kbd">Ctrl+E</kbd><span>Export results to CSV</span></li>
-                        <li><kbd class="help-kbd">Ctrl+D</kbd><span>Toggle dark / light mode</span></li>
-                        <li><kbd class="help-kbd">Ctrl+S</kbd><span>Export shortlist to calendar</span></li>
+                        <li><kbd class="help-kbd">F1</kbd> <kbd class="help-kbd">?</kbd><span>Open / close this help</span></li>
+                        <li><kbd class="help-kbd">/</kbd><span>Focus "Filter results"</span></li>
+                        <li><kbd class="help-kbd">e</kbd><span>Export results to CSV</span></li>
+                        <li><kbd class="help-kbd">d</kbd><span>Toggle dark / light mode</span></li>
+                        <li><kbd class="help-kbd">s</kbd><span>Export shortlist to calendar</span></li>
                         <li><kbd class="help-kbd">Escape</kbd><span>Close this dialog (or clear the quick-search)</span></li>
                     </ul>
                 </div>

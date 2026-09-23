@@ -10,7 +10,7 @@
  * - Dark mode
  */
 
-import { Tournament } from '../types';
+import { Tournament, SortOption } from '../types';
 import { formatLocation } from '../utils/countries';
 import { escapeHTML } from '../utils/html';
 
@@ -20,6 +20,8 @@ export class UIManager {
     private filteredTournaments: Tournament[] = [];
     private shortlistedUrls: Set<string> = new Set();
     private emptyStateContext: { totalCount: number; suggestions: string[] } | null = null;
+    private groupByDate = false;
+    private monthCounts: Map<string, number> = new Map();
 
     /** Called before displayTournaments when the result set will be empty. */
     prepareEmptyState(totalCount: number, suggestions: string[]): void {
@@ -124,11 +126,14 @@ export class UIManager {
     }
 
     /**
-     * Display tournaments
+     * Display tournaments. Pass the active sort option so month dividers only
+     * appear when the list is actually ordered by date - grouping by month
+     * would be misleading (and the counts wrong-looking) under any other sort.
      */
-    displayTournaments(tournaments: Tournament[]): void {
+    displayTournaments(tournaments: Tournament[], sortOption?: SortOption): void {
         this.filteredTournaments = tournaments;
         this.currentPage = 1;
+        this.groupByDate = sortOption === 'date-asc' || sortOption === 'date-desc';
         this.renderResults();
     }
 
@@ -171,7 +176,34 @@ export class UIManager {
         }
 
         // Render paginated tournaments
+        this.computeMonthCounts();
         this.renderPaginatedTournaments(tournamentList);
+    }
+
+    /** Year-month key used to detect a month boundary between two dates. */
+    private monthKey(date: Date): string {
+        return `${date.getFullYear()}-${date.getMonth()}`;
+    }
+
+    /** Total tournaments per month across the whole filtered list (not just the current page). */
+    private computeMonthCounts(): void {
+        this.monthCounts = new Map();
+        if (!this.groupByDate) return;
+        for (const t of this.filteredTournaments) {
+            const key = this.monthKey(t.date);
+            this.monthCounts.set(key, (this.monthCounts.get(key) ?? 0) + 1);
+        }
+    }
+
+    private createMonthDivider(date: Date, count: number): HTMLElement {
+        const divider = document.createElement('div');
+        divider.className = 'month-divider';
+        const label = date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+        divider.innerHTML = `
+            <span class="month-divider-label">${escapeHTML(label)}</span>
+            <span class="month-divider-count">${count}</span>
+        `;
+        return divider;
     }
 
     /**
@@ -184,7 +216,20 @@ export class UIManager {
         const endIndex = Math.min(startIndex + this.itemsPerPage, this.filteredTournaments.length);
         const pageTournaments = this.filteredTournaments.slice(startIndex, endIndex);
 
+        // Seed with the previous page's last month so a divider isn't
+        // repeated mid-month right after a pagination boundary.
+        let lastMonthKey = startIndex > 0
+            ? this.monthKey(this.filteredTournaments[startIndex - 1]!.date)
+            : null;
+
         pageTournaments.forEach(tournament => {
+            if (this.groupByDate) {
+                const key = this.monthKey(tournament.date);
+                if (key !== lastMonthKey) {
+                    container.appendChild(this.createMonthDivider(tournament.date, this.monthCounts.get(key) ?? 0));
+                    lastMonthKey = key;
+                }
+            }
             const card = this.createTournamentCard(tournament);
             container.appendChild(card);
         });
@@ -249,6 +294,39 @@ export class UIManager {
         const increment = incMatch ? parseInt(incMatch[1]!, 10) : 0;
 
         return `${baseMinutes}'+${increment}"`;
+    }
+
+    /**
+     * Colored pill for the tournament's time-control class (Classical/Rapid/
+     * Blitz), derived from FilterService.annotate()'s classificationReasons
+     * rather than re-parsing the category string, so it agrees with the
+     * checkboxes that actually filtered this tournament in. Priority favors
+     * the more specific/faster format when a multi-format event's category
+     * mentions more than one (e.g. "Standard & Blitz").
+     */
+    private timeControlClassHTML(tournament: Tournament): string {
+        const reasons = tournament.classificationReasons ?? [];
+        const cls = reasons.includes('Blitz') ? 'blitz'
+            : reasons.includes('Rapid') ? 'rapid'
+            : reasons.includes('Classical') ? 'classical'
+            : null;
+        if (!cls) return '';
+        const label = cls.charAt(0).toUpperCase() + cls.slice(1);
+        return `<span class="time-control-class time-control-class--${cls}">${label}</span>`;
+    }
+
+    /**
+     * Remaining category tokens (Open, Youth, U18…) as separate chips, once
+     * the time-control words have their own colored pill above — avoids
+     * repeating "Blitz" in both a colored pill and a plain string.
+     */
+    private categoryTagsHTML(tournament: Tournament): string {
+        const TIME_WORDS = /^(classical|standard|rapid|blitz)$/i;
+        const tokens = tournament.category
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t && !TIME_WORDS.test(t));
+        return tokens.map(t => `<span class="category-tag">${escapeHTML(t)}</span>`).join('');
     }
 
     /** Inclusive day count when dateTo is present and later than the start date. */
@@ -347,6 +425,9 @@ export class UIManager {
             ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(this.condenseTimeControl(tc))}</span>`
             : '';
 
+        const timeControlClassHTML = this.timeControlClassHTML(tournament);
+        const categoryTagsHTML = this.categoryTagsHTML(tournament);
+
         const durationDays = this.tournamentDurationDays(tournament);
         const durationHTML = durationDays !== null
             ? `<span class="duration-pill">${durationDays} days</span>`
@@ -381,8 +462,9 @@ export class UIManager {
                 </div>
                 <div class="tournament-location">${formatLocation(tournament.location)}</div>
                 <div class="tournament-meta">
-                    <span class="tournament-category">${escapeHTML(tournament.category)}</span>
+                    ${timeControlClassHTML}
                     ${timeControlHTML}
+                    ${categoryTagsHTML}
                     ${durationHTML}
                 </div>
                 ${travelTagsHTML}

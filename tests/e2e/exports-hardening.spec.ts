@@ -87,7 +87,7 @@ test.describe('Export hardening', () => {
     test.beforeEach(async ({ page }) => {
         await stubData(page);
         await page.goto('/');
-        await expect(page.locator('h1')).toContainText('European Chess Tournament Finder');
+        await expect(page.locator('h1')).toContainText('MedTourney');
     });
 
     test('search renders cards (no vacuous skip)', async ({ page }) => {
@@ -208,10 +208,12 @@ test.describe('Export hardening', () => {
         await expect(page.locator('#shortlistCount')).toHaveText('1');
 
         // Trigger shortlist export while no search has run (allTournaments empty).
-        // The Ctrl+S shortcut is enabled once a shortlist exists. This is exactly
-        // the path that previously showed a false "star tournaments first" message.
+        // The "s" shortcut is enabled once a shortlist exists (bare key, not
+        // Ctrl+S, which collides with the browser's save-page shortcut). This
+        // is exactly the path that previously showed a false "star tournaments
+        // first" message.
         page.on('download', () => { /* swallow the .ics download */ });
-        await page.keyboard.press('Control+s');
+        await page.keyboard.press('s');
 
         // Must NOT falsely tell the user to "star tournaments first".
         await expect(page.locator('#error')).not.toContainText(/star tournaments/i);
@@ -219,11 +221,11 @@ test.describe('Export hardening', () => {
         await expect(page.locator('#error')).toContainText(/exported 1 shortlisted/i, { timeout: 10000 });
     });
 
-    test('Ctrl+E keyboard shortcut exports the visible set to CSV', async ({ page }) => {
+    test('"e" keyboard shortcut exports the visible set to CSV', async ({ page }) => {
         await search(page);
         const [download] = await Promise.all([
             page.waitForEvent('download'),
-            page.keyboard.press('Control+e'),
+            page.keyboard.press('e'),
         ]);
         expect(download.suggestedFilename()).toContain('.csv');
     });

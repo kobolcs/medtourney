@@ -83,6 +83,7 @@ class TournamentFinder {
 
     // Deep-link: URL of tournament to highlight after next search (?t= param)
     private deepLinkUrl: string | null = null;
+    private headerDateLabel: string | null = null;
 
     constructor() {
         // Initialize service modules
@@ -134,8 +135,9 @@ class TournamentFinder {
             if (startDateElement) startDateElement.valueAsDate = today;
             if (endDateElement) endDateElement.valueAsDate = sixMonthsLater;
 
-            // Load saved filter preferences
+            // Load saved filter preferences (URL takes priority over cache)
             this.loadFilterPreferences();
+            this.syncFilterStateToURL();
 
             // Reflect any non-default advanced filters in the drawer badge,
             // and auto-open the drawer if a saved preference narrows results.
@@ -292,6 +294,15 @@ class TournamentFinder {
         this.trackEvent('Help Opened');
     }
 
+    private toggleHelpModal(): void {
+        const modal = document.getElementById('helpModal');
+        if (modal && modal.style.display !== 'none') {
+            this.closeHelpModal();
+        } else {
+            this.openHelpModal();
+        }
+    }
+
     private closeHelpModal(): void {
         const modal = document.getElementById('helpModal');
         if (!modal) return;
@@ -390,11 +401,11 @@ class TournamentFinder {
      * Update theme button text
      */
     private updateThemeButtonText(): void {
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            const isDark = document.body.classList.contains('dark-theme');
-            themeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
-        }
+        const isDark = document.body.classList.contains('dark-theme');
+        const icon = document.getElementById('themeToggleIcon');
+        if (icon) icon.textContent = isDark ? '☀' : '☽'; // sun / crescent moon
+        const label = document.getElementById('themeToggleLabel');
+        if (label) label.textContent = isDark ? 'Light Mode' : 'Dark Mode';
     }
 
     /**
@@ -443,16 +454,30 @@ class TournamentFinder {
     }
 
     /**
-     * Load saved filter preferences
+     * Load saved filter preferences: a URL carrying filter params (a shared
+     * link) takes priority over the localStorage prefs from a previous visit,
+     * since a shared link is an explicit request for that exact view.
      */
     private loadFilterPreferences(): void {
+        const fromUrl = this.filterStateFromSearchParams(new URLSearchParams(location.search));
+        if (fromUrl) {
+            this.applyFilterPreferences(fromUrl);
+            return;
+        }
+
         const preferences = this.cacheManager.loadFromCache<Partial<FilterState>>(
             this.cacheManager.CACHE_KEYS.FILTER_PREFERENCES
         );
 
         if (!preferences) return;
+        this.applyFilterPreferences(preferences);
+    }
 
-        // Apply saved filter values
+    /**
+     * Apply a partial filter state (from localStorage or the URL) to the
+     * actual filter DOM elements, which are what getFilterState() reads back.
+     */
+    private applyFilterPreferences(preferences: Partial<FilterState>): void {
         const filterElements = this.getFilterElements();
 
         if (preferences.openOnly !== undefined && filterElements.openOnly) {
@@ -514,6 +539,102 @@ class TournamentFinder {
     }
 
     /**
+     * Encode the parts of filter state worth sharing as a link into query
+     * params, e.g. "Senior seaside weeks in October" -> ?med=1&senior=1&dur=7.
+     * Only non-default values are written, so the common case (no filters
+     * narrowed) keeps a clean URL. Date range is deliberately left out - the
+     * default window shifts with "today" on every visit, so there's no stable
+     * "default" to diff against, and the deep-link ?t= param already covers
+     * sharing a single tournament.
+     */
+    private filterStateToSearchParams(state: FilterState): URLSearchParams {
+        const params = new URLSearchParams();
+
+        if (!state.openOnly) params.set('open', '0');
+        if (!state.excludeYouth) params.set('excludeYouth', '0');
+        if (state.mediterraneanOnly) params.set('med', '1');
+        if (state.seniorCategory) params.set('senior', '1');
+        if (state.seniorS60) params.set('senior60', '1');
+        if (state.womenOnly) params.set('women', '1');
+        if (state.includeTeamTournaments) params.set('team', '1');
+
+        const tcEnabled = [
+            state.classicalTime && 'classical',
+            state.rapidTime && 'rapid',
+            state.blitzTime && 'blitz',
+        ].filter((v): v is string => Boolean(v));
+        if (tcEnabled.length !== 3) params.set('tc', tcEnabled.join(','));
+
+        if (state.countryFilter.length > 0) params.set('country', state.countryFilter.join(','));
+        if (state.minDays !== 0) params.set('dur', String(state.minDays));
+        if (state.youthCategory) params.set('youthAge', state.youthCategory);
+        if (state.ratingCategory) params.set('rating', state.ratingCategory);
+
+        return params;
+    }
+
+    /** Inverse of filterStateToSearchParams(). Returns null when the URL carries no filter params at all. */
+    private filterStateFromSearchParams(params: URLSearchParams): Partial<FilterState> | null {
+        const FILTER_PARAM_KEYS = [
+            'open', 'excludeYouth', 'med', 'senior', 'senior60', 'women',
+            'team', 'tc', 'country', 'dur', 'youthAge', 'rating'
+        ];
+        if (!FILTER_PARAM_KEYS.some(key => params.has(key))) return null;
+
+        const preferences: Partial<FilterState> = {};
+
+        if (params.has('open')) preferences.openOnly = params.get('open') !== '0';
+        if (params.has('excludeYouth')) preferences.excludeYouth = params.get('excludeYouth') !== '0';
+        if (params.has('med')) preferences.mediterraneanOnly = params.get('med') === '1';
+        if (params.has('senior')) preferences.seniorCategory = params.get('senior') === '1';
+        if (params.has('senior60')) preferences.seniorS60 = params.get('senior60') === '1';
+        if (params.has('women')) preferences.womenOnly = params.get('women') === '1';
+        if (params.has('team')) preferences.includeTeamTournaments = params.get('team') === '1';
+
+        if (params.has('tc')) {
+            const enabled = new Set(params.get('tc')!.split(',').filter(Boolean));
+            preferences.classicalTime = enabled.has('classical');
+            preferences.rapidTime = enabled.has('rapid');
+            preferences.blitzTime = enabled.has('blitz');
+        }
+
+        if (params.has('country')) {
+            preferences.countryFilter = params.get('country')!.split(',').filter(Boolean);
+        }
+
+        if (params.has('dur')) {
+            const raw = params.get('dur')!;
+            preferences.minDays = (raw === 'weekend' || raw === 'just-weekend') ? raw : Number(raw);
+        }
+
+        if (params.has('youthAge')) preferences.youthCategory = params.get('youthAge')!;
+        if (params.has('rating')) preferences.ratingCategory = params.get('rating')!;
+
+        return preferences;
+    }
+
+    /**
+     * Mirror the current filter state into the URL (replacing history, not
+     * pushing - every checkbox click shouldn't add a back-button stop) so the
+     * current view can be shared or bookmarked. Preserves unrelated params
+     * (like the ?t= deep link) untouched.
+     */
+    private syncFilterStateToURL(): void {
+        const filterState = this.getFilterState();
+        const filterParams = this.filterStateToSearchParams(filterState);
+
+        const url = new URL(location.href);
+        const FILTER_PARAM_KEYS = [
+            'open', 'excludeYouth', 'med', 'senior', 'senior60', 'women',
+            'team', 'tc', 'country', 'dur', 'youthAge', 'rating'
+        ];
+        FILTER_PARAM_KEYS.forEach(key => url.searchParams.delete(key));
+        filterParams.forEach((value, key) => url.searchParams.set(key, value));
+
+        history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    /**
      * Attach listeners to filter inputs to auto-save preferences
      */
     private attachFilterChangeListeners(): void {
@@ -521,6 +642,7 @@ class TournamentFinder {
 
         const onFilterChange = () => {
             this.saveFilterPreferences();
+            this.syncFilterStateToURL();
             this.updateFilterCompatibility();
             this.updateAvailableCountries();
             this.updateAdvancedFilterCount();
@@ -696,6 +818,7 @@ class TournamentFinder {
         if (el.endDate)   el.endDate.valueAsDate   = sixMonths;
 
         this.saveFilterPreferences();
+        this.syncFilterStateToURL();
         void this.searchTournaments();
         this.trackEvent('Reset Filters');
     }
@@ -711,6 +834,7 @@ class TournamentFinder {
             // Fetch tournaments (with caching) and store full set for shortlist export
             const tournaments = await this.dataService.fetchTournaments();
             this.allTournaments = tournaments;
+            this.updateHeaderLiveStatus();
 
             // Recompute which countries have Mediterranean tournaments and update UI constraints
             this.mediterraneanCountries = this.computeMediterraneanCountries();
@@ -989,7 +1113,7 @@ class TournamentFinder {
             );
         }
 
-        this.uiManager.displayTournaments(toDisplay);
+        this.uiManager.displayTournaments(toDisplay, this.currentSort);
 
         if (this.deepLinkUrl) {
             const target = this.deepLinkUrl;
@@ -1269,15 +1393,11 @@ class TournamentFinder {
      */
     private initKeyboardNavigation(): void {
         document.addEventListener('keydown', (e: KeyboardEvent) => {
-            // F1: Toggle help modal
+            // F1: Toggle help modal (works even while typing — a dedicated
+            // function key has no conflicting "insert this character" use)
             if (e.key === 'F1') {
                 e.preventDefault();
-                const modal = document.getElementById('helpModal');
-                if (modal && modal.style.display !== 'none') {
-                    this.closeHelpModal();
-                } else {
-                    this.openHelpModal();
-                }
+                this.toggleHelpModal();
                 return;
             }
 
@@ -1296,41 +1416,73 @@ class TournamentFinder {
                 return;
             }
 
-            // Remaining shortcuts — skip when typing in an input/textarea
+            // Remaining shortcuts are bare single keys, not Ctrl/Cmd
+            // combinations — Ctrl/Cmd+D (bookmark), +S (save page) and +E
+            // (address bar in Chrome) are browser shortcuts that a page
+            // can't reliably override, so they never worked consistently.
+            // Skip while typing, and skip if any modifier is held so the
+            // browser's own shortcut still fires unmodified.
             const tag = (e.target as HTMLElement).tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-            // Ctrl/Cmd + K: Focus search button
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                const searchBtn = document.getElementById('searchBtn');
-                searchBtn?.focus();
-            }
-
-            // Ctrl/Cmd + E: Export to CSV
-            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
-                e.preventDefault();
-                const exportBtn = document.getElementById('exportBtn');
-                if (exportBtn && exportBtn.style.display !== 'none') {
-                    this.exportToCSV();
-                }
-            }
-
-            // Ctrl/Cmd + D: Toggle dark mode
-            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-                e.preventDefault();
-                this.toggleTheme();
-            }
-
-            // Ctrl/Cmd + S: Export shortlist to calendar
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                const exportShortlistBtn = document.getElementById('exportShortlistBtn');
-                if (exportShortlistBtn && exportShortlistBtn.style.display !== 'none') {
+            switch (e.key) {
+                case '/': {
+                    // Focus "filter results" — the closest thing this app has
+                    // to a single search box.
                     e.preventDefault();
-                    void this.exportShortlistToCalendar();
+                    const quickSearch = document.getElementById('quickSearch') as HTMLInputElement | null;
+                    quickSearch?.focus();
+                    break;
+                }
+                case '?':
+                    e.preventDefault();
+                    this.toggleHelpModal();
+                    break;
+                case 'd':
+                    e.preventDefault();
+                    this.toggleTheme();
+                    break;
+                case 's': {
+                    const exportShortlistBtn = document.getElementById('exportShortlistBtn');
+                    if (exportShortlistBtn && exportShortlistBtn.style.display !== 'none') {
+                        e.preventDefault();
+                        void this.exportShortlistToCalendar();
+                    }
+                    break;
+                }
+                case 'e': {
+                    const exportBtn = document.getElementById('exportBtn');
+                    if (exportBtn && exportBtn.style.display !== 'none') {
+                        e.preventDefault();
+                        this.exportToCSV();
+                    }
+                    break;
                 }
             }
         });
+    }
+
+    /**
+     * Parse the timestamp localStorage keeps alongside the cached tournament
+     * list. Shared by the footer's "Data updated" line and the header's live
+     * status line, which format it differently.
+     */
+    private getCachedTournamentsTimestamp(): Date | null {
+        const cacheTimestamp = localStorage.getItem(this.cacheManager.CACHE_KEYS.TOURNAMENTS);
+        if (!cacheTimestamp) return null;
+        try {
+            const parsed = JSON.parse(cacheTimestamp);
+            if (parsed.timestamp) {
+                const date = new Date(parsed.timestamp);
+                if (!isNaN(date.getTime())) return date;
+            }
+        } catch (e) {
+            this.logger.warn('Failed to parse cache timestamp', {
+                error: e instanceof Error ? e.message : 'Unknown error'
+            });
+        }
+        return null;
     }
 
     /**
@@ -1340,29 +1492,28 @@ class TournamentFinder {
         const lastUpdatedTime = document.getElementById('lastUpdatedTime');
         if (!lastUpdatedTime) return;
 
-        const cachedData = this.cacheManager.loadFromCache<Tournament[]>(
-            this.cacheManager.CACHE_KEYS.TOURNAMENTS
-        );
+        const date = this.getCachedTournamentsTimestamp();
+        lastUpdatedTime.textContent = date ? date.toLocaleString() : 'Never (no cached data)';
+    }
 
-        if (cachedData) {
-            const cacheTimestamp = localStorage.getItem(this.cacheManager.CACHE_KEYS.TOURNAMENTS);
-            if (cacheTimestamp) {
-                try {
-                    const parsed = JSON.parse(cacheTimestamp);
-                    if (parsed.timestamp) {
-                        const date = new Date(parsed.timestamp);
-                        lastUpdatedTime.textContent = date.toLocaleString();
-                        return;
-                    }
-                } catch (e) {
-                    this.logger.warn('Failed to parse cache timestamp', {
-                        error: e instanceof Error ? e.message : 'Unknown error'
-                    });
-                }
-            }
-        }
+    /**
+     * Refresh the header's "N European tournaments · updated <when>" line.
+     * Called after every search (count) and once checkDataStaleness resolves
+     * the authoritative scrape timestamp (date), so it settles quickly on
+     * repeat visits and self-corrects once the meta file lands.
+     */
+    private updateHeaderLiveStatus(): void {
+        const countEl = document.getElementById('headerTournamentCount');
+        if (!countEl || this.allTournaments.length === 0) return;
 
-        lastUpdatedTime.textContent = 'Never (no cached data)';
+        const count = this.allTournaments.length.toLocaleString('en-GB');
+        const date = this.headerDateLabel ?? this.getCachedTournamentsTimestamp()?.toLocaleString('en-GB', {
+            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+        }) ?? null;
+
+        countEl.textContent = date
+            ? `${count} European tournaments · updated ${date}`
+            : `${count} European tournaments`;
     }
 
     /**
@@ -1388,6 +1539,11 @@ class TournamentFinder {
                     hour: '2-digit', minute: '2-digit'
                 });
             }
+
+            this.headerDateLabel = generatedAt.toLocaleString('en-GB', {
+                day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+            });
+            this.updateHeaderLiveStatus();
 
             const hoursSince = (Date.now() - generatedAt.getTime()) / (1000 * 60 * 60);
             if (hoursSince > 48) {

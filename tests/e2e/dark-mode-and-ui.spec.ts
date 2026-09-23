@@ -136,7 +136,7 @@ test.describe('Dark Mode and UI Features', () => {
       await expect(firstCard.locator('.tournament-name')).toBeVisible();
       await expect(firstCard.locator('.tournament-date')).toBeVisible();
       await expect(firstCard.locator('.tournament-location')).toBeVisible();
-      await expect(firstCard.locator('.tournament-category')).toBeVisible();
+      await expect(firstCard.locator('.tournament-meta')).toBeVisible();
       await expect(firstCard.locator('.tournament-link')).toBeVisible();
 
       // Card should have hover effect
