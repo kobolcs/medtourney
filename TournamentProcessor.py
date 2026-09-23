@@ -276,6 +276,17 @@ class TournamentProcessor:
         # too much across organizers/languages/notations to enumerate, so
         # just take the first "<number><seconds-marker>" found anywhere after
         # the base time instead of requiring a specific connector before it.
+        # Deliberately NOT anchored with \b: real data spells "minutes" and
+        # "seconds" in a dozen languages ("Minuten", "minutos", "minut",
+        # "minuter", "minūtes", ...), all matched here only via their shared
+        # "min"/"sec" prefix. \b after that prefix breaks every one of them,
+        # since none happen to end a word right there (confirmed against the
+        # full real dataset - adding it misclassified 128 entries). This
+        # does mean a contrived string like "5 sections, 30 sec increment"
+        # could match "sec" inside "sections" first; not worth the tradeoff
+        # for a pattern that doesn't occur anywhere in real time-control
+        # data (that field describes clock settings, not tournament
+        # structure) versus breaking every non-English tournament's clock.
         m = re.search(r"(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|['′])", tc_lower)  # noqa: RUF001 (deliberate: matches real prime-mark notation)
         if m:
             val = int(m.group(1))

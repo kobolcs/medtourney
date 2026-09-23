@@ -364,6 +364,22 @@ class TestTournamentProcessor:
         assert processor._classify_by_fide_formula("10'05''") == "Rapid"
         assert processor._classify_by_fide_formula("30'+30\"") == "Classical"
 
+    def test_classify_by_fide_formula_non_english_unit_words(self, processor):
+        """The base/increment regexes match "min"/"sec" as a prefix, not a
+        whole word, specifically so this works: real chess-results.com data
+        spells "minutes"/"seconds" in a dozen languages ("Minuten",
+        "minutos", "minut", "minuter", "minūtes", "Sekunden", "segundos",
+        "sekund", ...), all sharing only that short English prefix. Anchoring
+        with \\b to prevent an unrelated word (e.g. "sections") from also
+        matching "sec" was tried and reverted - it broke matching for every
+        one of these languages, since none happen to end a word right after
+        "min"/"sec". Pin the multi-language behavior so it isn't "fixed"
+        that way again."""
+        assert processor._classify_by_fide_formula("10 minuten + 5 sekunden/zug") == "Rapid"
+        assert processor._classify_by_fide_formula("10 minutos + 5 segundos") == "Rapid"
+        assert processor._classify_by_fide_formula("10 minut + 5 sekund za tah") == "Rapid"
+        assert processor._classify_by_fide_formula("90 minuten + 30 sek pro zug") == "Classical"
+
     def test_determine_category_keyword_overrides_formula(self, processor):
         """An explicit 'Rapid'/'Classical' label in the source data is
         trusted even where the formula would (in isolation) agree or
