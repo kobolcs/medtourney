@@ -34,7 +34,7 @@ chess-results.com lists thousands of tournaments but only lets you filter by fed
 ![Tournament cards, each accent color mapped to a category](docs/images/screenshot-results.png)
 
 **Everything else**
-- Dark mode, keyboard shortcuts (`F1` help, `Ctrl+K`/`E`/`D`/`S`), WCAG 2.1 AA accessibility
+- Dark mode, keyboard shortcuts (`F1`/`?` help, `/` search, `d` dark mode, `e` CSV export, `s` shortlist export), WCAG 2.1 AA accessibility
 - Works on phones — including a fix for a real Chrome-for-Android bug where the sticky search button sat below the visible screen (see `CLAUDE.md` if you're curious)
 - Real flag icons, not emoji — emoji flags render as plain two-letter text on Windows and several Linux browsers regardless of which browser you use, since it's the OS that's missing the glyph, not the browser
 

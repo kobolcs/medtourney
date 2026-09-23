@@ -513,15 +513,25 @@ header h1 {
 
 .mode-switch-btn {
   flex: 1;
+  min-width: 0;
   text-align: center;
-  font: 600 var(--text-sm)/1 'Inter', sans-serif;
-  padding: var(--sp-2) var(--sp-3);
+  font: 600 var(--text-sm)/1.15 'Inter', sans-serif;
+  padding: var(--sp-2) var(--sp-1);
   border: none;
   border-radius: calc(var(--r-md) - 3px);
   background: transparent;
   color: var(--label);
   cursor: pointer;
-  white-space: nowrap;
+  /* Four equal-width segments plus these labels don't fit on one line below
+     ~500px (narrow phones, and the 340px desktop sidebar) - wrap instead of
+     overflowing, with a min-height so the row stays visually even whether a
+     given button wraps to two lines or not. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-height: 2.7em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background .15s, color .15s;
 }
 
@@ -2426,7 +2436,8 @@ footer a:hover {
     gap: var(--sp-4);
   }
 
-  .pagination-container {
+  .pagination-container,
+  .month-divider {
     grid-column: 1 / -1;
   }
 }

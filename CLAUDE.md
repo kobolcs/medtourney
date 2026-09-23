@@ -55,7 +55,7 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 ```
 medtourney/
 ├── src/                          # TypeScript source code
-│   ├── app.ts                    # Main application coordinator (1,412 lines)
+│   ├── app.ts                    # Main application coordinator (1,643 lines)
 │   ├── main.ts                   # Entry point
 │   ├── types.ts                  # Shared TypeScript interfaces
 │   ├── services/                 # Service modules (modular architecture)
@@ -63,12 +63,13 @@ medtourney/
 │   │   ├── FilterService.ts      # Multi-criteria filtering (395 lines)
 │   │   ├── DataService.ts        # 3-tier fetch strategy (319 lines)
 │   │   ├── ExportService.ts      # CSV & iCalendar exports (330 lines)
-│   │   └── UIManager.ts          # DOM manipulation & rendering (725 lines)
+│   │   └── UIManager.ts          # DOM manipulation & rendering (807 lines)
 │   └── utils/
 │       ├── Logger.ts             # Logging utility
 │       ├── validators.ts         # Zod runtime schemas for fetched data
 │       ├── countries.ts          # FED code -> name/flag-icon HTML for location display
-│       └── html.ts               # Shared escapeHTML() - see Security Considerations
+│       ├── html.ts               # Shared escapeHTML() - see Security Considerations
+│       └── filterUrl.ts          # FilterState <-> URLSearchParams (shareable filtered links)
 │
 ├── tests/                        # Comprehensive test suite (290+ tests)
 │   ├── unit/                     # Service unit tests (100 tests)
@@ -128,7 +129,7 @@ The application follows a **modular service-oriented architecture**. Each servic
 | **FilterService** | `src/services/FilterService.ts` | 395 | Multi-criteria filtering with FIFO cache |
 | **DataService** | `src/services/DataService.ts` | 319 | 3-tier fetch strategy (cache → local → CORS proxies) |
 | **ExportService** | `src/services/ExportService.ts` | 330 | CSV and iCalendar (RFC 5545) exports |
-| **UIManager** | `src/services/UIManager.ts` | 725 | DOM manipulation, loading skeletons, dark mode |
+| **UIManager** | `src/services/UIManager.ts` | 807 | DOM manipulation, loading skeletons, dark mode |
 
 ---
 
@@ -423,12 +424,16 @@ chore: Update dependencies to latest versions
 
 **Which level does it belong in?**
 
-The filters-card is two levels: `.filter-primary` (always visible — date
-range, Time Control, Mediterranean Seaside Only) and `<details id="advancedFilters">`
-(the "More filters" drawer — everything else). Default new filters to the
-drawer unless the filter is as fundamental to the product as the three
-primary ones above; the primary bar is deliberately small so the first
-tournament card stays near the top of the page.
+The filters-card is two levels: `.filter-primary` (always visible — the
+Seaside/Senior mode switch, date range, Time Control, Mediterranean Seaside
+Only) and `<details id="advancedFilters">` (the "More filters" drawer —
+everything else, including the Senior 50+/60+ checkboxes the mode switch
+also drives). Default new filters to the drawer unless the filter is as
+fundamental to the product as the ones above; the primary bar is
+deliberately small so the first tournament card stays near the top of the
+page. Filtering is live (`app.ts`'s `handleFilterChange()` /
+`applyFiltersAndRender()`) — a new filter's `change` listener should call
+into that same path rather than requiring a Search click.
 
 **Steps:**
 1. Update `FilterState` interface in `src/types.ts`
@@ -737,11 +742,11 @@ npm run preview
 
 | File | Purpose | Lines |
 |------|---------|-------|
-| `src/app.ts` | Main application coordinator | 1,412 |
+| `src/app.ts` | Main application coordinator | 1,643 |
 | `src/main.ts` | Entry point | 16 |
 | `src/types.ts` | Shared TypeScript interfaces | 50 |
-| `index.html` | Main HTML file | 461 |
-| `styles.css` | Application styles | 2,255 |
+| `index.html` | Main HTML file | 481 |
+| `styles.css` | Application styles | 2,467 |
 | `config.json` | App configuration | 853 |
 
 ### Service Modules
@@ -752,7 +757,7 @@ npm run preview
 | `src/services/FilterService.ts` | Multi-criteria filtering | 395 |
 | `src/services/DataService.ts` | 3-tier fetch strategy | 319 |
 | `src/services/ExportService.ts` | CSV & iCalendar exports | 330 |
-| `src/services/UIManager.ts` | DOM manipulation & rendering | 725 |
+| `src/services/UIManager.ts` | DOM manipulation & rendering | 807 |
 
 ### Configuration Files
 
@@ -816,14 +821,19 @@ npm run preview
    - Don't add logic to `app.ts` - create/use services
    - Follow dependency injection pattern
    - Keep services isolated and testable
-   - **This has drifted:** `app.ts` has grown to 1,412 lines (from 573 at
+   - **This has drifted:** `app.ts` has grown to 1,643 lines (from 573 at
      the v3.0 refactor) as event wiring, filter-preference persistence,
-     keyboard shortcuts, deep-linking, and shortlist management all
-     accumulated there as the coordination layer. It's not yet back to the
-     2,267-line pre-refactor monolith this architecture was built to avoid,
-     but it's trending that way - when adding a new feature, prefer
-     extracting genuinely standalone logic into a service (or a focused
-     `src/utils/` module, following `countries.ts`/`html.ts`) over adding
+     the mode switch, active-filter chips, keyboard shortcuts, deep-linking,
+     and shortlist management all accumulated there as the coordination
+     layer. It's not yet back to the 2,267-line pre-refactor monolith this
+     architecture was built to avoid, but it's trending that way -
+     `filterUrl.ts` (FilterState <-> URLSearchParams) was pulled out as a
+     `src/utils/` module rather than left as private methods here, since it
+     had no `this` dependency; that's the pattern to follow next time
+     something similarly self-contained accumulates. When adding a new
+     feature, prefer extracting genuinely standalone logic into a service
+     (or a focused `src/utils/` module, following `countries.ts`/`html.ts`)
+     over adding
      another method to `app.ts`, even though that's the path of least
      resistance for wiring up a single new control.
 
