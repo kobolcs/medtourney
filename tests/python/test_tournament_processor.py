@@ -380,6 +380,70 @@ class TestTournamentProcessor:
         assert processor._classify_by_fide_formula("10 minut + 5 sekund za tah") == "Rapid"
         assert processor._classify_by_fide_formula("90 minuten + 30 sek pro zug") == "Classical"
 
+    def test_classify_by_fide_formula_backtick_notation(self, processor):
+        """Regression: some sources' apostrophes come through as a
+        backtick instead of a real apostrophe/prime, e.g.
+        "8`+ 3\" por mov" (8+3=11, actually Rapid) - unrecognized entirely
+        by either the prime-notation or word-based paths, so it fell
+        through to the "Classical" default. Real example:
+        'I Open de Ajedrez Puerto Moral', timeControl "8 `+ 3\" por mov"."""
+        assert processor._classify_by_fide_formula('8 `+ 3" por mov') == "Rapid"
+        assert processor._classify_by_fide_formula("10`+5``") == "Rapid"
+        assert processor._classify_by_fide_formula("60`+30``") == "Classical"
+
+    def test_classify_by_fide_formula_slash_notation(self, processor):
+        """Regression: some UK clubs write base/increment as "N/M" instead
+        of "N+M" (e.g. "15/5", "3/2"), unrecognized entirely before this -
+        real example: '8th Epsom Chess Club SRCA RapidPlay Open',
+        timeControl "15/5" (15+5=20, actually Rapid), was defaulting to
+        Classical despite the tournament's own name saying RapidPlay.
+
+        Only matches when the ENTIRE string is just two numbers and a
+        slash: "/" is also used for moves-count formats like "40/90 Min,
+        Rest 15 Min" (40 moves per 90 min, not 40+90), which always carry
+        extra text around the slash and must NOT be picked up here."""
+        assert processor._classify_by_fide_formula("15/5") == "Rapid"
+        assert processor._classify_by_fide_formula("3/2") == "Blitz"
+        assert processor._classify_by_fide_formula("40/90 Min, Rest 15 Min") is None
+
+    def test_extract_category_rapid_blitz_compound_words(self, processor):
+        """Regression: \\brapid\\b/\\bblitz\\b (trailing word boundary)
+        missed real tournament names across languages where the word
+        doesn't end right there - German "Blitzschach"/"Blitzturnier",
+        English "RapidPlay"/"Rapidplay", and even the plain French word
+        "rapide" (still means "rapid", just spelled with a trailing e).
+        Affected 67 real tournaments, all silently defaulting to
+        Classical instead."""
+        assert "Blitz" in processor._extract_category("NRW Senioren Blitzschach 2026")
+        assert "Rapid" in processor._extract_category("8th Epsom Chess Club SRCA RapidPlay Open")
+        assert "Rapid" in processor._extract_category("Rapide FIDE Perpignan 27 Septembre 2026")
+
+    def test_determine_category_name_signal_only_used_as_fallback(self, processor):
+        """A tournament's own name can say "rapid"/"blitz" as a fallback
+        signal when the time-control field gives nothing (empty or
+        unparseable) - but must NOT override a class the time-control
+        field's numbers already successfully computed. Tried making the
+        name an override and reverted it: several real listings are
+        multi-format festivals whose scraped name mentions every format on
+        offer (e.g. "GOLDEN RHODOPES CHESS FESTIVAL 2026 ... Standard &
+        Blitz | 5000€"), so a single row's real time control (60+30=90min,
+        genuinely Classical) would get overridden to "Blitz" just because
+        that word also appears somewhere in the shared, multi-event name."""
+        # No time control at all - the name is the only signal available.
+        assert processor._determine_category(
+            "Rapide FIDE Perpignan 27 Septembre 2026", "Perpignan, FRA", ""
+        ) == "Rapid"
+
+        # A well-formed time control that computes Classical must win over
+        # a same-named "Blitz" mention elsewhere in a multi-format name.
+        category = processor._determine_category(
+            "GOLDEN RHODOPES CHESS FESTIVAL 2026 Standard & Blitz | 5000€",
+            "Zlatograd, BUL",
+            "60+30"
+        )
+        assert "Classical" in category
+        assert "Blitz" not in category
+
     def test_determine_category_keyword_overrides_formula(self, processor):
         """An explicit 'Rapid'/'Classical' label in the source data is
         trusted even where the formula would (in isolation) agree or
