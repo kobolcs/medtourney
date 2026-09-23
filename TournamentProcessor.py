@@ -267,13 +267,19 @@ class TournamentProcessor:
         if m:
             return self._total_to_class(int(m.group(1)) + int(m.group(2)))
 
-        # "N unit [+ M sec-unit]" format: "10min plus 3sec", "90 minutes + 30 seconds"
+        # "N unit [... M sec-unit]" format: "10min plus 3sec", "90 minutes + 30
+        # seconds", "45 minutes with 15 second increment", "30 minutes for
+        # game with 30 seconds increment", "... with an increment of 10
+        # seconds ...". The connector between base and increment varies too
+        # much across organizers/languages ("+", "plus", "with", "with an
+        # increment of", "Sek. Inkrement", ...) to enumerate, so just take
+        # the first "<number><seconds-word>" found anywhere after the base
+        # time instead of requiring a specific connector before it.
         m = re.search(r"(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|')", tc_lower)
         if m:
             val = int(m.group(1))
             base = val * 60 if m.group(2).startswith("h") else val
-            # Look for increment in seconds (handles "+" or "plus" as separator)
-            m2 = re.search(r"(?:\+|plus)\s*(\d+)\s*s(?:ec|ek|eg|ekunde|econds?|ekundy)?", tc_lower)
+            m2 = re.search(r"(\d+)\s*s(?:ec|ek|eg|ekunde|econds?|ekundy)?", tc_lower[m.end():])
             inc = int(m2.group(1)) if m2 else 0
             return self._total_to_class(base + inc)
 

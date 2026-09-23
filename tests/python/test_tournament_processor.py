@@ -310,6 +310,54 @@ class TestTournamentProcessor:
         assert "S50+" in category
         assert "Rapid" in category
 
+    # ========== Time Control Classification Tests (FIDE formula) ==========
+    # total = base_minutes + increment_seconds; Blitz <=10, Rapid <60, else Classical
+
+    def test_classify_by_fide_formula_bare_plus(self, processor):
+        """Bare 'N+M' format sums to the right bracket"""
+        assert processor._classify_by_fide_formula("10+5") == "Rapid"
+        assert processor._classify_by_fide_formula("90+30") == "Classical"
+        assert processor._classify_by_fide_formula("3+2") == "Blitz"
+
+    def test_classify_by_fide_formula_plus_sec_connector(self, processor):
+        """'+'/'plus' before the increment already worked before this fix"""
+        assert processor._classify_by_fide_formula("10 min + 5 sec") == "Rapid"
+        assert processor._classify_by_fide_formula("20 minutes plus 10 seconds") == "Rapid"
+
+    def test_classify_by_fide_formula_prose_with_connector(self, processor):
+        """Regression: 'N minutes with M second increment' was dropping the
+        increment entirely (only '+'/'plus' were recognized as connectors),
+        undercounting the total and misclassifying real chess-results.com
+        tournaments - e.g. a 45+15 (=60) game was coming out as Rapid
+        instead of Classical."""
+        assert processor._classify_by_fide_formula(
+            "45 minutes with 15 second increment from move 1"
+        ) == "Classical"
+        assert processor._classify_by_fide_formula(
+            "30 minutes for game with 30 seconds increment from move 1"
+        ) == "Classical"
+        assert processor._classify_by_fide_formula(
+            "8 minutes with 3 second increment from move 1"
+        ) == "Rapid"
+
+    def test_classify_by_fide_formula_increment_of_phrasing(self, processor):
+        """'... with an increment of N seconds ...' - connector isn't
+        directly before the number at all here."""
+        assert processor._classify_by_fide_formula(
+            "50 minutes to the end of the game with an increment of 10 seconds per move"
+        ) == "Classical"
+
+    def test_classify_by_fide_formula_no_increment(self, processor):
+        """No increment mentioned at all - just the base minutes"""
+        assert processor._classify_by_fide_formula("25 minutes") == "Rapid"
+        assert processor._classify_by_fide_formula("90 minutes") == "Classical"
+
+    def test_determine_category_keyword_overrides_formula(self, processor):
+        """An explicit 'Rapid'/'Classical' label in the source data is
+        trusted even where the formula would (in isolation) agree or
+        disagree - organizers' own labels take priority over inference."""
+        category = processor._determine_category("Open", "Budapest, HUN", "Rapid: 8 minutes with 3 second increment")
+        assert "Rapid" in category
 
     # ========== Tournament Filtering Tests ==========
 
