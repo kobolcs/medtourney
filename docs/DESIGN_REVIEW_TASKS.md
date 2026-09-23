@@ -47,8 +47,9 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 
 ## Scorecard follow-ups
 
-- [ ] Footer shows "Data updated …" until the JSON loads (the header live line
-  now covers this, but the footer placeholder is still visible at first).
+- [x] Footer shows "Data updated …" until the JSON loads. Now hidden until a real
+  timestamp is known (scrape time from `tournaments_data_meta.json`, or this
+  browser's cache time as a first-paint fallback) - no "…" or "Never (no cached data)".
 
 ## Known test issue (pre-existing, not from the review work)
 
@@ -56,3 +57,9 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
   collapse with Enter and Space" – focus doesn't land on the "Search Filters"
   heading after 4 Tabs. Cause: the sticky sidebar's `overflow-y: auto` made
   `.filters-card` a Firefox Tab stop; fixed with `tabindex="-1"` (`67a3cd9`).
+
+## Flaky tests seen
+
+- [ ] Mobile Chrome: `exports-hardening.spec.ts:149` "calendar export on page 2
+  downloads the correct tournament" failed once in a full run (2026-09-23),
+  passed 3/3 on rerun.

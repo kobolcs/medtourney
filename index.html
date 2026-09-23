@@ -431,8 +431,10 @@
 
         <footer role="contentinfo">
             <p id="lastUpdated" class="last-updated" aria-live="polite">
-                Data updated <span id="lastUpdatedTime">…</span>
-                · Source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a>
+                <!-- Hidden until a real timestamp is known (app.ts setFooterTimestamp) -
+                     no "…" placeholder or "Never" while the meta file loads. -->
+                <span id="lastUpdatedWrap" hidden>Data updated <span id="lastUpdatedTime"></span> ·</span>
+                Source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a>
                 · <a href="https://github.com/kobolcs/medtourney" target="_blank" rel="noopener noreferrer">GitHub</a>
             </p>
         </footer>

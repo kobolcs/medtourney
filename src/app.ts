@@ -1728,11 +1728,23 @@ class TournamentFinder {
      * Display last updated timestamp
      */
     private displayLastUpdated(): void {
-        const lastUpdatedTime = document.getElementById('lastUpdatedTime');
-        if (!lastUpdatedTime) return;
-
+        // First paint on repeat visits: when this browser cached the data (a
+        // close lower bound on freshness). checkDataStaleness() replaces it
+        // with the authoritative scrape time; with neither, the line stays hidden.
         const date = this.getCachedTournamentsTimestamp();
-        lastUpdatedTime.textContent = date ? date.toLocaleString() : 'Never (no cached data)';
+        if (date) this.setFooterTimestamp(date);
+    }
+
+    /** Show the footer's "Data updated <date> ·" segment with the given time. */
+    private setFooterTimestamp(date: Date): void {
+        const wrap = document.getElementById('lastUpdatedWrap');
+        const time = document.getElementById('lastUpdatedTime');
+        if (!wrap || !time) return;
+        time.textContent = date.toLocaleString('en-GB', {
+            day: 'numeric', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+        wrap.hidden = false;
     }
 
     /**
@@ -1771,13 +1783,7 @@ class TournamentFinder {
             if (isNaN(generatedAt.getTime())) return;
 
             // Overwrite footer with the authoritative generation timestamp
-            const lastUpdatedTime = document.getElementById('lastUpdatedTime');
-            if (lastUpdatedTime) {
-                lastUpdatedTime.textContent = generatedAt.toLocaleString('en-GB', {
-                    day: 'numeric', month: 'short', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit'
-                });
-            }
+            this.setFooterTimestamp(generatedAt);
 
             this.headerDateLabel = generatedAt.toLocaleString('en-GB', {
                 day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'

@@ -62,21 +62,31 @@ test.describe('Dark Mode and UI Features', () => {
     expect(stillDarkMode).toBe(true);
   });
 
-  test('should display last updated timestamp', async ({ page }) => {
-    const timestamp = page.locator('#lastUpdatedTime');
+  test('footer shows the scrape time from the meta file', async ({ page }) => {
+    await page.route('**/tournaments_data_meta.json', route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ generatedAt: '2026-09-23T03:43:02+00:00' }),
+      })
+    );
+    await page.reload();
 
-    // After init the app resolves the "Loading..." placeholder to a real
-    // status (a cached timestamp, or "Never (no cached data)").
-    await expect(timestamp).not.toHaveText(/loading/i, { timeout: 10000 });
+    await expect(page.locator('#lastUpdatedWrap')).toBeVisible();
+    await expect(page.locator('#lastUpdatedTime')).toContainText('23 Sept 2026');
+    await expect(page.locator('#lastUpdated')).not.toContainText('…');
+  });
 
-    // Results-first: the automatic first search already cached data, so just
-    // wait for results rather than re-clicking Search.
+  test('footer hides "Data updated" when no timestamp is known', async ({ page }) => {
+    await page.route('**/tournaments_data_meta.json', route => route.fulfill({ status: 404 }));
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
-    const timestampText = await timestamp.textContent();
-    expect(timestampText).not.toContain('Loading');
-    expect(timestampText).toBeTruthy();
-    expect(timestampText!.length).toBeGreaterThan(4);
+    // No placeholder, no "Never" - just the source links.
+    await expect(page.locator('#lastUpdatedWrap')).toBeHidden();
+    await expect(page.locator('#lastUpdated')).not.toContainText(/never|…/i);
+    await expect(page.locator('#lastUpdated')).toContainText('chess-results.com');
   });
 
   test('should collapse and expand filters on mobile', async ({ page, isMobile }) => {

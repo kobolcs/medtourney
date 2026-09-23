@@ -694,25 +694,6 @@ export class UIManager {
     }
 
     /**
-     * Update last updated timestamp
-     */
-    updateLastUpdatedTimestamp(): void {
-        const timestampEl = document.getElementById('lastUpdatedTime');
-        if (timestampEl) {
-            const now = new Date();
-            const formattedDate = now.toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZoneName: 'short'
-            });
-            timestampEl.textContent = formattedDate;
-        }
-    }
-
-    /**
      * Get filtered tournaments for export
      */
     getFilteredTournaments(): Tournament[] {
