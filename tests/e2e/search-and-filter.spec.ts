@@ -77,6 +77,30 @@ test.describe('Tournament Search and Filter', () => {
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
   });
 
+  test('should narrow the country checklist by typed query', async ({ page }) => {
+    // Stub data has ESP (Mediterranean) and AUT (Central Europe) tournaments.
+    await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
+    const esp = page.locator('.country-item[data-country="ESP"]');
+    const aut = page.locator('.country-item[data-country="AUT"]');
+    await expect(esp).toBeVisible();
+    await expect(aut).toBeVisible();
+
+    await page.fill('#countrySearch', 'spa');
+    await expect(esp).toBeVisible();
+    await expect(aut).toBeHidden();
+    await expect(page.locator('.country-group-label', { hasText: 'Mediterranean' })).toBeVisible();
+    await expect(page.locator('.country-group-label', { hasText: 'Central Europe' })).toBeHidden();
+
+    await page.fill('#countrySearch', 'zzz');
+    await expect(page.locator('#noCountriesMessage')).toBeVisible();
+    await expect(page.locator('#noCountriesMessage')).toContainText('zzz');
+
+    await page.fill('#countrySearch', '');
+    await expect(esp).toBeVisible();
+    await expect(aut).toBeVisible();
+    await expect(page.locator('#noCountriesMessage')).toBeHidden();
+  });
+
   test('should filter by country', async ({ page }) => {
     // Country filter is now a checkbox list — check Spain's checkbox
     await page.locator('#countryList input[value="ESP"]').check();

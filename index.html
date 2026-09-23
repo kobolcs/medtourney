@@ -283,63 +283,82 @@
                         </div>
                     </div>
                     <span id="country-scroll-hint" class="sr-only">Scrollable list — use arrow keys or scroll to see all countries</span>
+                    <label for="countrySearch" class="sr-only">Type to filter the country list</label>
+                    <input type="search" id="countrySearch" class="country-search-input" placeholder="Type to filter countries…">
                     <p id="noCountriesMessage" class="no-countries-message" hidden>No countries match your other filters.</p>
                     <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country" aria-describedby="country-scroll-hint">
+                        <div class="country-group-label">Mediterranean</div>
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="ALB"><label><input type="checkbox" name="countryFilter" value="ALB"><span class="checkbox-label">Albania</span></label></div>
                             <div class="country-item filter-group" data-country="AND"><label><input type="checkbox" name="countryFilter" value="AND"><span class="checkbox-label">Andorra</span></label></div>
-                            <div class="country-item filter-group" data-country="ARM"><label><input type="checkbox" name="countryFilter" value="ARM"><span class="checkbox-label">Armenia</span></label></div>
-                            <div class="country-item filter-group" data-country="AUT"><label><input type="checkbox" name="countryFilter" value="AUT"><span class="checkbox-label">Austria</span></label></div>
-                            <div class="country-item filter-group" data-country="AZE"><label><input type="checkbox" name="countryFilter" value="AZE"><span class="checkbox-label">Azerbaijan</span></label></div>
-                            <div class="country-item filter-group" data-country="BEL"><label><input type="checkbox" name="countryFilter" value="BEL"><span class="checkbox-label">Belgium</span></label></div>
                             <div class="country-item filter-group" data-country="BIH"><label><input type="checkbox" name="countryFilter" value="BIH"><span class="checkbox-label">Bosnia &amp; Herzegovina</span></label></div>
-                            <div class="country-item filter-group" data-country="BUL"><label><input type="checkbox" name="countryFilter" value="BUL"><span class="checkbox-label">Bulgaria</span></label></div>
                             <div class="country-item filter-group" data-country="CRO"><label><input type="checkbox" name="countryFilter" value="CRO"><span class="checkbox-label">Croatia</span></label></div>
                             <div class="country-item filter-group" data-country="CYP"><label><input type="checkbox" name="countryFilter" value="CYP"><span class="checkbox-label">Cyprus</span></label></div>
+                            <div class="country-item filter-group" data-country="FRA"><label><input type="checkbox" name="countryFilter" value="FRA"><span class="checkbox-label">France</span></label></div>
+                            <div class="country-item filter-group" data-country="GIB"><label><input type="checkbox" name="countryFilter" value="GIB"><span class="checkbox-label">Gibraltar</span></label></div>
+                            <div class="country-item filter-group" data-country="GRE"><label><input type="checkbox" name="countryFilter" value="GRE"><span class="checkbox-label">Greece</span></label></div>
+                            <div class="country-item filter-group" data-country="ITA"><label><input type="checkbox" name="countryFilter" value="ITA"><span class="checkbox-label">Italy</span></label></div>
+                            <div class="country-item filter-group" data-country="MLT"><label><input type="checkbox" name="countryFilter" value="MLT"><span class="checkbox-label">Malta</span></label></div>
+                            <div class="country-item filter-group" data-country="MNC"><label><input type="checkbox" name="countryFilter" value="MNC"><span class="checkbox-label">Monaco</span></label></div>
+                            <div class="country-item filter-group" data-country="MNE"><label><input type="checkbox" name="countryFilter" value="MNE"><span class="checkbox-label">Montenegro</span></label></div>
+                            <div class="country-item filter-group" data-country="POR"><label><input type="checkbox" name="countryFilter" value="POR"><span class="checkbox-label">Portugal</span></label></div>
+                            <div class="country-item filter-group" data-country="SMR"><label><input type="checkbox" name="countryFilter" value="SMR"><span class="checkbox-label">San Marino</span></label></div>
+                            <div class="country-item filter-group" data-country="SLO"><label><input type="checkbox" name="countryFilter" value="SLO"><span class="checkbox-label">Slovenia</span></label></div>
+                            <div class="country-item filter-group" data-country="ESP"><label><input type="checkbox" name="countryFilter" value="ESP"><span class="checkbox-label">Spain</span></label></div>
+                            <div class="country-item filter-group" data-country="TUR"><label><input type="checkbox" name="countryFilter" value="TUR"><span class="checkbox-label">Turkey</span></label></div>
+                        </div>
+
+                        <div class="country-group-label">Central Europe</div>
+                        <div class="filter-grid">
+                            <div class="country-item filter-group" data-country="AUT"><label><input type="checkbox" name="countryFilter" value="AUT"><span class="checkbox-label">Austria</span></label></div>
+                            <div class="country-item filter-group" data-country="BEL"><label><input type="checkbox" name="countryFilter" value="BEL"><span class="checkbox-label">Belgium</span></label></div>
                             <div class="country-item filter-group" data-country="CZE"><label><input type="checkbox" name="countryFilter" value="CZE"><span class="checkbox-label">Czech Republic</span></label></div>
+                            <div class="country-item filter-group" data-country="GER"><label><input type="checkbox" name="countryFilter" value="GER"><span class="checkbox-label">Germany</span></label></div>
+                            <div class="country-item filter-group" data-country="HUN"><label><input type="checkbox" name="countryFilter" value="HUN"><span class="checkbox-label">Hungary</span></label></div>
+                            <div class="country-item filter-group" data-country="LIE"><label><input type="checkbox" name="countryFilter" value="LIE"><span class="checkbox-label">Liechtenstein</span></label></div>
+                            <div class="country-item filter-group" data-country="LUX"><label><input type="checkbox" name="countryFilter" value="LUX"><span class="checkbox-label">Luxembourg</span></label></div>
+                            <div class="country-item filter-group" data-country="NED"><label><input type="checkbox" name="countryFilter" value="NED"><span class="checkbox-label">Netherlands</span></label></div>
+                            <div class="country-item filter-group" data-country="POL"><label><input type="checkbox" name="countryFilter" value="POL"><span class="checkbox-label">Poland</span></label></div>
+                            <div class="country-item filter-group" data-country="SVK"><label><input type="checkbox" name="countryFilter" value="SVK"><span class="checkbox-label">Slovakia</span></label></div>
+                            <div class="country-item filter-group" data-country="SUI"><label><input type="checkbox" name="countryFilter" value="SUI"><span class="checkbox-label">Switzerland</span></label></div>
+                        </div>
+
+                        <div class="country-group-label">Balkans &amp; Eastern Europe</div>
+                        <div class="filter-grid">
+                            <div class="country-item filter-group" data-country="ARM"><label><input type="checkbox" name="countryFilter" value="ARM"><span class="checkbox-label">Armenia</span></label></div>
+                            <div class="country-item filter-group" data-country="AZE"><label><input type="checkbox" name="countryFilter" value="AZE"><span class="checkbox-label">Azerbaijan</span></label></div>
+                            <div class="country-item filter-group" data-country="BUL"><label><input type="checkbox" name="countryFilter" value="BUL"><span class="checkbox-label">Bulgaria</span></label></div>
+                            <div class="country-item filter-group" data-country="GEO"><label><input type="checkbox" name="countryFilter" value="GEO"><span class="checkbox-label">Georgia</span></label></div>
+                            <div class="country-item filter-group" data-country="KOS"><label><input type="checkbox" name="countryFilter" value="KOS"><span class="checkbox-label">Kosovo</span></label></div>
+                            <div class="country-item filter-group" data-country="MDA"><label><input type="checkbox" name="countryFilter" value="MDA"><span class="checkbox-label">Moldova</span></label></div>
+                            <div class="country-item filter-group" data-country="MKD"><label><input type="checkbox" name="countryFilter" value="MKD"><span class="checkbox-label">North Macedonia</span></label></div>
+                            <div class="country-item filter-group" data-country="ROU"><label><input type="checkbox" name="countryFilter" value="ROU"><span class="checkbox-label">Romania</span></label></div>
+                            <div class="country-item filter-group" data-country="SRB"><label><input type="checkbox" name="countryFilter" value="SRB"><span class="checkbox-label">Serbia</span></label></div>
+                            <div class="country-item filter-group" data-country="UKR"><label><input type="checkbox" name="countryFilter" value="UKR"><span class="checkbox-label">Ukraine</span></label></div>
+                        </div>
+
+                        <div class="country-group-label">Nordic &amp; Baltic</div>
+                        <div class="filter-grid">
                             <div class="country-item filter-group" data-country="DEN"><label><input type="checkbox" name="countryFilter" value="DEN"><span class="checkbox-label">Denmark</span></label></div>
-                            <div class="country-item filter-group" data-country="ENG"><label><input type="checkbox" name="countryFilter" value="ENG"><span class="checkbox-label">England</span></label></div>
                             <div class="country-item filter-group" data-country="EST"><label><input type="checkbox" name="countryFilter" value="EST"><span class="checkbox-label">Estonia</span></label></div>
                             <div class="country-item filter-group" data-country="FAI"><label><input type="checkbox" name="countryFilter" value="FAI"><span class="checkbox-label">Faroe Islands</span></label></div>
                             <div class="country-item filter-group" data-country="FIN"><label><input type="checkbox" name="countryFilter" value="FIN"><span class="checkbox-label">Finland</span></label></div>
-                            <div class="country-item filter-group" data-country="FRA"><label><input type="checkbox" name="countryFilter" value="FRA"><span class="checkbox-label">France</span></label></div>
-                            <div class="country-item filter-group" data-country="GEO"><label><input type="checkbox" name="countryFilter" value="GEO"><span class="checkbox-label">Georgia</span></label></div>
-                            <div class="country-item filter-group" data-country="GER"><label><input type="checkbox" name="countryFilter" value="GER"><span class="checkbox-label">Germany</span></label></div>
-                            <div class="country-item filter-group" data-country="GIB"><label><input type="checkbox" name="countryFilter" value="GIB"><span class="checkbox-label">Gibraltar</span></label></div>
-                            <div class="country-item filter-group" data-country="GBR"><label><input type="checkbox" name="countryFilter" value="GBR"><span class="checkbox-label">Great Britain</span></label></div>
-                            <div class="country-item filter-group" data-country="GRE"><label><input type="checkbox" name="countryFilter" value="GRE"><span class="checkbox-label">Greece</span></label></div>
-                            <div class="country-item filter-group" data-country="GCI"><label><input type="checkbox" name="countryFilter" value="GCI"><span class="checkbox-label">Guernsey</span></label></div>
-                            <div class="country-item filter-group" data-country="HUN"><label><input type="checkbox" name="countryFilter" value="HUN"><span class="checkbox-label">Hungary</span></label></div>
                             <div class="country-item filter-group" data-country="ISL"><label><input type="checkbox" name="countryFilter" value="ISL"><span class="checkbox-label">Iceland</span></label></div>
+                            <div class="country-item filter-group" data-country="LAT"><label><input type="checkbox" name="countryFilter" value="LAT"><span class="checkbox-label">Latvia</span></label></div>
+                            <div class="country-item filter-group" data-country="LTU"><label><input type="checkbox" name="countryFilter" value="LTU"><span class="checkbox-label">Lithuania</span></label></div>
+                            <div class="country-item filter-group" data-country="NOR"><label><input type="checkbox" name="countryFilter" value="NOR"><span class="checkbox-label">Norway</span></label></div>
+                            <div class="country-item filter-group" data-country="SWE"><label><input type="checkbox" name="countryFilter" value="SWE"><span class="checkbox-label">Sweden</span></label></div>
+                        </div>
+
+                        <div class="country-group-label">British Isles</div>
+                        <div class="filter-grid">
+                            <div class="country-item filter-group" data-country="ENG"><label><input type="checkbox" name="countryFilter" value="ENG"><span class="checkbox-label">England</span></label></div>
+                            <div class="country-item filter-group" data-country="GBR"><label><input type="checkbox" name="countryFilter" value="GBR"><span class="checkbox-label">Great Britain</span></label></div>
+                            <div class="country-item filter-group" data-country="GCI"><label><input type="checkbox" name="countryFilter" value="GCI"><span class="checkbox-label">Guernsey</span></label></div>
                             <div class="country-item filter-group" data-country="IRL"><label><input type="checkbox" name="countryFilter" value="IRL"><span class="checkbox-label">Ireland</span></label></div>
                             <div class="country-item filter-group" data-country="IOM"><label><input type="checkbox" name="countryFilter" value="IOM"><span class="checkbox-label">Isle of Man</span></label></div>
-                            <div class="country-item filter-group" data-country="ITA"><label><input type="checkbox" name="countryFilter" value="ITA"><span class="checkbox-label">Italy</span></label></div>
                             <div class="country-item filter-group" data-country="JCI"><label><input type="checkbox" name="countryFilter" value="JCI"><span class="checkbox-label">Jersey</span></label></div>
-                            <div class="country-item filter-group" data-country="KOS"><label><input type="checkbox" name="countryFilter" value="KOS"><span class="checkbox-label">Kosovo</span></label></div>
-                            <div class="country-item filter-group" data-country="LAT"><label><input type="checkbox" name="countryFilter" value="LAT"><span class="checkbox-label">Latvia</span></label></div>
-                            <div class="country-item filter-group" data-country="LIE"><label><input type="checkbox" name="countryFilter" value="LIE"><span class="checkbox-label">Liechtenstein</span></label></div>
-                            <div class="country-item filter-group" data-country="LTU"><label><input type="checkbox" name="countryFilter" value="LTU"><span class="checkbox-label">Lithuania</span></label></div>
-                            <div class="country-item filter-group" data-country="LUX"><label><input type="checkbox" name="countryFilter" value="LUX"><span class="checkbox-label">Luxembourg</span></label></div>
-                            <div class="country-item filter-group" data-country="MLT"><label><input type="checkbox" name="countryFilter" value="MLT"><span class="checkbox-label">Malta</span></label></div>
-                            <div class="country-item filter-group" data-country="MDA"><label><input type="checkbox" name="countryFilter" value="MDA"><span class="checkbox-label">Moldova</span></label></div>
-                            <div class="country-item filter-group" data-country="MNC"><label><input type="checkbox" name="countryFilter" value="MNC"><span class="checkbox-label">Monaco</span></label></div>
-                            <div class="country-item filter-group" data-country="MNE"><label><input type="checkbox" name="countryFilter" value="MNE"><span class="checkbox-label">Montenegro</span></label></div>
-                            <div class="country-item filter-group" data-country="NED"><label><input type="checkbox" name="countryFilter" value="NED"><span class="checkbox-label">Netherlands</span></label></div>
-                            <div class="country-item filter-group" data-country="MKD"><label><input type="checkbox" name="countryFilter" value="MKD"><span class="checkbox-label">North Macedonia</span></label></div>
-                            <div class="country-item filter-group" data-country="NOR"><label><input type="checkbox" name="countryFilter" value="NOR"><span class="checkbox-label">Norway</span></label></div>
-                            <div class="country-item filter-group" data-country="POL"><label><input type="checkbox" name="countryFilter" value="POL"><span class="checkbox-label">Poland</span></label></div>
-                            <div class="country-item filter-group" data-country="POR"><label><input type="checkbox" name="countryFilter" value="POR"><span class="checkbox-label">Portugal</span></label></div>
-                            <div class="country-item filter-group" data-country="ROU"><label><input type="checkbox" name="countryFilter" value="ROU"><span class="checkbox-label">Romania</span></label></div>
-                            <div class="country-item filter-group" data-country="SMR"><label><input type="checkbox" name="countryFilter" value="SMR"><span class="checkbox-label">San Marino</span></label></div>
                             <div class="country-item filter-group" data-country="SCO"><label><input type="checkbox" name="countryFilter" value="SCO"><span class="checkbox-label">Scotland</span></label></div>
-                            <div class="country-item filter-group" data-country="SRB"><label><input type="checkbox" name="countryFilter" value="SRB"><span class="checkbox-label">Serbia</span></label></div>
-                            <div class="country-item filter-group" data-country="SVK"><label><input type="checkbox" name="countryFilter" value="SVK"><span class="checkbox-label">Slovakia</span></label></div>
-                            <div class="country-item filter-group" data-country="SLO"><label><input type="checkbox" name="countryFilter" value="SLO"><span class="checkbox-label">Slovenia</span></label></div>
-                            <div class="country-item filter-group" data-country="ESP"><label><input type="checkbox" name="countryFilter" value="ESP"><span class="checkbox-label">Spain</span></label></div>
-                            <div class="country-item filter-group" data-country="SWE"><label><input type="checkbox" name="countryFilter" value="SWE"><span class="checkbox-label">Sweden</span></label></div>
-                            <div class="country-item filter-group" data-country="SUI"><label><input type="checkbox" name="countryFilter" value="SUI"><span class="checkbox-label">Switzerland</span></label></div>
-                            <div class="country-item filter-group" data-country="TUR"><label><input type="checkbox" name="countryFilter" value="TUR"><span class="checkbox-label">Turkey</span></label></div>
-                            <div class="country-item filter-group" data-country="UKR"><label><input type="checkbox" name="countryFilter" value="UKR"><span class="checkbox-label">Ukraine</span></label></div>
                             <div class="country-item filter-group" data-country="WLS"><label><input type="checkbox" name="countryFilter" value="WLS"><span class="checkbox-label">Wales</span></label></div>
                         </div>
                     </div>

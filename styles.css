@@ -794,6 +794,23 @@ details#advancedFilters[open] > .advanced-summary::before {
   background: var(--sea-light);
 }
 
+.country-search-input {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-family: inherit;
+}
+
+.country-search-input:focus-visible {
+  outline: 2px solid var(--sea);
+  outline-offset: 1px;
+}
+
 .no-countries-message {
   color: var(--label);
   font-size: var(--text-sm);
@@ -810,6 +827,23 @@ details#advancedFilters[open] > .advanced-summary::before {
   background: var(--surface);
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+}
+
+/* Region grouping - the country list has always been alphabetical across
+   all 55 codes; grouping by how chess travellers actually think about
+   Europe makes the Mediterranean set (this site's own niche) fast to find
+   without hunting through Central/Nordic countries first. */
+.country-group-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--label);
+  padding: var(--sp-2) var(--sp-1) var(--sp-1);
+}
+
+.country-group-label:first-child {
+  padding-top: var(--sp-1);
 }
 
 .country-checkbox-list .filter-grid {

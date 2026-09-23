@@ -86,6 +86,7 @@ class TournamentFinder {
     // Deep-link: URL of tournament to highlight after next search (?t= param)
     private deepLinkUrl: string | null = null;
     private headerDateLabel: string | null = null;
+    private countrySearchQuery = '';
 
     constructor() {
         // Initialize service modules
@@ -217,6 +218,16 @@ class TournamentFinder {
             quickSearch.addEventListener('input', (e) => {
                 const target = e.target as HTMLInputElement;
                 this.searchWithinResults(target.value);
+            });
+        }
+
+        // Type-to-filter the country checklist (doesn't touch tournament
+        // filtering/results - only narrows which checkboxes are shown).
+        const countrySearch = document.getElementById('countrySearch') as HTMLInputElement | null;
+        if (countrySearch) {
+            countrySearch.addEventListener('input', (e) => {
+                this.countrySearchQuery = (e.target as HTMLInputElement).value;
+                this.applyCountrySearchFilter();
             });
         }
 
@@ -995,22 +1006,49 @@ class TournamentFinder {
             if (last) available.add(last.trim().toUpperCase());
         }
 
-        let anyVisible = false;
+        // Record availability as a data flag rather than setting style.display
+        // directly - applyCountrySearchFilter() is the single place that turns
+        // this (plus the type-to-filter query) into final visibility, so the
+        // two mechanisms narrow together instead of one clobbering the other.
         document.querySelectorAll<HTMLElement>('.country-item').forEach(item => {
             const code = item.dataset.country?.toUpperCase();
             if (!code) return;
             const cb = item.querySelector<HTMLInputElement>('input[type="checkbox"]');
             if (!cb) return;
-            const isAvailable = available.has(code);
-            if (!cb.checked) {
-                // Hide countries that have no results under current filters
-                item.style.display = isAvailable ? '' : 'none';
-                if (!isAvailable && cb.checked) cb.checked = false;
-            } else {
-                // Always keep checked countries visible
-                item.style.display = '';
-            }
-            if (item.style.display !== 'none') anyVisible = true;
+            // Always keep checked countries available, even with 0 results
+            // under the current filters - unchecking is the user's call.
+            const unavailable = !cb.checked && !available.has(code);
+            item.dataset.unavailable = unavailable ? 'true' : 'false';
+        });
+
+        this.applyCountrySearchFilter();
+    }
+
+    /**
+     * Final country-checkbox visibility: hidden if updateAvailableCountries()
+     * flagged it unavailable, OR it doesn't match the type-to-filter query.
+     * Called after updateAvailableCountries() (filters changed) and directly
+     * from the search input's own listener (only the query changed).
+     */
+    private applyCountrySearchFilter(): void {
+        const query = this.countrySearchQuery.trim().toLowerCase();
+        let anyVisible = false;
+
+        document.querySelectorAll<HTMLElement>('.country-item').forEach(item => {
+            const unavailable = item.dataset.unavailable === 'true';
+            const label = item.textContent?.toLowerCase() ?? '';
+            const matchesQuery = !query || label.includes(query);
+            const visible = !unavailable && matchesQuery;
+            item.style.display = visible ? '' : 'none';
+            if (visible) anyVisible = true;
+        });
+
+        // Hide a region heading when every country under it is hidden.
+        document.querySelectorAll<HTMLElement>('.country-group-label').forEach(label => {
+            const grid = label.nextElementSibling;
+            const hasVisible = !!grid && Array.from(grid.querySelectorAll<HTMLElement>('.country-item'))
+                .some(item => item.style.display !== 'none');
+            label.style.display = hasVisible ? '' : 'none';
         });
 
         // Every other filter can already narrow results to zero on its own
@@ -1019,7 +1057,12 @@ class TournamentFinder {
         const countryList = document.getElementById('countryList');
         const noCountriesMessage = document.getElementById('noCountriesMessage');
         if (countryList) countryList.style.display = anyVisible ? '' : 'none';
-        if (noCountriesMessage) noCountriesMessage.hidden = anyVisible;
+        if (noCountriesMessage) {
+            noCountriesMessage.hidden = anyVisible;
+            noCountriesMessage.textContent = query
+                ? `No countries match "${this.countrySearchQuery.trim()}".`
+                : 'No countries match your other filters.';
+        }
     }
 
     /**
