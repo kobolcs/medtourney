@@ -190,6 +190,35 @@ header {
   color: var(--header-text);
 }
 
+/* Thin board-rank motif along the header's bottom edge — alternating
+   accent squares standing in for a chessboard rank. Full-bleed (not
+   constrained to .header-inner's max-width) and just 7px tall, so it adds
+   texture without adding height to the results-first layout. */
+header::after {
+  content: "";
+  display: block;
+  height: 7px;
+  background-image: repeating-linear-gradient(90deg,
+    var(--sea) 0 7px,
+    var(--amber) 7px 14px
+  );
+  opacity: .5;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.header-logomark {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-top: 4px;
+  color: var(--header-text);
+}
+
 .header-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -350,10 +379,8 @@ header h1 {
   color: var(--label);
   margin-top: var(--sp-5);
   margin-bottom: var(--sp-3);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .08em;
 }
 
 .filter-grid {
@@ -414,6 +441,9 @@ header h1 {
   cursor: pointer;
   transition: border-color .15s;
   margin-top: var(--sp-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .filter-group select:focus {
@@ -515,11 +545,9 @@ details#advancedFilters[open] > .advanced-summary::before {
 .date-input label {
   display: block;
   margin-bottom: var(--sp-2);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--label);
-  text-transform: uppercase;
-  letter-spacing: .06em;
 }
 
 .date-input input[type="date"] {
@@ -551,11 +579,9 @@ details#advancedFilters[open] > .advanced-summary::before {
 }
 
 .date-presets-label {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--label);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
 }
 
 .date-preset-btn {
@@ -590,11 +616,9 @@ details#advancedFilters[open] > .advanced-summary::before {
 }
 
 .country-filter-label {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--label);
-  text-transform: uppercase;
-  letter-spacing: .06em;
 }
 
 .country-filter-header-right {
@@ -631,6 +655,13 @@ details#advancedFilters[open] > .advanced-summary::before {
   color: var(--sea);
   border-color: var(--sea);
   background: var(--sea-light);
+}
+
+.no-countries-message {
+  color: var(--label);
+  font-size: var(--text-sm);
+  font-style: italic;
+  padding: var(--sp-3) 0;
 }
 
 .country-checkbox-list {
@@ -957,10 +988,8 @@ body.dark-theme .error-message.success-type {
 }
 
 .featured-label {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 700;
-  letter-spacing: .07em;
-  text-transform: uppercase;
   color: var(--amber);
   margin-bottom: var(--sp-2);
 }
@@ -985,6 +1014,9 @@ body.dark-theme .error-message.success-type {
 .featured-location {
   color: var(--text);
   margin-bottom: var(--sp-3);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
 }
 
 .featured-meta {
@@ -1016,21 +1048,48 @@ body.dark-theme .error-message.success-type {
 }
 
 /* ── Regular tournament card ────────────────────────────────────────── */
+/* Accent color encodes category — a plain/open result gets the header's
+   navy, a Mediterranean/seaside result keeps the sea-blue that was
+   previously used for every card, and a senior result gets walnut amber.
+   Reuses the travelTags UIManager already computes for the travel-tag
+   pills; see createTournamentCard(). */
 .tournament-card {
   display: flex;
   gap: var(--sp-4);
   border: 1px solid var(--mist-light);
-  border-left: 4px solid var(--sea);
+  border-left: 4px solid var(--text);
   border-radius: var(--r-lg);
   padding: var(--sp-5) var(--sp-6);
   background: var(--surface);
+  cursor: pointer;
   transition: border-left-color .15s, box-shadow .15s, transform .12s;
 }
 
 .tournament-card:hover {
-  border-left-color: var(--sea-hover);
   box-shadow: var(--shadow-md);
   transform: translateX(3px);
+}
+
+.tournament-card--mediterranean {
+  border-left-color: var(--sea);
+}
+
+.tournament-card--mediterranean:hover {
+  border-left-color: var(--sea-hover);
+}
+
+.tournament-card--senior {
+  border-left-color: var(--amber);
+}
+
+.tournament-card--mediterranean .tournament-date-badge {
+  background: var(--sea-light);
+  color: var(--sea);
+}
+
+.tournament-card--senior .tournament-date-badge {
+  background: var(--amber-light);
+  color: var(--amber);
 }
 
 /* Left-hand date badge */
@@ -1043,8 +1102,8 @@ body.dark-theme .error-message.success-type {
   width: 52px;
   height: 52px;
   border-radius: var(--r-md);
-  background: var(--sea-light);
-  color: var(--sea);
+  background: var(--mist-light);
+  color: var(--text);
 }
 
 .tournament-date-badge-day {
@@ -1133,6 +1192,12 @@ body.dark-theme .error-message.success-type {
   gap: var(--sp-2);
 }
 
+.flag-icon {
+  flex-shrink: 0;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
+}
+
 .tournament-location::before {
   content: "→";
   color: var(--sea);
@@ -1193,21 +1258,32 @@ body.dark-theme .error-message.success-type {
   font-size: var(--text-sm);
 }
 
+/* Calendar/copy-link are secondary actions: the whole row is collapsed to
+   zero height at rest (not just faded out) so cards don't reserve dead
+   space for buttons nobody's pointing at — it grows in on hover/focus
+   instead. max-height (not height/display) lets this animate without
+   knowing the row's exact height, and keeps the buttons in the tab order
+   and clickable via automation throughout. */
 .tournament-actions {
   display: flex;
   gap: var(--sp-3);
   flex-wrap: wrap;
-  margin-top: var(--sp-4);
-  padding-top: var(--sp-4);
-  border-top: 1px solid var(--mist-light);
+  overflow: hidden;
+  max-height: 0;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 1px solid transparent;
+  transition: max-height .2s ease, margin-top .2s ease, padding-top .2s ease, border-top-color .2s ease;
 }
 
-/* Calendar/copy-link are secondary actions: quiet icon buttons that surface
-   on hover/focus instead of competing with the tournament name link. Scoped
-   under .tournament-actions (specificity 0-2-0) so this beats the standalone
-   .calendar-export-btn / .copy-link-btn rules below regardless of source
-   order. Opacity (not display) keeps them in the tab order and clickable via
-   automation while visually quiet at rest. */
+.tournament-card:hover .tournament-actions,
+.tournament-card:focus-within .tournament-actions {
+  max-height: 150px;
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top-color: var(--mist-light);
+}
+
 .tournament-actions .calendar-export-btn,
 .tournament-actions .copy-link-btn {
   opacity: 0;
@@ -1223,8 +1299,32 @@ body.dark-theme .error-message.success-type {
   opacity: 1;
 }
 
-/* No hover capability (touch): keep the actions visible at all times. */
+/* The featured "Tournament of the Week" card is a single, always-prominent
+   callout, not a dense list item competing for space - unlike the results
+   list, there's no "cards too big" problem to solve here, so its actions
+   (including the primary "View Tournament" CTA, which isn't even part of
+   the opacity-fade above) should just stay visible, not hover-gated. */
+.featured-card .tournament-actions {
+  max-height: none;
+  overflow: visible;
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top-color: var(--mist-light);
+}
+
+.featured-card .tournament-actions .calendar-export-btn {
+  opacity: 1;
+}
+
+/* No hover capability (touch): keep the actions visible and expanded at all times. */
 @media (hover: none) {
+  .tournament-actions {
+    max-height: 150px;
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-4);
+    border-top-color: var(--mist-light);
+  }
+
   .tournament-actions .calendar-export-btn,
   .tournament-actions .copy-link-btn {
     opacity: 1;
@@ -1585,11 +1685,9 @@ body.dark-theme .confidence-medium {
 .pagination-info {
   text-align: center;
   color: var(--label);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   margin-bottom: var(--sp-4);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
 }
 
 .pagination-controls {
@@ -1700,10 +1798,9 @@ footer a:hover {
 .last-updated {
   display: inline-block;
   margin: var(--sp-3) 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
+  color: var(--label);
 }
 
 .last-updated strong {

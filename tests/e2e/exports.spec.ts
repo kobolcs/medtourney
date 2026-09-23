@@ -75,6 +75,8 @@ test.describe('Export Functionality', () => {
 
     test('should export a tournament to calendar (.ics)', async ({ page }) => {
         await search(page);
+        // Calendar/copy-link are hover-revealed secondary actions on the card.
+        await page.locator('.tournament-card').first().hover();
         const [download] = await Promise.all([
             page.waitForEvent('download'),
             page.locator('.calendar-export-btn').first().click(),
@@ -92,6 +94,7 @@ test.describe('Export Functionality', () => {
     test('should display success message after calendar export', async ({ page }) => {
         await search(page);
         page.on('download', () => { /* swallow download */ });
+        await page.locator('.tournament-card').first().hover();
         await page.locator('.calendar-export-btn').first().click();
         await expect(page.locator('#error')).toContainText(/calendar event created/i, { timeout: 3000 });
     });

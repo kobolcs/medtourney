@@ -7,6 +7,8 @@
  * wait on the async config fetch.
  */
 
+import { escapeHTML } from './html';
+
 interface CountryInfo {
     name: string;
     iso2: string;
@@ -73,27 +75,35 @@ export const COUNTRY_CODES: Record<string, CountryInfo> = {
     WLS: { name: 'Wales', iso2: 'GB' },
 };
 
-/** Convert an ISO 3166-1 alpha-2 code into its regional-indicator flag emoji. */
-export function flagEmoji(iso2: string): string {
-    return Array.from(iso2.toUpperCase())
-        .map(ch => String.fromCodePoint(0x1F1E6 + ch.charCodeAt(0) - 65))
-        .join('');
+/**
+ * Small fixed-size (20x15, @3x source for retina) flag icons, not emoji -
+ * flag emoji render as plain two-letter text on platforms whose fonts don't
+ * include color flag glyphs (Windows and several Linux distros, regardless
+ * of browser). Sourced from the MIT-licensed lipis/flag-icons project and
+ * rasterized small since several countries' official flags carry a detailed
+ * coat of arms that's needlessly heavy as SVG at icon size (e.g. Serbia's
+ * was 180KB+); see public/flags/.
+ */
+function flagIconHTML(iso2: string): string {
+    return `<img class="flag-icon" src="flags/${iso2.toLowerCase()}.png" width="20" height="15" alt="" loading="lazy">`;
 }
 
 /**
- * Format a "City, FED" (or bare "FED") location string with a flag and the
- * spelled-out country name, e.g. "Chatham, ENG" -> "🇬🇧 Chatham · England".
- * Unknown FED codes fall back to the raw location string unchanged.
+ * Format a "City, FED" (or bare "FED") location string with a flag icon and
+ * the spelled-out country name, e.g. "Chatham, ENG" -> flag + "Chatham ·
+ * England". Unknown FED codes fall back to the raw (escaped) location
+ * string unchanged. Returns HTML ready to insert directly - the caller
+ * should NOT re-escape this.
  */
 export function formatLocation(location: string): string {
     const parts = location.split(',');
     const code = (parts.length > 1 ? parts[1] : parts[0])!.trim().toUpperCase();
     const info = COUNTRY_CODES[code];
-    if (!info) return location;
+    if (!info) return escapeHTML(location);
 
-    const flag = flagEmoji(info.iso2);
+    const flag = flagIconHTML(info.iso2);
     if (parts.length > 1) {
-        const city = parts[0]!.trim();
+        const city = escapeHTML(parts[0]!.trim());
         return city ? `${flag} ${city} · ${info.name}` : `${flag} ${info.name}`;
     }
     return `${flag} ${info.name}`;

@@ -74,8 +74,17 @@
     <header role="banner">
         <div class="header-inner">
             <div class="header-content">
-                <h1>European Chess Tournament Finder</h1>
-                <p class="subtitle">Search for chess tournaments on chess-results.com with advanced filtering</p>
+                <div class="header-title-row">
+                    <svg class="header-logomark" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M2 31c6-3 12-4 18-4s12 1 18 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".55"/>
+                        <path d="M12.5 31.5v-1.7c0-1 .7-1.8 1.7-1.8h11.6c1 0 1.7.8 1.7 1.8v1.7z" fill="currentColor"/>
+                        <path d="M15.3 28c-.7-4.7-.7-9.2 0-13.2.4-2.7 1.6-4.9 2.9-6.6a1 1 0 0 1 1.6 0c1.3 1.7 2.5 3.9 2.9 6.6.7 4 .7 8.5 0 13.2z" fill="currentColor"/>
+                        <circle cx="20" cy="6.3" r="1.9" fill="currentColor"/>
+                        <path d="M20 0v3.6M18.3 1.8h3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                    <h1>European Chess Tournament Finder</h1>
+                </div>
+                <p class="subtitle">Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
             </div>
             <div class="header-controls">
                 <button id="helpBtn" class="help-btn" aria-label="Open help (F1)">?</button>
@@ -220,7 +229,7 @@
                     <div class="filter-group">
                         <label for="youthCategory">Youth age group</label>
                         <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
-                            <option value="">None (use exclude filter above)</option>
+                            <option value="" title="Use the Exclude Youth-Only Tournaments filter above instead">None</option>
                             <option value="U8">U8</option>
                             <option value="U10">U10</option>
                             <option value="U12">U12</option>
@@ -257,6 +266,7 @@
                         </div>
                     </div>
                     <span id="country-scroll-hint" class="sr-only">Scrollable list — use arrow keys or scroll to see all countries</span>
+                    <p id="noCountriesMessage" class="no-countries-message" hidden>No countries match your other filters.</p>
                     <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country" aria-describedby="country-scroll-hint">
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="ALB"><label><input type="checkbox" name="countryFilter" value="ALB"><span class="checkbox-label">Albania</span></label></div>
@@ -402,7 +412,7 @@
 
                 <div class="help-section">
                     <h3>Getting started</h3>
-                    <p>Set your filters, then click <strong>Search</strong>. Click any tournament name to open its page on chess-results.com. Your filter settings are saved automatically.</p>
+                    <p>Results for the next 6 months load automatically — adjust filters and click <strong>Search</strong> to narrow them. Click anywhere on a card to open its page on chess-results.com. Your filter settings are saved automatically.</p>
                 </div>
 
                 <div class="help-section">
@@ -427,7 +437,7 @@
 
                 <div class="help-section">
                     <h3>Shortlist &amp; export</h3>
-                    <p>Click <strong>★</strong> on any card to save it. Use <strong>Export Shortlist</strong> to download all starred tournaments as a single <code class="help-code">.ics</code> file for Google Calendar, Apple Calendar, or Outlook. Each card also has <strong>&#x1F4C5; Add to Calendar</strong> for a single-tournament export.</p>
+                    <p>Click <strong>★</strong> on any card to save it. Use <strong>Export Shortlist</strong> to download all starred tournaments as a single <code class="help-code">.ics</code> file for Google Calendar, Apple Calendar, or Outlook. Hover or focus a card to reveal <strong>Add to Calendar</strong> for a single-tournament export, and <strong>Copy link</strong> to share it directly.</p>
                 </div>
 
                 <div class="help-section">

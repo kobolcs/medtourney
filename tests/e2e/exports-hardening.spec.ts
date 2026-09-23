@@ -154,6 +154,8 @@ test.describe('Export hardening', () => {
         await expect(page.locator('.tournament-card').first().locator('.tournament-name'))
             .toContainText('Coastal Open 11');
 
+        // Calendar/copy-link are hover-revealed secondary actions on the card.
+        await page.locator('.tournament-card').first().hover();
         const [download] = await Promise.all([
             page.waitForEvent('download'),
             page.locator('.calendar-export-btn').first().click(),
