@@ -407,6 +407,47 @@ def sea_distance_m(lat: float, lng: float, ways: list[list[tuple[float, float]]]
     return round(best) if best is not None and best <= COASTLINE_SEARCH_M else None
 
 
+# --- Town name for display (reverse geocoding) -------------------------------
+#
+# Location text is often a street or venue ("Fragkopoulou 29", "Centro Agora -
+# C/ Lepanto 55"). The card shows the town instead: Nominatim reverse at city
+# level (zoom 10), in English ("Vienna", "Seville"), once per coordinate and
+# cached under a "@town:lat,lng" key in the same cache file.
+
+NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse"
+TOWN_ADDRESS_KEYS = ("city", "town", "village", "municipality", "hamlet", "suburb")
+
+
+def nominatim_reverse_town(lat: float, lng: float) -> str | None:
+    """The city/town/village at these coordinates, or None. Raises on network errors."""
+    params = urllib.parse.urlencode({
+        "lat": lat, "lon": lng, "zoom": 10, "format": "jsonv2",
+        "addressdetails": 1, "accept-language": "en",
+    })
+    req = urllib.request.Request(f"{NOMINATIM_REVERSE_URL}?{params}", headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=20) as res:
+        result = json.load(res)
+    address = result.get("address", {}) if isinstance(result, dict) else {}
+    for key in TOWN_ADDRESS_KEYS:
+        if address.get(key):
+            return clean_town(str(address[key]))
+    return None
+
+
+# OSM's administrative wording around a town name: "City of Zagreb",
+# "Khatay Raion" (a Baku district) - show the name people use
+TOWN_PREFIX = re.compile(r"^(city|municipality|town|comune|commune|gmina|municipio) of\s+", re.IGNORECASE)
+TOWN_SUFFIX = re.compile(r"\s+(raion|rayon|district|municipality|urban hromada)$", re.IGNORECASE)
+
+
+def clean_town(name: str) -> str:
+    return TOWN_SUFFIX.sub("", TOWN_PREFIX.sub("", name.strip())).strip() or name
+
+
+def town_cache_key(lat: float, lng: float) -> str:
+    return f"@town:{lat:.3f},{lng:.3f}"
+
+
 def nominatim_search(query: str, iso2: str) -> dict[str, Any] | None:
     """One Nominatim lookup. Returns the top hit or None; raises on network errors."""
     params = urllib.parse.urlencode({
@@ -429,7 +470,9 @@ class Geocoder:
         geonames: dict[str, dict[str, Place]] | None = None,
         coastline: Callable[[float, float], list[list[tuple[float, float]]]] = overpass_coastline,
         overrides: dict[str, list[float] | None] | None = None,
+        reverse: Callable[[float, float], str | None] = nominatim_reverse_town,
     ) -> None:
+        self.reverse = reverse
         self.geonames = geonames
         self.coastline = coastline
         self.cache = cache
@@ -553,6 +596,23 @@ class Geocoder:
                     return [venue[0], venue[1]]
         return None
 
+    def town(self, lat: float, lng: float, max_lookups: int) -> str | None:
+        """Town name at these coordinates (cached; misses retried after MISS_RETRY_DAYS)."""
+        key = town_cache_key(lat, lng)
+        entry = self.cache.get(key)
+        if entry and (entry.get("town") or self._recent(entry.get("tried"))):
+            return entry.get("town")
+        if self.offline or self.lookups >= max_lookups:
+            return entry.get("town") if entry else None
+        try:
+            name = self._throttled(functools.partial(self.reverse, lat, lng))
+        except NETWORK_ERRORS as e:
+            logger.warning("Lookups stopped after a network error: %s", e)
+            self.offline = True
+            return None
+        self.cache[key] = {"town": name, "tried": self.now.isoformat()}
+        return name
+
     def place(self, location: str, max_lookups: int) -> tuple[float, float] | None:
         """geocode(), but hand-checked overrides first, and after a network
         error keep going from the cache only."""
@@ -612,6 +672,15 @@ class Geocoder:
         return self._fallback(location)
 
 
+def set_town(t: dict[str, Any], geocoder: Geocoder, max_lookups: int) -> None:
+    """Display town for the card (\"Benidorm\" for \"Gran Hotel Bali (Benidorm)\")."""
+    name = geocoder.town(t["lat"], t["lng"], max_lookups)
+    if name:
+        t["town"] = name
+    else:
+        t.pop("town", None)
+
+
 def annotate_tournament(
     t: dict[str, Any],
     geocoder: Geocoder,
@@ -625,7 +694,7 @@ def annotate_tournament(
     Returns (placed, seaside, beachfront) for the run's summary.
     """
     location = t.get("location", "")
-    for key in ("lat", "lng", "coast", "seaM", "airport"):
+    for key in ("lat", "lng", "coast", "seaM", "airport", "town"):
         t.pop(key, None)
 
     coords = geocoder.place(location, max_lookups)
@@ -638,6 +707,7 @@ def annotate_tournament(
     if nearest:
         t["airport"] = nearest
 
+    set_town(t, geocoder, max_lookups)
     kind = seaside_coast(t, coast) if coast else None
     if not kind:
         return True, False, False
@@ -647,6 +717,7 @@ def annotate_tournament(
     if not front or not front.get("venue"):
         return True, True, False
     t["lat"], t["lng"] = front["venue"]  # the venue itself, not the town centre
+    set_town(t, geocoder, max_lookups)
     sea_m = front.get("seaM")
     if sea_m is None or sea_m > BEACHFRONT_M:
         return True, True, False
@@ -660,6 +731,7 @@ def geocode_file(
     max_lookups: int,
     geonames_path: Path | None = None,
     search: Callable[[str, str], dict[str, Any] | None] = nominatim_search,
+    reverse: Callable[[float, float], str | None] = nominatim_reverse_town,
 ) -> dict[str, int]:
     tournaments: list[dict[str, Any]] = json.loads(data_path.read_text(encoding="utf-8"))
     cache: dict[str, dict[str, Any]] = (
@@ -681,7 +753,7 @@ def geocode_file(
     if coast is None:
         logger.warning("%s not found - seaside flags not computed", COAST_FILE)
 
-    geocoder = Geocoder(cache, search=search, on_progress=save_cache, geonames=geonames)
+    geocoder = Geocoder(cache, search=search, on_progress=save_cache, geonames=geonames, reverse=reverse)
     counts = {"placed": 0, "seaside": 0, "beachfront": 0}
     for t in tournaments:
         for key, hit in zip(counts, annotate_tournament(t, geocoder, geonames, coast, max_lookups, airports)):

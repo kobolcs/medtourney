@@ -95,16 +95,20 @@ function flagIconHTML(iso2: string): string {
  * string unchanged. Returns HTML ready to insert directly - the caller
  * should NOT re-escape this.
  */
-export function formatLocation(location: string): string {
+/**
+ * "🇪🇸 Benidorm · Spain" for a card. `town` (reverse-geocoded by
+ * geocode_tournaments.py) wins over the location text, which is often a
+ * street or venue ("Fragkopoulou 29", "Centro Ágora - C/ Lepanto 55"); the
+ * caller keeps the original text in a tooltip. The FED code is the last
+ * comma-separated part ("Hall, Street 5, ESP" has two commas).
+ */
+export function formatLocation(location: string, town?: string): string {
     const parts = location.split(',');
-    const code = (parts.length > 1 ? parts[1] : parts[0])!.trim().toUpperCase();
+    const code = parts[parts.length - 1]!.trim().toUpperCase();
     const info = COUNTRY_CODES[code];
-    if (!info) return escapeHTML(location);
+    if (!info) return escapeHTML(town ?? location);
 
     const flag = flagIconHTML(info.iso2);
-    if (parts.length > 1) {
-        const city = escapeHTML(parts[0]!.trim());
-        return city ? `${flag} ${city} · ${info.name}` : `${flag} ${info.name}`;
-    }
-    return `${flag} ${info.name}`;
+    const place = (town ?? parts.slice(0, -1).join(',')).trim();
+    return place ? `${flag} ${escapeHTML(place)} · ${info.name}` : `${flag} ${info.name}`;
 }

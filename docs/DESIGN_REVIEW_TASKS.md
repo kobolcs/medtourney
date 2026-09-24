@@ -120,20 +120,28 @@ republished as a recheck of merged `main`.
 
 ## Polish
 
-- [ ] **P1. Show the city, not the street** in location lines (store the
+- [x] **P1. Show the city, not the street** in location lines (store the
   geocoded town; venue in the tooltip).
-- [ ] **P2. The date appears twice** (badge + range pill + month header): drop
+  Done (town from Nominatim reverse geocoding (English, cached per coordinate, filled in by the daily run); venue text in the tooltip; country code now from the last comma part; Sofia hotel override).
+- [x] **P2. The date appears twice** (badge + range pill + month header): drop
   the pill, put the end date under the badge.
-- [ ] **P3. Tone down the card stripe**: only Seaside / Senior / Beachfront
+  Done (`825aa8d`: end date under the badge ("→ 27" / "→ 6 Nov"), year when not this year; pill removed).
+- [x] **P3. Tone down the card stripe**: only Seaside / Senior / Beachfront
   cards keep it; drop the "→" before the location.
-- [ ] **P4. One toolbar row**: search, List/Map, Sort, ★ Shortlist, quiet
+  Done (`9c9a7c8`: hairline cards; stripe only for seaside / senior / beachfront; arrow removed).
+- [x] **P4. One toolbar row**: search, List/Map, Sort, ★ Shortlist, quiet
   Export menu (CSV / .ics).
-- [ ] **P5. Header: one line of copy** on desktop too (long sentence to meta
+  Done (`9f96248`: one row - quiet "⤓ CSV" / "📅 Shortlist" buttons, "★ Shortlist" toggle chip, short sort labels).
+- [x] **P5. Header: one line of copy** on desktop too (long sentence to meta
   only); on phones ? and ☾ on the name's row.
-- [ ] **P6. Slimmer Tournament of the Week** (it pushes the first result off a
+  Done (`fbb973c`: long sentence screen-reader-only; phone header 263 → 136px with ? and ☾ on the brand row).
+- [x] **P6. Slimmer Tournament of the Week** (it pushes the first result off a
   phone screen).
-- [ ] **P7. Tablets (768–1023px)** use the bottom sheet too.
-- [ ] **P8. Phone: the Filters bar covers the result count.**
+  Done (`4a15bed`: slim banner, 92px desktop / 114px phone).
+- [x] **P7. Tablets (768–1023px)** use the bottom sheet too.
+  Done (`44e051d`: sheet up to 1023px).
+- [x] **P8. Phone: the Filters bar covers the result count.**
+  Done (`44e051d`: "Filters (1) · 30 tournaments" on the bar).
 
 ## Housekeeping
 

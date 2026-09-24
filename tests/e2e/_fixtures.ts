@@ -21,6 +21,7 @@ export interface TournamentFixture {
     coast?: 'med' | 'atlantic';
     seaM?: number;
     airport?: { iata: string; name: string; km: number };
+    town?: string;
 }
 
 /** ISO YYYY-MM-DD a given number of days from today (UTC). */

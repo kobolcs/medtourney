@@ -372,7 +372,7 @@ export class UIManager {
                     <a href="${escapeHTML(tournament.url)}" target="_blank" rel="noopener noreferrer"
                        class="featured-name-link">${escapeHTML(tournament.name)}</a>
                 </h3>
-                <span class="featured-where">${formatLocation(tournament.location)} · <span class="featured-date">${dateStr}</span></span>
+                <span class="featured-where">${formatLocation(tournament.location, tournament.town)} · <span class="featured-date">${dateStr}</span></span>
                 <button type="button" class="calendar-export-btn featured-calendar-btn"
                         data-tournament-url="${escapeHTML(tournament.url)}"
                         aria-label="Add ${escapeHTML(tournament.name)} to calendar"
@@ -466,7 +466,7 @@ export class UIManager {
                         </button>
                     </div>
                 </div>
-                <div class="tournament-location"><span class="tournament-place">${formatLocation(tournament.location)}${this.airportHintHTML(tournament)}</span></div>
+                <div class="tournament-location"><span class="tournament-place"${tournament.town ? ` title="${escapeHTML(tournament.location.replace(/,\s*[A-Z]{3}$/, ''))}"` : ''}>${formatLocation(tournament.location, tournament.town)}${this.airportHintHTML(tournament)}</span></div>
                 <div class="tournament-meta">
                     ${beachfrontHTML}
                     ${timeControlClassHTML}
