@@ -71,6 +71,9 @@
     </script>
 </head>
 <body>
+    <!-- Must run before anything paints: applies the saved/device dark theme
+         (a separate file because the CSP allows no inline scripts) -->
+    <script src="%BASE_URL%theme-init.js"></script>
     <!-- Skip Navigation Link for Accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 

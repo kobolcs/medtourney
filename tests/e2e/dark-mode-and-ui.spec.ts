@@ -335,3 +335,36 @@ test.describe('Dark Mode and UI Features', () => {
     await expect(page.locator('#mediterraneanOnly')).toBeChecked();
   });
 });
+
+test.describe('Theme follows the device unless the person chose one', () => {
+  test('a dark device gets the dark site from the first paint', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('body')).toHaveClass(/dark-theme/);
+    await expect(page.locator('#themeToggleIcon')).toHaveText('☀');
+  });
+
+  test('an explicit light choice beats a dark device, and is kept after reload', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await stubTournaments(page);
+    await page.goto('/');
+    await page.locator('#themeToggle').click(); // dark -> light, saved
+    await expect(page.locator('body')).not.toHaveClass(/dark-theme/);
+    await page.reload();
+    await expect(page.locator('body')).not.toHaveClass(/dark-theme/);
+  });
+
+  test('a theme saved days ago by an older version still applies', async ({ page }) => {
+    await stubTournaments(page);
+    await page.addInitScript(() => {
+      // The old CacheManager format, 3 days old, from version 3.0.0 - it used
+      // to expire after 24 h and be wiped by any version bump
+      localStorage.setItem('medtourney_theme', JSON.stringify({
+        data: 'dark', timestamp: Date.now() - 3 * 86400000, version: '3.0.0',
+      }));
+    });
+    await page.goto('/');
+    await expect(page.locator('body')).toHaveClass(/dark-theme/);
+  });
+});

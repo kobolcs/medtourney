@@ -406,13 +406,26 @@ class TournamentFinder {
     /**
      * Initialize theme (dark mode)
      */
+    /**
+     * Theme: the person's own choice if they made one (☾/☀ button), otherwise
+     * the device's light/dark setting - followed live until they choose.
+     * public/theme-init.js has already applied the same rule before first
+     * paint (the CSP allows no inline script), so this only syncs the button
+     * and listens for device changes.
+     */
     private initTheme(): void {
-        const savedTheme = this.cacheManager.loadFromCache<string>(this.cacheManager.CACHE_KEYS.THEME);
+        const saved = this.cacheManager.loadPreference<string>(this.cacheManager.CACHE_KEYS.THEME);
+        const deviceDark = window.matchMedia?.('(prefers-color-scheme: dark)');
+        const dark = saved === 'dark' || saved === 'light' ? saved === 'dark' : (deviceDark?.matches ?? false);
+        this.uiManager.setDarkMode(dark);
+        this.updateThemeButtonText();
 
-        if (savedTheme === 'dark') {
-            this.uiManager.toggleDarkMode();
+        deviceDark?.addEventListener('change', (e) => {
+            const chosen = this.cacheManager.loadPreference<string>(this.cacheManager.CACHE_KEYS.THEME);
+            if (chosen === 'dark' || chosen === 'light') return; // their choice wins
+            this.uiManager.setDarkMode(e.matches);
             this.updateThemeButtonText();
-        }
+        });
     }
 
     /**
@@ -423,7 +436,7 @@ class TournamentFinder {
 
         // Save theme preference
         const isDark = document.body.classList.contains('dark-theme');
-        this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.THEME, isDark ? 'dark' : 'light');
+        this.cacheManager.savePreference(this.cacheManager.CACHE_KEYS.THEME, isDark ? 'dark' : 'light');
 
         this.updateThemeButtonText();
     }
@@ -457,7 +470,7 @@ class TournamentFinder {
 
     private initCollapsibleFilters(): void {
         const filtersCard = document.querySelector('.filters-card');
-        const savedState = this.cacheManager.loadFromCache<string>(this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED);
+        const savedState = this.cacheManager.loadPreference<string>(this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED);
 
         if (savedState === 'collapsed' && filtersCard) {
             filtersCard.classList.add('collapsed');
@@ -483,7 +496,7 @@ class TournamentFinder {
                 filterTitle.setAttribute('aria-expanded', expanded);
 
                 // Save state
-                this.cacheManager.saveToCache(
+                this.cacheManager.savePreference(
                     this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED,
                     isCollapsed ? 'collapsed' : 'expanded'
                 );
@@ -511,7 +524,7 @@ class TournamentFinder {
             return;
         }
 
-        const preferences = this.cacheManager.loadFromCache<Partial<FilterState>>(
+        const preferences = this.cacheManager.loadPreference<Partial<FilterState>>(
             this.cacheManager.CACHE_KEYS.FILTER_PREFERENCES
         );
 
@@ -581,7 +594,7 @@ class TournamentFinder {
      */
     private saveFilterPreferences(): void {
         const filterState = this.getFilterState();
-        this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.FILTER_PREFERENCES, filterState);
+        this.cacheManager.savePreference(this.cacheManager.CACHE_KEYS.FILTER_PREFERENCES, filterState);
     }
 
     /**

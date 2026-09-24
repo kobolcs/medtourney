@@ -76,7 +76,8 @@ test.describe('Filter persistence', () => {
 
     const stored = await page.evaluate(() => localStorage.getItem('medtourney_filter_preferences'));
     expect(stored).toBeTruthy();
-    const prefs = (JSON.parse(stored!) as { data: Record<string, unknown> }).data;
+    // Stored as-is (a preference never expires - unlike cached data)
+    const prefs = JSON.parse(stored!) as Record<string, unknown>;
     expect(prefs['mediterraneanOnly']).toBe(true);
     expect(prefs['countryFilter']).toEqual(['ESP']);
   });
