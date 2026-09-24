@@ -90,3 +90,50 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 - [ ] Mobile Chrome: `exports-hardening.spec.ts:149` "calendar export on page 2
   downloads the correct tournament" failed once in a full run (2026-09-23),
   passed 3/3 on rerun.
+
+---
+
+# Recheck (24 Sep 2026, commit bc9f3d1)
+
+Source: the same [Design Review artifact](https://claude.ai/artifact/MbEyNbY4mX1c3ESiawJ9jM),
+republished as a recheck of merged `main`.
+
+## Fix first (wrong, not just unpolished)
+
+- [ ] **R1. Seaside lets in inland towns.** Tivoli matches the town list via
+  "Tivoli (Rome)"; Corteconcepción was geocoded to Huelva city (province name
+  at the end of the address). Only trust the coast flag when the geocode hit
+  is a town or venue (not a province/region), and match the town list against
+  the first place name only, not text in brackets.
+- [ ] **R2. Tournament of the Week is a 7-week club championship.** Cap length
+  at 5–16 days, skip club/league names (circolo, club, klub, fase, liga,
+  league...), prefer Beachfront, then soonest start.
+- [ ] **R3. Empty-state counts ignore the results search box.** Compute each
+  relaxation with the search text applied; when the search text empties the
+  list, lead with "Clear search '…' (N)".
+- [ ] **R4. OS dark mode ignored.** Follow `prefers-color-scheme` unless the
+  user chose a theme; apply before first paint (no light flash).
+
+## Polish
+
+- [ ] **P1. Show the city, not the street** in location lines (store the
+  geocoded town; venue in the tooltip).
+- [ ] **P2. The date appears twice** (badge + range pill + month header): drop
+  the pill, put the end date under the badge.
+- [ ] **P3. Tone down the card stripe**: only Seaside / Senior / Beachfront
+  cards keep it; drop the "→" before the location.
+- [ ] **P4. One toolbar row**: search, List/Map, Sort, ★ Shortlist, quiet
+  Export menu (CSV / .ics).
+- [ ] **P5. Header: one line of copy** on desktop too (long sentence to meta
+  only); on phones ? and ☾ on the name's row.
+- [ ] **P6. Slimmer Tournament of the Week** (it pushes the first result off a
+  phone screen).
+- [ ] **P7. Tablets (768–1023px)** use the bottom sheet too.
+- [ ] **P8. Phone: the Filters bar covers the result count.**
+
+## Housekeeping
+
+- [ ] **H1. CSP blocks Vite legacy's inline scripts** (old-browser fallback can
+  never load): allow them by hash or drop `@vitejs/plugin-legacy`.
+- [ ] **H2. Mark the map as verified** in the artifact (rendered with real OSM
+  tiles on 24 Sep).
