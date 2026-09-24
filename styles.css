@@ -1293,8 +1293,9 @@ body.dark-theme .error-message.success-type {
 .tournament-card {
   display: flex;
   gap: var(--sp-4);
+  /* Hairline all round; only seaside / senior / beachfront cards get a
+     coloured stripe (below) - so the stripe means something again */
   border: 1px solid var(--mist-light);
-  border-left: 4px solid var(--text);
   border-radius: var(--r-lg);
   padding: var(--sp-5) var(--sp-6);
   background: var(--surface);
@@ -1308,7 +1309,7 @@ body.dark-theme .error-message.success-type {
 }
 
 .tournament-card--mediterranean {
-  border-left-color: var(--sea);
+  border-left: 4px solid var(--sea);
 }
 
 .tournament-card--mediterranean:hover {
@@ -1316,7 +1317,7 @@ body.dark-theme .error-message.success-type {
 }
 
 .tournament-card--senior {
-  border-left-color: var(--amber);
+  border-left: 4px solid var(--amber);
 }
 
 /* Featured seaside: venue within 500 m of the sea (seaM from the geocoder) */
@@ -1469,13 +1470,6 @@ body.dark-theme .beachfront-pill {
   flex-shrink: 0;
   border-radius: 2px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
-}
-
-.tournament-location::before {
-  content: "→";
-  color: var(--sea);
-  font-weight: 700;
-  flex-shrink: 0;
 }
 
 .tournament-meta {
