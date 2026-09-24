@@ -2295,15 +2295,38 @@ footer a:hover {
     padding: var(--sp-5) var(--sp-4) var(--sp-4);
   }
 
+  /* ? and ☾ on the brand's row, not a row of their own above it; the live
+     count line then runs full width underneath */
   .header-inner {
-    flex-direction: column-reverse;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
     padding: var(--sp-5) var(--sp-4);
-    gap: var(--sp-4);
+    gap: var(--sp-2) var(--sp-3);
+  }
+
+  .header-content {
+    display: contents;
+  }
+
+  .header-title-row {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .header-controls {
-    align-self: flex-end;
+    grid-column: 2;
+    grid-row: 1;
     padding-top: 0;
+  }
+
+  .header-live {
+    grid-column: 1 / -1;
+    font-size: var(--text-xs);
+  }
+
+  .header-brand .tagline {
+    font-size: var(--text-xs);
   }
 
   .filters-card,
@@ -2464,6 +2487,20 @@ footer a:hover {
 @media (max-width: 320px) {
   .country-checkbox-list {
     max-height: 180px;
+  }
+}
+
+/* Too narrow for the brand and the two buttons side by side: buttons above */
+@media (max-width: 340px) {
+  .header-title-row {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .header-controls {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: end;
   }
 }
 
@@ -2932,11 +2969,6 @@ body.dark-theme .map-cluster {
     justify-content: flex-end;
   }
 
-  /* The tagline + live count line already say what the site is; the long
-     description stays in the page's meta description */
-  .subtitle {
-    display: none;
-  }
 }
 
 @media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
