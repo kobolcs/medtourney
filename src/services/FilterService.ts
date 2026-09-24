@@ -15,6 +15,11 @@ import { Logger } from '../utils/Logger';
 export class FilterService {
     private filterCache: Map<string, Tournament[]>;
     private readonly MAX_FILTER_CACHE_SIZE = 50;
+
+    /** Tournament of the Week: an event you'd travel for, not a season-long league. */
+    private static readonly FEATURED_MIN_DAYS = 5;
+    private static readonly FEATURED_MAX_DAYS = 16;
+    private static readonly CLUB_EVENT = /\b(circolo|club|klub|kluba|fase|liga|league|vereinsmeisterschaft|clubmeisterschaft|campionato sociale|campeonato social|championnat du club)\b/i;
     private readonly logger = Logger.createScoped('FilterService');
 
     constructor() {
@@ -280,7 +285,10 @@ export class FilterService {
     }
 
     private isTeamTournament(name: string, category: string): boolean {
-        const teamPattern = /\b(team|mannschaft|équipe|equipo|squadra|drużyn|družstv)\b/i;
+        // Prefix match, like TournamentProcessor._is_team_tournament, so plurals
+        // count too ("Copa por Equipos", "équipes", "teams"); \p{L} instead of
+        // \b because \b doesn't treat "é" as a letter
+        const teamPattern = /(?:^|[^\p{L}])(team|mannschaft|[eé]quipe|equipo|equipa|squadr[ae]|drużyn|družstv)/iu;
         return teamPattern.test(name) || teamPattern.test(category);
     }
 
@@ -329,9 +337,12 @@ export class FilterService {
     }
 
     /**
-     * Pick the best upcoming Mediterranean tournament to feature.
-     * Criteria: Mediterranean location, starts within 30 days, dateTo present,
-     * duration > 5 days. Sorted by nearest start, then longest duration.
+     * Pick the upcoming seaside tournament to feature: one you'd plan a trip
+     * around. Seaside, starts within 30 days, runs FEATURED_MIN_DAYS to
+     * FEATURED_MAX_DAYS (a 7-week club championship with a round a week is
+     * long but not a trip), is Open (not a closed national championship)
+     * and isn't a club/league, team or youth event.
+     * Beachfront venues first, then the soonest start, then the longer one.
      */
     pickFeatured(tournaments: Tournament[], mediterraneanLocations: Set<string>): Tournament | null {
         const now = new Date();
@@ -343,7 +354,14 @@ export class FilterService {
             if (t.date < todayUtc || t.date > cutoff) return false;
             if (!t.dateTo) return false;
             if (!this.isSeaside(t, mediterraneanLocations)) return false;
-            return this.getTournamentDays(t) > 5;
+            const days = this.getTournamentDays(t);
+            if (days < FilterService.FEATURED_MIN_DAYS || days > FilterService.FEATURED_MAX_DAYS) return false;
+            const name = t.name.toLowerCase();
+            const category = t.category.toLowerCase();
+            return this.isOpenCategory(category) // not a closed national/invitation event
+                && !FilterService.CLUB_EVENT.test(name)
+                && !this.isTeamTournament(name, category)
+                && !this.isYouthTournament(name, category);
         });
 
         if (candidates.length === 0) return null;

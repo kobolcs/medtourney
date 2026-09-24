@@ -55,6 +55,41 @@ test('Mediterranean seaside gets both tags', () => {
     assertEqual(tags.includes('Mediterranean') && tags.includes('Seaside'), true, 'both');
 });
 
+// --- Tournament of the Week (pickFeatured) -------------------------------
+const day = 86400000;
+const iso = (d) => new Date(d).toISOString().slice(0, 10);
+const trip = (name, startIn, days, extra = {}) => {
+    const start = new Date(Date.now() + startIn * day);
+    start.setUTCHours(0, 0, 0, 0);
+    return {
+        name, location: 'Calvià (Mallorca), ESP', lat: 39.57, lng: 2.51, coast: 'med',
+        category: 'Rapid, Open', url: `u-${name}`, description: '',
+        date: start, dateTo: iso(start.getTime() + (days - 1) * day), ...extra,
+    };
+};
+
+test('Tournament of the Week: a 7-week club championship is not a trip', () => {
+    const club = trip('Campionato circolo Scacchistico fase 1', 2, 50, { category: 'Classical, Open' });
+    assertEqual(fs.pickFeatured([club], towns), null, 'club');
+});
+
+test('Tournament of the Week: closed (non-Open) and team events are skipped', () => {
+    const closed = trip('75th National Championship', 2, 9, { category: 'Classical' });
+    const team = trip('Copa por Equipos 2026', 3, 9);
+    assertEqual(fs.pickFeatured([closed, team], towns), null, 'closed/team');
+});
+
+test('Tournament of the Week: an Open seaside event of 5-16 days is picked', () => {
+    const open = trip('XXIII Calvia Amateur Open', 5, 9);
+    assertEqual(fs.pickFeatured([open, trip('Too short', 1, 3)], towns).name, 'XXIII Calvia Amateur Open', 'open');
+});
+
+test('Tournament of the Week: beachfront beats an earlier start', () => {
+    const early = trip('Early Open', 2, 7);
+    const beach = trip('Beach Open', 10, 7, { seaM: 120 });
+    assertEqual(fs.pickFeatured([early, beach], towns).name, 'Beach Open', 'beach');
+});
+
 console.log('='.repeat(60));
 console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${passed + failed} total`);
 process.exit(failed > 0 ? 1 : 0);
