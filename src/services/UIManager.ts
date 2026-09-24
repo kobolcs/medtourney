@@ -345,33 +345,22 @@ export class UIManager {
         const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
 
         container.style.display = 'block';
+        // A slim one-line banner (it used to be the tallest thing on the page
+        // and pushed the first result off a phone screen): the name is the
+        // link, plus where and when, and a compact calendar button.
+        const beach = tournament.seaM !== undefined;
         container.innerHTML = `
             <div class="featured-card" role="region" aria-label="Tournament of the Week">
-                <div class="featured-label">Tournament of the Week</div>
+                <span class="featured-label">${beach ? '<span aria-hidden="true">🏖</span> ' : ''}Tournament of the Week</span>
                 <h3 class="featured-name">
-                    <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
-                       class="featured-name-link"
-                       aria-label="View details for ${escapeHTML(tournament.name)}">
-                        ${escapeHTML(tournament.name)}
-                    </a>
+                    <a href="${escapeHTML(tournament.url)}" target="_blank" rel="noopener noreferrer"
+                       class="featured-name-link">${escapeHTML(tournament.name)}</a>
                 </h3>
-                <div class="featured-location">${formatLocation(tournament.location)}</div>
-                <div class="featured-meta">
-                    <span class="featured-date">${dateStr}</span>
-                    <span class="featured-category">${escapeHTML(tournament.category)}</span>
-                </div>
-                <div class="tournament-actions">
-                    <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
-                       class="tournament-link"
-                       aria-label="View details for ${escapeHTML(tournament.name)}">
-                        View Tournament
-                    </a>
-                    <button class="calendar-export-btn"
-                            data-tournament-url="${escapeHTML(tournament.url)}"
-                            aria-label="Add ${escapeHTML(tournament.name)} to calendar">
-                        📅 Add to Calendar
-                    </button>
-                </div>
+                <span class="featured-where">${formatLocation(tournament.location)} · <span class="featured-date">${dateStr}</span></span>
+                <button type="button" class="calendar-export-btn featured-calendar-btn"
+                        data-tournament-url="${escapeHTML(tournament.url)}"
+                        aria-label="Add ${escapeHTML(tournament.name)} to calendar"
+                        title="Add to calendar"><span aria-hidden="true">📅</span></button>
             </div>
         `;
     }
