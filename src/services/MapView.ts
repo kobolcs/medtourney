@@ -3,7 +3,7 @@ import { Tournament } from '../types';
 import { escapeHTML } from '../utils/html';
 import { formatLocation } from '../utils/countries';
 import { Logger } from '../utils/Logger';
-import { groupByPlace, placeKind, Place } from '../utils/mapPlaces';
+import { groupByPlace, placeKind, isBeachfront, Place } from '../utils/mapPlaces';
 
 const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const ATTRIBUTION =
@@ -105,7 +105,7 @@ export class MapView {
             const marker = L.marker([place.lat, place.lng], {
                 icon: L.divIcon({
                     html: count > 1 ? `<span>${count}</span>` : '',
-                    className: `map-pin map-pin--${placeKind(place)}${count > 1 ? ' map-pin--multi' : ''}`,
+                    className: `map-pin map-pin--${placeKind(place)}${count > 1 ? ' map-pin--multi' : ''}${isBeachfront(place) ? ' map-pin--beach' : ''}`,
                     iconSize: count > 1 ? L.point(28, 28) : L.point(16, 16),
                 }),
                 title: count > 1 ? `${count} tournaments: ${name}` : `${place.tournaments[0]!.name}, ${name}`,
@@ -138,7 +138,7 @@ export class MapView {
             return `
                 <li>
                     <a href="${escapeHTML(t.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(t.name)}</a>
-                    <span class="map-popup-date">${escapeHTML(date)}</span>
+                    <span class="map-popup-date">${escapeHTML(date)}${t.seaM !== undefined ? ` · 🏖 ${t.seaM} m from the sea` : ''}</span>
                     <button type="button" class="map-show-in-list" data-url="${escapeHTML(t.url)}">Show in list</button>
                 </li>`;
         }).join('');

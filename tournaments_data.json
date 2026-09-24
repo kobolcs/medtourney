@@ -2497,7 +2497,8 @@
     "description": "5. OPEN ARSENAL HVAR 2026",
     "timeControl": "90 minutes with an increment of 30 seconds per move starting as of move 1",
     "lat": 43.1739,
-    "lng": 16.5565
+    "lng": 16.5565,
+    "coast": "med"
   },
   {
     "name": "5. BLITZ HVAR 2026",
@@ -2509,7 +2510,8 @@
     "description": "5. BLITZ HVAR 2026",
     "timeControl": "3 minutes with an increment of 2 seconds per move starting as of move 1",
     "lat": 43.1739,
-    "lng": 16.5565
+    "lng": 16.5565,
+    "coast": "med"
   },
   {
     "name": "Branje Grojzdja Pregrada 2026.",
@@ -2545,7 +2547,8 @@
     "description": "ŠK VIŠKOVO JESENSKI OPEN 2026",
     "timeControl": "5 minuta +3 sekunde po igraču",
     "lat": 45.3268,
-    "lng": 14.4422
+    "lng": 14.4422,
+    "coast": "med"
   },
   {
     "name": "Najmlajši Grozd Pregrade 2026.",
@@ -2581,7 +2584,8 @@
     "description": "Rapid Rujan 2026 ŠK Dubrovnik",
     "timeControl": "10'+5''",
     "lat": 42.6491,
-    "lng": 18.094
+    "lng": 18.094,
+    "coast": "med"
   },
   {
     "name": "New Zagreb Classic Futures U20 - Group A",
@@ -2665,7 +2669,8 @@
     "description": "28. međunarodni šahovski turnir \"Mihoja\" Memorijal Dragana Kovačića i Mirsada Dizdarevića",
     "timeControl": "10 min",
     "lat": 45.3908,
-    "lng": 14.4703
+    "lng": 14.4703,
+    "coast": "med"
   },
   {
     "name": "Memorijalni turnir Buder Rudolf 2026. - Kadeti",
@@ -2745,7 +2750,8 @@
     "description": "4. OTVORENI MEĐUNARODNI ŠAHOVSKI TURNIR DUBROVNIK ADVENT 2026Dubrovnik, Valamar Lacroma Dubrovnik Hotel, 17.12-20.12.2026.",
     "timeControl": "60 minuta za cijelu partiju s dodatkom 30 sekundi po potezu počevši od prvog poteza (Fischer)",
     "lat": 42.6491,
-    "lng": 18.094
+    "lng": 18.094,
+    "coast": "med"
   },
   {
     "name": "U1800 - DAN SJEĆANJA NA ŽRTVE DOMOVINSKOG RATA, subota-nedjelja 14.-15.11.2026. - Standard U1800 rating, Zagreb, MO Janko Matko",
@@ -2793,7 +2799,8 @@
     "description": "2. JUNIORSKA LIGA ZAPAD 2026.",
     "timeControl": "All moves in 60 minutes + 30 sec/move",
     "lat": 45.3268,
-    "lng": 14.4422
+    "lng": 14.4422,
+    "coast": "med"
   },
   {
     "name": "Liga kadetkinja zapad 2026.",
@@ -2805,7 +2812,8 @@
     "description": "Liga kadetkinja zapad 2026.",
     "timeControl": "All moves in 30 minutes + 30 sec/move",
     "lat": 45.3268,
-    "lng": 14.4422
+    "lng": 14.4422,
+    "coast": "med"
   },
   {
     "name": "2. ADVENTSKI ŠAHOVSKI FESTIVAL 2026- CRIKVENICA OPENB turnir",
@@ -7938,8 +7946,9 @@
     "url": "https://chess-results.com/tnr1478120.aspx?lan=1",
     "description": "19th Rapid Chess Festival Group A - Philippion Hotel",
     "timeControl": "10'+5''",
-    "lat": 40.6407,
-    "lng": 22.9349
+    "lat": 40.64632,
+    "lng": 22.9862,
+    "coast": "med"
   },
   {
     "name": "19th Rapid Chess Festival Group B - Philippion Hotel",
@@ -7950,8 +7959,9 @@
     "url": "https://chess-results.com/tnr1478121.aspx?lan=1",
     "description": "19th Rapid Chess Festival Group B - Philippion Hotel",
     "timeControl": "7'+5''",
-    "lat": 40.6407,
-    "lng": 22.9349
+    "lat": 40.64632,
+    "lng": 22.9862,
+    "coast": "med"
   },
   {
     "name": "15th Blitz Chess Festival - Philippion Hotel",
@@ -7962,8 +7972,9 @@
     "url": "https://chess-results.com/tnr1478114.aspx?lan=1",
     "description": "15th Blitz Chess Festival - Philippion Hotel",
     "timeControl": "3'+2''",
-    "lat": 40.6407,
-    "lng": 22.9349
+    "lat": 40.64632,
+    "lng": 22.9862,
+    "coast": "med"
   },
   {
     "name": "12ο ΣΚΑΚΙΣΤΙΚΟ ΤΟΥΡΝΟΥΑ RAPID ΘΑΣΟΥ 2026Royal Paradise Beach Resort & Spa (*****)",
@@ -7995,7 +8006,8 @@
     "description": "2ο ΦΘΙΝΟΠΩΡΙΝΟ ΤΟΥΡΝΟΥΑ RAPID Σ.Ε.Κ.Δ.'ΟΙ ΜΑΧΗΤΕΣ’ ΣΑΒΒΑΤΟ 26/9/2026 ΣΤΙΣ 18:00 , ΚΥΠΕΛΛΑ ΣΤΟΥΣ 3 ΠΡΩΤΟΥΣ ΑΝΑ ΚΑΤΗΓΟΡΙΑ , e.s.maxites@gmail.com",
     "timeControl": "Ο χρόνος σκέψης ορίζεται 8’+3'' για κάθε παίκτη",
     "lat": 37.9625,
-    "lng": 23.6197
+    "lng": 23.6197,
+    "coast": "med"
   },
   {
     "name": "1ο Σκακιστικό Τουρνουά Νέων 2026-Σ.Α. Ναυπλίου",
@@ -8007,7 +8019,8 @@
     "description": "1ο Σκακιστικό Τουρνουά Νέων 2026-Σ.Α. Ναυπλίου",
     "timeControl": "90'+30''/κίνηση",
     "lat": 37.5686,
-    "lng": 22.8069
+    "lng": 22.8069,
+    "coast": "med"
   },
   {
     "name": "➡️♘ 43rd MARATHON &#127939; @KOTINOS - Blitz Section‼ ( 24 - 09 - 2026 ) ®",
@@ -8019,7 +8032,8 @@
     "description": "➡️♘ 43rd MARATHON &#127939; @KOTINOS - Blitz Section‼ ( 24 - 09 - 2026 ) ®",
     "timeControl": "3'+2\"",
     "lat": 38.1532,
-    "lng": 23.9628
+    "lng": 23.9628,
+    "coast": "med"
   },
   {
     "name": "➡️♘ 43rd  MARATHON &#127939; @KOTINOS - Rapid Section‼ ( 24 - 09 - 2026 ) ®",
@@ -8031,7 +8045,8 @@
     "description": "➡️♘ 43rd  MARATHON &#127939; @KOTINOS - Rapid Section‼ ( 24 - 09 - 2026 ) ®",
     "timeControl": "8' + 3''",
     "lat": 38.1532,
-    "lng": 23.9628
+    "lng": 23.9628,
+    "coast": "med"
   },
   {
     "name": "51ο Τουρνουά ΠεριστερίουΕΝΑΡΞΗ 26 ΣΕΠΤΕΜΒΡΙΟΥ",
@@ -8053,7 +8068,8 @@
     "description": "Grand Chess SeriesPremier League <1700",
     "timeControl": "60 min + 30 sec per move",
     "lat": 38.0419,
-    "lng": 23.6849
+    "lng": 23.6849,
+    "coast": "med"
   },
   {
     "name": "JUNIOR ULTIMA SERIES B GROUP by ASOP DIAS27/09/2026",
@@ -8104,8 +8120,10 @@
     "url": "https://chess-results.com/tnr1502181.aspx?lan=1",
     "description": "72-Rapid-ToPionaki",
     "timeControl": "8+5",
-    "lat": 39.3408,
-    "lng": 23.0126
+    "lat": 39.33796,
+    "lng": 23.01328,
+    "coast": "med",
+    "seaM": 61
   },
   {
     "name": "30th Open Tournament 2026, by PAO Chess Club- Παρασκευή 25/09, 18:00",
@@ -8147,7 +8165,8 @@
     "description": "97ο RAPID ΠΓΣ\"ΠΕΤΡΟΣ ΚΟΛΥΒΑΣ\"ΠΑΡΑΣΚΕΥΗ 25/09  7μμ",
     "timeControl": "9' + 3\"/move",
     "lat": 37.9838,
-    "lng": 23.7278
+    "lng": 23.7278,
+    "coast": "med"
   },
   {
     "name": "3ο Open Τουρνουά στη μνήμη Πέτρου Κολυβά- 'Εναρξη Πέμπτη 15 Οκτωβρίου, 18:30",
@@ -8279,7 +8298,8 @@
     "description": "Grand Chess SeriesUltimate League  >1700",
     "timeControl": "90 min + 30 sec per move",
     "lat": 38.0419,
-    "lng": 23.6849
+    "lng": 23.6849,
+    "coast": "med"
   },
   {
     "name": "244th Rapid Panellinion Cafe October 2026- Σάββατο 03/10, 18:30",
@@ -8341,7 +8361,8 @@
     "description": "Team 3x3 Β' Κατηγορίαby ASOP DIAS",
     "timeControl": "90'+30''",
     "lat": 38.0419,
-    "lng": 23.6849
+    "lng": 23.6849,
+    "coast": "med"
   },
   {
     "name": "Team 3x3 Α' Κατηγορίαby ASOP DIAS",
@@ -8353,7 +8374,8 @@
     "description": "Team 3x3 Α' Κατηγορίαby ASOP DIAS",
     "timeControl": "90'+30''",
     "lat": 38.0419,
-    "lng": 23.6849
+    "lng": 23.6849,
+    "coast": "med"
   },
   {
     "name": "243rd Rapid Panellinion Cafe September 2026- Σάββατο 26/09, 18:30",
@@ -8385,7 +8407,8 @@
     "description": "75o Πανελλήνιο Ατομικό Πρωτάθλημα 2026",
     "timeControl": "90min/40moves + 30 min + 30sec/move",
     "lat": 38.5707,
-    "lng": 25.5855
+    "lng": 25.5855,
+    "coast": "med"
   },
   {
     "name": "GOLDEN RHODOPES CHESS FESTIVAL 2026 – ZLATOGRAD | Standart & Blitz",
@@ -8437,7 +8460,8 @@
     "description": "48ο ΠΑΝΕΛΛΗΝΙΟ ΑΤΟΜΙΚΟ ΠΡΩΤΑΘΛΗΜΑ ΓΥΝΑΙΚΩΝ 2026",
     "timeControl": "90min/40moves+30min+30sec/move",
     "lat": 37.3256,
-    "lng": 23.1433
+    "lng": 23.1433,
+    "coast": "med"
   },
   {
     "name": "FROM PATAGONIA TO CHANIAInternational Closed Tournament",
@@ -8459,7 +8483,8 @@
     "description": "4ο  Προκριματικό Τουρνουά \"Γιώργος Ελευθερουδάκης\"",
     "timeControl": "30' + 30 sec/move",
     "lat": 37.6124,
-    "lng": 26.2942
+    "lng": 26.2942,
+    "coast": "med"
   },
   {
     "name": "IV. Rittmann László Emlékverseny - 4 fős gyerek csapat - Szekszárd, 2026.09.26.",
@@ -9369,7 +9394,8 @@
     "description": "Campionato circolo Scacchistico E. Canal Venezia 2026 fase 1",
     "timeControl": "Standard: 45min +30sec increment per move starting from move 1",
     "lat": 45.4372,
-    "lng": 12.3346
+    "lng": 12.3346,
+    "coast": "med"
   },
   {
     "name": "OPEN A Elo 1800 - IX TORNEO SCACCHI SOTTO LA TORRE",
@@ -9464,8 +9490,10 @@
     "url": "https://chess-results.com/tnr1499029.aspx?lan=1",
     "description": "TRIESTE BUGHOUSE CUP",
     "timeControl": "5'",
-    "lat": 45.655,
-    "lng": 13.7712
+    "lat": 45.65504,
+    "lng": 13.77122,
+    "coast": "med",
+    "seaM": 235
   },
   {
     "name": "TRIESTE RAPID OPEN",
@@ -9476,8 +9504,10 @@
     "url": "https://chess-results.com/tnr1498006.aspx?lan=1",
     "description": "TRIESTE RAPID OPEN",
     "timeControl": "10'+5''",
-    "lat": 45.6495,
-    "lng": 13.7768
+    "lat": 45.65504,
+    "lng": 13.77122,
+    "coast": "med",
+    "seaM": 235
   },
   {
     "name": "ALPE ADRIA TEAM BLITZ 2026",
@@ -9560,8 +9590,10 @@
     "url": "https://chess-results.com/tnr1498875.aspx?lan=1",
     "description": "TRIESTE FREESTYLE OPEN 2026 – CHESS960",
     "timeControl": "10'+5''",
-    "lat": 45.655,
-    "lng": 13.7712
+    "lat": 45.65504,
+    "lng": 13.77122,
+    "coast": "med",
+    "seaM": 235
   },
   {
     "name": "Gran Prix Bresciano 2026 - VI Tappa",
@@ -9585,7 +9617,8 @@
     "description": "TRIESTE RAPID & BLITZ FESTIVAL 2026",
     "timeControl": "",
     "lat": 45.6495,
-    "lng": 13.7768
+    "lng": 13.7768,
+    "coast": "med"
   },
   {
     "name": "TORNEO MASTER   1850 - TORNEO INTERNAZIONALE DI SCACCHI \" TROFEO BCC OGLIO E SEIO\"",
@@ -9657,7 +9690,8 @@
     "description": "Torneo A - OPEN - 3^ Festival Internazionale di Scacchi “Città di Sanremo”",
     "timeControl": "90+30",
     "lat": 43.817,
-    "lng": 7.7751
+    "lng": 7.7751,
+    "coast": "med"
   },
   {
     "name": "Torneo B - Under 16 - 3^ Festival Internazionale di Scacchi “Città di Sanremo”",
@@ -9669,7 +9703,8 @@
     "description": "Torneo B - Under 16 - 3^ Festival Internazionale di Scacchi “Città di Sanremo”",
     "timeControl": "15+30",
     "lat": 43.817,
-    "lng": 7.7751
+    "lng": 7.7751,
+    "coast": "med"
   },
   {
     "name": "I Rapid Fide Furnari sotto le stelle",
@@ -9681,7 +9716,8 @@
     "description": "I Rapid Fide Furnari sotto le stelle",
     "timeControl": "12' + 3'' a mossa",
     "lat": 38.1047,
-    "lng": 15.1252
+    "lng": 15.1252,
+    "coast": "med"
   },
   {
     "name": "Rapid Amatoriale Furnari sotto le stelle",
@@ -9693,7 +9729,8 @@
     "description": "Rapid Amatoriale Furnari sotto le stelle",
     "timeControl": "12' + 3'' a mossa",
     "lat": 38.1044,
-    "lng": 15.1236
+    "lng": 15.1236,
+    "coast": "med"
   },
   {
     "name": "Torneo 5 turni - AMATORI: elo  1800 - 15° Festival Città di Palmanova",
@@ -10922,8 +10959,9 @@
     "url": "https://chess-results.com/tnr1491163.aspx?lan=1",
     "description": "Sagalytics Future Masters Grand Prix - Sep-2026 U12s",
     "timeControl": "8mins +4secs",
-    "lat": 35.9215,
-    "lng": 14.48
+    "lat": 35.91168,
+    "lng": 14.48927,
+    "coast": "med"
   },
   {
     "name": "Sagalytics Future Masters Grand Prix Sep-2026 U20s",
@@ -10934,8 +10972,9 @@
     "url": "https://chess-results.com/tnr1491165.aspx?lan=1",
     "description": "Sagalytics Future Masters Grand Prix Sep-2026 U20s",
     "timeControl": "8mins +4secs",
-    "lat": 35.9215,
-    "lng": 14.48
+    "lat": 35.91168,
+    "lng": 14.48927,
+    "coast": "med"
   },
   {
     "name": "Gran Prix Tiraspolrapid, 16-17 octombrie",
@@ -12557,7 +12596,8 @@
     "description": "European Blitz Championship 2026",
     "timeControl": "3'+2''",
     "lat": 37.1376,
-    "lng": -8.5368
+    "lng": -8.5368,
+    "coast": "atlantic"
   },
   {
     "name": "Campeonato de Aveiro Rápido Equipas 2025-2026",
@@ -12569,7 +12609,8 @@
     "description": "Campeonato de Aveiro Rápido Equipas 2025-2026",
     "timeControl": "3 min + 2 s/ jogada",
     "lat": 40.6457,
-    "lng": -8.6464
+    "lng": -8.6464,
+    "coast": "atlantic"
   },
   {
     "name": "Campeonato de Aveiro Rápido Individual 2025-2026",
@@ -12581,7 +12622,8 @@
     "description": "Campeonato de Aveiro Rápido Individual 2025-2026",
     "timeControl": "3 min + 2 s/ jogada",
     "lat": 40.6457,
-    "lng": -8.6464
+    "lng": -8.6464,
+    "coast": "atlantic"
   },
   {
     "name": "Campeonato de Aveiro Rápido Individual 2025-2026",
@@ -12593,7 +12635,8 @@
     "description": "Campeonato de Aveiro Rápido Individual 2025-2026",
     "timeControl": "3 min + 2 s/ jogada",
     "lat": 40.6457,
-    "lng": -8.6464
+    "lng": -8.6464,
+    "coast": "atlantic"
   },
   {
     "name": "GX Alekhine Open Abertura época 26/27 Jovens sub 8-16 semi-rápidas (27/09) 14h30",
@@ -12624,8 +12667,9 @@
     "url": "https://chess-results.com/tnr1492419.aspx?lan=1",
     "description": "Open de Outono de 2026 - 34.º Torneio da Velhinha",
     "timeControl": "10'+3''",
-    "lat": 38.7748,
-    "lng": -9.156
+    "lat": 38.77044,
+    "lng": -9.15965,
+    "coast": "atlantic"
   },
   {
     "name": "Xadrez na FNAC CC Alegro | Alfragide - Torneio (26/09 - 15h00/18h30)",
@@ -12637,7 +12681,8 @@
     "description": "Xadrez na FNAC CC Alegro | Alfragide - Torneio (26/09 - 15h00/18h30)",
     "timeControl": "10m+5s",
     "lat": 38.732,
-    "lng": -9.2192
+    "lng": -9.2192,
+    "coast": "atlantic"
   },
   {
     "name": "IV OPEN INTERNACIONAL DE XADREZ \"CIDADE DE LAGOS\"",
@@ -12649,7 +12694,8 @@
     "description": "IV OPEN INTERNACIONAL DE XADREZ \"CIDADE DE LAGOS\"",
     "timeControl": "1h30m + 30s",
     "lat": 37.1028,
-    "lng": -8.6729
+    "lng": -8.6729,
+    "coast": "atlantic"
   },
   {
     "name": "II OPEN SÃO MIGUEL ARCANJO 2026 - LEÇA ACADEMIA - XADREZ",
@@ -12660,8 +12706,9 @@
     "url": "https://chess-results.com/tnr1470230.aspx?lan=1",
     "description": "II OPEN SÃO MIGUEL ARCANJO 2026 - LEÇA ACADEMIA - XADREZ",
     "timeControl": "10' + 2''",
-    "lat": 41.191,
-    "lng": -8.7003
+    "lat": 41.19371,
+    "lng": -8.69713,
+    "coast": "atlantic"
   },
   {
     "name": "NXL - III Circuito de Xadrez Ibn Ammar 2026 - 6º Torneio - 26 Setembro",
@@ -12673,7 +12720,8 @@
     "description": "NXL - III Circuito de Xadrez Ibn Ammar 2026 - 6º Torneio - 26 Setembro",
     "timeControl": "10' + 5\"",
     "lat": 37.7449,
-    "lng": -25.5718
+    "lng": -25.5718,
+    "coast": "atlantic"
   },
   {
     "name": "XVII Open Internacional de Xadrez Marquês de Pombal (26/29Dez2026)",
@@ -12728,8 +12776,10 @@
     "url": "https://chess-results.com/tnr1489297.aspx?lan=1",
     "description": "43º Seixaliada Xadrez Semi Rapidas - Torneio Troca Peças (17OUT26)",
     "timeControl": "5 min + 5 seg./lance",
-    "lat": 38.6401,
-    "lng": -9.1014
+    "lat": 38.64193,
+    "lng": -9.10403,
+    "coast": "atlantic",
+    "seaM": 203
   },
   {
     "name": "43º Seixaliada Xadrez Semi Rapidas - Torneio Pares Mistos (10OUT26)",
@@ -12753,7 +12803,8 @@
     "description": "Torneio Nossa Senhora do Carmo - Samouco 27 Setembro 2026 15H00",
     "timeControl": "10+5",
     "lat": 41.1667,
-    "lng": -8.6333
+    "lng": -8.6333,
+    "coast": "atlantic"
   },
   {
     "name": "GXP -7º Torneio da série Campeãs Mundiais - Xie Ju",
@@ -12827,7 +12878,8 @@
     "description": "II Open Clássicas Clube Peões da Caparica",
     "timeControl": "90 minutos + 30 segundos por lance",
     "lat": 38.6618,
-    "lng": -9.2003
+    "lng": -9.2003,
+    "coast": "atlantic"
   },
   {
     "name": "CHESS LABOR CITY International Rapid Chess",
@@ -12869,7 +12921,8 @@
     "description": "Torneio Sub12+Sub14 GDC Casquilhos (Barreiro)(4 de Outubro, Domingo, 15:00)",
     "timeControl": "15' KO",
     "lat": 38.6631,
-    "lng": -9.0724
+    "lng": -9.0724,
+    "coast": "atlantic"
   },
   {
     "name": "Torneio Sub8+Sub10 GDC Casquilhos (Barreiro)(4 de Outubro, Domingo, 15:00)",
@@ -12881,7 +12934,8 @@
     "description": "Torneio Sub8+Sub10 GDC Casquilhos (Barreiro)(4 de Outubro, Domingo, 15:00)",
     "timeControl": "15' KO",
     "lat": 38.6631,
-    "lng": -9.0724
+    "lng": -9.0724,
+    "coast": "atlantic"
   },
   {
     "name": "Torneio de Outubro do CX Sintra (sexta-feira 2/10/2026, 20h30)     - Aberto e registado para Elo de semirrápidas",
@@ -12893,7 +12947,8 @@
     "description": "Torneio de Outubro do CX Sintra (sexta-feira 2/10/2026, 20h30)     - Aberto e registado para Elo de semirrápidas",
     "timeControl": "10+2",
     "lat": 38.801,
-    "lng": -9.3783
+    "lng": -9.3783,
+    "coast": "atlantic"
   },
   {
     "name": "ADCF - Torneio Outono 2026 - V Circuito 4 EstaçõesAbertura da época 2026/27 - Comemorativo da Implantação da República",
@@ -12915,7 +12970,8 @@
     "description": "8.º Torneio Maia Blitz Cup (Rápidas) 25 de setembro de 2026 | Pedrouços, Maia",
     "timeControl": "3`+ 2``",
     "lat": 41.2357,
-    "lng": -8.6199
+    "lng": -8.6199,
+    "coast": "atlantic"
   },
   {
     "name": "VIII MAIA RAPID CUP (Semi-Rápidas) 2026 26 de setembro de 2026 | Pedrouços, Maia",
@@ -12927,7 +12983,8 @@
     "description": "VIII MAIA RAPID CUP (Semi-Rápidas) 2026 26 de setembro de 2026 | Pedrouços, Maia",
     "timeControl": "10`+ 5``",
     "lat": 41.2357,
-    "lng": -8.6199
+    "lng": -8.6199,
+    "coast": "atlantic"
   },
   {
     "name": "FUNCHAL CHESS OPEN 26/11 - 02/12  (13000€ IN PRIZES)",
@@ -12939,7 +12996,8 @@
     "description": "FUNCHAL CHESS OPEN 26/11 - 02/12  (13000€ IN PRIZES)",
     "timeControl": "90 minutes + 30 seconds increment",
     "lat": 32.6496,
-    "lng": -16.9087
+    "lng": -16.9087,
+    "coast": "atlantic"
   },
   {
     "name": "I TORNEIO DOS VENTOS (3 de outubro de 2026) | Recarei, Paredes",
@@ -12963,7 +13021,8 @@
     "description": "European Fischer Random (Chess 960) Championship 2026",
     "timeControl": "10'+5''",
     "lat": 37.1376,
-    "lng": -8.5368
+    "lng": -8.5368,
+    "coast": "atlantic"
   },
   {
     "name": "European Rapid Championship 2026",
@@ -12975,7 +13034,8 @@
     "description": "European Rapid Championship 2026",
     "timeControl": "15'+10''",
     "lat": 37.1376,
-    "lng": -8.5368
+    "lng": -8.5368,
+    "coast": "atlantic"
   },
   {
     "name": "VII Torneio Internacional de Xadrez de Caldas da Rainha/APCavalgante Arneirense 06-07-08 de novembro 2026",
@@ -12987,7 +13047,8 @@
     "description": "VII Torneio Internacional de Xadrez de Caldas da Rainha/APCavalgante Arneirense 06-07-08 de novembro 2026",
     "timeControl": "90 min + 30 s",
     "lat": 39.4033,
-    "lng": -9.1384
+    "lng": -9.1384,
+    "coast": "atlantic"
   },
   {
     "name": "III Torneio Internacional de Xadrez de Caldas da Rainha/APCavalgante Arneirense Jovem Sub18 (Elo inferior a1550) - 07 e 08 de novembro 2026",
@@ -12999,7 +13060,8 @@
     "description": "III Torneio Internacional de Xadrez de Caldas da Rainha/APCavalgante Arneirense Jovem Sub18 (Elo inferior a1550) - 07 e 08 de novembro 2026",
     "timeControl": "30 min + 30 s",
     "lat": 39.4033,
-    "lng": -9.1384
+    "lng": -9.1384,
+    "coast": "atlantic"
   },
   {
     "name": "Jogos Desportivos Castro Daire 2026Xadrez",
@@ -13035,7 +13097,8 @@
     "description": "Torneio FNAC Gaia Shopping",
     "timeControl": "3+2",
     "lat": 41.124,
-    "lng": -8.6124
+    "lng": -8.6124,
+    "coast": "atlantic"
   },
   {
     "name": "XX FEST. INT. XADREZ F. FOZ TORNEIO SABIR ALI",
@@ -13079,7 +13142,8 @@
     "description": "NXL - III Circuito de Xadrez Ibn Ammar 2026 - 6º Torneio - 26 Setembro",
     "timeControl": "10' + 5\"",
     "lat": 37.7449,
-    "lng": -25.5718
+    "lng": -25.5718,
+    "coast": "atlantic"
   },
   {
     "name": "4.º Torneio \"Grandes Mestres CINEMAX\"",
@@ -13101,7 +13165,8 @@
     "description": "III CIRCUITO DE XADREZ IBN AMMAR 2026 - 6º Torneio - 26 Setembro",
     "timeControl": "10' + 5\"",
     "lat": 37.7449,
-    "lng": -25.5718
+    "lng": -25.5718,
+    "coast": "atlantic"
   },
   {
     "name": "2.º Encontro CLDE Braga Iniciado e Juvenil Grupo C 2025/2026",
@@ -13113,7 +13178,8 @@
     "description": "2.º Encontro CLDE Braga Iniciado e Juvenil Grupo C 2025/2026",
     "timeControl": "10minutos + 0 segundos de incremento",
     "lat": 41.9618,
-    "lng": -8.7206
+    "lng": -8.7206,
+    "coast": "atlantic"
   },
   {
     "name": "Turneul Familiei - Echipe, Sibiu, 4 oct, ora 17",
@@ -15545,7 +15611,8 @@
     "description": "19. pospešeno prvenstvo Pirana - 2/4",
     "timeControl": "10 + 5",
     "lat": 45.5071,
-    "lng": 13.6046
+    "lng": 13.6046,
+    "coast": "med"
   },
   {
     "name": "Serija \"Stara kela 2026\" - 8. turnir",
@@ -15657,7 +15724,8 @@
     "description": "CAMPEONATO DE TENERIFE BLITZ 2026",
     "timeControl": "3 minutos + 2 segundos de incremento por jugada",
     "lat": 28.4682,
-    "lng": -16.2546
+    "lng": -16.2546,
+    "coast": "atlantic"
   },
   {
     "name": "VI Bambuchess Chess Festival – Masters B IM NORM - 3 LAST SPOTS",
@@ -15681,7 +15749,8 @@
     "description": "Campeonato de Tenerife de Ajedrez Rapido 2026",
     "timeControl": "15 min + 5 sec/mov from nove 1",
     "lat": 28.4506,
-    "lng": -16.4209
+    "lng": -16.4209,
+    "coast": "atlantic"
   },
   {
     "name": "I Open de ajedrez de Corteconcepcion",
@@ -15693,7 +15762,8 @@
     "description": "I Open de ajedrez de Corteconcepcion",
     "timeControl": "8 min + 3 segundos por mov",
     "lat": 37.2664,
-    "lng": -6.94
+    "lng": -6.94,
+    "coast": "atlantic"
   },
   {
     "name": "III Torneig Escacs per Equips La Vila Joiosa",
@@ -15705,7 +15775,8 @@
     "description": "III Torneig Escacs per Equips La Vila Joiosa",
     "timeControl": "5' + 3'' por jugada",
     "lat": 38.5075,
-    "lng": -0.2335
+    "lng": -0.2335,
+    "coast": "med"
   },
   {
     "name": "III OPEN 60+30 EBANO 2026",
@@ -15717,7 +15788,8 @@
     "description": "III OPEN 60+30 EBANO 2026",
     "timeControl": "60 min + 30 sec/move from move 1",
     "lat": 28.4858,
-    "lng": -16.3159
+    "lng": -16.3159,
+    "coast": "atlantic"
   },
   {
     "name": "III Escolar de Ajedrez \"VILLA DE PELIGROS\"",
@@ -15741,7 +15813,8 @@
     "description": "BLITZ OKTOBERCHESS ÉBANO 2026",
     "timeControl": "Blitz: 3min +2sec increment per move starting from move 1",
     "lat": 28.4858,
-    "lng": -16.3159
+    "lng": -16.3159,
+    "coast": "atlantic"
   },
   {
     "name": "IX Abierto de Ajedrez \"VILLA DE PELIGROS\" - ABIERTO",
@@ -15765,7 +15838,8 @@
     "description": "VII elllobregat Open Group A",
     "timeControl": "90min + 30sec from move 1",
     "lat": 41.3241,
-    "lng": 2.0511
+    "lng": 2.0511,
+    "coast": "med"
   },
   {
     "name": "I Torneo Ajedrez Multitiempo",
@@ -15777,7 +15851,8 @@
     "description": "I Torneo Ajedrez Multitiempo",
     "timeControl": "",
     "lat": 39.4313,
-    "lng": 3.0198
+    "lng": 3.0198,
+    "coast": "med"
   },
   {
     "name": "TORNEO Sub 14 DE AJEDREZ MEMORIAL JULIO GANZO 2026",
@@ -15801,7 +15876,8 @@
     "description": "XXXII ABIERTO DE AJEDREZ \"VILLA DE LOS PALACIOS\"",
     "timeControl": "8+3",
     "lat": 41.418,
-    "lng": 2.186
+    "lng": 2.186,
+    "coast": "med"
   },
   {
     "name": "VI Torneo Blitz Aguas de Teror Chess 2026",
@@ -15825,7 +15901,8 @@
     "description": "2º Open Internacional Sub2200 \"Hotel Vértice CHIPIONA MAR\" 2026- Máximo 70 participantes",
     "timeControl": "80 minutos + 10 segundos por jugador",
     "lat": 36.7366,
-    "lng": -6.437
+    "lng": -6.437,
+    "coast": "atlantic"
   },
   {
     "name": "III OPEN DE AJEDREZ FUNDACIÓN CAJASOL",
@@ -15859,7 +15936,8 @@
     "description": "IV TORNEO DE AJEDREZ AYTO DE EL CAMPILLO",
     "timeControl": "8'+3''",
     "lat": 37.2664,
-    "lng": -6.94
+    "lng": -6.94,
+    "coast": "atlantic"
   },
   {
     "name": "52 Abierto Internacional Ciudad de Sevilla 2027",
@@ -15883,7 +15961,8 @@
     "description": "III Open Sub2400 Castillo Santa Catalina Cadiz 2026",
     "timeControl": "80 min + 10 sec por jugada",
     "lat": 36.5267,
-    "lng": -6.2891
+    "lng": -6.2891,
+    "coast": "atlantic"
   },
   {
     "name": "III Open AJEDUCA Castillo Santa Catalina Cadiz 2026",
@@ -15895,7 +15974,8 @@
     "description": "III Open AJEDUCA Castillo Santa Catalina Cadiz 2026",
     "timeControl": "8 min + 3 sec por jugada",
     "lat": 36.5267,
-    "lng": -6.2891
+    "lng": -6.2891,
+    "coast": "atlantic"
   },
   {
     "name": "III Open Sub1700 Castillo Santa Catalina Cadiz 2026",
@@ -15907,7 +15987,8 @@
     "description": "III Open Sub1700 Castillo Santa Catalina Cadiz 2026",
     "timeControl": "50 min + 10 sec por jugada",
     "lat": 36.5267,
-    "lng": -6.2891
+    "lng": -6.2891,
+    "coast": "atlantic"
   },
   {
     "name": "Torneo Relámpago Master + 55 Alcubierre 2026",
@@ -15943,7 +16024,8 @@
     "description": "IV INTERNACIONAL CHESS OPEN HOTEL CAP NEGRET 65Mayores de 65 años",
     "timeControl": "90 min + 30 seg. for mov",
     "lat": 38.6028,
-    "lng": -0.0472
+    "lng": -0.0472,
+    "coast": "med"
   },
   {
     "name": "TORNEO INTERNACIONAL DE AJEDREZ MEMORIAL JULIO GANZO 2026",
@@ -15979,7 +16061,8 @@
     "description": "V Torneo Fiestas de Mula (Murcia)",
     "timeControl": "8' + 3\"",
     "lat": 38.7057,
-    "lng": 1.4289
+    "lng": 1.4289,
+    "coast": "med"
   },
   {
     "name": "I Torneo de Ajedrez Rápido SANTIAGO Y ZARAICHE (MURCIA CIUDAD) 26.09.2026",
@@ -16003,7 +16086,8 @@
     "description": "Torneo de Ajedrez Juan Martinez Sola 2026",
     "timeControl": "5+3",
     "lat": 36.8686,
-    "lng": -2.312
+    "lng": -2.312,
+    "coast": "med"
   },
   {
     "name": "I TORNEO BLITZ MIGUEL ÁNGEL DÍAZ MOLINA",
@@ -16015,7 +16099,8 @@
     "description": "I TORNEO BLITZ MIGUEL ÁNGEL DÍAZ MOLINA",
     "timeControl": "3 minutos + 2 segundos de incremento por jugada",
     "lat": 36.5939,
-    "lng": -6.233
+    "lng": -6.233,
+    "coast": "atlantic"
   },
   {
     "name": "XXIII Calvia Amateur Open",
@@ -16027,7 +16112,8 @@
     "description": "XXIII Calvia Amateur Open",
     "timeControl": "90mn 40 jugadas + 15min + 30seg desde la jugada 1",
     "lat": 39.5191,
-    "lng": 2.5343
+    "lng": 2.5343,
+    "coast": "med"
   },
   {
     "name": "I Open Ciudad de Lepe",
@@ -16039,7 +16125,8 @@
     "description": "I Open Ciudad de Lepe",
     "timeControl": "8+3",
     "lat": 37.2544,
-    "lng": -7.2032
+    "lng": -7.2032,
+    "coast": "atlantic"
   },
   {
     "name": "Blitz Monteolivete - Septiembre 2026",
@@ -16071,7 +16158,8 @@
     "description": "XXIII Blitz Amateur de CalviaII Memorial Jaime Simonet",
     "timeControl": "5 minutos + 3 segundos Bronstein",
     "lat": 39.5191,
-    "lng": 2.5343
+    "lng": 2.5343,
+    "coast": "med"
   },
   {
     "name": "I Torneo de Ajedrez sub 2400 Zamora, la Bien Cercada",
@@ -16166,8 +16254,10 @@
     "url": "https://chess-results.com/tnr1465179.aspx?lan=1",
     "description": "Simultánea Magistral Gata Kamsky Gran Hotel Bali 2026",
     "timeControl": "Standard",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "Copa por Equipos Gran Hotel Bali 2026- Sub 12",
@@ -16178,8 +16268,10 @@
     "url": "https://chess-results.com/tnr1439481.aspx?lan=1",
     "description": "Copa por Equipos Gran Hotel Bali 2026- Sub 12",
     "timeControl": "60 minutos + 30 segundos por movimiento",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "III OPEN DE AJEDREZ ESCUDERIA ALBA",
@@ -16213,7 +16305,8 @@
     "description": "Gipuzkoako Hirugarren mailako Txapelketa Irunen",
     "timeControl": "90 min. + 30 seg.",
     "lat": 43.339,
-    "lng": -1.7894
+    "lng": -1.7894,
+    "coast": "atlantic"
   },
   {
     "name": "Gipuzkoako Hirugarren mailako Txapelketa Astigarragan",
@@ -16225,7 +16318,8 @@
     "description": "Gipuzkoako Hirugarren mailako Txapelketa Astigarragan",
     "timeControl": "90 min. + 30 seg.",
     "lat": 43.2816,
-    "lng": -1.9475
+    "lng": -1.9475,
+    "coast": "atlantic"
   },
   {
     "name": "XVIII TORNEO DE AJEDREZ G.E. AIRBUS SEVILLA",
@@ -16248,8 +16342,10 @@
     "url": "https://chess-results.com/tnr1404738.aspx?lan=1",
     "description": "I Copa Internacional por Equipos Gran Hotel Bali",
     "timeControl": "60 minutos + 30 segundos por movimiento",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "Copa por Equipos Gran Hotel Bali 2026- Sub 16",
@@ -16260,8 +16356,10 @@
     "url": "https://chess-results.com/tnr1439478.aspx?lan=1",
     "description": "Copa por Equipos Gran Hotel Bali 2026- Sub 16",
     "timeControl": "60 minutos + 30 segundos por movimiento",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "Pinar de Jalon 2026",
@@ -16309,7 +16407,8 @@
     "description": "Torneo de Ajedrez Fiestas Puerto del Rosario",
     "timeControl": "10 minutos + 5 segundos de incremento por jugada",
     "lat": 28.5004,
-    "lng": -13.8627
+    "lng": -13.8627,
+    "coast": "atlantic"
   },
   {
     "name": "Torneo Ajedrez Colegio César Augusto 2026 SUB 12",
@@ -16341,7 +16440,8 @@
     "description": "Open Mallorca Amateur S2400 2026",
     "timeControl": "Standard: 60 minutes with 30 seconds increment from move 1",
     "lat": 39.5696,
-    "lng": 2.6501
+    "lng": 2.6501,
+    "coast": "med"
   },
   {
     "name": "Trofeo Escolar Abadia 2026",
@@ -16365,7 +16465,8 @@
     "description": "Trofeo Valparaiso 2026",
     "timeControl": "Blitz: 5 minutes for game with 3 seconds increment from move 1",
     "lat": 39.5696,
-    "lng": 2.6501
+    "lng": 2.6501,
+    "coast": "med"
   },
   {
     "name": "Torneo Día Internacional de las Personas Mayores 2026",
@@ -16389,7 +16490,8 @@
     "description": "PABELLÓN 14 ENTRENAMIENTO CAMPO GIBRALTAR  26/09/26",
     "timeControl": "8 + 3",
     "lat": 36.1312,
-    "lng": -5.4474
+    "lng": -5.4474,
+    "coast": "med"
   },
   {
     "name": "XII Open Internacional de Ajedrez Ciudad de Albacete Sub2400",
@@ -16425,7 +16527,8 @@
     "description": "BLITZ FIDE - Ibiza Travel 2026",
     "timeControl": "3 minutes + 2 seconds per move",
     "lat": 38.9831,
-    "lng": 1.3009
+    "lng": 1.3009,
+    "coast": "med"
   },
   {
     "name": "RAPID FIDE - Ibiza Travel 2026",
@@ -16437,7 +16540,8 @@
     "description": "RAPID FIDE - Ibiza Travel 2026",
     "timeControl": "10 minutes + 5 seconds per move",
     "lat": 38.9831,
-    "lng": 1.3009
+    "lng": 1.3009,
+    "coast": "med"
   },
   {
     "name": "II Torneo ESCOLAR Feria de Brenes - 2026",
@@ -16494,8 +16598,10 @@
     "url": "https://chess-results.com/tnr1404735.aspx?lan=1",
     "description": "XXIII Torneo Internacional Gran Hotel Bali Grupo B Aficionados",
     "timeControl": "Standard: 90 minutes with 30 second increment from move 1",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "II IRT FIESTAS DEL PILAR 2026",
@@ -16530,8 +16636,10 @@
     "url": "https://chess-results.com/tnr1411135.aspx?lan=1",
     "description": "XXIII Open Internacional Gran Hotel Bali 2026",
     "timeControl": "Standard: 90 minutes with 30 second increment from move 1",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "Emakumezkoen Xake Azkar Txapelketa // Torneo de ajedrez Femenino de Rapidas.   Balmaseda - 27 de septiembre",
@@ -16587,7 +16695,8 @@
     "description": "Gipuzkoako Taldekako Blitz Xake Txapelketa",
     "timeControl": "3 min. + 2 seg",
     "lat": 43.3383,
-    "lng": -1.7888
+    "lng": -1.7888,
+    "coast": "atlantic"
   },
   {
     "name": "AMURRIOKO V. SUSTAPEN TXAPELKETA",
@@ -16621,7 +16730,8 @@
     "description": "Gipuzkoako Bigarren mailako Txapelketa Irunen",
     "timeControl": "90 min. + 30 seg.",
     "lat": 43.339,
-    "lng": -1.7894
+    "lng": -1.7894,
+    "coast": "atlantic"
   },
   {
     "name": "Gipuzkoako Bigarren mailako Txapelketa Astigarragan",
@@ -16633,7 +16743,8 @@
     "description": "Gipuzkoako Bigarren mailako Txapelketa Astigarragan",
     "timeControl": "90 min. + 30 seg.",
     "lat": 43.2816,
-    "lng": -1.9475
+    "lng": -1.9475,
+    "coast": "atlantic"
   },
   {
     "name": "Gipuzkoako Absolutua 2026ko Txapelketa",
@@ -16657,7 +16768,8 @@
     "description": "XII Torneig (Sub 14) d'Escacs Gata Fira al carrer 2026Categoría Sub 14",
     "timeControl": "5 minuts+3 segons d'increment per jugada",
     "lat": 38.7744,
-    "lng": 0.0854
+    "lng": 0.0854,
+    "coast": "med"
   },
   {
     "name": "XII Torneig d'Escacs Gata Fira al carrer 2026Categoría Absolut",
@@ -16669,7 +16781,8 @@
     "description": "XII Torneig d'Escacs Gata Fira al carrer 2026Categoría Absolut",
     "timeControl": "5 minuts+3 segons d'increment per jugada",
     "lat": 38.7744,
-    "lng": 0.0854
+    "lng": 0.0854,
+    "coast": "med"
   },
   {
     "name": "CAMPEONATO RAPIDAS DE ÁLAVA INDIVIDUAL 2026",
@@ -16762,8 +16875,10 @@
     "url": "https://chess-results.com/tnr1439479.aspx?lan=1",
     "description": "Copa por Equipos Gran Hotel Bali 2026- Sub 14",
     "timeControl": "60 minutos + 30 segundos por movimiento",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "VII Open Internacional de Ajedrez Dama Negra",
@@ -16785,7 +16900,8 @@
     "description": "II Open Internacional de Ajedrez Ciudad de Irun 2026 Grupo B",
     "timeControl": "90'+30\"",
     "lat": 42.4477,
-    "lng": -8.6859
+    "lng": -8.6859,
+    "coast": "atlantic"
   },
   {
     "name": "II Open Internacional de Ajedrez Ciudad de Irun 2026Grupo A",
@@ -16797,7 +16913,8 @@
     "description": "II Open Internacional de Ajedrez Ciudad de Irun 2026Grupo A",
     "timeControl": "90'+30\"",
     "lat": 42.4477,
-    "lng": -8.6859
+    "lng": -8.6859,
+    "coast": "atlantic"
   },
   {
     "name": "XIX TORNEO DE LA VENDIMIA DE AJEDREZ INFANTIL - INFANTIL",
@@ -16914,8 +17031,10 @@
     "url": "https://chess-results.com/tnr1404737.aspx?lan=1",
     "description": "XVII Torneo Blitz Nocturno Gran Hotel Bali 2026-Grupo Aficionados B",
     "timeControl": "3 minutes with 2 second increment from move 1",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "I Torneig Escacs llampec Monar't",
@@ -16939,7 +17058,8 @@
     "description": "V OPEN  ACTIVO  DE REYES  BERAUN BERA 2027",
     "timeControl": "10 minutos + 2 seg.",
     "lat": 43.3125,
-    "lng": -1.8986
+    "lng": -1.8986,
+    "coast": "atlantic"
   },
   {
     "name": "I Blitz Lanzaloe-OneChess 2026",
@@ -17007,7 +17127,8 @@
     "description": "IV INTERNACIONAL CHESS OPEN HOTEL CAP NEGRET 50Mayores de 50 años",
     "timeControl": "90 min + 30 seg. for mov",
     "lat": 38.6028,
-    "lng": -0.0472
+    "lng": -0.0472,
+    "coast": "med"
   },
   {
     "name": "Halloween Xake Txapelketa Ibailakuako",
@@ -17059,7 +17180,8 @@
     "description": "Amateur - Ibiza Travel 2026",
     "timeControl": "10 minutos finish",
     "lat": 38.9831,
-    "lng": 1.3009
+    "lng": 1.3009,
+    "coast": "med"
   },
   {
     "name": "Copa por Equipos Gran Hotel Bali 2026- Sub 18",
@@ -17070,8 +17192,10 @@
     "url": "https://chess-results.com/tnr1439477.aspx?lan=1",
     "description": "Copa por Equipos Gran Hotel Bali 2026- Sub 18",
     "timeControl": "60 minutos + 30 segundos por movimiento",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "V OPEN INTERNACIONAL DE AJEDREZ MOA 2026",
@@ -17195,7 +17319,8 @@
     "description": "I Open de Ajedrez Puerto Moral",
     "timeControl": "8 `+ 3\" por mov",
     "lat": 36.5939,
-    "lng": -6.233
+    "lng": -6.233,
+    "coast": "atlantic"
   },
   {
     "name": "XVII Torneo Blitz Nocturno Gran Hotel Bali 2026-Grupo A Open",
@@ -17206,8 +17331,10 @@
     "url": "https://chess-results.com/tnr1404736.aspx?lan=1",
     "description": "XVII Torneo Blitz Nocturno Gran Hotel Bali 2026-Grupo A Open",
     "timeControl": "3 minutes with 2 second increment from move 1",
-    "lat": 38.5315,
-    "lng": -0.1635
+    "lat": 38.53147,
+    "lng": -0.16349,
+    "coast": "med",
+    "seaM": 358
   },
   {
     "name": "I Festival internacional de ajedrez Villa de Mallen 2026",
@@ -17299,7 +17426,8 @@
     "description": "X Lliga Comarcal d’Escacs 2027 (SUB 16) sede Gata de Gorgos",
     "timeControl": "5 minuts per jugador + 3 segons d’increment per jugada",
     "lat": 38.7696,
-    "lng": 0.0672
+    "lng": 0.0672,
+    "coast": "med"
   },
   {
     "name": "X Lliga Comarcal d’Escacs 2027 (SUB 16) sede Benissa",
@@ -17311,7 +17439,8 @@
     "description": "X Lliga Comarcal d’Escacs 2027 (SUB 16) sede Benissa",
     "timeControl": "5 minuts per jugador + 3 segons d'increment per jugada.",
     "lat": 38.7149,
-    "lng": 0.0485
+    "lng": 0.0485,
+    "coast": "med"
   },
   {
     "name": "X Lliga Comarcal d'Escacs 2027 (Sub 16) sede Xàbia",
@@ -17323,7 +17452,8 @@
     "description": "X Lliga Comarcal d'Escacs 2027 (Sub 16) sede Xàbia",
     "timeControl": "5 minuts per jugador + 3 segons d'increment per jugada",
     "lat": 38.7833,
-    "lng": 0.1667
+    "lng": 0.1667,
+    "coast": "med"
   },
   {
     "name": "42 KATTU haur xake Jaialdia - Azkoitia 2026",
@@ -17347,7 +17477,8 @@
     "description": "VII elllobregat Open Group B - Memorial Arturo Pomar",
     "timeControl": "15 min + 5 sec from move 1",
     "lat": 41.3241,
-    "lng": 2.0511
+    "lng": 2.0511,
+    "coast": "med"
   },
   {
     "name": "Trofeo Sant Antoni de Portmany - Amateur",
@@ -17359,7 +17490,8 @@
     "description": "Trofeo Sant Antoni de Portmany - Amateur",
     "timeControl": "10 minutes + 5 seconds per move",
     "lat": 38.9831,
-    "lng": 1.3009
+    "lng": 1.3009,
+    "coast": "med"
   },
   {
     "name": "Björkstadsschacket 2026",
@@ -18203,7 +18335,8 @@
     "description": "EZGİ SATRANÇ İLKÖĞRETİM HAFTASI GELENEKSEL 4. HIZLI SATRANÇ TURNUVASI 12 YAŞ VE ALTI (2015-2020 Arası  Doğumlular )",
     "timeControl": "15'' eklemesiz tempo",
     "lat": 36.812,
-    "lng": 34.6389
+    "lng": 34.6389,
+    "coast": "med"
   },
   {
     "name": "EZGİ SATRANÇ İLKÖĞRETİM HAFTASI GELENEKSEL 4. HIZLI SATRANÇ TURNUVASI 10 YAŞ VE ALTI (2017-2018 Doğumlular )",
@@ -18215,7 +18348,8 @@
     "description": "EZGİ SATRANÇ İLKÖĞRETİM HAFTASI GELENEKSEL 4. HIZLI SATRANÇ TURNUVASI 10 YAŞ VE ALTI (2017-2018 Doğumlular )",
     "timeControl": "15'' eklemesiz tempo",
     "lat": 36.812,
-    "lng": 34.6389
+    "lng": 34.6389,
+    "coast": "med"
   },
   {
     "name": "EZGİ SATRANÇ İLKÖĞRETİM HAFTASI GELENEKSEL 4. HIZLI SATRANÇ TURNUVASI 8 YAŞ (2021 Doğumlular )",
@@ -18227,7 +18361,8 @@
     "description": "EZGİ SATRANÇ İLKÖĞRETİM HAFTASI GELENEKSEL 4. HIZLI SATRANÇ TURNUVASI 8 YAŞ (2021 Doğumlular )",
     "timeControl": "15'' eklemesiz tempo",
     "lat": 36.812,
-    "lng": 34.6389
+    "lng": 34.6389,
+    "coast": "med"
   },
   {
     "name": "EZGİ SATRANÇ İLKÖĞRETİM HAFTASI GELENEKSEL 4. HIZLI SATRANÇ TURNUVASI 7 YAŞ (2020 Doğumlular )",
@@ -18239,7 +18374,8 @@
     "description": "EZGİ SATRANÇ İLKÖĞRETİM HAFTASI GELENEKSEL 4. HIZLI SATRANÇ TURNUVASI 7 YAŞ (2020 Doğumlular )",
     "timeControl": "15'' eklemesiz tempo",
     "lat": 36.812,
-    "lng": 34.6389
+    "lng": 34.6389,
+    "coast": "med"
   },
   {
     "name": "YILDIZKENT İLKOKULUARALIK AYI SATRANÇ TURNUVASI 1",

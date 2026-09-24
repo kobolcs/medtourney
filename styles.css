@@ -1294,6 +1294,31 @@ body.dark-theme .error-message.success-type {
   border-left-color: var(--amber);
 }
 
+/* Featured seaside: venue within 500 m of the sea (seaM from the geocoder) */
+.tournament-card--beachfront {
+  border-left-width: 6px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--sea) 7%, transparent), transparent 45%),
+    var(--surface);
+}
+
+.beachfront-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px var(--sp-3);
+  border-radius: 20px;
+  background: var(--sea);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+body.dark-theme .beachfront-pill {
+  color: var(--ink);
+}
+
 .tournament-card--mediterranean .tournament-date-badge {
   background: var(--sea-light);
   color: var(--sea);
@@ -2678,6 +2703,11 @@ body.dark-theme .map-canvas .leaflet-tile-pane {
   margin: var(--sp-2) 0 0;
   color: #5C6A78;
   font-size: var(--text-xs);
+}
+
+/* Beachfront places: a sand-coloured ring around the pin */
+.map-pin.map-pin--beach {
+  box-shadow: 0 0 0 3px #E8C77A, 0 1px 4px rgba(0, 0, 0, .35);
 }
 
 /* --sea is a light blue in dark mode - dark text on it, as on the mode switch */

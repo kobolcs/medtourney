@@ -409,6 +409,12 @@ export class UIManager {
         const timeControlClassHTML = this.timeControlClassHTML(tournament);
         const categoryTagsHTML = this.categoryTagsHTML(tournament);
 
+        // Featured seaside: the venue itself is within 500 m of the sea
+        const beachfrontHTML = tournament.seaM !== undefined
+            ? `<span class="beachfront-pill" title="The venue is about ${tournament.seaM} m from the sea (OpenStreetMap coastline)"><span aria-hidden="true">🏖</span> Beachfront · ${tournament.seaM} m from the sea</span>`
+            : '';
+        if (tournament.seaM !== undefined) card.classList.add('tournament-card--beachfront');
+
         const durationLabel = formatDurationLabel(tournament.date, tournament.dateTo);
         const durationHTML = durationLabel
             ? `<span class="duration-pill">${escapeHTML(durationLabel)}</span>`
@@ -443,6 +449,7 @@ export class UIManager {
                 </div>
                 <div class="tournament-location">${formatLocation(tournament.location)}</div>
                 <div class="tournament-meta">
+                    ${beachfrontHTML}
                     ${timeControlClassHTML}
                     ${timeControlHTML}
                     ${categoryTagsHTML}

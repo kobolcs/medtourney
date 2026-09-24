@@ -52,14 +52,16 @@ test.describe('Map view', () => {
     // re-measures, and the pin never counts as "stable".
     const press = async (l: import('@playwright/test').Locator): Promise<void> => {
       await expect(l).toBeInViewport();
-      // Wait until it stops moving (a popup opening auto-pans the map)
+      // Wait until it stops moving (a popup opening auto-pans the map, with
+      // easing that can pause briefly mid-way): 3 equal readings in a row
       let box = (await l.boundingBox())!;
+      let still = 0;
       await expect.poll(async () => {
         const next = (await l.boundingBox())!;
-        const settled = next.x === box.x && next.y === box.y;
+        still = next.x === box.x && next.y === box.y ? still + 1 : 0;
         box = next;
-        return settled;
-      }, { intervals: [100] }).toBe(true);
+        return still >= 3;
+      }, { intervals: [150] }).toBe(true);
       const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
       if (isMobile) await page.touchscreen.tap(x, y);
       else await page.mouse.click(x, y);

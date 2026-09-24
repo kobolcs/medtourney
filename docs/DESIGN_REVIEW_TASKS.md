@@ -36,12 +36,20 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 - [x] **7. Sticky filter sidebar on desktop** (≥1024px) (`2cd6664`).
 - [ ] **8. Filters in a bottom sheet on phones** – results first, a "Filters (3)" button
   opens the same filter markup as a sheet with a "Show N tournaments" button.
-- [~] **9. Country list that fits the niche** (`027ecd7`).
+- [x] **9. Country list that fits the niche** (`027ecd7`).
   - [x] Grouped by region (Mediterranean, Central, Balkans & Eastern, Nordic & Baltic, British Isles)
   - [x] Type-to-filter input; empty groups hidden; "no match" message echoes the query
   - [x] Group-level "select all" tick per region (ticks shown countries; partly
     selected shows as indeterminate)
-  - [ ] In Seaside mode, show only the Mediterranean group expanded
+  - [x] In Seaside mode, only the Mediterranean group shows (already the case:
+    regions with no seaside tournaments hide themselves)
+- [x] **Seaside rule fixed** (found while checking the above): Seaside matched only
+  59 of 1,617 tournaments (2 in the default view) via a 223-town list. Now also
+  within 10 km of the Mediterranean or Spain/Portugal's Atlantic coast (geocoder
+  `coast` flag, Natural Earth coastline) - 30 in the default view.
+- [x] **Featured seaside / Beachfront** (user request): venue within 500 m of the sea
+  (venue-level Nominatim hit + OSM coastline via Overpass) gets a 🏖 badge, a
+  highlighted card and a ringed map pin; Tournament of the Week prefers them.
 
 ## Bigger additions
 

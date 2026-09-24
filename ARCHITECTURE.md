@@ -231,6 +231,18 @@ queries places it hasn't seen; misses are retried after 30 days. Town names
 buried in venue text fall back to an offline match against GeoNames'
 `cities1000` list. The browser never calls a geocoding service.
 
+**Seaside and beachfront** (same script, same run):
+- `coast: "med" | "atlantic"` - within 10 km of the Mediterranean or of
+  Spain's/Portugal's Atlantic coast, measured against
+  `data/southern_coast.json` (Natural Earth 1:10m coastline, clipped by
+  `scripts/build_southern_coast.py`). `FilterService.isSeaside()` = this flag
+  OR a listed coastal town (`config.json`), so unplaced tournaments still work.
+- `seaM` - featured "Beachfront": only for near-coast tournaments whose venue
+  itself is found (Nominatim hotel/hall/club hit that shares a word with the
+  location text and is within 5 km of it), then measured against
+  OpenStreetMap's `natural=coastline` via Overpass; set when <= 500 m. The
+  venue's coordinates also replace the town-centre pin on the map.
+
 ---
 
 ## Coordination Layer

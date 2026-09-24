@@ -106,7 +106,12 @@
  "ALGECIRAS, ESP": {
   "lat": 36.1312,
   "lng": -5.4474,
-  "q": "ALGECIRAS"
+  "q": "ALGECIRAS",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "ASKÖ Sportzentrum Salzburg-Maxglan, AUT": {
   "miss": "no match",
@@ -129,12 +134,25 @@
   "lat": 38.7748,
   "lng": -9.156,
   "q": "lumiar",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": [
+    38.77044,
+    -9.15965
+   ],
+   "seaM": null,
+   "tried": "2026-09-24T00:12:21.322689+00:00"
+  }
  },
  "Agios Kirikos Ikarias, GRE": {
   "lat": 37.6124,
   "lng": 26.2942,
-  "q": "Agios Kirikos Ikarias"
+  "q": "Agios Kirikos Ikarias",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Agóra Veszprém Kulturális Központ, HUN": {
   "lat": 47.0933,
@@ -145,7 +163,12 @@
  "Ajuntament de Gata de Gorgos ( Sala CSI ) Gata de Gorgos  (03740), ESP": {
   "lat": 38.7696,
   "lng": 0.0672,
-  "q": "Gata de Gorgos"
+  "q": "Gata de Gorgos",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Alcalá de Henares, ESP": {
   "lat": 40.482,
@@ -160,7 +183,12 @@
  "Almeria, ESP": {
   "lat": 36.8686,
   "lng": -2.312,
-  "q": "Almeria"
+  "q": "Almeria",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Almond Park Yaşayış Kompleksi, AZE": {
   "miss": "no match",
@@ -169,7 +197,12 @@
  "Altea (Spain), ESP": {
   "lat": 38.6028,
   "lng": -0.0472,
-  "q": "Altea (Spain)"
+  "q": "Altea (Spain)",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Alverdiscott Village Hall EX39 4PZ, ENG": {
   "miss": "no match",
@@ -234,7 +267,12 @@
  "Astigarraga, ESP": {
   "lat": 43.2816,
   "lng": -1.9475,
-  "q": "Astigarraga"
+  "q": "Astigarraga",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Atomis Hotel Munich Airport by Mercure, GER": {
   "lat": 48.1374,
@@ -259,7 +297,12 @@
   "lat": 37.2664,
   "lng": -6.94,
   "q": "huelva",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Azkoitia - Eibar - Elgoibar, ESP": {
   "lat": 43.2144,
@@ -639,12 +682,22 @@
  "Calvia (Mallorca), ESP": {
   "lat": 39.5191,
   "lng": 2.5343,
-  "q": "Calvia (Mallorca)"
+  "q": "Calvia (Mallorca)",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Calvià (Mallorca), ESP": {
   "lat": 39.5191,
   "lng": 2.5343,
-  "q": "Calvià (Mallorca)"
+  "q": "Calvià (Mallorca)",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Camberley Chess Club, ENG": {
   "lat": 51.337,
@@ -663,7 +716,12 @@
  "Casal Ca'n Pere Ignasi (Campos, ESP": {
   "lat": 39.4313,
   "lng": 3.0198,
-  "q": "Campos"
+  "q": "Campos",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Castelcovati, ITA": {
   "lat": 45.4984,
@@ -708,7 +766,12 @@
   "lat": 38.7149,
   "lng": 0.0485,
   "q": "benissa",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Centro Carmen Jimenez, ESP": {
   "miss": "no match",
@@ -814,7 +877,12 @@
   "lat": 38.801,
   "lng": -9.3783,
   "q": "sintra",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Cluj-Napoca, ROU": {
   "lat": 46.7694,
@@ -855,7 +923,12 @@
   "lat": 38.7057,
   "lng": 1.4289,
   "q": "san francisco",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Cosmopolitan Bobycentrum, CZE": {
   "miss": "no match",
@@ -992,7 +1065,12 @@
  "Dubrovnik, CRO": {
   "lat": 42.6491,
   "lng": 18.094,
-  "q": "Dubrovnik"
+  "q": "Dubrovnik",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Duisburg, GER": {
   "lat": 51.435,
@@ -1041,7 +1119,12 @@
  "ERRENTERIA, ESP": {
   "lat": 43.3125,
   "lng": -1.8986,
-  "q": "ERRENTERIA"
+  "q": "ERRENTERIA",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "ESP": {
   "miss": "unplaceable",
@@ -1092,7 +1175,12 @@
  "Escola EB 2, POR": {
   "lat": 41.9618,
   "lng": -8.7206,
-  "q": "Escola EB 2"
+  "q": "Escola EB 2",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Espace Grand-Bo, FRA": {
   "miss": "no match",
@@ -1132,13 +1220,23 @@
   "lat": 41.124,
   "lng": -8.6124,
   "q": "gaia",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "FOUGARO ART CENTER NAFPLIO, GRE": {
   "lat": 37.5686,
   "lng": 22.8069,
   "q": "nafplio",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Falla Duque de Calabria - Pobla de Farnals, ESP": {
   "miss": "no match",
@@ -1171,12 +1269,22 @@
  "Funchal, POR": {
   "lat": 32.6496,
   "lng": -16.9087,
-  "q": "Funchal"
+  "q": "Funchal",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Furnari, ITA": {
   "lat": 38.1047,
   "lng": 15.1252,
-  "q": "Furnari"
+  "q": "Furnari",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "GDC Casquilhos, POR": {
   "miss": "no match",
@@ -1280,7 +1388,15 @@
  "Gran Hotel Bali (Benidorm), ESP": {
   "lat": 38.5315,
   "lng": -0.1635,
-  "q": "Gran Hotel Bali (Benidorm)"
+  "q": "Gran Hotel Bali (Benidorm)",
+  "seafront": {
+   "venue": [
+    38.53147,
+    -0.16349
+   ],
+   "seaM": 358,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Grand Hotel Ceahlău, ROU": {
   "lat": 47.05,
@@ -1367,13 +1483,26 @@
   "lat": 39.3408,
   "lng": 23.0126,
   "q": "agria",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": [
+    39.33796,
+    23.01328
+   ],
+   "seaM": 61,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "HOTEL VERTICE CHIPIONA MAR ***, ESP": {
   "lat": 36.7366,
   "lng": -6.437,
   "q": "chipiona",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "HUN": {
   "miss": "unplaceable",
@@ -1494,7 +1623,15 @@
  "Hotel Bali - Benidorm (Alicante - SPAIN), ESP": {
   "lat": 38.5315,
   "lng": -0.1635,
-  "q": "Hotel Bali - Benidorm (Alicante - SPAIN)"
+  "q": "Hotel Bali - Benidorm (Alicante - SPAIN)",
+  "seafront": {
+   "venue": [
+    38.53147,
+    -0.16349
+   ],
+   "seaM": 358,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Hotel Beograd, BIH": {
   "miss": "no match",
@@ -1626,7 +1763,12 @@
  "Hvar, CRO": {
   "lat": 43.1739,
   "lng": 16.5565,
-  "q": "Hvar"
+  "q": "Hvar",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "IRL": {
   "miss": "unplaceable",
@@ -1654,13 +1796,23 @@
  "Irun, ESP": {
   "lat": 43.3383,
   "lng": -1.7888,
-  "q": "Irun"
+  "q": "Irun",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Irun: c/Lope de Irigoyen, ESP": {
   "lat": 43.339,
   "lng": -1.7894,
   "q": "irun",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Istanbul, TUR": {
   "lat": 41.0064,
@@ -1695,7 +1847,15 @@
   "lat": 41.191,
   "lng": -8.7003,
   "q": "leca da palmeira",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": [
+    41.19371,
+    -8.69713
+   ],
+   "seaM": null,
+   "tried": "2026-09-24T00:12:21.322689+00:00"
+  }
  },
  "Junta de Miralbueno. Plaza de la rosa s/n, ESP": {
   "miss": "no match",
@@ -1803,7 +1963,12 @@
   "lat": 38.0419,
   "lng": 23.6849,
   "q": "petroupoli",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Kronach, GER": {
   "lat": 50.2484,
@@ -1853,7 +2018,12 @@
  "LAGOS, POR": {
   "lat": 37.1028,
   "lng": -8.6729,
-  "q": "LAGOS"
+  "q": "LAGOS",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:12:21.322689+00:00"
+  }
  },
  "LDC De Stip, BEL": {
   "miss": "no match",
@@ -1882,7 +2052,12 @@
  "La Pirámide - El Sauzal, ESP": {
   "lat": 28.4506,
   "lng": -16.4209,
-  "q": "El Sauzal"
+  "q": "El Sauzal",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Lajosmizse (HUN), HUN": {
   "lat": 47.0213,
@@ -1976,7 +2151,12 @@
   "lat": 41.418,
   "lng": 2.186,
   "q": "navas",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Lubartow, POL": {
   "lat": 51.4603,
@@ -1987,7 +2167,12 @@
  "Lucija, SLO": {
   "lat": 45.5071,
   "lng": 13.6046,
-  "q": "Lucija"
+  "q": "Lucija",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Luzern, SUI": {
   "lat": 47.0521,
@@ -2245,7 +2430,12 @@
   "lat": 37.2664,
   "lng": -6.94,
   "q": "huelva",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "PARQUE DE LA CHIRRITANA  Calle Francia, ESP": {
   "miss": "no match",
@@ -2279,7 +2469,12 @@
   "lat": 36.5939,
   "lng": -6.233,
   "q": "puerto",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Palacio Horcasitas Jauregia (Balmaseda), ESP": {
   "lat": 43.1942,
@@ -2310,7 +2505,12 @@
  "Palma de Mallorca, ESP": {
   "lat": 39.5696,
   "lng": 2.6501,
-  "q": "Palma de Mallorca"
+  "q": "Palma de Mallorca",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Palmanova, ITA": {
   "lat": 45.9055,
@@ -2361,7 +2561,15 @@
   "lat": 38.6401,
   "lng": -9.1014,
   "q": "seixal",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": [
+    38.64193,
+    -9.10403
+   ],
+   "seaM": 203,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Paseo Independencia de Zaragoza la altura del nº 30, ESP": {
   "lat": 41.6561,
@@ -2418,7 +2626,15 @@
   "lat": 40.6407,
   "lng": 22.9349,
   "q": "thessaloniki",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": [
+    40.64632,
+    22.9862
+   ],
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Piata Amzei, ROU": {
   "miss": "no match",
@@ -2436,7 +2652,12 @@
  "Plaza España (Lepe), ESP": {
   "lat": 37.2544,
   "lng": -7.2032,
-  "q": "Plaza España (Lepe)"
+  "q": "Plaza España (Lepe)",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Plaza de La Montaña, ESP": {
   "miss": "no match",
@@ -2470,12 +2691,22 @@
  "Portimão, POR": {
   "lat": 37.1376,
   "lng": -8.5368,
-  "q": "Portimão"
+  "q": "Portimão",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Porto Cheli, GRE": {
   "lat": 37.3256,
   "lng": 23.1433,
-  "q": "Porto Cheli"
+  "q": "Porto Cheli",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Potsdam-Babelsberg, GER": {
   "miss": "no match",
@@ -2519,7 +2750,12 @@
  "Psara Chios Greece, GRE": {
   "lat": 38.5707,
   "lng": 25.5855,
-  "q": "Psara Chios Greece"
+  "q": "Psara Chios Greece",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Päivölän opisto, FIN": {
   "miss": "no match",
@@ -2540,7 +2776,12 @@
   "lat": 37.7449,
   "lng": -25.5718,
   "q": "lagoa",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:12:21.322689+00:00"
+  }
  },
  "Quinborne Community Centre, ENG": {
   "miss": "no match",
@@ -2668,7 +2909,12 @@
  "Rijeka, CRO": {
   "lat": 45.3268,
   "lng": 14.4422,
-  "q": "Rijeka"
+  "q": "Rijeka",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Ritisevo, SRB": {
   "lat": 45.0661,
@@ -2792,7 +3038,12 @@
   "lat": 45.3908,
   "lng": 14.4703,
   "q": "drazice",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Sala Multiuso, SUI": {
   "miss": "no match",
@@ -2810,33 +3061,63 @@
  "San Cristobal De La Laguna, ESP": {
   "lat": 28.4858,
   "lng": -16.3159,
-  "q": "San Cristobal De La Laguna"
+  "q": "San Cristobal De La Laguna",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "San Cristóbal de La Laguna, ESP": {
   "lat": 28.4858,
   "lng": -16.3159,
-  "q": "San Cristóbal de La Laguna"
+  "q": "San Cristóbal de La Laguna",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "San Juan Arria Plaza, ESP": {
   "lat": 42.4477,
   "lng": -8.6859,
   "q": "san juan",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Sanremo, ITA": {
   "lat": 43.817,
   "lng": 7.7751,
-  "q": "Sanremo"
+  "q": "Sanremo",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Sant Antoni de Portmany(Ibiza), ESP": {
   "lat": 38.9831,
   "lng": 1.3009,
-  "q": "Sant Antoni de Portmany(Ibiza)"
+  "q": "Sant Antoni de Portmany(Ibiza)",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Sant Boi de Llobregat, ESP": {
   "lat": 41.3241,
   "lng": 2.0511,
-  "q": "Sant Boi de Llobregat"
+  "q": "Sant Boi de Llobregat",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Sc. Gim. Prof. Nicolae Simache, ROU": {
   "miss": "no match",
@@ -3143,7 +3424,15 @@
   "lat": 35.9215,
   "lng": 14.48,
   "q": "swieqi",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": [
+    35.91168,
+    14.48927
+   ],
+   "seaM": 505,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Szczytna, POL": {
   "lat": 50.4169,
@@ -3261,12 +3550,28 @@
   "lat": 45.6495,
   "lng": 13.7768,
   "q": "trieste",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": [
+    45.65504,
+    13.77122
+   ],
+   "seaM": 235,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Trieste – NH Hotel, ITA": {
   "lat": 45.655,
   "lng": 13.7712,
-  "q": "Trieste – NH Hotel"
+  "q": "Trieste – NH Hotel",
+  "seafront": {
+   "venue": [
+    45.65504,
+    13.77122
+   ],
+   "seaM": 235,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Trzcianka, POL": {
   "lat": 53.0418,
@@ -3340,7 +3645,12 @@
  "Venezia, ITA": {
   "lat": 45.4372,
   "lng": 12.3346,
-  "q": "Venezia"
+  "q": "Venezia",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Vilkaviškis, LTU": {
   "lat": 54.6502,
@@ -3479,7 +3789,12 @@
   "lat": 36.812,
   "lng": 34.6389,
   "q": "mersin",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:16:01.250879+00:00"
+  }
  },
  "Yerevan, ARM": {
   "lat": 40.1777,
@@ -3617,7 +3932,12 @@
   "lat": 37.9625,
   "lng": 23.6197,
   "q": "κερατσινι",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Δήμο Παραλιμνίου-Δερύνειας, CYP": {
   "miss": "no match",
@@ -3627,7 +3947,12 @@
   "lat": 37.9838,
   "lng": 23.7278,
   "q": "αθηνα",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Εντευκτήρια σωματείων, GRE": {
   "miss": "no match",
@@ -3657,7 +3982,12 @@
   "lat": 38.0419,
   "lng": 23.6849,
   "q": "πετρουπολη",
-  "src": "geonames"
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
  },
  "Μακρυνίτσας 3, GRE": {
   "miss": "no match",

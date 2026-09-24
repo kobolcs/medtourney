@@ -14,6 +14,10 @@ export interface Tournament {
     /** Map coordinates from geocode_tournaments.py; absent if the location couldn't be placed. */
     lat?: number;
     lng?: number;
+    /** Within 10 km of the sea (geocode_tournaments.py): Mediterranean or Spain/Portugal's Atlantic coast. */
+    coast?: 'med' | 'atlantic';
+    /** Featured seaside: the venue itself is this many metres (<= 500) from OSM's coastline. */
+    seaM?: number;
     classificationConfidence?: 'high' | 'medium' | 'low';
     classificationReasons?: string[];
     travelTags?: string[];

@@ -1207,7 +1207,7 @@ class TournamentFinder {
     private computeMediterraneanCountries(): Set<string> {
         const result = new Set<string>();
         for (const t of this.allTournaments) {
-            if (this.filterService.isMediterraneanLocation(t.location.toLowerCase(), this.mediterraneanLocations)) {
+            if (this.filterService.isSeaside(t, this.mediterraneanLocations)) {
                 const parts = t.location.split(',');
                 const last = parts[parts.length - 1];
                 const code = last ? last.trim().toUpperCase() : '';

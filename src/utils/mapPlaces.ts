@@ -41,3 +41,8 @@ export function placeKind(place: Place): 'sea' | 'senior' | 'plain' {
     if (tags.includes('Senior-friendly')) return 'senior';
     return 'plain';
 }
+
+/** A place is beachfront when any of its tournaments' venues is <= 500 m from the sea. */
+export function isBeachfront(place: Place): boolean {
+    return place.tournaments.some(t => t.seaM !== undefined);
+}

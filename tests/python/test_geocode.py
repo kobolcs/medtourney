@@ -1,5 +1,6 @@
 """Tests for geocode_tournaments.py - no network: Nominatim is a fake."""
 
+import importlib.util
 import json
 import re
 import urllib.error
@@ -168,7 +169,7 @@ class TestGeocodeFile:
         out = json.loads(data.read_text(encoding="utf-8"))
         assert out[0]["lat"] == 47.07
         assert "lat" not in out[1]
-        assert stats == {"tournaments": 2, "placed": 1, "lookups": 1}
+        assert stats == {"tournaments": 2, "placed": 1, "lookups": 1, "seaside": 0, "beachfront": 0}
 
 
 def test_fed_to_iso2_matches_frontend_countries_ts() -> None:
@@ -177,3 +178,89 @@ def test_fed_to_iso2_matches_frontend_countries_ts() -> None:
     frontend = {fed: iso.lower() for fed, iso in re.findall(r"(\w{3}): \{ name: '[^']*', iso2: '(\w\w)' \}", ts)}
     assert len(frontend) == 55
     assert frontend == gt.FED_TO_ISO2
+
+
+class TestSeaside:
+    COAST = gt.Coast({"med": [[38.53, -0.13]], "atlantic": [[43.32, -1.98]]})
+
+    def test_within_10_km_of_the_coast(self) -> None:
+        assert self.COAST.coast_of(38.54, -0.12) == "med"  # ~1.4 km
+        assert self.COAST.coast_of(38.70, -0.13) is None  # ~19 km inland
+
+    def test_atlantic_only_counts_for_spain_and_portugal(self) -> None:
+        spain = {"lat": 43.32, "lng": -1.97, "location": "Donostia, ESP"}
+        france = {"lat": 43.32, "lng": -1.97, "location": "Hendaye, FRA"}
+        assert gt.seaside_coast(spain, self.COAST) == "atlantic"
+        assert gt.seaside_coast(france, self.COAST) is None
+
+    def test_coast_regions(self) -> None:
+        spec = importlib.util.spec_from_file_location("bsc", ROOT / "scripts" / "build_southern_coast.py")
+        bsc = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bsc)
+        assert bsc.region(-0.13, 38.53) == "med"        # Benidorm
+        assert bsc.region(-1.98, 43.32) == "atlantic"   # San Sebastián
+        assert bsc.region(-8.63, 41.16) == "atlantic"   # Porto
+        assert bsc.region(-15.43, 28.12) == "atlantic"  # Las Palmas
+        assert bsc.region(28.98, 41.01) is None         # Istanbul (Bosphorus / Black Sea)
+        assert bsc.region(-1.56, 43.48) is None         # Biarritz (France's Atlantic)
+        assert bsc.region(10.0, 54.0) is None           # Baltic
+
+
+class TestBeachfront:
+    def venue_hit(self, lat: float = 38.5315, lon: float = -0.1635, name: str = "Gran Hotel Bali") -> Dict[str, Any]:
+        return {"lat": str(lat), "lon": str(lon), "category": "tourism", "addresstype": "tourism", "name": name}
+
+    def make(self, answers, coastline) -> gt.Geocoder:
+        cache = {"Gran Hotel Bali (Benidorm), ESP": {"lat": 38.54, "lng": -0.13, "q": "Benidorm"}}
+        return gt.Geocoder(cache, search=FakeNominatim(answers), sleep=lambda _s: None,
+                           now=NOW, coastline=coastline)
+
+    def test_metres_to_segment(self) -> None:
+        # a point 0.001 deg (~111 m) north of an east-west segment
+        d = gt.metres_to_segment((38.001, 0.0005), (38.0, 0.0), (38.0, 0.001))
+        assert 105 < d < 116
+
+    def test_venue_near_the_sea_gets_sea_metres(self) -> None:
+        shore = [[(38.5285, -0.17), (38.5285, -0.16)]]  # ~330 m south of the hotel
+        g = self.make({("Gran Hotel Bali (Benidorm)", "es"): self.venue_hit()}, lambda _lat, _lng: shore)
+        front = g.seafront("Gran Hotel Bali (Benidorm), ESP", 10)
+        assert front["venue"] == [38.5315, -0.1635]
+        assert 300 < front["seaM"] < 360
+
+    def test_town_level_hit_is_not_a_venue(self) -> None:
+        town = {"lat": "38.54", "lon": "-0.13", "category": "place", "addresstype": "town"}
+        g = self.make({("Gran Hotel Bali (Benidorm)", "es"): town}, lambda _lat, _lng: [])
+        front = g.seafront("Gran Hotel Bali (Benidorm), ESP", 10)
+        assert front["venue"] is None
+        assert front["seaM"] is None
+
+    def test_venue_with_an_unrelated_name_is_rejected(self) -> None:
+        # "Calvia (Mallorca)" once matched a hotel called "Mallorca"
+        hit = self.venue_hit(name="Hotel Mallorca")
+        g = self.make({("Gran Hotel Bali (Benidorm)", "es"): hit}, lambda _lat, _lng: [])
+        assert g.seafront("Gran Hotel Bali (Benidorm), ESP", 10)["venue"] is None
+
+    def test_same_name_venue_far_away_is_rejected(self) -> None:
+        # Spain has many a "Convento de San Francisco" - one 700 km away isn't ours
+        far = self.venue_hit(lat=42.43, lon=-8.64)
+        g = self.make({("Gran Hotel Bali (Benidorm)", "es"): far}, lambda _lat, _lng: [])
+        assert g.seafront("Gran Hotel Bali (Benidorm), ESP", 10)["venue"] is None
+
+    def test_overpass_down_is_not_cached_and_skips_the_rest(self) -> None:
+        def down(_lat: float, _lng: float) -> None:
+            msg = "504"
+            raise urllib.error.URLError(msg)
+        g = self.make({("Gran Hotel Bali (Benidorm)", "es"): self.venue_hit()}, down)
+        assert g.seafront("Gran Hotel Bali (Benidorm), ESP", 10) is None
+        assert "seafront" not in g.cache["Gran Hotel Bali (Benidorm), ESP"]
+        assert g.overpass_down
+
+    def test_annotate_marks_beachfront_and_moves_pin_to_venue(self) -> None:
+        shore = [[(38.5285, -0.17), (38.5285, -0.16)]]
+        g = self.make({("Gran Hotel Bali (Benidorm)", "es"): self.venue_hit()}, lambda _lat, _lng: shore)
+        t = {"name": "Benidorm Open", "location": "Gran Hotel Bali (Benidorm), ESP"}
+        coast = gt.Coast({"med": [[38.53, -0.13]]})
+        assert gt.annotate_tournament(t, g, None, coast, 10) == (True, True, True)
+        assert (t["lat"], t["lng"]) == (38.5315, -0.1635)
+        assert t["coast"] == "med"
+        assert t["seaM"] <= gt.BEACHFRONT_M

@@ -25,8 +25,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import logging
+import math
 import re
 import sys
 import time
@@ -36,13 +38,15 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Tuple
+from typing import Any, Callable, Tuple, TypeVar
 
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 USER_AGENT = "MedTourney/3.0 (+https://github.com/kobolcs/medtourney)"
 REQUEST_INTERVAL_S = 1.1
 MISS_RETRY_DAYS = 30
 logger = logging.getLogger("geocode")
+T = TypeVar("T")
+NETWORK_ERRORS = (urllib.error.URLError, TimeoutError, OSError, ValueError)
 
 DEFAULT_MAX_LOOKUPS = 300
 SAVE_EVERY = 25
@@ -198,6 +202,159 @@ def town_from_name(
     return (match[1][0], match[1][1]) if match else None
 
 
+# --- Seaside: distance to the southern coasts ---------------------------------
+#
+# A placed tournament within SEASIDE_KM of the Mediterranean or of Spain's /
+# Portugal's Atlantic coast gets "coast": "med" | "atlantic", which the site's
+# Seaside filter uses alongside its town list (config.json). Coastline points
+# come from Natural Earth (public domain), prebuilt by
+# scripts/build_southern_coast.py into data/southern_coast.json.
+
+SEASIDE_KM = 10.0
+COAST_FILE = Path(__file__).parent / "data" / "southern_coast.json"
+GRID_DEG = 0.25  # grid cell size for the nearest-point lookup
+EARTH_DIAMETER_KM = 12742
+
+
+class Coast:
+    def __init__(self, points: dict[str, list[list[float]]]) -> None:
+        self.grid: dict[tuple[int, int], list[tuple[float, float, str]]] = {}
+        for kind, pts in points.items():
+            for lat, lng in pts:
+                self.grid.setdefault(self._cell(lat, lng), []).append((lat, lng, kind))
+
+    @staticmethod
+    def _cell(lat: float, lng: float) -> tuple[int, int]:
+        return math.floor(lat / GRID_DEG), math.floor(lng / GRID_DEG)
+
+    @classmethod
+    def load(cls, path: Path = COAST_FILE) -> Coast:
+        return cls(json.loads(path.read_text(encoding="utf-8")))
+
+    def nearest(self, lat: float, lng: float) -> tuple[float, str | None]:
+        """(km, 'med' | 'atlantic') to the nearest coast point in the 5x5 cells around."""
+        best_km, best_kind = math.inf, None
+        row, col = self._cell(lat, lng)
+        for dr in range(-2, 3):
+            for dc in range(-2, 3):
+                for plat, plng, kind in self.grid.get((row + dr, col + dc), ()):
+                    dlat, dlng = math.radians(plat - lat), math.radians(plng - lng)
+                    h = (math.sin(dlat / 2) ** 2
+                         + math.cos(math.radians(lat)) * math.cos(math.radians(plat)) * math.sin(dlng / 2) ** 2)
+                    d = EARTH_DIAMETER_KM * math.asin(math.sqrt(h))
+                    if d < best_km:
+                        best_km, best_kind = d, kind
+        return best_km, best_kind
+
+    def coast_of(self, lat: float, lng: float) -> str | None:
+        km, kind = self.nearest(lat, lng)
+        return kind if km <= SEASIDE_KM else None
+
+
+# Atlantic seaside is Spain's and Portugal's coast only (e.g. not Hendaye,
+# France, 2 km from the Spanish border).
+ATLANTIC_FEDS = {"ESP", "POR"}
+
+
+def seaside_coast(tournament: dict[str, Any], coast: Coast) -> str | None:
+    """'med' / 'atlantic' if the tournament's coordinates are by the sea."""
+    kind = coast.coast_of(tournament["lat"], tournament["lng"])
+    fed = tournament.get("location", "").rpartition(",")[2].strip().upper()
+    if kind == "atlantic" and fed not in ATLANTIC_FEDS:
+        return None
+    return kind
+
+
+# --- Beachfront: venue-level distance to OpenStreetMap's coastline -----------
+#
+# "Featured seaside" = the venue itself is at most BEACHFRONT_M from the sea.
+# Town-centre coordinates can't support a 500 m claim (Barcelona's centre is
+# ~2 km inland), so only tournaments near the coast (coast set) get a venue
+# lookup - Nominatim, accepting a real venue (hotel, hall, club...) only -
+# and then one Overpass query for OSM's natural=coastline around it. Results
+# are cached on the location's cache entry like everything else.
+
+BEACHFRONT_M = 500
+COASTLINE_SEARCH_M = 600
+# Public Overpass instances; the second is tried when the first is overloaded
+OVERPASS_URLS = (
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+)
+OVERPASS_RETRY_WAIT_S = (5, 20)
+VENUE_CATEGORIES = {
+    "tourism", "amenity", "building", "leisure", "club", "sport", "office", "shop", "historic",
+}
+M_PER_DEG_LAT = 110540
+M_PER_DEG_LNG_EQUATOR = 111320
+
+
+VENUE_MAX_KM = 5.0  # hotels sit on the edge of town: Gran Hotel Bali is 3.1 km from Benidorm centre
+VENUE_NAME_MIN_LEN = 3
+
+
+def km_between(a: tuple[float, float], b: tuple[float, float]) -> float:
+    dlat, dlng = math.radians(b[0] - a[0]), math.radians(b[1] - a[1])
+    h = (math.sin(dlat / 2) ** 2
+         + math.cos(math.radians(a[0])) * math.cos(math.radians(b[0])) * math.sin(dlng / 2) ** 2)
+    return EARTH_DIAMETER_KM * math.asin(math.sqrt(h))
+
+
+def names_match(location_part: str, venue_name: str) -> bool:
+    """True if the venue's name shares a distinctive word with the location text."""
+    def words(text: str) -> set[str]:
+        found = re.findall("[^\\W\\d_]+", normalise(text))
+        return {w for w in found if len(w) >= VENUE_NAME_MIN_LEN and w not in VENUE_WORDS}
+    return bool(words(location_part) & words(venue_name))
+
+
+def metres_to_segment(p: tuple[float, float], a: tuple[float, float], b: tuple[float, float]) -> float:
+    """Distance from point p to segment a-b (lat, lng), flat-earth metres (fine at <1 km)."""
+    kx = M_PER_DEG_LNG_EQUATOR * math.cos(math.radians(p[0]))
+    ax, ay = (a[1] - p[1]) * kx, (a[0] - p[0]) * M_PER_DEG_LAT
+    bx, by = (b[1] - p[1]) * kx, (b[0] - p[0]) * M_PER_DEG_LAT
+    dx, dy = bx - ax, by - ay
+    length2 = dx * dx + dy * dy
+    t = 0.0 if length2 == 0 else max(0.0, min(1.0, -(ax * dx + ay * dy) / length2))
+    return math.hypot(ax + t * dx, ay + t * dy)
+
+
+def overpass_coastline(
+    lat: float, lng: float, sleep: Callable[[float], None] = time.sleep
+) -> list[list[tuple[float, float]]]:
+    """OSM natural=coastline ways within COASTLINE_SEARCH_M, as lists of (lat, lng).
+
+    Public Overpass servers often answer 429/504 under load: retry with a
+    growing wait, alternating instances, before giving up (raises).
+    """
+    query = (f"[out:json][timeout:25];way(around:{COASTLINE_SEARCH_M},{lat},{lng})"
+             f'["natural"="coastline"];out geom;')
+    body = urllib.parse.urlencode({"data": query}).encode()
+    waits = (0, *OVERPASS_RETRY_WAIT_S)
+    for attempt, wait in enumerate(waits):
+        if wait:
+            sleep(wait)
+        url = OVERPASS_URLS[attempt % len(OVERPASS_URLS)]
+        req = urllib.request.Request(url, data=body, headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as res:
+                elements = json.load(res).get("elements", [])
+            return [[(g["lat"], g["lon"]) for g in way.get("geometry", [])] for way in elements]
+        except NETWORK_ERRORS:
+            if attempt == len(waits) - 1:
+                raise
+    return []  # unreachable
+
+
+def sea_distance_m(lat: float, lng: float, ways: list[list[tuple[float, float]]]) -> int | None:
+    """Metres to the nearest coastline segment, or None if none within the search radius."""
+    best = min(
+        (metres_to_segment((lat, lng), a, b) for way in ways for a, b in zip(way, way[1:])),
+        default=None,
+    )
+    return round(best) if best is not None and best <= COASTLINE_SEARCH_M else None
+
+
 def nominatim_search(query: str, iso2: str) -> dict[str, Any] | None:
     """One Nominatim lookup. Returns the top hit or None; raises on network errors."""
     params = urllib.parse.urlencode({
@@ -218,14 +375,18 @@ class Geocoder:
         now: datetime | None = None,
         on_progress: Callable[[], None] | None = None,
         geonames: dict[str, dict[str, Place]] | None = None,
+        coastline: Callable[[float, float], list[list[tuple[float, float]]]] = overpass_coastline,
     ) -> None:
         self.geonames = geonames
+        self.coastline = coastline
         self.cache = cache
         self.search = search
         self.sleep = sleep
         self.now = now or datetime.now(timezone.utc)
         self.on_progress = on_progress
         self.lookups = 0
+        self.offline = False
+        self.overpass_down = False
 
     def _cache_usable(self, entry: dict[str, Any]) -> bool:
         if "lat" in entry:
@@ -254,6 +415,109 @@ class Geocoder:
         name, (lat, lng, _pop) = match
         self.cache[location] = {"lat": lat, "lng": lng, "q": name, "src": "geonames"}
         return lat, lng
+
+    def _recent(self, tried: str | None) -> bool:
+        if not tried:
+            return False
+        return self.now - datetime.fromisoformat(tried) < timedelta(days=MISS_RETRY_DAYS)
+
+    def _throttled(self, call: Callable[[], T]) -> T:
+        """One request to OSM's services, at most one per REQUEST_INTERVAL_S."""
+        if self.lookups:
+            self.sleep(REQUEST_INTERVAL_S)
+        self.lookups += 1
+        if self.on_progress and self.lookups % SAVE_EVERY == 0:
+            self.on_progress()
+        return call()
+
+    def seafront(self, location: str, max_lookups: int) -> dict[str, Any] | None:
+        """Venue coordinates + metres to the sea for a near-coast location.
+
+        Returns {"venue": [lat, lng] | None, "seaM": int | None}, from the
+        cache when fresh; None when the lookup budget is spent or Overpass is
+        down (then nothing is cached, so the next run retries). Nominatim
+        network errors propagate to the caller.
+        """
+        entry = self.cache.get(location)
+        if not entry or "lat" not in entry:
+            return None
+        front: dict[str, Any] | None = entry.get("seafront")
+        if front and (front.get("venue") or self._recent(front.get("tried"))):
+            return front
+        # Up to two venue queries plus one coastline query
+        if self.overpass_down or self.lookups + 3 > max_lookups:
+            return None
+        front = self._lookup_seafront(location, entry.get("q", ""))
+        if front is not None:
+            entry["seafront"] = front
+        return front
+
+    def _lookup_seafront(self, location: str, town: str) -> dict[str, Any] | None:
+        head, iso2 = split_location(location)
+        entry = self.cache[location]
+        venue = self._find_venue(head, iso2, town, (entry["lat"], entry["lng"]))
+        sea_m = None
+        if venue:
+            try:
+                ways = self._throttled(functools.partial(self.coastline, venue[0], venue[1]))
+            except NETWORK_ERRORS as e:
+                # Overpass overloaded even after retries: skip beachfront checks
+                # for the rest of this run (not cached - next run tries again)
+                logger.warning("Overpass unavailable, skipping beachfront checks: %s", e)
+                self.overpass_down = True
+                return None
+            sea_m = sea_distance_m(venue[0], venue[1], ways)
+        return {"venue": venue, "seaM": sea_m, "tried": self.now.isoformat()}
+
+    def _find_venue(
+        self, head: str, iso2: str | None, town: str, near: tuple[float, float]
+    ) -> list[float] | None:
+        """The venue itself (hotel, hall, club...) - never a town - or None.
+
+        Only trusted when it is the venue the location names (shares a real
+        word with the location's first part: "Gran Hotel Bali" yes, a hotel
+        called "Mallorca" for "Calvia (Mallorca)" no) and lies within
+        VENUE_MAX_KM of where the location was placed (Spain has many a
+        "Convento de San Francisco").
+        """
+        if not head or not iso2:
+            return None
+        first = SEGMENT_SPLIT.split(head)[0]
+        queries = [head]
+        if town and town.lower() not in head.lower():
+            queries.append(f"{first} {town}")
+        for query in queries:
+            hit = self._throttled(functools.partial(self.search, query, iso2))
+            if (hit and hit.get("category") in VENUE_CATEGORIES
+                    and names_match(first, hit.get("name") or "")):
+                venue = (round(float(hit["lat"]), 5), round(float(hit["lon"]), 5))
+                if km_between(venue, near) <= VENUE_MAX_KM:
+                    return [venue[0], venue[1]]
+        return None
+
+    def place(self, location: str, max_lookups: int) -> tuple[float, float] | None:
+        """geocode(), but after a network error keep going from the cache only."""
+        if not self.offline:
+            try:
+                return self.geocode(location, max_lookups)
+            except NETWORK_ERRORS as e:
+                logger.warning("Lookups stopped after a network error: %s", e)
+                self.offline = True
+        entry = self.cache.get(location, {})
+        return (entry["lat"], entry["lng"]) if "lat" in entry else None
+
+    def place_seafront(self, location: str, max_lookups: int) -> dict[str, Any] | None:
+        """seafront(), falling back to the cache when offline or out of budget."""
+        if not self.offline:
+            try:
+                front = self.seafront(location, max_lookups)
+                if front is not None:
+                    return front
+            except NETWORK_ERRORS as e:
+                logger.warning("Lookups stopped after a network error: %s", e)
+                self.offline = True
+        front = self.cache.get(location, {}).get("seafront")
+        return front if isinstance(front, dict) else None
 
     def geocode(self, location: str, max_lookups: int) -> tuple[float, float] | None:
         entry = self.cache.get(location)
@@ -286,6 +550,44 @@ class Geocoder:
         return self._fallback(location)
 
 
+def annotate_tournament(
+    t: dict[str, Any],
+    geocoder: Geocoder,
+    geonames: dict[str, dict[str, Place]] | None,
+    coast: Coast | None,
+    max_lookups: int,
+) -> tuple[bool, bool, bool]:
+    """Set lat/lng, coast and seaM on one tournament.
+
+    Returns (placed, seaside, beachfront) for the run's summary.
+    """
+    location = t.get("location", "")
+    for key in ("lat", "lng", "coast", "seaM"):
+        t.pop(key, None)
+
+    coords = geocoder.place(location, max_lookups)
+    if coords is None and geonames:
+        coords = town_from_name(t, geonames)
+    if coords is None:
+        return False, False, False
+    t["lat"], t["lng"] = coords
+
+    kind = seaside_coast(t, coast) if coast else None
+    if not kind:
+        return True, False, False
+    t["coast"] = kind
+
+    front = geocoder.place_seafront(location, max_lookups)
+    if not front or not front.get("venue"):
+        return True, True, False
+    t["lat"], t["lng"] = front["venue"]  # the venue itself, not the town centre
+    sea_m = front.get("seaM")
+    if sea_m is None or sea_m > BEACHFRONT_M:
+        return True, True, False
+    t["seaM"] = sea_m
+    return True, True, True
+
+
 def geocode_file(
     data_path: Path,
     cache_path: Path,
@@ -308,33 +610,19 @@ def geocode_file(
     elif geonames_path:
         logger.warning("GeoNames file %s not found - fallback disabled", geonames_path)
 
-    geocoder = Geocoder(cache, search=search, on_progress=save_cache, geonames=geonames)
-    placed = 0
-    network_error = False
+    coast = Coast.load() if COAST_FILE.exists() else None
+    if coast is None:
+        logger.warning("%s not found - seaside flags not computed", COAST_FILE)
 
+    geocoder = Geocoder(cache, search=search, on_progress=save_cache, geonames=geonames)
+    counts = {"placed": 0, "seaside": 0, "beachfront": 0}
     for t in tournaments:
-        coords = None
-        if not network_error:
-            try:
-                coords = geocoder.geocode(t.get("location", ""), max_lookups)
-            except (urllib.error.URLError, TimeoutError, OSError, ValueError) as e:
-                logger.warning("Geocoding stopped after a network error: %s", e)
-                network_error = True
-        if coords is None and network_error:
-            entry = cache.get(t.get("location", ""), {})
-            coords = (entry["lat"], entry["lng"]) if "lat" in entry else None
-        if coords is None and geonames:
-            coords = town_from_name(t, geonames)
-        if coords:
-            t["lat"], t["lng"] = coords
-            placed += 1
-        else:
-            t.pop("lat", None)
-            t.pop("lng", None)
+        for key, hit in zip(counts, annotate_tournament(t, geocoder, geonames, coast, max_lookups)):
+            counts[key] += hit
 
     data_path.write_text(json.dumps(tournaments, indent=2, ensure_ascii=False), encoding="utf-8")
     save_cache()
-    return {"tournaments": len(tournaments), "placed": placed, "lookups": geocoder.lookups}
+    return {"tournaments": len(tournaments), "lookups": geocoder.lookups, **counts}
 
 
 def main() -> int:
@@ -354,8 +642,9 @@ def main() -> int:
         Path(args.geonames) if args.geonames else None,
     )
     logger.info(
-        "Geocoded %d/%d tournaments (%d Nominatim lookups)",
-        stats["placed"], stats["tournaments"], stats["lookups"],
+        "Geocoded %d/%d tournaments (%d lookups), %d by the sea, %d within %d m of it",
+        stats["placed"], stats["tournaments"], stats["lookups"], stats["seaside"],
+        stats["beachfront"], BEACHFRONT_M,
     )
     return 0  # never fail the data update
 

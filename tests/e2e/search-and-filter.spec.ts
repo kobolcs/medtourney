@@ -469,3 +469,43 @@ test.describe('Country list region ticks', () => {
     await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toBeEnabled();
   });
 });
+
+test.describe('Seaside rule and beachfront', () => {
+  // Matosinhos (Porto's beach town) isn't in config.json's town list: it only
+  // counts as seaside through the geocoder's coast flag. The Benidorm hotel
+  // is a venue 120 m from the sea (seaM) - the featured "beachfront" case.
+  const fixtures: TournamentFixture[] = [
+    { name: 'Matosinhos Open', location: 'Matosinhos, POR', lat: 41.18, lng: -8.69, coast: 'atlantic' },
+    { name: 'Benidorm Beach Open', location: 'Gran Hotel Bali (Benidorm), ESP', lat: 38.5315, lng: -0.1635, coast: 'med', seaM: 120 },
+    { name: 'Madrid Open', location: 'Madrid, ESP', lat: 40.42, lng: -3.70 },
+  ].map((t, i) => ({
+    ...t, date: isoInDays(7 * (i + 1)), category: 'Open, Classical',
+    url: `https://chess-results.com/tnr8${i}.aspx?lan=1`, description: '',
+  }));
+
+  test.beforeEach(async ({ page }) => {
+    await stubTournaments(page, fixtures);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+  });
+
+  test('Seaside mode includes coast-flagged places not in the town list', async ({ page }) => {
+    await page.locator('.mode-switch-btn[data-mode="seaside"]').click();
+    await expect(page.locator('.tournament-card')).toHaveCount(2);
+    await expect(page.locator('.tournament-card', { hasText: 'Madrid Open' })).toHaveCount(0);
+
+    // Atlantic coast: Seaside, but not tagged Mediterranean
+    const matosinhos = page.locator('.tournament-card', { hasText: 'Matosinhos Open' });
+    await expect(matosinhos.locator('.travel-tag', { hasText: 'Seaside' })).toBeVisible();
+    await expect(matosinhos.locator('.travel-tag', { hasText: 'Mediterranean' })).toHaveCount(0);
+  });
+
+  test('a venue within 500 m of the sea is featured as beachfront', async ({ page }) => {
+    const benidorm = page.locator('.tournament-card', { hasText: 'Benidorm Beach Open' });
+    await expect(benidorm).toHaveClass(/tournament-card--beachfront/);
+    await expect(benidorm.locator('.beachfront-pill')).toContainText('Beachfront · 120 m from the sea');
+
+    const others = page.locator('.tournament-card.tournament-card--beachfront');
+    await expect(others).toHaveCount(1);
+  });
+});

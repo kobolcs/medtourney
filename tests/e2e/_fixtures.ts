@@ -18,6 +18,8 @@ export interface TournamentFixture {
     description: string;
     lat?: number;
     lng?: number;
+    coast?: 'med' | 'atlantic';
+    seaM?: number;
 }
 
 /** ISO YYYY-MM-DD a given number of days from today (UTC). */

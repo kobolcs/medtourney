@@ -30,6 +30,7 @@ chess-results.com lists thousands of tournaments but only lets you filter by fed
 - Click anywhere on a card to open it on chess-results.com; hover or focus a card for single-tournament calendar export and a shareable deep link
 - A "Tournament of the Week" card highlights a qualifying Mediterranean event automatically, independent of your active filters
 - Filter-within-results, sort by date/name/location/country, CSV export of whatever's currently visible
+- "Seaside" means within about 10 km of the Mediterranean or of Spain's and Portugal's Atlantic coast (Natural Earth coastline), plus a list of well-known coastal towns; venues found to be within 500 m of the sea (OpenStreetMap coastline) get a 🏖 Beachfront badge
 - A Map view of the current results on OpenStreetMap - pins coloured for seaside and senior events, clustered when zoomed out, with "Show in list" from each pin. Places are geocoded once after each daily scrape (OpenStreetMap Nominatim + GeoNames) and cached, so the map needs no API keys and makes no geocoding calls from your browser
 
 ![Tournament cards, each accent color mapped to a category](docs/images/screenshot-results.png)

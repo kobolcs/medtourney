@@ -24,7 +24,9 @@ export const TournamentSchema = z.object({
     // Map coordinates added by geocode_tournaments.py (absent when a
     // location couldn't be placed)
     lat: z.number().min(-90).max(90).optional(),
-    lng: z.number().min(-180).max(180).optional()
+    lng: z.number().min(-180).max(180).optional(),
+    coast: z.enum(['med', 'atlantic']).optional(),
+    seaM: z.number().int().min(0).max(500).optional()
 });
 
 /**
