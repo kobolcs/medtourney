@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com https://plausible.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+    <!-- script-src hashes: the four small inline scripts @vitejs/plugin-legacy
+         injects (modern-browser detection + the old-browser loader). Their
+         bodies are constant across builds (the bundle name is in an
+         attribute); they change only on a plugin upgrade - then
+         site-basics.spec.ts ("no Content-Security-Policy violations") fails
+         and prints the new hash.
+         No frame-ancestors: browsers ignore it in a <meta> policy (it only
+         works as an HTTP header, which GitHub Pages can't set). -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://plausible.io 'sha256-ZxAi3a7m9Mzbc+Z1LGuCCK5Xee6reDkEPRas66H9KSo=' 'sha256-+5XkZFazzJo8n0iOP4ti/cLCMUudTf//Mzkb7xNPXIc=' 'sha256-MS6/3FCg4WjP9gwgaBGwLpRCY6fZBgwmhVCdrPrNf3E=' 'sha256-tQjf8gvb2ROOMapIxFvFAYBeUJ0v1HCbOcSmDNXGtDo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com https://plausible.io; base-uri 'self'; form-action 'self';">
 
     <!-- Primary Meta Tags -->
     <title>MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments</title>
@@ -71,6 +79,9 @@
     </script>
 </head>
 <body>
+    <!-- Must run before anything paints: applies the saved/device dark theme
+         (a separate file because the CSP allows no inline scripts) -->
+    <script src="%BASE_URL%theme-init.js"></script>
     <!-- Skip Navigation Link for Accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -90,7 +101,9 @@
                         <p class="tagline">Chess by the sea &middot; seniors welcome</p>
                     </div>
                 </div>
-                <p class="subtitle">European Chess Tournament Finder &mdash; Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
+                <!-- Visually hidden: the tagline and live count already say it; kept for
+                     screen readers (and it's the page's meta description) -->
+                <p class="subtitle sr-only">European Chess Tournament Finder &mdash; Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
                 <p id="headerLiveStatus" class="header-live" aria-live="polite">
                     <span class="live-dot" aria-hidden="true"></span>
                     <span id="headerTournamentCount">Loading tournament data&hellip;</span>
@@ -415,26 +428,24 @@
                     <div class="sort-controls">
                         <label for="sortBy">Sort</label>
                         <select id="sortBy" class="sort-select" aria-label="Sort tournaments by">
-                            <option value="date-asc">Date (earliest first)</option>
-                            <option value="date-desc">Date (latest first)</option>
-                            <option value="name">Name (A–Z)</option>
-                            <option value="location">Location (A–Z)</option>
-                            <option value="country">Country (A–Z)</option>
+                            <option value="date-asc">Earliest</option>
+                            <option value="date-desc">Latest</option>
+                            <option value="name">Name</option>
+                            <option value="location">Location</option>
+                            <option value="country">Country</option>
                         </select>
                     </div>
-                    <button id="exportBtn" class="export-button" aria-label="Export CSV of the current results">
-                        Export CSV
-                    </button>
-                    <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar">
-                        Export Shortlist
-                        <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
-                    </button>
-                </div>
-                <div class="shortlist-controls">
                     <label class="shortlist-toggle-label">
                         <input type="checkbox" id="showShortlistOnly" aria-label="Show shortlisted tournaments only">
-                        <span>★ Shortlist only</span>
+                        <span>★ Shortlist</span>
                     </label>
+                    <button id="exportBtn" class="export-button" aria-label="Export CSV of the current results" title="Export these results as CSV">
+                        <span aria-hidden="true">⤓</span> CSV
+                    </button>
+                    <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar" title="Add your shortlist to your calendar (.ics)">
+                        <span aria-hidden="true">📅</span> Shortlist
+                        <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
+                    </button>
                 </div>
             </div>
             <div id="mapView" class="map-view" hidden>
@@ -448,7 +459,8 @@
 
         <!-- Phones: opens the filters bottom sheet (FilterSheet.ts) -->
         <button type="button" id="openFiltersBtn" class="open-filters-btn" aria-controls="filtersSheet" aria-expanded="false" hidden>
-            <span aria-hidden="true">&#9776;</span> Filters<span class="open-filters-count"></span>
+            <span aria-hidden="true">&#9776;</span>
+            <span>Filters<span class="open-filters-count"></span><span class="open-filters-results"></span></span>
         </button>
         <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
 
@@ -499,7 +511,7 @@
 
                 <div class="help-section">
                     <h3>Featured card</h3>
-                    <p>When a qualifying seaside tournament starts within 30 days and lasts more than 5 days, it appears highlighted in amber above the results — independently of your active filters. Beachfront venues are preferred.</p>
+                    <p>When a seaside tournament you could plan a trip around starts within 30 days (an Open event of 5–16 days, not a club league, team or youth event), it appears highlighted in amber above the results — independently of your active filters. Beachfront venues are preferred.</p>
                 </div>
 
                 <div class="help-section">

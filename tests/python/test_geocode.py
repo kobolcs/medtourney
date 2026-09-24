@@ -164,7 +164,7 @@ class TestGeocodeFile:
             msg = "offline"
             raise urllib.error.URLError(msg)
 
-        stats = gt.geocode_file(data, cache, max_lookups=10, search=offline)
+        stats = gt.geocode_file(data, cache, max_lookups=10, search=offline, reverse=offline)
 
         out = json.loads(data.read_text(encoding="utf-8"))
         assert out[0]["lat"] == 47.07
@@ -293,3 +293,59 @@ class TestAirports:
         ba = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(ba)
         assert {"RU", "BY"} <= ba.EXCLUDED_COUNTRIES
+
+
+class TestSeasideFixes:
+    def test_country_code_segments_are_never_queried_alone(self) -> None:
+        # "Arco- Trentino (ITA)" once matched a place called Ita
+        assert "ITA" not in gt.candidate_queries("Arco- Trentino (ITA)")
+
+    def test_overrides_win_over_cache_and_lookups(self) -> None:
+        cache = {"Village Huelva, ESP": {"lat": 37.27, "lng": -6.94, "q": "huelva", "src": "geonames"},
+                 "Rua Camilo Castelo Branco, POR": {"lat": 39.8, "lng": -7.5, "q": "castelo branco"}}
+        overrides = {"Village Huelva, ESP": [37.9, -6.5], "Rua Camilo Castelo Branco, POR": None}
+        g = gt.Geocoder(cache, search=FakeNominatim(), sleep=lambda _s: None, now=NOW, overrides=overrides)
+        assert g.place("Village Huelva, ESP", 10) == (37.9, -6.5)
+        assert g.place("Rua Camilo Castelo Branco, POR", 10) is None
+
+    def test_overrides_file_is_valid(self) -> None:
+        data = json.loads((ROOT / "data" / "geocode_overrides.json").read_text(encoding="utf-8"))
+        for location, coords in data.items():
+            assert location.rpartition(",")[2].strip() in gt.FED_TO_ISO2
+            assert coords is None or (len(coords) == 2 and -90 <= coords[0] <= 90)
+
+
+class TestTown:
+    def make(self, cache=None, towns=None):
+        calls = []
+
+        def reverse(lat: float, lng: float) -> Optional[str]:
+            calls.append((lat, lng))
+            return (towns or {}).get((round(lat, 2), round(lng, 2)))
+
+        g = gt.Geocoder(cache if cache is not None else {}, search=FakeNominatim(), sleep=lambda _s: None,
+                        now=NOW, reverse=reverse)
+        return g, calls
+
+    def test_town_is_looked_up_once_per_coordinate(self) -> None:
+        g, calls = self.make(towns={(38.53, -0.16): "Benidorm"})
+        assert g.town(38.5315, -0.1635, 10) == "Benidorm"
+        assert g.town(38.5315, -0.1635, 10) == "Benidorm"
+        assert len(calls) == 1
+
+    def test_a_miss_is_cached_and_not_retried_soon(self) -> None:
+        g, calls = self.make()
+        assert g.town(40.0, 20.0, 10) is None
+        assert g.town(40.0, 20.0, 10) is None
+        assert len(calls) == 1
+
+    def test_set_town_on_a_tournament(self) -> None:
+        g, _ = self.make(towns={(38.53, -0.16): "Benidorm"})
+        t = {"lat": 38.5315, "lng": -0.1635}
+        gt.set_town(t, g, 10)
+        assert t["town"] == "Benidorm"
+
+    def test_town_names_lose_administrative_wording(self) -> None:
+        assert gt.clean_town("City of Zagreb") == "Zagreb"
+        assert gt.clean_town("Khatay Raion") == "Khatay"
+        assert gt.clean_town("Benidorm") == "Benidorm"

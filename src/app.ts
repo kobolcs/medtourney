@@ -406,13 +406,26 @@ class TournamentFinder {
     /**
      * Initialize theme (dark mode)
      */
+    /**
+     * Theme: the person's own choice if they made one (☾/☀ button), otherwise
+     * the device's light/dark setting - followed live until they choose.
+     * public/theme-init.js has already applied the same rule before first
+     * paint (the CSP allows no inline script), so this only syncs the button
+     * and listens for device changes.
+     */
     private initTheme(): void {
-        const savedTheme = this.cacheManager.loadFromCache<string>(this.cacheManager.CACHE_KEYS.THEME);
+        const saved = this.cacheManager.loadPreference<string>(this.cacheManager.CACHE_KEYS.THEME);
+        const deviceDark = window.matchMedia?.('(prefers-color-scheme: dark)');
+        const dark = saved === 'dark' || saved === 'light' ? saved === 'dark' : (deviceDark?.matches ?? false);
+        this.uiManager.setDarkMode(dark);
+        this.updateThemeButtonText();
 
-        if (savedTheme === 'dark') {
-            this.uiManager.toggleDarkMode();
+        deviceDark?.addEventListener('change', (e) => {
+            const chosen = this.cacheManager.loadPreference<string>(this.cacheManager.CACHE_KEYS.THEME);
+            if (chosen === 'dark' || chosen === 'light') return; // their choice wins
+            this.uiManager.setDarkMode(e.matches);
             this.updateThemeButtonText();
-        }
+        });
     }
 
     /**
@@ -423,7 +436,7 @@ class TournamentFinder {
 
         // Save theme preference
         const isDark = document.body.classList.contains('dark-theme');
-        this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.THEME, isDark ? 'dark' : 'light');
+        this.cacheManager.savePreference(this.cacheManager.CACHE_KEYS.THEME, isDark ? 'dark' : 'light');
 
         this.updateThemeButtonText();
     }
@@ -457,7 +470,7 @@ class TournamentFinder {
 
     private initCollapsibleFilters(): void {
         const filtersCard = document.querySelector('.filters-card');
-        const savedState = this.cacheManager.loadFromCache<string>(this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED);
+        const savedState = this.cacheManager.loadPreference<string>(this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED);
 
         if (savedState === 'collapsed' && filtersCard) {
             filtersCard.classList.add('collapsed');
@@ -483,7 +496,7 @@ class TournamentFinder {
                 filterTitle.setAttribute('aria-expanded', expanded);
 
                 // Save state
-                this.cacheManager.saveToCache(
+                this.cacheManager.savePreference(
                     this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED,
                     isCollapsed ? 'collapsed' : 'expanded'
                 );
@@ -511,7 +524,7 @@ class TournamentFinder {
             return;
         }
 
-        const preferences = this.cacheManager.loadFromCache<Partial<FilterState>>(
+        const preferences = this.cacheManager.loadPreference<Partial<FilterState>>(
             this.cacheManager.CACHE_KEYS.FILTER_PREFERENCES
         );
 
@@ -581,7 +594,7 @@ class TournamentFinder {
      */
     private saveFilterPreferences(): void {
         const filterState = this.getFilterState();
-        this.cacheManager.saveToCache(this.cacheManager.CACHE_KEYS.FILTER_PREFERENCES, filterState);
+        this.cacheManager.savePreference(this.cacheManager.CACHE_KEYS.FILTER_PREFERENCES, filterState);
     }
 
     /**
@@ -885,16 +898,34 @@ class TournamentFinder {
      * tip because the number tells you whether it's worth tapping at all.
      * Sorted biggest-win first and capped so the list stays scannable.
      */
-    private buildEmptyStateRelaxations(): { label: string; count: number; apply: () => void }[] {
+    private buildEmptyStateRelaxations(): { label: string; count: number; apply: () => void; lead?: boolean }[] {
         const base = this.getFilterState();
-        const countWith = (partial: Partial<FilterState>): number =>
-            this.filterService.filterTournaments(
-                this.allTournaments,
-                { ...base, ...partial },
-                this.mediterraneanLocations
-            ).length;
+        const filtered = (partial: Partial<FilterState> = {}): Tournament[] =>
+            this.filterService.filterTournaments(this.allTournaments, { ...base, ...partial }, this.mediterraneanLocations);
+        // Counts include the search box and "Shortlist only", exactly as the list would
+        const countWith = (partial: Partial<FilterState>): number => this.narrowForDisplay(filtered(partial)).length;
 
-        const relaxations: { label: string; count: number; apply: () => void }[] = [];
+        const relaxations: { label: string; count: number; apply: () => void; lead?: boolean }[] = [];
+
+        // When the search text or "Shortlist only" is what empties the list,
+        // undoing that is the obvious first fix
+        const search = this.currentQuickSearch.trim();
+        if (search) {
+            relaxations.push({
+                label: `Clear search "${search}"`,
+                count: this.narrowForDisplay(filtered(), '').length,
+                apply: () => this.clearQuickSearch(),
+                lead: true,
+            });
+        }
+        if (this.showShortlistOnly) {
+            relaxations.push({
+                label: 'Show all, not just the shortlist',
+                count: this.narrowForDisplay(filtered(), this.currentQuickSearch, false).length,
+                apply: () => this.setShortlistOnly(false),
+                lead: true,
+            });
+        }
 
         if (base.mediterraneanOnly) {
             relaxations.push({
@@ -989,8 +1020,20 @@ class TournamentFinder {
 
         return relaxations
             .filter(r => r.count > 0)
-            .sort((a, b) => b.count - a.count)
+            .sort((a, b) => Number(b.lead ?? false) - Number(a.lead ?? false) || b.count - a.count)
             .slice(0, 4);
+    }
+
+    private clearQuickSearch(): void {
+        this.currentQuickSearch = '';
+        const input = document.getElementById('quickSearch') as HTMLInputElement | null;
+        if (input) input.value = '';
+    }
+
+    private setShortlistOnly(on: boolean): void {
+        this.showShortlistOnly = on;
+        const toggle = document.getElementById('showShortlistOnly') as HTMLInputElement | null;
+        if (toggle) toggle.checked = on;
     }
 
     /**
@@ -1396,21 +1439,27 @@ class TournamentFinder {
      * Apply shortlist-only and quick-search display filters on top of filteredTournaments.
      * Always call this instead of uiManager.updateDisplayedTournaments directly.
      */
+    /**
+     * The results' own narrowing on top of the filters: "Shortlist only" and
+     * the "Filter results..." text. Shared with the empty state's counts so a
+     * suggested fix never promises results the list would then hide.
+     */
+    private narrowForDisplay(
+        list: Tournament[],
+        search = this.currentQuickSearch,
+        shortlistOnly = this.showShortlistOnly
+    ): Tournament[] {
+        let out = list;
+        if (shortlistOnly) out = out.filter(t => this.shortlist.has(t.url));
+        const q = search.trim().toLowerCase();
+        if (q) {
+            out = out.filter(t => t.name.toLowerCase().includes(q) || t.location.toLowerCase().includes(q));
+        }
+        return out;
+    }
+
     private applyDisplayFilters(): void {
-        let toDisplay = this.filteredTournaments;
-
-        if (this.showShortlistOnly) {
-            toDisplay = toDisplay.filter(t => this.shortlist.has(t.url));
-        }
-
-        if (this.currentQuickSearch.trim()) {
-            const q = this.currentQuickSearch.toLowerCase();
-            toDisplay = toDisplay.filter(t =>
-                t.name.toLowerCase().includes(q) ||
-                t.location.toLowerCase().includes(q)
-            );
-        }
-
+        const toDisplay = this.narrowForDisplay(this.filteredTournaments);
         this.displayedTournaments = toDisplay;
         this.uiManager.setShortlistedUrls(this.shortlist);
 
@@ -1424,6 +1473,7 @@ class TournamentFinder {
 
         this.uiManager.displayTournaments(toDisplay, this.currentSort);
         this.uiManager.updateShowResultsButton(toDisplay.length);
+        this.filterSheet?.setResultCount(toDisplay.length);
         if (this.currentView === 'map') {
             this.syncMapVisibility();
             this.mapView?.update(toDisplay);

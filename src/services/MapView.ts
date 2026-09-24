@@ -154,7 +154,7 @@ export class MapView {
         }).join('');
         return `
             <div class="map-popup">
-                <div class="map-popup-place">${formatLocation(place.tournaments[0]!.location)}</div>
+                <div class="map-popup-place">${formatLocation(place.tournaments[0]!.location, place.tournaments[0]!.town)}</div>
                 <ul>${items}</ul>
                 ${more > 0 ? `<p class="map-popup-more">+${more} more here - see the list</p>` : ''}
             </div>`;

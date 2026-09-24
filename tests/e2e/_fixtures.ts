@@ -21,6 +21,7 @@ export interface TournamentFixture {
     coast?: 'med' | 'atlantic';
     seaM?: number;
     airport?: { iata: string; name: string; km: number };
+    town?: string;
 }
 
 /** ISO YYYY-MM-DD a given number of days from today (UTC). */
@@ -51,6 +52,8 @@ export function defaultFixtures(): TournamentFixture[] {
             // Coordinates as geocode_tournaments.py would add them (map view)
             lat: isMed ? 41.3874 : 48.2082,
             lng: isMed ? 2.1686 : 16.3738,
+            // Seaside comes from the geocoder's coast flag once a place has coordinates
+            ...(isMed ? { coast: 'med' as const } : {}),
             date: isoInDays(n * 7),
             category: cat.join(', '),
             url: `https://chess-results.com/tnr${n}.aspx?lan=1`,

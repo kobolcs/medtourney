@@ -39,9 +39,9 @@ test.describe('Accessibility Tests', () => {
     const clearBtn = page.locator('#clearFiltersBtn');
     await expect(clearBtn).toHaveAttribute('aria-label', /clear all filters/i);
 
-    // Check theme toggle
-    const themeToggle = page.getByRole('button', { name: /toggle dark mode/i });
-    await expect(themeToggle).toHaveAttribute('aria-label', /dark mode/i);
+    // Check theme toggle - named for what it does next ("Switch to dark mode")
+    const themeToggle = page.locator('#themeToggle');
+    await expect(themeToggle).toHaveAttribute('aria-label', /switch to (dark|light) mode/i);
 
     // Check filter panel
     const filterPanel = page.locator('.filters-card');
@@ -150,7 +150,7 @@ test.describe('Accessibility Tests', () => {
       // Card should have proper structure
       await expect(firstCard.locator('.tournament-name')).toBeVisible();
       await expect(firstCard.locator('.tournament-location')).toBeVisible();
-      await expect(firstCard.locator('.tournament-date')).toBeVisible();
+      await expect(firstCard.locator('.tournament-date-badge')).toBeVisible();
 
       // Links should have proper labels
       const tournamentLink = firstCard.locator('.tournament-link');

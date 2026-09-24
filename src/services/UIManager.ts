@@ -277,12 +277,28 @@ export class UIManager {
         return `${dateFrom.toLocaleDateString('en-GB', opts)}–${to.toLocaleDateString('en-GB', opts)}`;
     }
 
-    /** Day number + 3-letter month for the card's left-hand date badge. */
-    private formatDateBadge(date: Date): { day: string; month: string } {
+    /**
+     * The card's left-hand date badge: day, 3-letter month, an end line for
+     * multi-day events ("→ 27", or "→ 6 Nov" across months) and the year
+     * when it isn't this year (list sorts other than date have no month
+     * headers to show it). It is the card's only visible date.
+     */
+    private formatDateBadge(date: Date, dateTo?: string): { day: string; month: string; end: string; year: string } {
+        const month3 = (d: Date): string =>
+            // en-GB renders September as "Sept" (4 chars) - slice to a consistent 3.
+            d.toLocaleDateString('en-GB', { month: 'short' }).slice(0, 3);
         const day = date.toLocaleDateString('en-GB', { day: 'numeric' });
-        // en-GB renders September as "Sept" (4 chars) - slice to a consistent 3.
-        const month = date.toLocaleDateString('en-GB', { month: 'short' }).slice(0, 3);
-        return { day, month };
+        const month = month3(date);
+
+        let end = '';
+        const to = dateTo ? new Date(dateTo) : null;
+        if (to && !isNaN(to.getTime()) && to.getTime() > date.getTime()) {
+            const toDay = to.toLocaleDateString('en-GB', { day: 'numeric' });
+            const sameMonth = to.getMonth() === date.getMonth() && to.getFullYear() === date.getFullYear();
+            end = sameMonth ? `→ ${toDay}` : `→ ${toDay} ${month3(to)}`;
+        }
+        const year = date.getFullYear() !== new Date().getFullYear() ? String(date.getFullYear()) : '';
+        return { day, month, end, year };
     }
 
     /**
@@ -345,33 +361,22 @@ export class UIManager {
         const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
 
         container.style.display = 'block';
+        // A slim one-line banner (it used to be the tallest thing on the page
+        // and pushed the first result off a phone screen): the name is the
+        // link, plus where and when, and a compact calendar button.
+        const beach = tournament.seaM !== undefined;
         container.innerHTML = `
             <div class="featured-card" role="region" aria-label="Tournament of the Week">
-                <div class="featured-label">Tournament of the Week</div>
+                <span class="featured-label">${beach ? '<span aria-hidden="true">🏖</span> ' : ''}Tournament of the Week</span>
                 <h3 class="featured-name">
-                    <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
-                       class="featured-name-link"
-                       aria-label="View details for ${escapeHTML(tournament.name)}">
-                        ${escapeHTML(tournament.name)}
-                    </a>
+                    <a href="${escapeHTML(tournament.url)}" target="_blank" rel="noopener noreferrer"
+                       class="featured-name-link">${escapeHTML(tournament.name)}</a>
                 </h3>
-                <div class="featured-location">${formatLocation(tournament.location)}</div>
-                <div class="featured-meta">
-                    <span class="featured-date">${dateStr}</span>
-                    <span class="featured-category">${escapeHTML(tournament.category)}</span>
-                </div>
-                <div class="tournament-actions">
-                    <a href="${tournament.url}" target="_blank" rel="noopener noreferrer"
-                       class="tournament-link"
-                       aria-label="View details for ${escapeHTML(tournament.name)}">
-                        View Tournament
-                    </a>
-                    <button class="calendar-export-btn"
-                            data-tournament-url="${escapeHTML(tournament.url)}"
-                            aria-label="Add ${escapeHTML(tournament.name)} to calendar">
-                        📅 Add to Calendar
-                    </button>
-                </div>
+                <span class="featured-where">${formatLocation(tournament.location, tournament.town)} · <span class="featured-date">${dateStr}</span></span>
+                <button type="button" class="calendar-export-btn featured-calendar-btn"
+                        data-tournament-url="${escapeHTML(tournament.url)}"
+                        aria-label="Add ${escapeHTML(tournament.name)} to calendar"
+                        title="Add to calendar"><span aria-hidden="true">📅</span></button>
             </div>
         `;
     }
@@ -390,7 +395,7 @@ export class UIManager {
         card.setAttribute('aria-label', tournament.name);
         card.dataset.tournamentUrl = tournament.url;
 
-        const { day, month } = this.formatDateBadge(tournament.date);
+        const { day, month, end, year } = this.formatDateBadge(tournament.date, tournament.dateTo);
         const dateStr = this.formatDateRange(tournament.date, tournament.dateTo);
 
         const isShortlisted = this.shortlistedUrls.has(tournament.url);
@@ -433,9 +438,12 @@ export class UIManager {
             : '';
 
         card.innerHTML = `
-            <div class="tournament-date-badge" aria-hidden="true">
-                <span class="tournament-date-badge-day">${day}</span>
-                <span class="tournament-date-badge-month">${month}</span>
+            <div class="tournament-date-badge" title="${escapeHTML(dateStr)}">
+                <span class="sr-only">${escapeHTML(dateStr)}</span>
+                <span class="tournament-date-badge-day" aria-hidden="true">${day}</span>
+                <span class="tournament-date-badge-month" aria-hidden="true">${month}</span>
+                ${end ? `<span class="tournament-date-badge-end" aria-hidden="true">${escapeHTML(end)}</span>` : ''}
+                ${year ? `<span class="tournament-date-badge-year" aria-hidden="true">${year}</span>` : ''}
             </div>
             <div class="tournament-body">
                 <div class="tournament-header">
@@ -449,7 +457,6 @@ export class UIManager {
                         </a>
                     </h3>
                     <div class="tournament-header-right">
-                        <span class="tournament-date">${dateStr}</span>
                         <button class="shortlist-btn${isShortlisted ? ' shortlisted' : ''}"
                                 data-tournament-url="${escapeHTML(tournament.url)}"
                                 data-tournament-name="${escapeHTML(tournament.name)}"
@@ -459,7 +466,7 @@ export class UIManager {
                         </button>
                     </div>
                 </div>
-                <div class="tournament-location"><span class="tournament-place">${formatLocation(tournament.location)}${this.airportHintHTML(tournament)}</span></div>
+                <div class="tournament-location"><span class="tournament-place"${tournament.town ? ` title="${escapeHTML(tournament.location.replace(/,\s*[A-Z]{3}$/, ''))}"` : ''}>${formatLocation(tournament.location, tournament.town)}${this.airportHintHTML(tournament)}</span></div>
                 <div class="tournament-meta">
                     ${beachfrontHTML}
                     ${timeControlClassHTML}

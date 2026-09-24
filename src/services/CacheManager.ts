@@ -95,6 +95,41 @@ export class CacheManager {
     }
 
     /**
+     * A person's choices (theme, filter settings, ...): stored as-is, never
+     * expired and never wiped by a version bump - unlike cached data, which
+     * saveToCache/loadFromCache drop after 24 hours or on a new version.
+     */
+    savePreference<T>(key: string, value: T): void {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+            this.logger.warn('Failed to save preference', {
+                key,
+                error: err instanceof Error ? err.message : 'Unknown error'
+            });
+        }
+    }
+
+    /**
+     * Read a preference saved by savePreference - or by the older
+     * saveToCache, whose {data, timestamp, version} wrapper is unwrapped
+     * (ignoring its expiry) so nobody loses their settings on upgrade.
+     */
+    loadPreference<T>(key: string): T | null {
+        try {
+            const item = localStorage.getItem(key);
+            if (item === null) return null;
+            const parsed: unknown = JSON.parse(item);
+            if (parsed && typeof parsed === 'object' && 'data' in parsed && 'timestamp' in parsed) {
+                return (parsed as CachedData<T>).data;
+            }
+            return parsed as T;
+        } catch {
+            return null;
+        }
+    }
+
+    /**
      * Clear specific cache entry
      */
     clearCache(key: string): void {

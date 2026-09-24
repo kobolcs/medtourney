@@ -90,3 +90,65 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 - [ ] Mobile Chrome: `exports-hardening.spec.ts:149` "calendar export on page 2
   downloads the correct tournament" failed once in a full run (2026-09-23),
   passed 3/3 on rerun.
+
+---
+
+# Recheck (24 Sep 2026, commit bc9f3d1)
+
+Source: the same [Design Review artifact](https://claude.ai/artifact/MbEyNbY4mX1c3ESiawJ9jM),
+republished as a recheck of merged `main`.
+
+## Fix first (wrong, not just unpolished)
+
+- [x] **R1. Seaside lets in inland towns.** Tivoli matches the town list via
+  "Tivoli (Rome)"; Corteconcepción was geocoded to Huelva city (province name
+  at the end of the address). Only trust the coast flag when the geocode hit
+  is a town or venue (not a province/region), and match the town list against
+  the first place name only, not text in brackets.
+  Done (`c65184f`: coordinates decide; town list only for unplaced, never via brackets; country-code segments skipped; `data/geocode_overrides.json` for Corteconcepción and a street named Castelo Branco).
+- [x] **R2. Tournament of the Week is a 7-week club championship.** Cap length
+  at 5–16 days, skip club/league names (circolo, club, klub, fase, liga,
+  league...), prefer Beachfront, then soonest start.
+  Done (`3e572f9`: Open, 5–16 days, no club/league/team/youth; now the Calvià Amateur Open. The team filter also caught plurals - 15 more team events hidden by default).
+- [x] **R3. Empty-state counts ignore the results search box.** Compute each
+  relaxation with the search text applied; when the search text empties the
+  list, lead with "Clear search '…' (N)".
+  Done (`c7147f1`: counts include search + shortlist; "Clear search" offered first).
+- [x] **R4. OS dark mode ignored.** Follow `prefers-color-scheme` unless the
+  user chose a theme; apply before first paint (no light flash).
+  Done (`de1bdd8`: device setting followed until the person chooses; `public/theme-init.js` before first paint; theme/filter preferences no longer expire after 24 h).
+
+## Polish
+
+- [x] **P1. Show the city, not the street** in location lines (store the
+  geocoded town; venue in the tooltip).
+  Done (town from Nominatim reverse geocoding (English, cached per coordinate, filled in by the daily run); venue text in the tooltip; country code now from the last comma part; Sofia hotel override).
+- [x] **P2. The date appears twice** (badge + range pill + month header): drop
+  the pill, put the end date under the badge.
+  Done (`825aa8d`: end date under the badge ("→ 27" / "→ 6 Nov"), year when not this year; pill removed).
+- [x] **P3. Tone down the card stripe**: only Seaside / Senior / Beachfront
+  cards keep it; drop the "→" before the location.
+  Done (`9c9a7c8`: hairline cards; stripe only for seaside / senior / beachfront; arrow removed).
+- [x] **P4. One toolbar row**: search, List/Map, Sort, ★ Shortlist, quiet
+  Export menu (CSV / .ics).
+  Done (`9f96248`: one row - quiet "⤓ CSV" / "📅 Shortlist" buttons, "★ Shortlist" toggle chip, short sort labels).
+- [x] **P5. Header: one line of copy** on desktop too (long sentence to meta
+  only); on phones ? and ☾ on the name's row.
+  Done (`fbb973c`: long sentence screen-reader-only; phone header 263 → 136px with ? and ☾ on the brand row).
+- [x] **P6. Slimmer Tournament of the Week** (it pushes the first result off a
+  phone screen).
+  Done (`4a15bed`: slim banner, 92px desktop / 114px phone).
+- [x] **P7. Tablets (768–1023px)** use the bottom sheet too.
+  Done (`44e051d`: sheet up to 1023px).
+- [x] **P8. Phone: the Filters bar covers the result count.**
+  Done (`44e051d`: "Filters (1) · 30 tournaments" on the bar).
+
+## Housekeeping
+
+- [x] **H1. CSP blocks Vite legacy's inline scripts** (old-browser fallback can
+  never load): allow them by hash or drop `@vitejs/plugin-legacy`.
+  Done: allowed by sha256 (bodies are constant across builds), an E2E test
+  fails on any CSP violation; also dropped `frame-ancestors`, which browsers
+  ignore in a `<meta>` policy.
+- [x] **H2. Mark the map as verified** in the artifact (rendered with real OSM
+  tiles on 24 Sep).

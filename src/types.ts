@@ -20,6 +20,8 @@ export interface Tournament {
     seaM?: number;
     /** Travel context: nearest airport with scheduled flights (geocode_tournaments.py, <= 150 km). */
     airport?: { iata: string; name: string; km: number };
+    /** Display town from reverse geocoding (the location text is often a street or venue). */
+    town?: string;
     classificationConfidence?: 'high' | 'medium' | 'low';
     classificationReasons?: string[];
     travelTags?: string[];

@@ -535,3 +535,47 @@ test.describe('Travel context', () => {
     await expect(page.locator('.tournament-card', { hasText: 'Somewhere Open' }).locator('.airport-hint')).toHaveCount(0);
   });
 });
+
+test.describe('Empty state and the results search box', () => {
+  test('when the search text empties the list, clearing it is the first fix - with a real count', async ({ page }) => {
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+
+    await page.fill('#quickSearch', 'zzzz');
+    const emptyState = page.locator('.empty-state');
+    await expect(emptyState).toBeVisible();
+
+    const buttons = page.locator('.empty-state-relaxation-btn');
+    await expect(buttons.first()).toContainText('Clear search "zzzz" (24)');
+    // No other suggestion may promise results the search box would still hide
+    await expect(buttons).toHaveCount(1);
+
+    await buttons.first().click();
+    await expect(page.locator('#quickSearch')).toHaveValue('');
+    await expect(page.locator('.tournament-card').first()).toBeVisible();
+    await expect(emptyState).toBeHidden();
+  });
+});
+
+test.describe('Town instead of street', () => {
+  test('a card shows the geocoded town, keeping the original location in the tooltip', async ({ page }) => {
+    await stubTournaments(page, [
+      { name: 'Athens Open', location: 'Fragkopoulou 29, GRE', lat: 37.98, lng: 23.73, town: 'Athens',
+        date: isoInDays(7), category: 'Open, Classical', url: 'https://chess-results.com/tnr61.aspx?lan=1', description: '' },
+      { name: 'Hall Open', location: 'Sports Hall, Main Street 5, ESP',
+        date: isoInDays(8), category: 'Open, Classical', url: 'https://chess-results.com/tnr62.aspx?lan=1', description: '' },
+    ]);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+
+    const athens = page.locator('.tournament-card', { hasText: 'Athens Open' }).locator('.tournament-place');
+    await expect(athens).toContainText('Athens · Greece');
+    await expect(athens).not.toContainText('Fragkopoulou');
+    await expect(athens).toHaveAttribute('title', 'Fragkopoulou 29');
+
+    // No town yet: the location text, and a country from the LAST part even with two commas
+    const hall = page.locator('.tournament-card', { hasText: 'Hall Open' }).locator('.tournament-place');
+    await expect(hall).toContainText('Sports Hall, Main Street 5 · Spain');
+  });
+});
