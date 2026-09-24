@@ -145,7 +145,10 @@ republished as a recheck of merged `main`.
 
 ## Housekeeping
 
-- [ ] **H1. CSP blocks Vite legacy's inline scripts** (old-browser fallback can
+- [x] **H1. CSP blocks Vite legacy's inline scripts** (old-browser fallback can
   never load): allow them by hash or drop `@vitejs/plugin-legacy`.
+  Done: allowed by sha256 (bodies are constant across builds), an E2E test
+  fails on any CSP violation; also dropped `frame-ancestors`, which browsers
+  ignore in a `<meta>` policy.
 - [ ] **H2. Mark the map as verified** in the artifact (rendered with real OSM
   tiles on 24 Sep).

@@ -54,6 +54,22 @@ test.describe('SEO metadata', () => {
   });
 });
 
+test.describe('Content-Security-Policy', () => {
+  test('no Content-Security-Policy violations on load', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Chromium reports blocked inline scripts reliably');
+    const violations: string[] = [];
+    page.on('console', msg => {
+      if (/Content Security Policy/i.test(msg.text())) violations.push(msg.text());
+    });
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+    // A plugin upgrade changes the inline scripts - the message includes the
+    // sha256 to put in index.html's script-src
+    expect(violations).toEqual([]);
+  });
+});
+
 test.describe('Static files', () => {
   for (const file of ['sitemap.xml', 'robots.txt']) {
     test(`${file} is served`, async ({ request }) => {

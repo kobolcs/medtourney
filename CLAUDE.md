@@ -885,7 +885,14 @@ npm run preview
    - Prefer local `tournaments_data.json` (updated daily)
 
 4. **CSP headers**
-   - Content Security Policy configured for GitHub Pages
+   - Content Security Policy configured for GitHub Pages (a `<meta>` tag in
+     `index.html` - Pages can't send headers, so `frame-ancestors` can't be
+     used there)
+   - No inline scripts: `script-src` allows only the four inline scripts
+     `@vitejs/plugin-legacy` injects, by sha256. A plugin upgrade changes
+     them; `site-basics.spec.ts` ("no Content-Security-Policy violations")
+     then fails and the console message names the new hash. Anything else
+     that must run before paint goes in a file (e.g. `public/theme-init.js`)
    - Be mindful when adding external resources
 
 ### Performance Considerations
