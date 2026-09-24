@@ -100,19 +100,23 @@ republished as a recheck of merged `main`.
 
 ## Fix first (wrong, not just unpolished)
 
-- [ ] **R1. Seaside lets in inland towns.** Tivoli matches the town list via
+- [x] **R1. Seaside lets in inland towns.** Tivoli matches the town list via
   "Tivoli (Rome)"; Corteconcepción was geocoded to Huelva city (province name
   at the end of the address). Only trust the coast flag when the geocode hit
   is a town or venue (not a province/region), and match the town list against
   the first place name only, not text in brackets.
-- [ ] **R2. Tournament of the Week is a 7-week club championship.** Cap length
+  Done (`c65184f`: coordinates decide; town list only for unplaced, never via brackets; country-code segments skipped; `data/geocode_overrides.json` for Corteconcepción and a street named Castelo Branco).
+- [x] **R2. Tournament of the Week is a 7-week club championship.** Cap length
   at 5–16 days, skip club/league names (circolo, club, klub, fase, liga,
   league...), prefer Beachfront, then soonest start.
-- [ ] **R3. Empty-state counts ignore the results search box.** Compute each
+  Done (`3e572f9`: Open, 5–16 days, no club/league/team/youth; now the Calvià Amateur Open. The team filter also caught plurals - 15 more team events hidden by default).
+- [x] **R3. Empty-state counts ignore the results search box.** Compute each
   relaxation with the search text applied; when the search text empties the
   list, lead with "Clear search '…' (N)".
-- [ ] **R4. OS dark mode ignored.** Follow `prefers-color-scheme` unless the
+  Done (`c7147f1`: counts include search + shortlist; "Clear search" offered first).
+- [x] **R4. OS dark mode ignored.** Follow `prefers-color-scheme` unless the
   user chose a theme; apply before first paint (no light flash).
+  Done (`de1bdd8`: device setting followed until the person chooses; `public/theme-init.js` before first paint; theme/filter preferences no longer expire after 24 h).
 
 ## Polish
 
