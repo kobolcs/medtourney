@@ -150,7 +150,7 @@ test.describe('Accessibility Tests', () => {
       // Card should have proper structure
       await expect(firstCard.locator('.tournament-name')).toBeVisible();
       await expect(firstCard.locator('.tournament-location')).toBeVisible();
-      await expect(firstCard.locator('.tournament-date')).toBeVisible();
+      await expect(firstCard.locator('.tournament-date-badge')).toBeVisible();
 
       // Links should have proper labels
       const tournamentLink = firstCard.locator('.tournament-link');
