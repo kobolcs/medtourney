@@ -1,7 +1,7 @@
 import { Logger } from '../utils/Logger';
 
 /**
- * Phones (<= 768px): the filters card becomes a bottom sheet, so results come
+ * Phones and tablets (<= 1023px): the filters card becomes a bottom sheet, so results come
  * first. One form, no duplication - the same .filters-card is restyled and
  * gets dialog semantics while in sheet mode; the Seaside/Senior mode switch
  * and the active-filter chips (the site's front door) are moved out of it
@@ -10,7 +10,8 @@ import { Logger } from '../utils/Logger';
  * exactly as they are (DOM order included).
  */
 
-export const SHEET_QUERY = '(max-width: 768px)';
+// Up to the desktop sidebar breakpoint (1024px): tablets get the sheet too
+export const SHEET_QUERY = '(max-width: 1023px)';
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
 
@@ -57,11 +58,34 @@ export class FilterSheet {
         return this.open;
     }
 
-    /** "Filters" / "Filters (3)" - N = active-filter chips (dates and time control included). */
+    private activeCount = 0;
+    private resultCount: number | null = null;
+
+    /** "Filters (3)" - N = active-filter chips (dates and time control included). */
     setCount(count: number): void {
-        const label = this.bar.querySelector('.open-filters-count');
-        if (label) label.textContent = count > 0 ? ` (${count})` : '';
-        this.bar.setAttribute('aria-label', count > 0 ? `Filters, ${count} active` : 'Filters');
+        this.activeCount = count;
+        this.renderBarLabel();
+    }
+
+    /**
+     * "· 30 tournaments" on the bar: on a phone the results heading with the
+     * count is often under the bar (or below a tall featured card), so the
+     * bar carries it too.
+     */
+    setResultCount(count: number): void {
+        this.resultCount = count;
+        this.renderBarLabel();
+    }
+
+    private renderBarLabel(): void {
+        const active = this.bar.querySelector('.open-filters-count');
+        if (active) active.textContent = this.activeCount > 0 ? ` (${this.activeCount})` : '';
+        const results = this.bar.querySelector('.open-filters-results');
+        const n = this.resultCount;
+        const resultsText = n === null ? '' : `${n.toLocaleString('en-GB')} tournament${n === 1 ? '' : 's'}`;
+        if (results) results.textContent = resultsText ? ` · ${resultsText}` : '';
+        const activeText = this.activeCount > 0 ? `, ${this.activeCount} active` : '';
+        this.bar.setAttribute('aria-label', `Filters${activeText}${resultsText ? `. Showing ${resultsText}` : ''}`);
     }
 
     show(): void {

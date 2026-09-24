@@ -2729,7 +2729,7 @@ body.dark-theme .map-cluster {
 }
 
 /* ─────────────────────────────────────────
-   PHONES: FILTERS IN A BOTTOM SHEET
+   PHONES + TABLETS: FILTERS IN A BOTTOM SHEET
    (src/services/FilterSheet.ts). Results come first; the filters card is
    the sheet, the mode switch + chips move above the results, and a
    "Filters (N)" bar takes the fixed bottom slot. Wider screens unchanged.
@@ -2754,7 +2754,13 @@ body.dark-theme .map-cluster {
   min-height: 44px;
 }
 
-@media (max-width: 768px) {
+/* Phones and tablets (<= 1023px - the desktop sidebar starts at 1024px) */
+@media (max-width: 1023px) {
+  /* Room for the fixed Filters bar at the bottom of the page */
+  body {
+    padding-bottom: var(--sp-16);
+  }
+
   .filters-card.filters-card--sheet {
     position: fixed;
     left: 0;
@@ -2851,6 +2857,11 @@ body.dark-theme .map-cluster {
     cursor: pointer;
   }
 
+  .open-filters-results {
+    font-weight: 500;
+    opacity: .85;
+  }
+
   body.dark-theme .open-filters-btn:not([hidden]) {
     color: var(--ink);
   }
@@ -2866,7 +2877,10 @@ body.dark-theme .map-cluster {
   body.sheet-open {
     overflow: hidden;
   }
+}
 
+/* Phones only: compact the results header so the first card is above the fold */
+@media (max-width: 768px) {
   /* Results first: the results controls in two rows instead of four stacked
      full-width rows, so the first card is on screen without scrolling -
      filter box on its own, then List/Map, Sort and Export side by side. */
@@ -2937,7 +2951,7 @@ body.dark-theme .map-cluster {
   }
 }
 
-@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
   .filters-card.filters-card--sheet,
   .filters-card.filters-card--sheet.is-open {
     transition: none;

@@ -1473,6 +1473,7 @@ class TournamentFinder {
 
         this.uiManager.displayTournaments(toDisplay, this.currentSort);
         this.uiManager.updateShowResultsButton(toDisplay.length);
+        this.filterSheet?.setResultCount(toDisplay.length);
         if (this.currentView === 'map') {
             this.syncMapVisibility();
             this.mapView?.update(toDisplay);

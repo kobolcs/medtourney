@@ -136,6 +136,8 @@ test.describe('Dark Mode and UI Features', () => {
     await page.locator('.mode-switch-btn[data-mode="seaside"]').click();
     await expect(page.locator('#mediterraneanOnly')).toBeChecked();
     await expect(page.locator('#openFiltersBtn')).toContainText('Filters (1)');
+    // The bar also carries the result count (the heading is often under it)
+    await expect(page.locator('#openFiltersBtn')).toContainText('· 12 tournaments');
   });
 
   test('phones: the sheet footer count updates live while filtering', async ({ page, isMobile }) => {
@@ -366,5 +368,23 @@ test.describe('Theme follows the device unless the person chose one', () => {
     });
     await page.goto('/');
     await expect(page.locator('body')).toHaveClass(/dark-theme/);
+  });
+});
+
+test.describe('Tablets use the filters sheet too', () => {
+  test('at 820px the filters open from the bar, and results come first', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Viewport set explicitly below');
+    await page.setViewportSize({ width: 820, height: 1180 });
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+
+    await expect(page.locator('#openFiltersBtn')).toBeVisible();
+    await expect(page.locator('#openFiltersBtn')).toContainText('Filters · 24 tournaments');
+    await expect(page.locator('.tournament-card').first()).toBeInViewport();
+
+    await page.locator('#openFiltersBtn').click();
+    await expect(page.locator('#filtersSheet')).toHaveAttribute('role', 'dialog');
+    await expect(page.locator('#startDate')).toBeVisible();
   });
 });
