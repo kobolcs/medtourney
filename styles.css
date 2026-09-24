@@ -1010,16 +1010,19 @@ body.dark-theme .error-message.success-type {
   letter-spacing: .04em;
 }
 
+/* One toolbar row under the title: search, List/Map, Sort, ★ Shortlist,
+   and the quiet export buttons */
 .results-controls {
+  flex: 1 1 100%;
   display: flex;
-  gap: var(--sp-3);
+  gap: var(--sp-2) var(--sp-3);
   align-items: center;
   flex-wrap: wrap;
 }
 
 .search-within {
-  flex: 1;
-  min-width: 180px;
+  flex: 1 1 120px;
+  min-width: 110px;
 }
 
 .quick-search-input {
@@ -1071,11 +1074,11 @@ body.dark-theme .error-message.success-type {
   border-color: var(--sea);
 }
 
-/* EXPORT BUTTONS */
+/* EXPORT BUTTONS - quiet secondary actions, not the page's loudest element */
 .export-button {
-  background: var(--success);
-  color: #fff;
-  border: none;
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
   padding: var(--sp-2) var(--sp-4);
   min-height: 38px;
   border-radius: var(--r-md);
@@ -1090,8 +1093,8 @@ body.dark-theme .error-message.success-type {
 }
 
 .export-button:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
+  border-color: var(--sea);
+  color: var(--sea);
 }
 
 .export-button:active {
@@ -1099,15 +1102,16 @@ body.dark-theme .error-message.success-type {
 }
 
 .export-shortlist-btn {
-  background: var(--amber);
+  border-color: color-mix(in srgb, var(--amber) 55%, transparent);
+  color: var(--amber);
 }
 
 .shortlist-count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,.9);
-  color: var(--amber);
+  background: var(--amber);
+  color: #fff;
   font-size: .65rem;
   font-weight: 800;
   min-width: 18px;
@@ -1117,18 +1121,16 @@ body.dark-theme .error-message.success-type {
   line-height: 1;
 }
 
-/* SHORTLIST FILTER */
-.shortlist-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  flex-wrap: wrap;
-}
-
+/* SHORTLIST FILTER - a toggle chip in the toolbar row */
 .shortlist-toggle-label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
+  min-height: 38px;
+  padding: 0 var(--sp-3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  white-space: nowrap;
   cursor: pointer;
   font-size: var(--text-sm);
   font-weight: 500;
@@ -1136,11 +1138,29 @@ body.dark-theme .error-message.success-type {
   user-select: none;
 }
 
+/* A toggle chip: the real checkbox stays for keyboard and screen readers
+   (visually hidden); the chip itself shows the on state */
+.shortlist-toggle-label {
+  position: relative;
+}
+
 .shortlist-toggle-label input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-  accent-color: var(--amber);
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+
+.shortlist-toggle-label:has(input:checked) {
+  background: var(--amber-light);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.shortlist-toggle-label:has(input:focus-visible) {
+  outline: 2px solid var(--sea);
+  outline-offset: 2px;
 }
 
 /* ─────────────────────────────────────────
@@ -2444,10 +2464,6 @@ footer a:hover {
     font-size: 1.1rem;
   }
 
-  .shortlist-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
 
   .pagination-btn {
     min-width: 44px;
@@ -2940,14 +2956,12 @@ body.dark-theme .map-cluster {
     min-height: 44px;
   }
 
-  .results-controls .export-button {
+  .results-controls .export-button,
+  .results-controls .shortlist-toggle-label {
     width: auto;
     min-height: 44px;
-    padding: 0 var(--sp-4);
   }
 
-  /* Let the header's controls flow together so Export CSV and "Shortlist
-     only" share a row */
   .results-header {
     flex-direction: row;
     flex-wrap: wrap;
@@ -2957,16 +2971,6 @@ body.dark-theme .map-cluster {
 
   .results-header .results-title-group {
     flex: 1 1 100%;
-  }
-
-  .results-header .results-controls {
-    display: contents;
-  }
-
-  .results-header .shortlist-controls {
-    width: auto;
-    flex: 1 1 auto;
-    justify-content: flex-end;
   }
 
 }

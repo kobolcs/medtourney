@@ -420,26 +420,24 @@
                     <div class="sort-controls">
                         <label for="sortBy">Sort</label>
                         <select id="sortBy" class="sort-select" aria-label="Sort tournaments by">
-                            <option value="date-asc">Date (earliest first)</option>
-                            <option value="date-desc">Date (latest first)</option>
-                            <option value="name">Name (A–Z)</option>
-                            <option value="location">Location (A–Z)</option>
-                            <option value="country">Country (A–Z)</option>
+                            <option value="date-asc">Earliest</option>
+                            <option value="date-desc">Latest</option>
+                            <option value="name">Name</option>
+                            <option value="location">Location</option>
+                            <option value="country">Country</option>
                         </select>
                     </div>
-                    <button id="exportBtn" class="export-button" aria-label="Export CSV of the current results">
-                        Export CSV
-                    </button>
-                    <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar">
-                        Export Shortlist
-                        <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
-                    </button>
-                </div>
-                <div class="shortlist-controls">
                     <label class="shortlist-toggle-label">
                         <input type="checkbox" id="showShortlistOnly" aria-label="Show shortlisted tournaments only">
-                        <span>★ Shortlist only</span>
+                        <span>★ Shortlist</span>
                     </label>
+                    <button id="exportBtn" class="export-button" aria-label="Export CSV of the current results" title="Export these results as CSV">
+                        <span aria-hidden="true">⤓</span> CSV
+                    </button>
+                    <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar" title="Add your shortlist to your calendar (.ics)">
+                        <span aria-hidden="true">📅</span> Shortlist
+                        <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
+                    </button>
                 </div>
             </div>
             <div id="mapView" class="map-view" hidden>
