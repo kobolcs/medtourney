@@ -112,7 +112,8 @@ medtourney/
 ├── geocode_tournaments.py        # Adds lat/lng after each scrape (Nominatim + GeoNames, cached)
 ├── geocode_cache.json            # Geocoding cache - committed, so daily runs only look up new places
 ├── data/southern_coast.json      # Med + Iberian Atlantic coastline points for the Seaside rule
-├── scripts/                      # build_southern_coast.py, og-image.html + render-og-image.mjs
+├── data/airports.json            # Airports with scheduled flights (card's nearest-airport hint)
+├── scripts/                      # build_southern_coast.py, build_airports.py, og-image.html + render-og-image.mjs
 │
 ├── vite.config.ts                # Vite build configuration
 ├── tsconfig.json                 # TypeScript configuration (strict mode)

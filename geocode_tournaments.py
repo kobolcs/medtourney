@@ -251,6 +251,53 @@ class Coast:
         return kind if km <= SEASIDE_KM else None
 
 
+# --- Nearest airport (travel context on the cards) ---------------------------
+#
+# Straight-line distance to the nearest airport with scheduled flights, from
+# data/airports.json (OurAirports, public domain; built by
+# scripts/build_airports.py). Offline, recomputed every run.
+
+AIRPORTS_FILE = Path(__file__).parent / "data" / "airports.json"
+AIRPORT_SEARCH_DEG = 3  # grid cells searched around a point (~300 km)
+# Prefer a large (international) airport over a nearer small one when it is
+# at most this much further: Hvar -> Split, not the seasonal Brac strip;
+# Reykjavik -> Keflavik, not the domestic airport
+LARGE_AIRPORT_DETOUR_KM = 40
+# Beyond this, "nearest airport" isn't useful travel context (e.g. Ukraine,
+# with no civilian flights since 2022) - no pill rather than a misleading one
+MAX_AIRPORT_KM = 150
+
+
+class Airports:
+    def __init__(self, rows: list[list[Any]]) -> None:
+        self.grid: dict[tuple[int, int], list[tuple[str, str, float, float, bool]]] = {}
+        for iata, name, lat, lng, large in rows:
+            cell = (math.floor(lat), math.floor(lng))
+            self.grid.setdefault(cell, []).append((iata, name, lat, lng, bool(large)))
+
+    @classmethod
+    def load(cls, path: Path = AIRPORTS_FILE) -> Airports:
+        return cls(json.loads(path.read_text(encoding="utf-8")))
+
+    def nearest(self, lat: float, lng: float) -> dict[str, Any] | None:
+        """{"iata", "name", "km"} of the airport to show (within ~300 km), or None."""
+        found: list[tuple[float, str, str, bool]] = []
+        row, col = math.floor(lat), math.floor(lng)
+        for dr in range(-AIRPORT_SEARCH_DEG, AIRPORT_SEARCH_DEG + 1):
+            for dc in range(-AIRPORT_SEARCH_DEG, AIRPORT_SEARCH_DEG + 1):
+                for iata, name, alat, alng, large in self.grid.get((row + dr, col + dc), ()):
+                    found.append((km_between((lat, lng), (alat, alng)), iata, name, large))
+        if not found:
+            return None
+        found.sort()
+        nearest = found[0]
+        hub = next((a for a in found if a[3]), None)
+        pick = hub if hub and hub[0] - nearest[0] <= LARGE_AIRPORT_DETOUR_KM else nearest
+        if pick[0] > MAX_AIRPORT_KM:
+            return None
+        return {"iata": pick[1], "name": pick[2], "km": max(1, round(pick[0]))}
+
+
 # Atlantic seaside is Spain's and Portugal's coast only (e.g. not Hendaye,
 # France, 2 km from the Spanish border).
 ATLANTIC_FEDS = {"ESP", "POR"}
@@ -556,13 +603,14 @@ def annotate_tournament(
     geonames: dict[str, dict[str, Place]] | None,
     coast: Coast | None,
     max_lookups: int,
+    airports: Airports | None = None,
 ) -> tuple[bool, bool, bool]:
-    """Set lat/lng, coast and seaM on one tournament.
+    """Set lat/lng, airport, coast and seaM on one tournament.
 
     Returns (placed, seaside, beachfront) for the run's summary.
     """
     location = t.get("location", "")
-    for key in ("lat", "lng", "coast", "seaM"):
+    for key in ("lat", "lng", "coast", "seaM", "airport"):
         t.pop(key, None)
 
     coords = geocoder.place(location, max_lookups)
@@ -571,6 +619,9 @@ def annotate_tournament(
     if coords is None:
         return False, False, False
     t["lat"], t["lng"] = coords
+    nearest = airports.nearest(*coords) if airports else None
+    if nearest:
+        t["airport"] = nearest
 
     kind = seaside_coast(t, coast) if coast else None
     if not kind:
@@ -610,6 +661,7 @@ def geocode_file(
     elif geonames_path:
         logger.warning("GeoNames file %s not found - fallback disabled", geonames_path)
 
+    airports = Airports.load() if AIRPORTS_FILE.exists() else None
     coast = Coast.load() if COAST_FILE.exists() else None
     if coast is None:
         logger.warning("%s not found - seaside flags not computed", COAST_FILE)
@@ -617,7 +669,7 @@ def geocode_file(
     geocoder = Geocoder(cache, search=search, on_progress=save_cache, geonames=geonames)
     counts = {"placed": 0, "seaside": 0, "beachfront": 0}
     for t in tournaments:
-        for key, hit in zip(counts, annotate_tournament(t, geocoder, geonames, coast, max_lookups)):
+        for key, hit in zip(counts, annotate_tournament(t, geocoder, geonames, coast, max_lookups, airports)):
             counts[key] += hit
 
     data_path.write_text(json.dumps(tournaments, indent=2, ensure_ascii=False), encoding="utf-8")

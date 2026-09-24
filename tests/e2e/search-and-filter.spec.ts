@@ -480,7 +480,8 @@ test.describe('Seaside rule and beachfront', () => {
   // is a venue 120 m from the sea (seaM) - the featured "beachfront" case.
   const fixtures: TournamentFixture[] = [
     { name: 'Matosinhos Open', location: 'Matosinhos, POR', lat: 41.18, lng: -8.69, coast: 'atlantic' },
-    { name: 'Benidorm Beach Open', location: 'Gran Hotel Bali (Benidorm), ESP', lat: 38.5315, lng: -0.1635, coast: 'med', seaM: 120 },
+    { name: 'Benidorm Beach Open', location: 'Gran Hotel Bali (Benidorm), ESP', lat: 38.5315, lng: -0.1635, coast: 'med', seaM: 120,
+      airport: { iata: 'ALC', name: 'Alicante-Elche Miguel Hernández Airport', km: 47 } },
     { name: 'Madrid Open', location: 'Madrid, ESP', lat: 40.42, lng: -3.70 },
   ].map((t, i) => ({
     ...t, date: isoInDays(7 * (i + 1)), category: 'Open, Classical',
@@ -511,5 +512,26 @@ test.describe('Seaside rule and beachfront', () => {
 
     const others = page.locator('.tournament-card.tournament-card--beachfront');
     await expect(others).toHaveCount(1);
+  });
+});
+
+test.describe('Travel context', () => {
+  test('a card shows the nearest airport, spelled out in its tooltip', async ({ page }) => {
+    await stubTournaments(page, [
+      { name: 'Benidorm Open', location: 'Benidorm, ESP', lat: 38.54, lng: -0.13, date: isoInDays(7),
+        category: 'Open, Classical', url: 'https://chess-results.com/tnr71.aspx?lan=1', description: '',
+        airport: { iata: 'ALC', name: 'Alicante-Elche Miguel Hernández Airport', km: 47 } },
+      { name: 'Somewhere Open', location: 'Somewhere, UKR', date: isoInDays(8),
+        category: 'Open, Classical', url: 'https://chess-results.com/tnr72.aspx?lan=1', description: '' },
+    ]);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+
+    const hint = page.locator('.tournament-card', { hasText: 'Benidorm Open' }).locator('.airport-hint');
+    await expect(hint).toContainText('✈ ALC · 47 km');
+    await expect(hint).toHaveAttribute('title', /Alicante-Elche Miguel Hernández Airport \(ALC\), about 47 km in a straight line/);
+
+    // No airport data -> no hint (e.g. Ukraine: no civilian flights)
+    await expect(page.locator('.tournament-card', { hasText: 'Somewhere Open' }).locator('.airport-hint')).toHaveCount(0);
   });
 });

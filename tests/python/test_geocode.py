@@ -264,3 +264,32 @@ class TestBeachfront:
         assert (t["lat"], t["lng"]) == (38.5315, -0.1635)
         assert t["coast"] == "med"
         assert t["seaM"] <= gt.BEACHFRONT_M
+
+
+class TestAirports:
+    ROWS: ClassVar[list] = [
+        ["BWK", "Brač Airport", 43.2857, 16.6797, 0],          # small, nearest to Hvar
+        ["SPU", "Split Saint Jerome Airport", 43.5389, 16.2980, 1],
+        ["RMU", "Region of Murcia International Airport", 37.8030, -1.1250, 0],
+        ["ALC", "Alicante-Elche Miguel Hernández Airport", 38.2822, -0.5582, 1],
+    ]
+
+    def test_prefers_a_large_airport_within_the_detour(self) -> None:
+        a = gt.Airports(self.ROWS)
+        assert a.nearest(43.17, 16.44)["iata"] == "SPU"  # Hvar: Split, not the Brač strip
+
+    def test_keeps_the_nearest_when_the_large_one_is_too_far(self) -> None:
+        a = gt.Airports(self.ROWS)
+        hit = a.nearest(38.04, -1.49)  # Mula: Murcia (41 km), not Alicante (~85 km)
+        assert hit["iata"] == "RMU"
+        assert 35 < hit["km"] < 50
+
+    def test_nothing_beyond_the_cap(self) -> None:
+        a = gt.Airports([["XXX", "Far Airport", 50.0, 30.0, 1]])
+        assert a.nearest(48.0, 33.0) is None  # ~300 km away
+
+    def test_build_skips_russia_and_belarus(self) -> None:
+        spec = importlib.util.spec_from_file_location("ba", ROOT / "scripts" / "build_airports.py")
+        ba = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(ba)
+        assert {"RU", "BY"} <= ba.EXCLUDED_COUNTRIES

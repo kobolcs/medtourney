@@ -319,6 +319,18 @@ export class UIManager {
     }
 
     /**
+     * Travel context on the location line: nearest airport with scheduled
+     * flights, as travellers search for it (IATA code), with the full name in
+     * the tooltip / for screen readers. Distance is straight-line, and says so.
+     */
+    private airportHintHTML(tournament: Tournament): string {
+        const a = tournament.airport;
+        if (!a) return '';
+        const full = `Nearest airport with scheduled flights: ${a.name} (${a.iata}), about ${a.km} km in a straight line`;
+        return `<span class="airport-hint" title="${escapeHTML(full)}"><span aria-hidden="true">✈ ${escapeHTML(a.iata)} · ${a.km} km</span><span class="sr-only">${escapeHTML(full)}</span></span>`;
+    }
+
+    /**
      * Render (or hide) the featured "Tournament of the Week" card.
      */
     renderFeaturedTournament(tournament: Tournament | null): void {
@@ -447,7 +459,7 @@ export class UIManager {
                         </button>
                     </div>
                 </div>
-                <div class="tournament-location">${formatLocation(tournament.location)}</div>
+                <div class="tournament-location"><span class="tournament-place">${formatLocation(tournament.location)}${this.airportHintHTML(tournament)}</span></div>
                 <div class="tournament-meta">
                     ${beachfrontHTML}
                     ${timeControlClassHTML}

@@ -60,8 +60,10 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
   clustered pins coloured seaside/senior, "Show in list" from popups. Coordinates
   from `geocode_tournaments.py` after each daily scrape (Nominatim, cached in
   `geocode_cache.json`, GeoNames offline fallback).
-- [ ] **11. Travel context on cards** – nearest airport / beach town vs city,
-  starting with a hand-made lookup for ~60 Mediterranean host towns.
+- [x] **11. Travel context on cards** – nearest airport with scheduled flights and
+  straight-line distance on the location line ("✈ ALC · 47 km", full name in the
+  tooltip), computed after each scrape from OurAirports. "Beach town vs city" left
+  out on purpose: the Seaside tag and Beachfront badge already say it.
 - [x] **12. Friendlier empty state** – one-tap relaxations with real result counts,
   including "extend the date range by a month" (`a42dab7`).
 

@@ -1429,6 +1429,17 @@ body.dark-theme .beachfront-pill {
   gap: var(--sp-2);
 }
 
+/* Travel context: nearest airport, subdued so it doesn't compete with the
+   place itself. Inline after the place name (inside .tournament-place), so
+   it simply wraps like text on narrow screens. */
+.airport-hint {
+  margin-left: var(--sp-2);
+  color: var(--label);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .flag-icon {
   flex-shrink: 0;
   border-radius: 2px;
