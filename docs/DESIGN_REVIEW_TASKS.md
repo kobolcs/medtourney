@@ -150,5 +150,5 @@ republished as a recheck of merged `main`.
   Done: allowed by sha256 (bodies are constant across builds), an E2E test
   fails on any CSP violation; also dropped `frame-ancestors`, which browsers
   ignore in a `<meta>` policy.
-- [ ] **H2. Mark the map as verified** in the artifact (rendered with real OSM
+- [x] **H2. Mark the map as verified** in the artifact (rendered with real OSM
   tiles on 24 Sep).
