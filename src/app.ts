@@ -885,16 +885,34 @@ class TournamentFinder {
      * tip because the number tells you whether it's worth tapping at all.
      * Sorted biggest-win first and capped so the list stays scannable.
      */
-    private buildEmptyStateRelaxations(): { label: string; count: number; apply: () => void }[] {
+    private buildEmptyStateRelaxations(): { label: string; count: number; apply: () => void; lead?: boolean }[] {
         const base = this.getFilterState();
-        const countWith = (partial: Partial<FilterState>): number =>
-            this.filterService.filterTournaments(
-                this.allTournaments,
-                { ...base, ...partial },
-                this.mediterraneanLocations
-            ).length;
+        const filtered = (partial: Partial<FilterState> = {}): Tournament[] =>
+            this.filterService.filterTournaments(this.allTournaments, { ...base, ...partial }, this.mediterraneanLocations);
+        // Counts include the search box and "Shortlist only", exactly as the list would
+        const countWith = (partial: Partial<FilterState>): number => this.narrowForDisplay(filtered(partial)).length;
 
-        const relaxations: { label: string; count: number; apply: () => void }[] = [];
+        const relaxations: { label: string; count: number; apply: () => void; lead?: boolean }[] = [];
+
+        // When the search text or "Shortlist only" is what empties the list,
+        // undoing that is the obvious first fix
+        const search = this.currentQuickSearch.trim();
+        if (search) {
+            relaxations.push({
+                label: `Clear search "${search}"`,
+                count: this.narrowForDisplay(filtered(), '').length,
+                apply: () => this.clearQuickSearch(),
+                lead: true,
+            });
+        }
+        if (this.showShortlistOnly) {
+            relaxations.push({
+                label: 'Show all, not just the shortlist',
+                count: this.narrowForDisplay(filtered(), this.currentQuickSearch, false).length,
+                apply: () => this.setShortlistOnly(false),
+                lead: true,
+            });
+        }
 
         if (base.mediterraneanOnly) {
             relaxations.push({
@@ -989,8 +1007,20 @@ class TournamentFinder {
 
         return relaxations
             .filter(r => r.count > 0)
-            .sort((a, b) => b.count - a.count)
+            .sort((a, b) => Number(b.lead ?? false) - Number(a.lead ?? false) || b.count - a.count)
             .slice(0, 4);
+    }
+
+    private clearQuickSearch(): void {
+        this.currentQuickSearch = '';
+        const input = document.getElementById('quickSearch') as HTMLInputElement | null;
+        if (input) input.value = '';
+    }
+
+    private setShortlistOnly(on: boolean): void {
+        this.showShortlistOnly = on;
+        const toggle = document.getElementById('showShortlistOnly') as HTMLInputElement | null;
+        if (toggle) toggle.checked = on;
     }
 
     /**
@@ -1396,21 +1426,27 @@ class TournamentFinder {
      * Apply shortlist-only and quick-search display filters on top of filteredTournaments.
      * Always call this instead of uiManager.updateDisplayedTournaments directly.
      */
+    /**
+     * The results' own narrowing on top of the filters: "Shortlist only" and
+     * the "Filter results..." text. Shared with the empty state's counts so a
+     * suggested fix never promises results the list would then hide.
+     */
+    private narrowForDisplay(
+        list: Tournament[],
+        search = this.currentQuickSearch,
+        shortlistOnly = this.showShortlistOnly
+    ): Tournament[] {
+        let out = list;
+        if (shortlistOnly) out = out.filter(t => this.shortlist.has(t.url));
+        const q = search.trim().toLowerCase();
+        if (q) {
+            out = out.filter(t => t.name.toLowerCase().includes(q) || t.location.toLowerCase().includes(q));
+        }
+        return out;
+    }
+
     private applyDisplayFilters(): void {
-        let toDisplay = this.filteredTournaments;
-
-        if (this.showShortlistOnly) {
-            toDisplay = toDisplay.filter(t => this.shortlist.has(t.url));
-        }
-
-        if (this.currentQuickSearch.trim()) {
-            const q = this.currentQuickSearch.toLowerCase();
-            toDisplay = toDisplay.filter(t =>
-                t.name.toLowerCase().includes(q) ||
-                t.location.toLowerCase().includes(q)
-            );
-        }
-
+        const toDisplay = this.narrowForDisplay(this.filteredTournaments);
         this.displayedTournaments = toDisplay;
         this.uiManager.setShortlistedUrls(this.shortlist);
 

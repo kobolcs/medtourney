@@ -535,3 +535,25 @@ test.describe('Travel context', () => {
     await expect(page.locator('.tournament-card', { hasText: 'Somewhere Open' }).locator('.airport-hint')).toHaveCount(0);
   });
 });
+
+test.describe('Empty state and the results search box', () => {
+  test('when the search text empties the list, clearing it is the first fix - with a real count', async ({ page }) => {
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+
+    await page.fill('#quickSearch', 'zzzz');
+    const emptyState = page.locator('.empty-state');
+    await expect(emptyState).toBeVisible();
+
+    const buttons = page.locator('.empty-state-relaxation-btn');
+    await expect(buttons.first()).toContainText('Clear search "zzzz" (24)');
+    // No other suggestion may promise results the search box would still hide
+    await expect(buttons).toHaveCount(1);
+
+    await buttons.first().click();
+    await expect(page.locator('#quickSearch')).toHaveValue('');
+    await expect(page.locator('.tournament-card').first()).toBeVisible();
+    await expect(emptyState).toBeHidden();
+  });
+});
