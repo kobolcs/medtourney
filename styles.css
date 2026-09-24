@@ -25,6 +25,11 @@
   --success:      #1E6840;
   --success-bg:   #DCF0E6;
 
+  /* Time-control class colors — one hue each, echoed in dark mode below */
+  --classical:    var(--sea);
+  --rapid:        #7A4E9C;
+  --blitz:        #A0461E;
+
   /* The header is always dark navy — does NOT change in dark mode */
   --header-bg:    #162032;
   --header-text:  #ffffff;
@@ -85,6 +90,10 @@ body.dark-theme {
   --label:        #8AAABF;
   --success:      #42C47A;
   --success-bg:   #0A2218;
+
+  --classical:    var(--sea);
+  --rapid:        #B48BD6;
+  --blitz:        #E58A66;
 
   /* Semantic — explicit to avoid var() chain failures */
   --bg:           #0B1827;
@@ -219,6 +228,19 @@ header::after {
   color: var(--header-text);
 }
 
+.header-brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.tagline {
+  font-size: var(--text-sm);
+  color: var(--header-sub);
+  font-weight: 500;
+}
+
 .header-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -257,19 +279,41 @@ header h1 {
   max-width: 500px;
 }
 
-.theme-toggle {
+.header-live {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--header-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+}
+
+.theme-toggle,
+.theme-toggle.icon-btn {
   background: rgba(255,255,255,.1);
   color: rgba(255,255,255,.88);
   border: 1px solid rgba(255,255,255,.2);
-  padding: var(--sp-2) var(--sp-4);
-  min-height: 38px;
-  border-radius: var(--r-md);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   cursor: pointer;
-  font-size: var(--text-sm);
+  font-size: 1.2rem;
   font-family: inherit;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background .15s, border-color .15s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .theme-toggle:hover {
@@ -321,7 +365,7 @@ header h1 {
 .filters-card.collapsed .date-range,
 .filters-card.collapsed .country-filter-section,
 .filters-card.collapsed .date-presets,
-.filters-card.collapsed .search-button {
+.filters-card.collapsed .show-results-btn {
   display: none;
 }
 
@@ -456,20 +500,106 @@ header h1 {
   margin-bottom: var(--sp-2);
 }
 
+/* Seaside/Senior mode switch — the front door onto the site's two USPs */
+.mode-switch {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: var(--sp-4);
+}
+
+.mode-switch-btn {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font: 600 var(--text-sm)/1.15 'Inter', sans-serif;
+  padding: var(--sp-2) var(--sp-1);
+  border: none;
+  border-radius: calc(var(--r-md) - 3px);
+  background: transparent;
+  color: var(--label);
+  cursor: pointer;
+  /* Four equal-width segments plus these labels don't fit on one line below
+     ~500px (narrow phones, and the 340px desktop sidebar) - wrap instead of
+     overflowing, with a min-height so the row stays visually even whether a
+     given button wraps to two lines or not. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-height: 2.7em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+}
+
+.mode-switch-btn:hover {
+  color: var(--text);
+}
+
+.mode-switch-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.mode-switch-btn.is-active {
+  background: var(--sea);
+  color: #fff;
+}
+
+body.dark-theme .mode-switch-btn.is-active {
+  /* --sea is a lighter blue in dark mode - needs dark text, not white */
+  color: var(--ink);
+}
+
+/* Active-filter chips — shows why the list is short, each removable in one tap */
+.active-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.active-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  background: var(--sea-light);
+  color: var(--sea);
+  border: none;
+  padding: 4px var(--sp-2) 4px var(--sp-3);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.active-filter-chip span[aria-hidden] {
+  font-size: 1rem;
+  line-height: 1;
+  opacity: .7;
+}
+
+.active-filter-chip:hover span[aria-hidden] {
+  opacity: 1;
+}
+
+.active-filter-clear-all {
+  background: none;
+  border: none;
+  color: var(--label);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px var(--sp-1);
+}
+
 .filter-grid-compact {
   margin-bottom: var(--sp-3);
-}
-
-.filter-group-featured {
-  margin: var(--sp-4) 0 var(--sp-2);
-  padding: var(--sp-1) var(--sp-3);
-  border: 1.5px solid var(--sea);
-  border-radius: var(--r-md);
-  background: var(--sea-light);
-}
-
-.filter-group-featured .checkbox-label {
-  font-weight: 700;
 }
 
 details#advancedFilters {
@@ -657,6 +787,23 @@ details#advancedFilters[open] > .advanced-summary::before {
   background: var(--sea-light);
 }
 
+.country-search-input {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-family: inherit;
+}
+
+.country-search-input:focus-visible {
+  outline: 2px solid var(--sea);
+  outline-offset: 1px;
+}
+
 .no-countries-message {
   color: var(--label);
   font-size: var(--text-sm);
@@ -675,13 +822,38 @@ details#advancedFilters[open] > .advanced-summary::before {
   scrollbar-color: var(--border) transparent;
 }
 
+/* Region grouping - the country list has always been alphabetical across
+   all 55 codes; grouping by how chess travellers actually think about
+   Europe makes the Mediterranean set (this site's own niche) fast to find
+   without hunting through Central/Nordic countries first. */
+.country-group-label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  cursor: pointer;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--label);
+  padding: var(--sp-2) var(--sp-1) var(--sp-1);
+}
+
+.country-group-label:first-child {
+  padding-top: var(--sp-1);
+}
+
 .country-checkbox-list .filter-grid {
   margin-bottom: 0;
   gap: 0;
 }
 
-/* SEARCH BUTTON */
-.search-button {
+/* SHOW-RESULTS BUTTON
+   Filtering is live, so there is no Search button. Below 1024px the filters
+   sit above the results, and this jumps down to them with the live count;
+   on the desktop sidebar layout the results are already beside the filters. */
+.show-results-btn {
+  display: none;
   width: 100%;
   padding: var(--sp-4) var(--sp-8);
   min-height: 52px;
@@ -698,21 +870,33 @@ details#advancedFilters[open] > .advanced-summary::before {
   letter-spacing: .01em;
 }
 
-.search-button:hover {
+.show-results-btn:hover {
   background: var(--sea-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.search-button:active {
+.show-results-btn:active {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
 
-.search-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-  transform: none;
+@media (max-width: 1023px) {
+  .show-results-btn {
+    display: block;
+  }
+}
+
+.error-retry-btn {
+  margin-left: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid currentColor;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* ─────────────────────────────────────────
@@ -968,6 +1152,34 @@ body.dark-theme .error-message.success-type {
   gap: var(--sp-4);
 }
 
+/* Month divider — only inserted when the list is sorted by date */
+.month-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+.month-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.month-divider-count {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 500;
+}
+
 /* ── Featured "Tournament of the Week" card ─────────────────────────── */
 #featuredTournament {
   margin-bottom: var(--sp-6);
@@ -1082,6 +1294,31 @@ body.dark-theme .error-message.success-type {
   border-left-color: var(--amber);
 }
 
+/* Featured seaside: venue within 500 m of the sea (seaM from the geocoder) */
+.tournament-card--beachfront {
+  border-left-width: 6px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--sea) 7%, transparent), transparent 45%),
+    var(--surface);
+}
+
+.beachfront-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px var(--sp-3);
+  border-radius: 20px;
+  background: var(--sea);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+body.dark-theme .beachfront-pill {
+  color: var(--ink);
+}
+
 .tournament-card--mediterranean .tournament-date-badge {
   background: var(--sea-light);
   color: var(--sea);
@@ -1192,6 +1429,17 @@ body.dark-theme .error-message.success-type {
   gap: var(--sp-2);
 }
 
+/* Travel context: nearest airport, subdued so it doesn't compete with the
+   place itself. Inline after the place name (inside .tournament-place), so
+   it simply wraps like text on narrow screens. */
+.airport-hint {
+  margin-left: var(--sp-2);
+  color: var(--label);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .flag-icon {
   flex-shrink: 0;
   border-radius: 2px;
@@ -1213,18 +1461,6 @@ body.dark-theme .error-message.success-type {
   margin-bottom: var(--sp-3);
 }
 
-.tournament-category {
-  display: inline-flex;
-  align-items: center;
-  background: var(--sea-light);
-  color: var(--sea);
-  padding: 3px var(--sp-3);
-  border-radius: 20px;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: .02em;
-}
-
 .time-control-badge {
   display: inline-flex;
   align-items: center;
@@ -1239,9 +1475,40 @@ body.dark-theme .error-message.success-type {
   letter-spacing: .01em;
 }
 
+/* Time-control class pill — the one chip that always carries color, so
+   Classical/Rapid/Blitz reads at a glance across the whole results list. */
+.time-control-class {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px var(--sp-3);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.time-control-class--classical { background: color-mix(in srgb, var(--classical) 14%, transparent); color: var(--classical); }
+.time-control-class--rapid     { background: color-mix(in srgb, var(--rapid) 14%, transparent);     color: var(--rapid); }
+.time-control-class--blitz     { background: color-mix(in srgb, var(--blitz) 14%, transparent);     color: var(--blitz); }
+
+/* Remaining category tokens (Open, U18, Youth…) once time control has its
+   own colored pill above — plain and quiet so the color pill still leads. */
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-2);
+  color: var(--label);
+  border: 1px solid var(--border);
+  padding: 3px var(--sp-3);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
 .duration-pill {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
   background: var(--amber-light);
   color: var(--amber);
   padding: 3px var(--sp-3);
@@ -1638,6 +1905,31 @@ body.dark-theme .confidence-medium {
   content: "→ ";
   color: var(--sea);
   font-weight: 700;
+}
+
+.empty-state-relaxation-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--sea);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.empty-state-relaxation-btn:hover {
+  color: var(--sea-hover);
+}
+
+.empty-state-relaxation-count {
+  color: var(--label);
+  font-weight: 600;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
 }
 
 .empty-state-actions {
@@ -2047,7 +2339,7 @@ footer a:hover {
     grid-template-columns: 1fr 1fr;
   }
 
-  /* Sticky search button */
+  /* Sticky show-results button */
   body {
     padding-bottom: var(--sp-16);
   }
@@ -2056,7 +2348,7 @@ footer a:hover {
     margin-bottom: 80px;
   }
 
-  .search-button {
+  .show-results-btn {
     position: fixed;
     /* Chrome for Android's layout viewport (window.innerHeight) is taller
        than the actually-visible visual viewport by the toolbar's height, so
@@ -2075,7 +2367,7 @@ footer a:hover {
     box-shadow: 0 -4px 20px rgba(22,32,50,.18);
   }
 
-  .search-button:hover {
+  .show-results-btn:hover {
     transform: none;
   }
 
@@ -2167,7 +2459,7 @@ footer a:hover {
     margin-bottom: var(--sp-6);
   }
 
-  .search-button {
+  .show-results-btn {
     position: static;
     border-radius: var(--r-md);
     box-shadow: var(--shadow-sm);
@@ -2176,7 +2468,7 @@ footer a:hover {
     padding: var(--sp-4) var(--sp-8);
   }
 
-  .search-button:hover {
+  .show-results-btn:hover {
     transform: translateY(-1px);
   }
 }
@@ -2212,6 +2504,34 @@ footer a:hover {
   }
 }
 
+/* Desktop — sticky filters sidebar beside results, so results are visible
+   without scrolling past the whole filter panel. Pure layout: same markup,
+   same #main-content children, just arranged as two grid columns instead of
+   stacked. #staleness-banner spans both columns as a full-width top banner. */
+@media (min-width: 1024px) {
+  main {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    align-items: start;
+    gap: var(--sp-6);
+  }
+
+  #staleness-banner {
+    grid-column: 1 / -1;
+  }
+
+  .filters-card {
+    position: sticky;
+    top: var(--sp-6);
+    max-height: calc(100vh - var(--sp-10));
+    overflow-y: auto;
+  }
+
+  .results-column {
+    min-width: 0;
+  }
+}
+
 /* Wide desktop — 2-column card layout */
 @media (min-width: 1400px) {
   .container,
@@ -2225,7 +2545,8 @@ footer a:hover {
     gap: var(--sp-4);
   }
 
-  .pagination-container {
+  .pagination-container,
+  .month-divider {
     grid-column: 1 / -1;
   }
 }
@@ -2251,5 +2572,374 @@ footer a:hover {
   *, *::before, *::after {
     animation-duration: .01ms !important;
     transition-duration: .01ms !important;
+  }
+}
+
+/* ─────────────────────────────────────────
+   LIST / MAP VIEW
+   The map (src/services/MapView.ts) shows every tournament in the current
+   results; Leaflet and its CSS load on first use. Pins and clusters use the
+   site's own tokens, so they follow light/dark automatically.
+────────────────────────────────────────── */
+.view-toggle {
+  display: inline-flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 3px;
+  gap: 3px;
+}
+
+.view-toggle-btn {
+  font: 600 var(--text-sm)/1 'Inter', sans-serif;
+  min-height: 36px;
+  padding: 0 var(--sp-4);
+  border: none;
+  border-radius: calc(var(--r-md) - 3px);
+  background: transparent;
+  color: var(--label);
+  cursor: pointer;
+}
+
+.view-toggle-btn:hover {
+  color: var(--text);
+}
+
+.view-toggle-btn.is-active {
+  background: var(--sea);
+  color: #fff;
+}
+
+.map-view {
+  margin-top: var(--sp-4);
+}
+
+/* The list/map swap toggles `hidden`; .tournament-list sets its own display,
+   which would otherwise win over the global [hidden] rule. */
+.tournament-list[hidden],
+.map-view[hidden] {
+  display: none;
+}
+
+.map-canvas {
+  height: min(70vh, 560px);
+  min-height: 320px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface-2);
+  z-index: 0; /* keep Leaflet's panes under the sticky mobile button */
+}
+
+.map-note {
+  margin-top: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--label);
+}
+
+/* (.leaflet-marker-icon in the selectors below: leaflet.css loads later and
+   sets display:block on it, which would un-centre the pin/cluster counts.) */
+
+/* Raster OSM tiles have no dark style - dim and invert them in dark mode. */
+body.dark-theme .map-canvas .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.9);
+}
+
+.map-pin.leaflet-marker-icon {
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+  background: var(--label);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font: 700 12px/1 'Inter', sans-serif;
+}
+
+.map-pin--sea { background: var(--sea); }
+.map-pin--senior { background: var(--amber); }
+
+.map-cluster.leaflet-marker-icon {
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sea) 85%, transparent);
+  border: 3px solid color-mix(in srgb, var(--sea) 35%, transparent);
+  background-clip: padding-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font: 700 13px/1 'Inter', sans-serif;
+}
+
+.map-popup {
+  font: var(--text-sm)/1.4 'Inter', sans-serif;
+}
+
+.map-popup-place {
+  font-weight: 600;
+  margin-bottom: var(--sp-2);
+}
+
+.map-popup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.map-popup li {
+  display: grid;
+  gap: 2px;
+}
+
+.map-popup-date {
+  color: #5C6A78;
+  font-size: var(--text-xs);
+}
+
+.map-show-in-list {
+  justify-self: start;
+  padding: 2px var(--sp-2);
+  border: 1px solid currentColor;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: #1A5E8A;
+  font: 600 var(--text-xs) 'Inter', sans-serif;
+  cursor: pointer;
+}
+
+.map-popup-more {
+  margin: var(--sp-2) 0 0;
+  color: #5C6A78;
+  font-size: var(--text-xs);
+}
+
+/* Beachfront places: a sand-coloured ring around the pin */
+.map-pin.map-pin--beach {
+  box-shadow: 0 0 0 3px #E8C77A, 0 1px 4px rgba(0, 0, 0, .35);
+}
+
+/* --sea is a light blue in dark mode - dark text on it, as on the mode switch */
+body.dark-theme .view-toggle-btn.is-active,
+body.dark-theme .map-pin--sea,
+body.dark-theme .map-cluster {
+  color: var(--ink);
+}
+
+/* ─────────────────────────────────────────
+   PHONES: FILTERS IN A BOTTOM SHEET
+   (src/services/FilterSheet.ts). Results come first; the filters card is
+   the sheet, the mode switch + chips move above the results, and a
+   "Filters (N)" bar takes the fixed bottom slot. Wider screens unchanged.
+────────────────────────────────────────── */
+.sheet-close,
+.open-filters-btn,
+.sheet-backdrop {
+  display: none;
+}
+
+.mobile-quick-filters {
+  margin-bottom: var(--sp-4);
+}
+
+.mobile-quick-filters .mode-switch {
+  margin-bottom: var(--sp-3);
+}
+
+/* Full page width on phones puts the labels on one line - keep the
+   segments a comfortable touch target anyway */
+.mobile-quick-filters .mode-switch-btn {
+  min-height: 44px;
+}
+
+@media (max-width: 768px) {
+  .filters-card.filters-card--sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--viewport-toolbar-gap, 0px);
+    z-index: 1100;
+    margin: 0;
+    max-height: 85vh;
+    max-height: 85dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 16px 16px 0 0;
+    padding-top: var(--sp-6);
+    padding-bottom: 0;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, .25);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform .25s ease, visibility 0s linear .25s;
+  }
+
+  .filters-card.filters-card--sheet.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform .25s ease;
+  }
+
+  /* grab handle */
+  .filters-card--sheet::before {
+    content: "";
+    position: absolute;
+    top: var(--sp-2);
+    left: 50%;
+    width: 40px;
+    height: 4px;
+    margin-left: -20px;
+    border-radius: 2px;
+    background: var(--border);
+  }
+
+  .filters-card--sheet .sheet-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: var(--sp-2);
+    border: none;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .filters-card--sheet h2 {
+    cursor: default !important;
+  }
+
+  /* Date inputs have a wide intrinsic minimum - let the two-up grid shrink them */
+  .filters-card--sheet .date-range input,
+  .filters-card--sheet .date-input {
+    min-width: 0;
+  }
+
+  /* "Show N tournaments" is the sheet's done button, stuck to its bottom */
+  .filters-card--sheet .show-results-btn {
+    position: sticky;
+    bottom: 0;
+    left: auto;
+    right: auto;
+    width: calc(100% + 2 * var(--sp-5));
+    margin: var(--sp-4) calc(-1 * var(--sp-5)) 0;
+    z-index: 1;
+  }
+
+  .open-filters-btn:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--viewport-toolbar-gap, 0px);
+    z-index: 1000;
+    min-height: 60px;
+    padding: var(--sp-5) var(--sp-8);
+    border: none;
+    background: var(--sea);
+    color: #fff;
+    font: 600 var(--text-lg) 'Inter', sans-serif;
+    box-shadow: 0 -4px 20px rgba(22, 32, 50, .18);
+    cursor: pointer;
+  }
+
+  body.dark-theme .open-filters-btn:not([hidden]) {
+    color: var(--ink);
+  }
+
+  .sheet-backdrop:not([hidden]) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(10, 16, 28, .45);
+  }
+
+  body.sheet-open {
+    overflow: hidden;
+  }
+
+  /* Results first: the results controls in two rows instead of four stacked
+     full-width rows, so the first card is on screen without scrolling -
+     filter box on its own, then List/Map, Sort and Export side by side. */
+  .results-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .results-controls .search-within {
+    flex: 1 1 100%;
+  }
+
+  .results-controls .sort-controls {
+    width: auto;
+    flex: 1 1 auto;
+    gap: var(--sp-2);
+  }
+
+  .results-controls .sort-controls label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .results-controls .sort-select {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .results-controls .export-button {
+    width: auto;
+    min-height: 44px;
+    padding: 0 var(--sp-4);
+  }
+
+  /* Let the header's controls flow together so Export CSV and "Shortlist
+     only" share a row */
+  .results-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .results-header .results-title-group {
+    flex: 1 1 100%;
+  }
+
+  .results-header .results-controls {
+    display: contents;
+  }
+
+  .results-header .shortlist-controls {
+    width: auto;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+
+  /* The tagline + live count line already say what the site is; the long
+     description stays in the page's meta description */
+  .subtitle {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .filters-card.filters-card--sheet,
+  .filters-card.filters-card--sheet.is-open {
+    transition: none;
   }
 }

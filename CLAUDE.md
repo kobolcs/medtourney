@@ -1,7 +1,7 @@
 # CLAUDE.md - AI Assistant Guide for MedTourney
 
-**Last Updated:** 2026-09-23
-**Version:** 3.0.0
+**Last Updated:** 2026-09-24
+**Version:** 3.1.0
 **Purpose:** Comprehensive guide for AI assistants (like Claude) working on the MedTourney codebase
 
 ---
@@ -34,9 +34,9 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 
 ### Key Statistics
 
-- **Version:** 3.0.0
+- **Version:** 3.1.0
 - **Total Tests:** 290+ (100 service unit, 8 service integration, 68 Playwright E2E per browser, 87 Python backend, 27 Python integration) — all currently passing; see Testing Strategy
-- **Bundle Size:** ~30KB gzipped JS + ~6.5KB gzipped CSS (grown from the original 25KB as the results-first redesign, mobile fixes, and flag-icon system landed — still deliberately small; see Performance Considerations)
+- **Bundle Size:** ~36KB gzipped JS + ~7.6KB gzipped CSS for the main bundle (grown from the original 25KB as the results-first redesign, mobile fixes, flag icons, live filtering and the map toggle landed — still deliberately small; see Performance Considerations). The map view (MapView + Leaflet + markercluster, ~54KB gzipped) is lazy-loaded on first use and not part of it
 - **Architecture:** Modular service-oriented (5 specialized services + focused utils)
 - **Technologies:** TypeScript (strict mode), Vite, Playwright, Robot Framework, Python
 
@@ -55,7 +55,7 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 ```
 medtourney/
 ├── src/                          # TypeScript source code
-│   ├── app.ts                    # Main application coordinator (1,412 lines)
+│   ├── app.ts                    # Main application coordinator (1,643 lines)
 │   ├── main.ts                   # Entry point
 │   ├── types.ts                  # Shared TypeScript interfaces
 │   ├── services/                 # Service modules (modular architecture)
@@ -63,12 +63,18 @@ medtourney/
 │   │   ├── FilterService.ts      # Multi-criteria filtering (395 lines)
 │   │   ├── DataService.ts        # 3-tier fetch strategy (319 lines)
 │   │   ├── ExportService.ts      # CSV & iCalendar exports (330 lines)
-│   │   └── UIManager.ts          # DOM manipulation & rendering (725 lines)
+│   │   ├── UIManager.ts          # DOM manipulation & rendering (807 lines)
+│   │   ├── MapView.ts            # List/Map toggle's map (Leaflet + OSM tiles, lazy-loaded)
+│   │   └── FilterSheet.ts        # Phones (<=768px): filters card as a bottom sheet
 │   └── utils/
 │       ├── Logger.ts             # Logging utility
 │       ├── validators.ts         # Zod runtime schemas for fetched data
 │       ├── countries.ts          # FED code -> name/flag-icon HTML for location display
-│       └── html.ts               # Shared escapeHTML() - see Security Considerations
+│       ├── html.ts               # Shared escapeHTML() - see Security Considerations
+│       ├── filterUrl.ts          # FilterState <-> URLSearchParams (shareable filtered links)
+│       ├── timeControl.ts        # Scraped time control -> "90+30" notation
+│       ├── durationLabel.ts      # Card duration pill ("Fri–Sun · 3 days")
+│       └── mapPlaces.ts          # Group tournaments into map markers (pure)
 │
 ├── tests/                        # Comprehensive test suite (290+ tests)
 │   ├── unit/                     # Service unit tests (100 tests)
@@ -103,6 +109,11 @@ medtourney/
 ├── TournamentProcessor.py        # Python backend for scraping
 ├── scrape_tournaments.robot      # Robot Framework scraper
 ├── run_scraper.py                # Scraper entry point
+├── geocode_tournaments.py        # Adds lat/lng after each scrape (Nominatim + GeoNames, cached)
+├── geocode_cache.json            # Geocoding cache - committed, so daily runs only look up new places
+├── data/southern_coast.json      # Med + Iberian Atlantic coastline points for the Seaside rule
+├── data/airports.json            # Airports with scheduled flights (card's nearest-airport hint)
+├── scripts/                      # build_southern_coast.py, build_airports.py, og-image.html + render-og-image.mjs
 │
 ├── vite.config.ts                # Vite build configuration
 ├── tsconfig.json                 # TypeScript configuration (strict mode)
@@ -128,7 +139,7 @@ The application follows a **modular service-oriented architecture**. Each servic
 | **FilterService** | `src/services/FilterService.ts` | 395 | Multi-criteria filtering with FIFO cache |
 | **DataService** | `src/services/DataService.ts` | 319 | 3-tier fetch strategy (cache → local → CORS proxies) |
 | **ExportService** | `src/services/ExportService.ts` | 330 | CSV and iCalendar (RFC 5545) exports |
-| **UIManager** | `src/services/UIManager.ts` | 725 | DOM manipulation, loading skeletons, dark mode |
+| **UIManager** | `src/services/UIManager.ts` | 807 | DOM manipulation, loading skeletons, dark mode |
 
 ---
 
@@ -261,7 +272,7 @@ ruff check .
 
 # Type checking
 npm run type-check      # TypeScript
-mypy TournamentProcessor.py run_scraper.py  # Python
+mypy TournamentProcessor.py run_scraper.py geocode_tournaments.py  # Python
 ```
 
 ---
@@ -423,12 +434,16 @@ chore: Update dependencies to latest versions
 
 **Which level does it belong in?**
 
-The filters-card is two levels: `.filter-primary` (always visible — date
-range, Time Control, Mediterranean Seaside Only) and `<details id="advancedFilters">`
-(the "More filters" drawer — everything else). Default new filters to the
-drawer unless the filter is as fundamental to the product as the three
-primary ones above; the primary bar is deliberately small so the first
-tournament card stays near the top of the page.
+The filters-card is two levels: `.filter-primary` (always visible — the
+Seaside/Senior mode switch, date range, Time Control, Mediterranean Seaside
+Only) and `<details id="advancedFilters">` (the "More filters" drawer —
+everything else, including the Senior 50+/60+ checkboxes the mode switch
+also drives). Default new filters to the drawer unless the filter is as
+fundamental to the product as the ones above; the primary bar is
+deliberately small so the first tournament card stays near the top of the
+page. Filtering is live (`app.ts`'s `handleFilterChange()` /
+`applyFiltersAndRender()`) — a new filter's `change` listener should call
+into that same path rather than requiring a Search click.
 
 **Steps:**
 1. Update `FilterState` interface in `src/types.ts`
@@ -441,9 +456,14 @@ tournament card stays near the top of the page.
    checked, so for those "active" means *unchecked*) — otherwise a filter
    that narrows results won't show up in the drawer's badge or auto-open it
 6. Add unit tests in `tests/unit/services/test_FilterService.spec.js`
-7. Add E2E test in `tests/e2e/search-and-filter.spec.ts`. If the new control
-   lives in the drawer, call `openAdvancedFilters(page)` (from
-   `tests/e2e/_fixtures.ts`) before interacting with it — either in the
+7. Add E2E test in `tests/e2e/search-and-filter.spec.ts`. On phones
+   (<= 768px, the Mobile Chrome / Mobile Safari projects) the whole filters
+   card is a bottom sheet (`src/services/FilterSheet.ts`): call
+   `openFilters(page)` before using any control in it and `closeFilters(page)`
+   before touching the results behind it; `setMode(page, mode)` clicks the
+   Seaside/Senior switch, which sits above the results there. If the new
+   control lives in the drawer, call `openAdvancedFilters(page)` (from
+   `tests/e2e/_fixtures.ts`; it opens the sheet first) before interacting with it — either in the
    spec's `beforeEach`, or inline in just the tests that drive it if the spec
    asserts keyboard tab order (see `accessibility.spec.ts` /
    `keyboard-navigation.spec.ts` for that pattern)
@@ -737,11 +757,11 @@ npm run preview
 
 | File | Purpose | Lines |
 |------|---------|-------|
-| `src/app.ts` | Main application coordinator | 1,412 |
+| `src/app.ts` | Main application coordinator | 1,643 |
 | `src/main.ts` | Entry point | 16 |
 | `src/types.ts` | Shared TypeScript interfaces | 50 |
-| `index.html` | Main HTML file | 461 |
-| `styles.css` | Application styles | 2,255 |
+| `index.html` | Main HTML file | 481 |
+| `styles.css` | Application styles | 2,467 |
 | `config.json` | App configuration | 853 |
 
 ### Service Modules
@@ -752,7 +772,7 @@ npm run preview
 | `src/services/FilterService.ts` | Multi-criteria filtering | 395 |
 | `src/services/DataService.ts` | 3-tier fetch strategy | 319 |
 | `src/services/ExportService.ts` | CSV & iCalendar exports | 330 |
-| `src/services/UIManager.ts` | DOM manipulation & rendering | 725 |
+| `src/services/UIManager.ts` | DOM manipulation & rendering | 807 |
 
 ### Configuration Files
 
@@ -816,14 +836,19 @@ npm run preview
    - Don't add logic to `app.ts` - create/use services
    - Follow dependency injection pattern
    - Keep services isolated and testable
-   - **This has drifted:** `app.ts` has grown to 1,412 lines (from 573 at
+   - **This has drifted:** `app.ts` has grown to 1,643 lines (from 573 at
      the v3.0 refactor) as event wiring, filter-preference persistence,
-     keyboard shortcuts, deep-linking, and shortlist management all
-     accumulated there as the coordination layer. It's not yet back to the
-     2,267-line pre-refactor monolith this architecture was built to avoid,
-     but it's trending that way - when adding a new feature, prefer
-     extracting genuinely standalone logic into a service (or a focused
-     `src/utils/` module, following `countries.ts`/`html.ts`) over adding
+     the mode switch, active-filter chips, keyboard shortcuts, deep-linking,
+     and shortlist management all accumulated there as the coordination
+     layer. It's not yet back to the 2,267-line pre-refactor monolith this
+     architecture was built to avoid, but it's trending that way -
+     `filterUrl.ts` (FilterState <-> URLSearchParams) was pulled out as a
+     `src/utils/` module rather than left as private methods here, since it
+     had no `this` dependency; that's the pattern to follow next time
+     something similarly self-contained accumulates. When adding a new
+     feature, prefer extracting genuinely standalone logic into a service
+     (or a focused `src/utils/` module, following `countries.ts`/`html.ts`)
+     over adding
      another method to `app.ts`, even though that's the path of least
      resistance for wiring up a single new control.
 
@@ -866,7 +891,7 @@ npm run preview
 ### Performance Considerations
 
 1. **Bundle size**
-   - Current: ~30KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~6.5KB gzipped CSS - verify with `npm run build:vite` after any change that feels like it could be heavy
+   - Current: ~36KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~7.6KB gzipped CSS; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `app.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
    - Flag icons (`public/flags/*.png`) are static assets served on demand, not part of this bundle - kept to ~4KB average per flag (rasterized small; several countries' full-detail SVG coats of arms were 30-180KB, wasted at 20px icon size)
    - Avoid large dependencies
    - Use tree-shaking friendly imports

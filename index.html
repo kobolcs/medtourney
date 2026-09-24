@@ -21,6 +21,9 @@
     <meta property="og:title" content="MedTourney - European Chess Tournament Finder">
     <meta property="og:description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Updated daily from chess-results.com.">
     <meta property="og:image" content="https://kobolcs.github.io/medtourney/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="MedTourney - chess by the sea, seniors welcome. European chess tournaments, updated daily.">
     <meta property="og:locale" content="en_US">
     <meta property="og:site_name" content="MedTourney">
 
@@ -82,14 +85,22 @@
                         <circle cx="20" cy="6.3" r="1.9" fill="currentColor"/>
                         <path d="M20 0v3.6M18.3 1.8h3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
                     </svg>
-                    <h1>European Chess Tournament Finder</h1>
+                    <div class="header-brand">
+                        <h1>MedTourney</h1>
+                        <p class="tagline">Chess by the sea &middot; seniors welcome</p>
+                    </div>
                 </div>
-                <p class="subtitle">Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
+                <p class="subtitle">European Chess Tournament Finder &mdash; Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
+                <p id="headerLiveStatus" class="header-live" aria-live="polite">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span id="headerTournamentCount">Loading tournament data&hellip;</span>
+                </p>
             </div>
             <div class="header-controls">
                 <button id="helpBtn" class="help-btn" aria-label="Open help (F1)">?</button>
-                <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-                    Dark Mode
+                <button id="themeToggle" class="theme-toggle icon-btn" aria-label="Toggle dark mode">
+                    <span id="themeToggleIcon" class="theme-toggle-icon" aria-hidden="true">&#9789;</span>
+                    <span id="themeToggleLabel" class="sr-only">Dark Mode</span>
                 </button>
             </div>
         </div>
@@ -98,13 +109,28 @@
     <div class="container">
         <main role="main" id="main-content">
         <div id="staleness-banner" class="error-message warning-type" style="display:none;" role="alert" aria-live="polite"></div>
-        <div class="filters-card" role="search" aria-label="Tournament search filters" aria-expanded="true">
+        <!-- tabindex="-1": on desktop the sticky sidebar scrolls (overflow-y: auto), and
+             Firefox makes scroll containers a Tab stop of their own. Every control inside
+             is focusable anyway (focusing one scrolls it into view), so the extra stop
+             only adds noise. -->
+        <div class="filters-card" id="filtersSheet" role="search" aria-label="Tournament search filters" aria-expanded="true" tabindex="-1">
             <div class="filters-title-row">
                 <h2>Search Filters</h2>
                 <button type="button" id="clearFiltersBtn" class="clear-filters-btn" aria-label="Clear all filters">Clear all</button>
+                <!-- Phones only: the card is a bottom sheet there (src/services/FilterSheet.ts) -->
+                <button type="button" class="sheet-close" aria-label="Close filters">&times;</button>
             </div>
 
             <div class="filter-primary">
+                <div class="mode-switch" role="group" aria-label="Quick filter: seaside and senior tournaments">
+                    <button type="button" class="mode-switch-btn is-active" data-mode="all" aria-pressed="true">All Europe</button>
+                    <button type="button" class="mode-switch-btn" data-mode="seaside" aria-pressed="false">&#127754; Seaside</button>
+                    <button type="button" class="mode-switch-btn" data-mode="senior" aria-pressed="false">Senior 50+</button>
+                    <button type="button" class="mode-switch-btn" data-mode="both" aria-pressed="false">Both</button>
+                </div>
+
+                <div id="activeFilterChips" class="active-filter-chips" aria-live="polite" hidden></div>
+
                 <div class="date-range" role="group" aria-label="Date range selection">
                     <div class="date-input">
                         <label for="startDate">Start Date</label>
@@ -146,13 +172,11 @@
                     </div>
                 </div>
 
-                <div class="filter-group filter-group-featured">
-                    <label>
-                        <input type="checkbox" id="mediterraneanOnly" aria-describedby="mediterranean-desc">
-                        <span class="checkbox-label">Mediterranean Seaside Only</span>
-                    </label>
-                    <span id="mediterranean-desc" class="sr-only">Show only tournaments in Mediterranean coastal cities</span>
-                </div>
+                <!-- The Seaside / Both mode switch buttons above are the only visible
+                     control for this; the hidden checkbox stays as the single source
+                     of truth that preferences, the URL, chips and the empty-state
+                     relaxations read and write (see app.ts initModeSwitch). -->
+                <input type="checkbox" id="mediterraneanOnly" hidden>
             </div>
 
             <details id="advancedFilters">
@@ -266,74 +290,100 @@
                         </div>
                     </div>
                     <span id="country-scroll-hint" class="sr-only">Scrollable list — use arrow keys or scroll to see all countries</span>
+                    <label for="countrySearch" class="sr-only">Type to filter the country list</label>
+                    <input type="search" id="countrySearch" class="country-search-input" placeholder="Type to filter countries…">
                     <p id="noCountriesMessage" class="no-countries-message" hidden>No countries match your other filters.</p>
                     <div id="countryList" class="country-checkbox-list" role="group" aria-label="Filter by country" aria-describedby="country-scroll-hint">
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Mediterranean countries"> Mediterranean</label>
                         <div class="filter-grid">
                             <div class="country-item filter-group" data-country="ALB"><label><input type="checkbox" name="countryFilter" value="ALB"><span class="checkbox-label">Albania</span></label></div>
                             <div class="country-item filter-group" data-country="AND"><label><input type="checkbox" name="countryFilter" value="AND"><span class="checkbox-label">Andorra</span></label></div>
-                            <div class="country-item filter-group" data-country="ARM"><label><input type="checkbox" name="countryFilter" value="ARM"><span class="checkbox-label">Armenia</span></label></div>
-                            <div class="country-item filter-group" data-country="AUT"><label><input type="checkbox" name="countryFilter" value="AUT"><span class="checkbox-label">Austria</span></label></div>
-                            <div class="country-item filter-group" data-country="AZE"><label><input type="checkbox" name="countryFilter" value="AZE"><span class="checkbox-label">Azerbaijan</span></label></div>
-                            <div class="country-item filter-group" data-country="BEL"><label><input type="checkbox" name="countryFilter" value="BEL"><span class="checkbox-label">Belgium</span></label></div>
                             <div class="country-item filter-group" data-country="BIH"><label><input type="checkbox" name="countryFilter" value="BIH"><span class="checkbox-label">Bosnia &amp; Herzegovina</span></label></div>
-                            <div class="country-item filter-group" data-country="BUL"><label><input type="checkbox" name="countryFilter" value="BUL"><span class="checkbox-label">Bulgaria</span></label></div>
                             <div class="country-item filter-group" data-country="CRO"><label><input type="checkbox" name="countryFilter" value="CRO"><span class="checkbox-label">Croatia</span></label></div>
                             <div class="country-item filter-group" data-country="CYP"><label><input type="checkbox" name="countryFilter" value="CYP"><span class="checkbox-label">Cyprus</span></label></div>
+                            <div class="country-item filter-group" data-country="FRA"><label><input type="checkbox" name="countryFilter" value="FRA"><span class="checkbox-label">France</span></label></div>
+                            <div class="country-item filter-group" data-country="GIB"><label><input type="checkbox" name="countryFilter" value="GIB"><span class="checkbox-label">Gibraltar</span></label></div>
+                            <div class="country-item filter-group" data-country="GRE"><label><input type="checkbox" name="countryFilter" value="GRE"><span class="checkbox-label">Greece</span></label></div>
+                            <div class="country-item filter-group" data-country="ITA"><label><input type="checkbox" name="countryFilter" value="ITA"><span class="checkbox-label">Italy</span></label></div>
+                            <div class="country-item filter-group" data-country="MLT"><label><input type="checkbox" name="countryFilter" value="MLT"><span class="checkbox-label">Malta</span></label></div>
+                            <div class="country-item filter-group" data-country="MNC"><label><input type="checkbox" name="countryFilter" value="MNC"><span class="checkbox-label">Monaco</span></label></div>
+                            <div class="country-item filter-group" data-country="MNE"><label><input type="checkbox" name="countryFilter" value="MNE"><span class="checkbox-label">Montenegro</span></label></div>
+                            <div class="country-item filter-group" data-country="POR"><label><input type="checkbox" name="countryFilter" value="POR"><span class="checkbox-label">Portugal</span></label></div>
+                            <div class="country-item filter-group" data-country="SMR"><label><input type="checkbox" name="countryFilter" value="SMR"><span class="checkbox-label">San Marino</span></label></div>
+                            <div class="country-item filter-group" data-country="SLO"><label><input type="checkbox" name="countryFilter" value="SLO"><span class="checkbox-label">Slovenia</span></label></div>
+                            <div class="country-item filter-group" data-country="ESP"><label><input type="checkbox" name="countryFilter" value="ESP"><span class="checkbox-label">Spain</span></label></div>
+                            <div class="country-item filter-group" data-country="TUR"><label><input type="checkbox" name="countryFilter" value="TUR"><span class="checkbox-label">Turkey</span></label></div>
+                        </div>
+
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Central Europe countries"> Central Europe</label>
+                        <div class="filter-grid">
+                            <div class="country-item filter-group" data-country="AUT"><label><input type="checkbox" name="countryFilter" value="AUT"><span class="checkbox-label">Austria</span></label></div>
+                            <div class="country-item filter-group" data-country="BEL"><label><input type="checkbox" name="countryFilter" value="BEL"><span class="checkbox-label">Belgium</span></label></div>
                             <div class="country-item filter-group" data-country="CZE"><label><input type="checkbox" name="countryFilter" value="CZE"><span class="checkbox-label">Czech Republic</span></label></div>
+                            <div class="country-item filter-group" data-country="GER"><label><input type="checkbox" name="countryFilter" value="GER"><span class="checkbox-label">Germany</span></label></div>
+                            <div class="country-item filter-group" data-country="HUN"><label><input type="checkbox" name="countryFilter" value="HUN"><span class="checkbox-label">Hungary</span></label></div>
+                            <div class="country-item filter-group" data-country="LIE"><label><input type="checkbox" name="countryFilter" value="LIE"><span class="checkbox-label">Liechtenstein</span></label></div>
+                            <div class="country-item filter-group" data-country="LUX"><label><input type="checkbox" name="countryFilter" value="LUX"><span class="checkbox-label">Luxembourg</span></label></div>
+                            <div class="country-item filter-group" data-country="NED"><label><input type="checkbox" name="countryFilter" value="NED"><span class="checkbox-label">Netherlands</span></label></div>
+                            <div class="country-item filter-group" data-country="POL"><label><input type="checkbox" name="countryFilter" value="POL"><span class="checkbox-label">Poland</span></label></div>
+                            <div class="country-item filter-group" data-country="SVK"><label><input type="checkbox" name="countryFilter" value="SVK"><span class="checkbox-label">Slovakia</span></label></div>
+                            <div class="country-item filter-group" data-country="SUI"><label><input type="checkbox" name="countryFilter" value="SUI"><span class="checkbox-label">Switzerland</span></label></div>
+                        </div>
+
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Balkans &amp; Eastern Europe countries"> Balkans &amp; Eastern Europe</label>
+                        <div class="filter-grid">
+                            <div class="country-item filter-group" data-country="ARM"><label><input type="checkbox" name="countryFilter" value="ARM"><span class="checkbox-label">Armenia</span></label></div>
+                            <div class="country-item filter-group" data-country="AZE"><label><input type="checkbox" name="countryFilter" value="AZE"><span class="checkbox-label">Azerbaijan</span></label></div>
+                            <div class="country-item filter-group" data-country="BUL"><label><input type="checkbox" name="countryFilter" value="BUL"><span class="checkbox-label">Bulgaria</span></label></div>
+                            <div class="country-item filter-group" data-country="GEO"><label><input type="checkbox" name="countryFilter" value="GEO"><span class="checkbox-label">Georgia</span></label></div>
+                            <div class="country-item filter-group" data-country="KOS"><label><input type="checkbox" name="countryFilter" value="KOS"><span class="checkbox-label">Kosovo</span></label></div>
+                            <div class="country-item filter-group" data-country="MDA"><label><input type="checkbox" name="countryFilter" value="MDA"><span class="checkbox-label">Moldova</span></label></div>
+                            <div class="country-item filter-group" data-country="MKD"><label><input type="checkbox" name="countryFilter" value="MKD"><span class="checkbox-label">North Macedonia</span></label></div>
+                            <div class="country-item filter-group" data-country="ROU"><label><input type="checkbox" name="countryFilter" value="ROU"><span class="checkbox-label">Romania</span></label></div>
+                            <div class="country-item filter-group" data-country="SRB"><label><input type="checkbox" name="countryFilter" value="SRB"><span class="checkbox-label">Serbia</span></label></div>
+                            <div class="country-item filter-group" data-country="UKR"><label><input type="checkbox" name="countryFilter" value="UKR"><span class="checkbox-label">Ukraine</span></label></div>
+                        </div>
+
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Nordic &amp; Baltic countries"> Nordic &amp; Baltic</label>
+                        <div class="filter-grid">
                             <div class="country-item filter-group" data-country="DEN"><label><input type="checkbox" name="countryFilter" value="DEN"><span class="checkbox-label">Denmark</span></label></div>
-                            <div class="country-item filter-group" data-country="ENG"><label><input type="checkbox" name="countryFilter" value="ENG"><span class="checkbox-label">England</span></label></div>
                             <div class="country-item filter-group" data-country="EST"><label><input type="checkbox" name="countryFilter" value="EST"><span class="checkbox-label">Estonia</span></label></div>
                             <div class="country-item filter-group" data-country="FAI"><label><input type="checkbox" name="countryFilter" value="FAI"><span class="checkbox-label">Faroe Islands</span></label></div>
                             <div class="country-item filter-group" data-country="FIN"><label><input type="checkbox" name="countryFilter" value="FIN"><span class="checkbox-label">Finland</span></label></div>
-                            <div class="country-item filter-group" data-country="FRA"><label><input type="checkbox" name="countryFilter" value="FRA"><span class="checkbox-label">France</span></label></div>
-                            <div class="country-item filter-group" data-country="GEO"><label><input type="checkbox" name="countryFilter" value="GEO"><span class="checkbox-label">Georgia</span></label></div>
-                            <div class="country-item filter-group" data-country="GER"><label><input type="checkbox" name="countryFilter" value="GER"><span class="checkbox-label">Germany</span></label></div>
-                            <div class="country-item filter-group" data-country="GIB"><label><input type="checkbox" name="countryFilter" value="GIB"><span class="checkbox-label">Gibraltar</span></label></div>
-                            <div class="country-item filter-group" data-country="GBR"><label><input type="checkbox" name="countryFilter" value="GBR"><span class="checkbox-label">Great Britain</span></label></div>
-                            <div class="country-item filter-group" data-country="GRE"><label><input type="checkbox" name="countryFilter" value="GRE"><span class="checkbox-label">Greece</span></label></div>
-                            <div class="country-item filter-group" data-country="GCI"><label><input type="checkbox" name="countryFilter" value="GCI"><span class="checkbox-label">Guernsey</span></label></div>
-                            <div class="country-item filter-group" data-country="HUN"><label><input type="checkbox" name="countryFilter" value="HUN"><span class="checkbox-label">Hungary</span></label></div>
                             <div class="country-item filter-group" data-country="ISL"><label><input type="checkbox" name="countryFilter" value="ISL"><span class="checkbox-label">Iceland</span></label></div>
+                            <div class="country-item filter-group" data-country="LAT"><label><input type="checkbox" name="countryFilter" value="LAT"><span class="checkbox-label">Latvia</span></label></div>
+                            <div class="country-item filter-group" data-country="LTU"><label><input type="checkbox" name="countryFilter" value="LTU"><span class="checkbox-label">Lithuania</span></label></div>
+                            <div class="country-item filter-group" data-country="NOR"><label><input type="checkbox" name="countryFilter" value="NOR"><span class="checkbox-label">Norway</span></label></div>
+                            <div class="country-item filter-group" data-country="SWE"><label><input type="checkbox" name="countryFilter" value="SWE"><span class="checkbox-label">Sweden</span></label></div>
+                        </div>
+
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all British Isles countries"> British Isles</label>
+                        <div class="filter-grid">
+                            <div class="country-item filter-group" data-country="ENG"><label><input type="checkbox" name="countryFilter" value="ENG"><span class="checkbox-label">England</span></label></div>
+                            <div class="country-item filter-group" data-country="GBR"><label><input type="checkbox" name="countryFilter" value="GBR"><span class="checkbox-label">Great Britain</span></label></div>
+                            <div class="country-item filter-group" data-country="GCI"><label><input type="checkbox" name="countryFilter" value="GCI"><span class="checkbox-label">Guernsey</span></label></div>
                             <div class="country-item filter-group" data-country="IRL"><label><input type="checkbox" name="countryFilter" value="IRL"><span class="checkbox-label">Ireland</span></label></div>
                             <div class="country-item filter-group" data-country="IOM"><label><input type="checkbox" name="countryFilter" value="IOM"><span class="checkbox-label">Isle of Man</span></label></div>
-                            <div class="country-item filter-group" data-country="ITA"><label><input type="checkbox" name="countryFilter" value="ITA"><span class="checkbox-label">Italy</span></label></div>
                             <div class="country-item filter-group" data-country="JCI"><label><input type="checkbox" name="countryFilter" value="JCI"><span class="checkbox-label">Jersey</span></label></div>
-                            <div class="country-item filter-group" data-country="KOS"><label><input type="checkbox" name="countryFilter" value="KOS"><span class="checkbox-label">Kosovo</span></label></div>
-                            <div class="country-item filter-group" data-country="LAT"><label><input type="checkbox" name="countryFilter" value="LAT"><span class="checkbox-label">Latvia</span></label></div>
-                            <div class="country-item filter-group" data-country="LIE"><label><input type="checkbox" name="countryFilter" value="LIE"><span class="checkbox-label">Liechtenstein</span></label></div>
-                            <div class="country-item filter-group" data-country="LTU"><label><input type="checkbox" name="countryFilter" value="LTU"><span class="checkbox-label">Lithuania</span></label></div>
-                            <div class="country-item filter-group" data-country="LUX"><label><input type="checkbox" name="countryFilter" value="LUX"><span class="checkbox-label">Luxembourg</span></label></div>
-                            <div class="country-item filter-group" data-country="MLT"><label><input type="checkbox" name="countryFilter" value="MLT"><span class="checkbox-label">Malta</span></label></div>
-                            <div class="country-item filter-group" data-country="MDA"><label><input type="checkbox" name="countryFilter" value="MDA"><span class="checkbox-label">Moldova</span></label></div>
-                            <div class="country-item filter-group" data-country="MNC"><label><input type="checkbox" name="countryFilter" value="MNC"><span class="checkbox-label">Monaco</span></label></div>
-                            <div class="country-item filter-group" data-country="MNE"><label><input type="checkbox" name="countryFilter" value="MNE"><span class="checkbox-label">Montenegro</span></label></div>
-                            <div class="country-item filter-group" data-country="NED"><label><input type="checkbox" name="countryFilter" value="NED"><span class="checkbox-label">Netherlands</span></label></div>
-                            <div class="country-item filter-group" data-country="MKD"><label><input type="checkbox" name="countryFilter" value="MKD"><span class="checkbox-label">North Macedonia</span></label></div>
-                            <div class="country-item filter-group" data-country="NOR"><label><input type="checkbox" name="countryFilter" value="NOR"><span class="checkbox-label">Norway</span></label></div>
-                            <div class="country-item filter-group" data-country="POL"><label><input type="checkbox" name="countryFilter" value="POL"><span class="checkbox-label">Poland</span></label></div>
-                            <div class="country-item filter-group" data-country="POR"><label><input type="checkbox" name="countryFilter" value="POR"><span class="checkbox-label">Portugal</span></label></div>
-                            <div class="country-item filter-group" data-country="ROU"><label><input type="checkbox" name="countryFilter" value="ROU"><span class="checkbox-label">Romania</span></label></div>
-                            <div class="country-item filter-group" data-country="SMR"><label><input type="checkbox" name="countryFilter" value="SMR"><span class="checkbox-label">San Marino</span></label></div>
                             <div class="country-item filter-group" data-country="SCO"><label><input type="checkbox" name="countryFilter" value="SCO"><span class="checkbox-label">Scotland</span></label></div>
-                            <div class="country-item filter-group" data-country="SRB"><label><input type="checkbox" name="countryFilter" value="SRB"><span class="checkbox-label">Serbia</span></label></div>
-                            <div class="country-item filter-group" data-country="SVK"><label><input type="checkbox" name="countryFilter" value="SVK"><span class="checkbox-label">Slovakia</span></label></div>
-                            <div class="country-item filter-group" data-country="SLO"><label><input type="checkbox" name="countryFilter" value="SLO"><span class="checkbox-label">Slovenia</span></label></div>
-                            <div class="country-item filter-group" data-country="ESP"><label><input type="checkbox" name="countryFilter" value="ESP"><span class="checkbox-label">Spain</span></label></div>
-                            <div class="country-item filter-group" data-country="SWE"><label><input type="checkbox" name="countryFilter" value="SWE"><span class="checkbox-label">Sweden</span></label></div>
-                            <div class="country-item filter-group" data-country="SUI"><label><input type="checkbox" name="countryFilter" value="SUI"><span class="checkbox-label">Switzerland</span></label></div>
-                            <div class="country-item filter-group" data-country="TUR"><label><input type="checkbox" name="countryFilter" value="TUR"><span class="checkbox-label">Turkey</span></label></div>
-                            <div class="country-item filter-group" data-country="UKR"><label><input type="checkbox" name="countryFilter" value="UKR"><span class="checkbox-label">Ukraine</span></label></div>
                             <div class="country-item filter-group" data-country="WLS"><label><input type="checkbox" name="countryFilter" value="WLS"><span class="checkbox-label">Wales</span></label></div>
                         </div>
                     </div>
                 </div>
             </details>
 
-            <button id="searchBtn" class="search-button" aria-label="Search Tournaments with the selected filters">
-                Search Tournaments
+            <!-- Filtering is live, so there's no Search button. Below 1024px the
+                 filters sit above the results; this jumps down to them and
+                 carries the live match count (hidden on the desktop sidebar). -->
+            <button id="showResultsBtn" class="show-results-btn" type="button">
+                Show tournaments ↓
             </button>
         </div>
 
+        <div class="results-column">
+        <!-- Phones: the mode switch and active-filter chips are moved here from
+             the filters card, which becomes a bottom sheet (FilterSheet.ts) -->
+        <div id="mobileQuickFilters" class="mobile-quick-filters" hidden></div>
         <div id="loading" class="loading" style="display: none;" role="status" aria-live="polite" aria-busy="true">
             <div class="spinner" aria-hidden="true"></div>
             <p>Fetching tournaments from chess-results.com…</p>
@@ -346,7 +396,7 @@
         <div id="results" class="results-container" style="display: none;" role="region" aria-label="Tournament search results">
             <div class="results-header">
                 <div class="results-title-group">
-                    <h2>Search Results</h2>
+                    <h2 id="resultsHeading" tabindex="-1">Search Results</h2>
                     <span id="resultsCount" class="results-count" role="status" aria-live="polite"></span>
                 </div>
                 <div class="results-controls">
@@ -357,6 +407,10 @@
                                class="quick-search-input"
                                placeholder="Filter results…"
                                aria-label="Search within results by name or location">
+                    </div>
+                    <div class="view-toggle" role="group" aria-label="Results view">
+                        <button type="button" class="view-toggle-btn is-active" data-view="list" aria-pressed="true">List</button>
+                        <button type="button" class="view-toggle-btn" data-view="map" aria-pressed="false">Map</button>
                     </div>
                     <div class="sort-controls">
                         <label for="sortBy">Sort</label>
@@ -383,14 +437,27 @@
                     </label>
                 </div>
             </div>
+            <div id="mapView" class="map-view" hidden>
+                <div id="mapCanvas" class="map-canvas" role="region" aria-label="Map of the tournaments in the current results"></div>
+                <p id="mapNote" class="map-note" hidden></p>
+            </div>
             <div id="tournamentList" class="tournament-list"></div>
+        </div>
         </div>
         </main>
 
+        <!-- Phones: opens the filters bottom sheet (FilterSheet.ts) -->
+        <button type="button" id="openFiltersBtn" class="open-filters-btn" aria-controls="filtersSheet" aria-expanded="false" hidden>
+            <span aria-hidden="true">&#9776;</span> Filters<span class="open-filters-count"></span>
+        </button>
+        <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+
         <footer role="contentinfo">
             <p id="lastUpdated" class="last-updated" aria-live="polite">
-                Data updated <span id="lastUpdatedTime">…</span>
-                · Source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a>
+                <!-- Hidden until a real timestamp is known (app.ts setFooterTimestamp) -
+                     no "…" placeholder or "Never" while the meta file loads. -->
+                <span id="lastUpdatedWrap" hidden>Data updated <span id="lastUpdatedTime"></span> ·</span>
+                Source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a>
                 · <a href="https://github.com/kobolcs/medtourney" target="_blank" rel="noopener noreferrer">GitHub</a>
             </p>
         </footer>
@@ -412,7 +479,7 @@
 
                 <div class="help-section">
                     <h3>Getting started</h3>
-                    <p>Results for the next 6 months load automatically — adjust filters and click <strong>Search</strong> to narrow them. Click anywhere on a card to open its page on chess-results.com. Your filter settings are saved automatically.</p>
+                    <p>Results for the next 6 months load automatically — results update as soon as you change a filter. Click anywhere on a card to open its page on chess-results.com. Your filter settings are saved automatically.</p>
                 </div>
 
                 <div class="help-section">
@@ -420,19 +487,19 @@
                     <ul>
                         <li><strong>Open Category</strong><span>Shows only tournaments open to all skill levels — not invitation-only or club-only events.</span></li>
                         <li><strong>Exclude Youth</strong><span>Hides tournaments aimed at players under 18.</span></li>
-                        <li><strong>Mediterranean</strong><span>Limits results to coastal Mediterranean cities: Barcelona, Nice, Athens, Malta, Split, and more.</span></li>
+                        <li><strong>Seaside</strong><span>Tournaments within about 10 km of the Mediterranean coast (incl. the Adriatic and Aegean) or the Atlantic coasts of Spain and Portugal, plus well-known coastal towns. A <strong>🏖 Beachfront</strong> badge marks venues found to be within 500 m of the sea.</span></li>
                         <li><strong>S50+ / S60+</strong><span>Senior age categories. Checking both shows all senior events (OR logic).</span></li>
                         <li><strong>Rating ceiling</strong><span>U1400–U2200 — shows only club-level tournaments below a rating limit.</span></li>
                         <li><strong>Youth age group</strong><span>Targets a specific under-age group (overrides the exclude-youth filter).</span></li>
                         <li><strong>Time Control</strong><span>Classical, Rapid, or Blitz. All three checked = show everything.</span></li>
                         <li><strong>Duration</strong><span>Weekend-only to multi-week vacations — useful for travel planning.</span></li>
-                        <li><strong>Country</strong><span>Tick one or more countries for OR filtering. When Mediterranean is active, only Med-compatible countries are shown.</span></li>
+                        <li><strong>Country</strong><span>Tick one or more countries for OR filtering. In Seaside mode, only countries with seaside tournaments are shown.</span></li>
                     </ul>
                 </div>
 
                 <div class="help-section">
                     <h3>Featured card</h3>
-                    <p>When a qualifying Mediterranean tournament starts within 30 days and lasts more than 5 days, it appears highlighted in amber above the results — independently of your active filters.</p>
+                    <p>When a qualifying seaside tournament starts within 30 days and lasts more than 5 days, it appears highlighted in amber above the results — independently of your active filters. Beachfront venues are preferred.</p>
                 </div>
 
                 <div class="help-section">
@@ -442,12 +509,13 @@
 
                 <div class="help-section">
                     <h3>Keyboard shortcuts</h3>
+                    <p>These work anywhere on the page except while typing in a text field.</p>
                     <ul>
-                        <li><kbd class="help-kbd">F1</kbd><span>Open / close this help</span></li>
-                        <li><kbd class="help-kbd">Ctrl+K</kbd><span>Focus the Search button</span></li>
-                        <li><kbd class="help-kbd">Ctrl+E</kbd><span>Export results to CSV</span></li>
-                        <li><kbd class="help-kbd">Ctrl+D</kbd><span>Toggle dark / light mode</span></li>
-                        <li><kbd class="help-kbd">Ctrl+S</kbd><span>Export shortlist to calendar</span></li>
+                        <li><kbd class="help-kbd">F1</kbd> <kbd class="help-kbd">?</kbd><span>Open / close this help</span></li>
+                        <li><kbd class="help-kbd">/</kbd><span>Focus "Filter results"</span></li>
+                        <li><kbd class="help-kbd">e</kbd><span>Export results to CSV</span></li>
+                        <li><kbd class="help-kbd">d</kbd><span>Toggle dark / light mode</span></li>
+                        <li><kbd class="help-kbd">s</kbd><span>Export shortlist to calendar</span></li>
                         <li><kbd class="help-kbd">Escape</kbd><span>Close this dialog (or clear the quick-search)</span></li>
                     </ul>
                 </div>

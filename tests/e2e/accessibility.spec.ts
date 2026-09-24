@@ -35,9 +35,9 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should have proper ARIA labels on interactive elements', async ({ page }) => {
-    // Check search button
-    const searchBtn = page.getByRole('button', { name: /search tournaments/i });
-    await expect(searchBtn).toHaveAttribute('aria-label', /search.*tournaments/i);
+    // Check the filters' "Clear all" button
+    const clearBtn = page.locator('#clearFiltersBtn');
+    await expect(clearBtn).toHaveAttribute('aria-label', /clear all filters/i);
 
     // Check theme toggle
     const themeToggle = page.getByRole('button', { name: /toggle dark mode/i });
@@ -208,15 +208,15 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should be keyboard navigable', async ({ page }) => {
-    const searchBtn = page.getByRole('button', { name: /search tournaments/i });
-
-    // Tabbing through the interactive elements must eventually reach the
-    // search button (robust to exact element count/order).
-    // Limit is high because the country checkbox list has 54 entries.
+    // Filtering is live (no Search button), so tab all the way through the
+    // filter panel to the results' "Filter results..." box that follows it
+    // (robust to exact element count/order).
+    // Limit is high because the country checkbox list has 55 entries.
+    const quickSearch = page.locator('#quickSearch');
     let reached = false;
     for (let i = 0; i < 200 && !reached; i++) {
       await page.keyboard.press('Tab');
-      reached = await searchBtn.evaluate((el) => el === document.activeElement).catch(() => false);
+      reached = await quickSearch.evaluate((el) => el === document.activeElement).catch(() => false);
     }
     expect(reached).toBe(true);
   });
@@ -255,19 +255,20 @@ test.describe('Accessibility Tests', () => {
 
   test('should have accessible mobile navigation', async ({ page, isMobile }) => {
     if (isMobile) {
-      // Check filter collapse is keyboard accessible on mobile
-      const filtersHeading = page.locator('h2', { hasText: 'Search Filters' });
-      await expect(filtersHeading).toHaveAttribute('tabindex', '0');
-      await expect(filtersHeading).toHaveAttribute('role', 'button');
-      await expect(filtersHeading).toHaveAttribute('aria-expanded');
+      // Phones: filters open from a "Filters" bar into a modal bottom sheet
+      const bar = page.locator('#openFiltersBtn');
+      await expect(bar).toHaveAttribute('aria-controls', 'filtersSheet');
+      await expect(bar).toHaveAttribute('aria-expanded', 'false');
 
-      // Should be able to activate with keyboard
-      await filtersHeading.focus();
+      await bar.focus();
       await page.keyboard.press('Enter');
+      await expect(bar).toHaveAttribute('aria-expanded', 'true');
+      await expect(page.locator('#filtersSheet')).toHaveAttribute('role', 'dialog');
+      await expect(page.locator('#filtersSheet')).toHaveAttribute('aria-modal', 'true');
 
-      // Aria-expanded should change
-      const expanded = await filtersHeading.getAttribute('aria-expanded');
-      expect(['true', 'false']).toContain(expanded);
+      await page.keyboard.press('Escape');
+      await expect(bar).toHaveAttribute('aria-expanded', 'false');
+      await expect(bar).toBeFocused();
     }
   });
 });

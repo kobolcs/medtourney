@@ -205,6 +205,73 @@ updateResultsCount(count: number): void
 
 ---
 
+### 6. **MapView** (`src/services/MapView.ts`)
+
+**Responsibility**: The results' Map view (List/Map toggle in the results header)
+
+**How it works**:
+- Loaded lazily: `app.ts` `import()`s the module on the first switch to Map,
+  and MapView `import()`s Leaflet, `leaflet.markercluster` and their CSS on
+  first show - none of it is in the main bundle
+- Shows every tournament in the current results (all pages), grouped by
+  identical coordinates (`src/utils/mapPlaces.ts`, pure and unit-tested),
+  clustered at low zoom; pins coloured seaside / senior / other
+- Tiles: OpenStreetMap's standard raster tiles (attribution shown); dark mode
+  inverts the tile pane with a CSS filter
+- Popups link to chess-results and offer "Show in list", which switches back
+  and calls `UIManager.showTournamentInList()` (jumps to the right page)
+- Tournaments without coordinates are counted in a note under the map
+
+**Where coordinates come from**: `geocode_tournaments.py` runs after every
+daily scrape (`.github/workflows/update-tournaments.yml`) and writes
+`lat`/`lng` into `tournaments_data.json`. Locations are looked up once via
+OpenStreetMap Nominatim (1 request/s, identifying User-Agent, capped per
+run) and remembered in the committed `geocode_cache.json`, so each run only
+queries places it hasn't seen; misses are retried after 30 days. Town names
+buried in venue text fall back to an offline match against GeoNames'
+`cities1000` list. The browser never calls a geocoding service.
+
+**Seaside and beachfront** (same script, same run):
+- `coast: "med" | "atlantic"` - within 10 km of the Mediterranean or of
+  Spain's/Portugal's Atlantic coast, measured against
+  `data/southern_coast.json` (Natural Earth 1:10m coastline, clipped by
+  `scripts/build_southern_coast.py`). `FilterService.isSeaside()` = this flag
+  OR a listed coastal town (`config.json`), so unplaced tournaments still work.
+- `seaM` - featured "Beachfront": only for near-coast tournaments whose venue
+  itself is found (Nominatim hotel/hall/club hit that shares a word with the
+  location text and is within 5 km of it), then measured against
+  OpenStreetMap's `natural=coastline` via Overpass; set when <= 500 m. The
+  venue's coordinates also replace the town-centre pin on the map.
+- `airport: {iata, name, km}` - travel context: the nearest airport with
+  scheduled flights (`data/airports.json`, OurAirports public domain, built
+  by `scripts/build_airports.py`; Russia/Belarus excluded), preferring a
+  large airport if it is at most 40 km further; omitted beyond 150 km.
+  Shown on the card's location line as "✈ ALC · 47 km".
+
+---
+
+### 7. **FilterSheet** (`src/services/FilterSheet.ts`)
+
+**Responsibility**: Phones (`max-width: 768px`) - the filters card as a bottom sheet, results first
+
+**How it works**:
+- One form, no duplication: the existing `.filters-card` gets
+  `filters-card--sheet`, dialog semantics (`role="dialog"`, `aria-modal`)
+  and `inert` while closed; a "Filters (N)" bar (`#openFiltersBtn`, N =
+  active-filter chips) opens it, and its "Show N tournaments" button closes it
+- The Seaside/Senior mode switch and the active-filter chips are *moved*
+  (listeners intact) to `#mobileQuickFilters` above the results, and moved
+  back when the viewport grows past 768px (a `matchMedia` listener)
+- Escape / backdrop tap / close button close it; focus is trapped while
+  open and returns to the bar; a saved "collapsed" state from the old phone
+  collapse toggle is neutralised in sheet mode and restored on leaving it
+- Both the bar and the sheet sit on `--viewport-toolbar-gap`
+  (`UIManager.initViewportOffsetFix`) so they stay above Chrome for
+  Android's toolbar
+- Tablets and desktop are untouched, DOM order included
+
+---
+
 ## Coordination Layer
 
 ### **app.ts** (573 lines, -75% from original)

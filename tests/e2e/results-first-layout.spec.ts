@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments } from './_fixtures';
+import { stubTournaments, openFilters } from './_fixtures';
 
 /**
  * Results-first layout: auto-search on load, a primary filter bar with
@@ -22,12 +22,16 @@ test.describe('Results-First Layout', () => {
 
     const details = page.locator('#advancedFilters');
     await expect(details).toHaveJSProperty('open', false);
+    await openFilters(page); // phones: the filters live in a bottom sheet
 
     // Primary controls are usable without opening the drawer.
     await expect(page.locator('#startDate')).toBeVisible();
     await expect(page.locator('#endDate')).toBeVisible();
     await expect(page.getByLabel('Classical / Standard')).toBeVisible();
-    await expect(page.getByLabel('Mediterranean Seaside Only')).toBeVisible();
+    await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toBeVisible();
+    // The old "Mediterranean Seaside Only" checkbox is gone from view - the
+    // mode switch is its only visible control.
+    await expect(page.locator('#mediterraneanOnly')).toBeHidden();
 
     // Advanced-only controls are not visible until the drawer opens.
     await expect(page.getByLabel('Open Category Only')).toBeHidden();
@@ -36,6 +40,7 @@ test.describe('Results-First Layout', () => {
 
   test('clicking "More filters" opens the drawer and reveals advanced controls', async ({ page }) => {
     await page.goto('/');
+    await openFilters(page);
 
     await page.locator('.advanced-summary').click();
 
@@ -49,6 +54,7 @@ test.describe('Results-First Layout', () => {
 
     const badge = page.locator('#advancedFilterCount');
     await expect(badge).toBeHidden();
+    await openFilters(page);
 
     await page.locator('.advanced-summary').click();
     // openOnly ships checked, so unchecking it counts as one active filter...
@@ -62,6 +68,7 @@ test.describe('Results-First Layout', () => {
 
   test('a saved advanced filter preference auto-opens the drawer on reload', async ({ page }) => {
     await page.goto('/');
+    await openFilters(page);
 
     await page.locator('.advanced-summary').click();
     await page.getByLabel('Open Category Only').uncheck();

@@ -16,6 +16,11 @@ export interface TournamentFixture {
     category: string;
     url: string;
     description: string;
+    lat?: number;
+    lng?: number;
+    coast?: 'med' | 'atlantic';
+    seaM?: number;
+    airport?: { iata: string; name: string; km: number };
 }
 
 /** ISO YYYY-MM-DD a given number of days from today (UTC). */
@@ -43,6 +48,9 @@ export function defaultFixtures(): TournamentFixture[] {
         items.push({
             name: `${isMed ? 'Barcelona' : 'Vienna'} Open ${n}`,
             location: isMed ? 'Barcelona, ESP' : 'Vienna, AUT',
+            // Coordinates as geocode_tournaments.py would add them (map view)
+            lat: isMed ? 41.3874 : 48.2082,
+            lng: isMed ? 2.1686 : 16.3738,
             date: isoInDays(n * 7),
             category: cat.join(', '),
             url: `https://chess-results.com/tnr${n}.aspx?lan=1`,
@@ -66,9 +74,11 @@ export async function stubTournaments(
     );
 }
 
-/** Click the search button and wait for tournament cards to render. */
+/**
+ * Wait for tournament cards to render. Results load automatically and
+ * filtering is live, so there's no Search button to click any more.
+ */
 export async function runSearch(page: Page): Promise<void> {
-    await page.locator('#searchBtn').click();
     await page.locator('.tournament-card').first().waitFor({ state: 'visible', timeout: 10000 });
 }
 
@@ -79,11 +89,61 @@ export async function runSearch(page: Page): Promise<void> {
  * keyboard specs that Tab from the top of the document aren't left starting
  * mid-page (and so the skip-link test still sees an unfocused document).
  */
+/**
+ * Phones (<= 768px): filters live in a bottom sheet (FilterSheet.ts) - open
+ * it so its controls can be used. No-op on wider screens.
+ */
+export async function openFilters(page: Page): Promise<void> {
+    const bar = page.locator('#openFiltersBtn');
+    if (!(await bar.isVisible())) return;
+    const sheet = page.locator('#filtersSheet');
+    if (!(await sheet.evaluate(el => el.classList.contains('is-open')))) {
+        await bar.click();
+    }
+    await sheet.locator('.sheet-close').waitFor({ state: 'visible' });
+}
+
+/** Close the phone filters sheet (e.g. before using the results behind it). No-op elsewhere. */
+export async function closeFilters(page: Page): Promise<void> {
+    const sheet = page.locator('#filtersSheet');
+    if (await sheet.evaluate(el => el.classList.contains('is-open'))) {
+        await sheet.locator('.sheet-close').click();
+        await sheet.locator('.sheet-close').waitFor({ state: 'hidden' });
+    }
+}
+
+/**
+ * Click a Seaside/Senior mode button. On phones it sits above the results,
+ * behind the open filters sheet - close the sheet first, then reopen it so
+ * the test can carry on with sheet controls.
+ */
+export async function setMode(page: Page, mode: 'all' | 'seaside' | 'senior' | 'both'): Promise<void> {
+    const sheet = page.locator('#filtersSheet');
+    const wasOpen = await sheet.evaluate(el => el.classList.contains('is-open'));
+    if (wasOpen) await closeFilters(page);
+    await page.locator(`.mode-switch-btn[data-mode="${mode}"]`).click();
+    if (wasOpen) await openFilters(page);
+}
+
 export async function openAdvancedFilters(page: Page): Promise<void> {
+    await openFilters(page);
     const details = page.locator('#advancedFilters');
     const isOpen = await details.evaluate((el) => (el as HTMLDetailsElement).open);
     if (!isOpen) {
         await page.locator('.advanced-summary').click();
     }
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+}
+
+/** 1x1 transparent PNG - stands in for OpenStreetMap tiles in tests. */
+const BLANK_PNG = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+    'base64'
+);
+
+/** Serve map tiles locally so map tests never hit tile.openstreetmap.org. */
+export async function stubMapTiles(page: Page): Promise<void> {
+    await page.route('https://tile.openstreetmap.org/**', route =>
+        route.fulfill({ status: 200, contentType: 'image/png', body: BLANK_PNG })
+    );
 }

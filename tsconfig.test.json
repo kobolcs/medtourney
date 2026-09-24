@@ -15,7 +15,10 @@
   "include": [
     "src/services/ExportService.ts",
     "src/services/FilterService.ts",
-    "src/types.ts"
+    "src/types.ts",
+    "src/utils/timeControl.ts",
+    "src/utils/durationLabel.ts",
+    "src/utils/mapPlaces.ts"
   ],
   "exclude": []
 }

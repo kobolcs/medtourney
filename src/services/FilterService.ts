@@ -64,7 +64,6 @@ export class FilterService {
             }
 
             const categoryLower = tournament.category.toLowerCase();
-            const locationLower = tournament.location.toLowerCase();
             const nameLower = tournament.name.toLowerCase();
 
             // Open category filter
@@ -77,8 +76,8 @@ export class FilterService {
                 return false;
             }
 
-            // Mediterranean filter
-            if (filterState.mediterraneanOnly && !this.isMediterraneanLocation(locationLower, mediterraneanLocations)) {
+            // Seaside filter (mediterraneanOnly - the "Seaside" mode)
+            if (filterState.mediterraneanOnly && !this.isSeaside(tournament, mediterraneanLocations)) {
                 return false;
             }
 
@@ -178,7 +177,6 @@ export class FilterService {
     annotate(tournament: Tournament, mediterraneanLocations: Set<string>): Tournament {
         const cat = tournament.category.toLowerCase();
         const name = tournament.name.toLowerCase();
-        const loc = tournament.location.toLowerCase();
 
         const reasons: string[] = [];
         const tags: string[] = [];
@@ -190,8 +188,10 @@ export class FilterService {
         if (this.isRapidTime(cat)) reasons.push('Rapid');
         if (this.isBlitzTime(cat)) reasons.push('Blitz');
 
-        if (this.isMediterraneanLocation(loc, mediterraneanLocations)) {
-            tags.push('Mediterranean');
+        if (this.isSeaside(tournament, mediterraneanLocations)) {
+            // Atlantic Iberia (Algarve, Galicia, Canaries...) is seaside but not Mediterranean
+            const atlantic = tournament.coast === 'atlantic';
+            if (!atlantic) tags.push('Mediterranean');
             tags.push('Seaside');
         }
         if (this.isSeniorCategory(cat, name)) tags.push('Senior-friendly');
@@ -213,6 +213,17 @@ export class FilterService {
     private isYouthTournament(name: string, category: string): boolean {
         const youthPattern = /\b(youth|junior|u\d+|u-\d+|under|młodzie[żz]|juniorów|juniorzy|žiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
         return youthPattern.test(name) || youthPattern.test(category);
+    }
+
+    /**
+     * The Seaside rule: geocoded within 10 km of the Mediterranean or of
+     * Spain's/Portugal's Atlantic coast (`coast`, set by geocode_tournaments.py
+     * after each scrape), or - for tournaments that couldn't be placed, and
+     * as a safety net - a listed coastal town named in the location text.
+     */
+    isSeaside(tournament: Tournament, mediterraneanLocations: Set<string>): boolean {
+        return tournament.coast !== undefined
+            || this.isMediterraneanLocation(tournament.location.toLowerCase(), mediterraneanLocations);
     }
 
     isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
@@ -325,13 +336,16 @@ export class FilterService {
         const candidates = tournaments.filter(t => {
             if (t.date < todayUtc || t.date > cutoff) return false;
             if (!t.dateTo) return false;
-            if (!this.isMediterraneanLocation(t.location.toLowerCase(), mediterraneanLocations)) return false;
+            if (!this.isSeaside(t, mediterraneanLocations)) return false;
             return this.getTournamentDays(t) > 5;
         });
 
         if (candidates.length === 0) return null;
 
         candidates.sort((a, b) => {
+            // Beachfront venues (<= 500 m from the sea) are the ones to feature
+            const beachDiff = Number(b.seaM !== undefined) - Number(a.seaM !== undefined);
+            if (beachDiff !== 0) return beachDiff;
             const dateDiff = a.date.getTime() - b.date.getTime();
             if (dateDiff !== 0) return dateDiff;
             return this.getTournamentDays(b) - this.getTournamentDays(a);

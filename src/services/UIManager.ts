@@ -10,8 +10,10 @@
  * - Dark mode
  */
 
-import { Tournament } from '../types';
+import { Tournament, SortOption } from '../types';
 import { formatLocation } from '../utils/countries';
+import { formatTimeControl } from '../utils/timeControl';
+import { formatDurationLabel } from '../utils/durationLabel';
 import { escapeHTML } from '../utils/html';
 
 export class UIManager {
@@ -19,11 +21,20 @@ export class UIManager {
     private itemsPerPage = 10;
     private filteredTournaments: Tournament[] = [];
     private shortlistedUrls: Set<string> = new Set();
-    private emptyStateContext: { totalCount: number; suggestions: string[] } | null = null;
+    private emptyStateContext: { totalCount: number; relaxations: { label: string; count: number }[] } | null = null;
+    private groupByDate = false;
+    private monthCounts: Map<string, number> = new Map();
 
-    /** Called before displayTournaments when the result set will be empty. */
-    prepareEmptyState(totalCount: number, suggestions: string[]): void {
-        this.emptyStateContext = { totalCount, suggestions };
+    /**
+     * Called before displayTournaments when the result set will be empty.
+     * relaxations are one-tap "relax this filter" options with the result
+     * count each would produce - app.ts computes them (it owns FilterState
+     * and FilterService) and keeps the matching apply() callbacks itself,
+     * wiring clicks via its own delegated listener since these buttons are
+     * rendered fresh into the DOM each time showEmptyState() runs.
+     */
+    prepareEmptyState(totalCount: number, relaxations: { label: string; count: number }[]): void {
+        this.emptyStateContext = { totalCount, relaxations };
     }
 
     setShortlistedUrls(urls: Set<string>): void {
@@ -124,11 +135,14 @@ export class UIManager {
     }
 
     /**
-     * Display tournaments
+     * Display tournaments. Pass the active sort option so month dividers only
+     * appear when the list is actually ordered by date - grouping by month
+     * would be misleading (and the counts wrong-looking) under any other sort.
      */
-    displayTournaments(tournaments: Tournament[]): void {
+    displayTournaments(tournaments: Tournament[], sortOption?: SortOption): void {
         this.filteredTournaments = tournaments;
         this.currentPage = 1;
+        this.groupByDate = sortOption === 'date-asc' || sortOption === 'date-desc';
         this.renderResults();
     }
 
@@ -171,7 +185,34 @@ export class UIManager {
         }
 
         // Render paginated tournaments
+        this.computeMonthCounts();
         this.renderPaginatedTournaments(tournamentList);
+    }
+
+    /** Year-month key used to detect a month boundary between two dates. */
+    private monthKey(date: Date): string {
+        return `${date.getFullYear()}-${date.getMonth()}`;
+    }
+
+    /** Total tournaments per month across the whole filtered list (not just the current page). */
+    private computeMonthCounts(): void {
+        this.monthCounts = new Map();
+        if (!this.groupByDate) return;
+        for (const t of this.filteredTournaments) {
+            const key = this.monthKey(t.date);
+            this.monthCounts.set(key, (this.monthCounts.get(key) ?? 0) + 1);
+        }
+    }
+
+    private createMonthDivider(date: Date, count: number): HTMLElement {
+        const divider = document.createElement('div');
+        divider.className = 'month-divider';
+        const label = date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+        divider.innerHTML = `
+            <span class="month-divider-label">${escapeHTML(label)}</span>
+            <span class="month-divider-count">${count}</span>
+        `;
+        return divider;
     }
 
     /**
@@ -184,7 +225,20 @@ export class UIManager {
         const endIndex = Math.min(startIndex + this.itemsPerPage, this.filteredTournaments.length);
         const pageTournaments = this.filteredTournaments.slice(startIndex, endIndex);
 
+        // Seed with the previous page's last month so a divider isn't
+        // repeated mid-month right after a pagination boundary.
+        let lastMonthKey = startIndex > 0
+            ? this.monthKey(this.filteredTournaments[startIndex - 1]!.date)
+            : null;
+
         pageTournaments.forEach(tournament => {
+            if (this.groupByDate) {
+                const key = this.monthKey(tournament.date);
+                if (key !== lastMonthKey) {
+                    container.appendChild(this.createMonthDivider(tournament.date, this.monthCounts.get(key) ?? 0));
+                    lastMonthKey = key;
+                }
+            }
             const card = this.createTournamentCard(tournament);
             container.appendChild(card);
         });
@@ -232,32 +286,48 @@ export class UIManager {
     }
 
     /**
-     * Condense a verbose time control into "base'+increment"" (e.g. "90 minutes
-     * with 30 second increment from move 1" -> 90'+30"). Values that are
-     * already short (bare "N+M" format like "8+3") are left unchanged.
+     * Colored pill for the tournament's time-control class (Classical/Rapid/
+     * Blitz), derived from FilterService.annotate()'s classificationReasons
+     * rather than re-parsing the category string, so it agrees with the
+     * checkboxes that actually filtered this tournament in. Priority favors
+     * the more specific/faster format when a multi-format event's category
+     * mentions more than one (e.g. "Standard & Blitz").
      */
-    private condenseTimeControl(tc: string): string {
-        if (/^\d+\s*['"]?\s*\+\s*\d+\s*['"]?$/.test(tc)) return tc;
-
-        const lower = tc.toLowerCase();
-        const baseMatch = lower.match(/(\d+)\s*(h(?:our)?s?|min(?:ute)?s?)/);
-        if (!baseMatch) return tc;
-
-        const value = parseInt(baseMatch[1]!, 10);
-        const baseMinutes = baseMatch[2]!.startsWith('h') ? value * 60 : value;
-        const incMatch = lower.match(/(\d+)\s*sec(?:ond)?s?/);
-        const increment = incMatch ? parseInt(incMatch[1]!, 10) : 0;
-
-        return `${baseMinutes}'+${increment}"`;
+    private timeControlClassHTML(tournament: Tournament): string {
+        const reasons = tournament.classificationReasons ?? [];
+        const cls = reasons.includes('Blitz') ? 'blitz'
+            : reasons.includes('Rapid') ? 'rapid'
+            : reasons.includes('Classical') ? 'classical'
+            : null;
+        if (!cls) return '';
+        const label = cls.charAt(0).toUpperCase() + cls.slice(1);
+        return `<span class="time-control-class time-control-class--${cls}">${label}</span>`;
     }
 
-    /** Inclusive day count when dateTo is present and later than the start date. */
-    private tournamentDurationDays(tournament: Tournament): number | null {
-        if (!tournament.dateTo) return null;
-        const to = new Date(tournament.dateTo);
-        if (isNaN(to.getTime())) return null;
-        const days = Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
-        return days > 1 ? days : null;
+    /**
+     * Remaining category tokens (Open, Youth, U18…) as separate chips, once
+     * the time-control words have their own colored pill above — avoids
+     * repeating "Blitz" in both a colored pill and a plain string.
+     */
+    private categoryTagsHTML(tournament: Tournament): string {
+        const TIME_WORDS = /^(classical|standard|rapid|blitz)$/i;
+        const tokens = tournament.category
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t && !TIME_WORDS.test(t));
+        return tokens.map(t => `<span class="category-tag">${escapeHTML(t)}</span>`).join('');
+    }
+
+    /**
+     * Travel context on the location line: nearest airport with scheduled
+     * flights, as travellers search for it (IATA code), with the full name in
+     * the tooltip / for screen readers. Distance is straight-line, and says so.
+     */
+    private airportHintHTML(tournament: Tournament): string {
+        const a = tournament.airport;
+        if (!a) return '';
+        const full = `Nearest airport with scheduled flights: ${a.name} (${a.iata}), about ${a.km} km in a straight line`;
+        return `<span class="airport-hint" title="${escapeHTML(full)}"><span aria-hidden="true">✈ ${escapeHTML(a.iata)} · ${a.km} km</span><span class="sr-only">${escapeHTML(full)}</span></span>`;
     }
 
     /**
@@ -343,13 +413,23 @@ export class UIManager {
         // Show raw time control only when it adds info beyond the class label
         const tc = (tournament.timeControl ?? '').trim();
         const TC_CLASS_LABELS = new Set(['classical', 'rapid', 'blitz', '']);
-        const timeControlHTML = tc && !TC_CLASS_LABELS.has(tc.toLowerCase())
-            ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(this.condenseTimeControl(tc))}</span>`
+        const tcDisplay = TC_CLASS_LABELS.has(tc.toLowerCase()) ? '' : formatTimeControl(tc);
+        const timeControlHTML = tcDisplay
+            ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(tcDisplay)}</span>`
             : '';
 
-        const durationDays = this.tournamentDurationDays(tournament);
-        const durationHTML = durationDays !== null
-            ? `<span class="duration-pill">${durationDays} days</span>`
+        const timeControlClassHTML = this.timeControlClassHTML(tournament);
+        const categoryTagsHTML = this.categoryTagsHTML(tournament);
+
+        // Featured seaside: the venue itself is within 500 m of the sea
+        const beachfrontHTML = tournament.seaM !== undefined
+            ? `<span class="beachfront-pill" title="The venue is about ${tournament.seaM} m from the sea (OpenStreetMap coastline)"><span aria-hidden="true">🏖</span> Beachfront · ${tournament.seaM} m from the sea</span>`
+            : '';
+        if (tournament.seaM !== undefined) card.classList.add('tournament-card--beachfront');
+
+        const durationLabel = formatDurationLabel(tournament.date, tournament.dateTo);
+        const durationHTML = durationLabel
+            ? `<span class="duration-pill">${escapeHTML(durationLabel)}</span>`
             : '';
 
         card.innerHTML = `
@@ -379,10 +459,12 @@ export class UIManager {
                         </button>
                     </div>
                 </div>
-                <div class="tournament-location">${formatLocation(tournament.location)}</div>
+                <div class="tournament-location"><span class="tournament-place">${formatLocation(tournament.location)}${this.airportHintHTML(tournament)}</span></div>
                 <div class="tournament-meta">
-                    <span class="tournament-category">${escapeHTML(tournament.category)}</span>
+                    ${beachfrontHTML}
+                    ${timeControlClassHTML}
                     ${timeControlHTML}
+                    ${categoryTagsHTML}
                     ${durationHTML}
                 </div>
                 ${travelTagsHTML}
@@ -534,13 +616,19 @@ export class UIManager {
             ? `<p class="empty-state-message empty-state-count">0 of ${ctx.totalCount.toLocaleString()} tournaments match your filters.</p>`
             : `<p class="empty-state-message">We couldn't find any tournaments matching your current filters.</p>`;
 
-        const suggestions = ctx?.suggestions.length
-            ? ctx.suggestions
-            : ['Expand the date range', 'Remove some filter criteria', 'Try a different country or location'];
+        const relaxations = ctx?.relaxations ?? [];
 
-        const suggestionItems = suggestions
-            .map(s => `<li>${escapeHTML(s)}</li>`)
-            .join('');
+        const relaxationItems = relaxations.length > 0
+            ? relaxations.map((r, i) => `
+                <li>
+                    <button type="button" class="empty-state-relaxation-btn" data-relaxation-index="${i}">
+                        ${escapeHTML(r.label)} <span class="empty-state-relaxation-count">(${r.count.toLocaleString()})</span>
+                    </button>
+                </li>
+            `).join('')
+            : ['Expand the date range', 'Remove some filter criteria', 'Try a different country or location']
+                .map(s => `<li>${escapeHTML(s)}</li>`)
+                .join('');
 
         container.innerHTML = `
             <div class="empty-state">
@@ -548,8 +636,8 @@ export class UIManager {
                 <h3 class="empty-state-title">No Tournaments Found</h3>
                 ${countLine}
                 <div class="empty-state-suggestions">
-                    <h4>Try adjusting your filters:</h4>
-                    <ul>${suggestionItems}</ul>
+                    <h4>${relaxations.length > 0 ? 'One-tap fixes:' : 'Try adjusting your filters:'}</h4>
+                    <ul>${relaxationItems}</ul>
                 </div>
                 <div class="empty-state-actions">
                     <button class="reset-filters-btn" id="resetFiltersBtn">
@@ -566,7 +654,7 @@ export class UIManager {
     /**
      * Show error message
      */
-    showError(message: string, type: 'error' | 'warning' | 'success' = 'error'): void {
+    showError(message: string, type: 'error' | 'warning' | 'success' = 'error', onRetry?: () => void): void {
         const error = document.getElementById('error');
         if (!error) return;
 
@@ -574,12 +662,48 @@ export class UIManager {
         error.className = `error-message ${type}-type`;
         error.style.display = 'block';
 
+        // With live filtering there's no Search button to press again, so a
+        // failed load offers its own retry.
+        if (onRetry) {
+            const retry = document.createElement('button');
+            retry.type = 'button';
+            retry.className = 'error-retry-btn';
+            retry.textContent = 'Try again';
+            retry.addEventListener('click', () => {
+                error.style.display = 'none';
+                onRetry();
+            });
+            error.append(' ', retry);
+        }
+
         // Auto-hide success messages
         if (type === 'success') {
             setTimeout(() => {
                 error.style.display = 'none';
             }, 5000);
         }
+    }
+
+    /**
+     * Keep the "Show N tournaments" jump button's label in step with the
+     * live result count (the button itself is only displayed below 1024px,
+     * where the filters sit above the results - see styles.css).
+     */
+    updateShowResultsButton(count: number): void {
+        const btn = document.getElementById('showResultsBtn');
+        if (!btn) return;
+        btn.textContent = count === 0
+            ? 'No matches – see suggestions ↓'
+            : `Show ${count.toLocaleString('en-GB')} tournament${count === 1 ? '' : 's'} ↓`;
+    }
+
+    /** Scroll the results into view and move focus to their heading. */
+    scrollToResults(): void {
+        const heading = document.getElementById('resultsHeading');
+        if (!heading) return;
+        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        heading.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        heading.focus({ preventScroll: true });
     }
 
     /**
@@ -599,6 +723,18 @@ export class UIManager {
      * Scroll to and briefly highlight the tournament card matching the given URL.
      * Called after a deep-link search (?t= param) completes rendering.
      */
+    /**
+     * Go to the results page that holds this tournament, then highlight its
+     * card (used by the map's "Show in list"). No-op if it isn't in the list.
+     */
+    showTournamentInList(url: string): void {
+        const index = this.filteredTournaments.findIndex(t => t.url === url);
+        if (index < 0) return;
+        this.currentPage = Math.floor(index / this.itemsPerPage) + 1;
+        this.renderResults();
+        this.highlightTournament(url);
+    }
+
     highlightTournament(url: string): void {
         // Find the card that contains a .tournament-link pointing to this URL
         const link = document.querySelector<HTMLAnchorElement>(
@@ -625,25 +761,6 @@ export class UIManager {
     }
 
     /**
-     * Update last updated timestamp
-     */
-    updateLastUpdatedTimestamp(): void {
-        const timestampEl = document.getElementById('lastUpdatedTime');
-        if (timestampEl) {
-            const now = new Date();
-            const formattedDate = now.toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZoneName: 'short'
-            });
-            timestampEl.textContent = formattedDate;
-        }
-    }
-
-    /**
      * Get filtered tournaments for export
      */
     getFilteredTournaments(): Tournament[] {
@@ -663,45 +780,30 @@ export class UIManager {
      * Toggle dark mode
      */
     toggleDarkMode(): void {
-        document.body.classList.toggle('dark-theme');
-        const isDark = document.body.classList.contains('dark-theme');
-
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-            themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-        }
+        this.setDarkMode(!document.body.classList.contains('dark-theme'));
     }
 
     /**
-     * Set dark mode state
+     * Set dark mode state. Only the accessible name changes here - the
+     * button's visible icon (#themeToggleIcon) is app.ts's
+     * updateThemeButtonText(); replacing the button's textContent would
+     * wipe that icon markup and leave "Light Mode" text spilling out of the
+     * round icon button.
      */
     setDarkMode(enabled: boolean): void {
-        if (enabled) {
-            document.body.classList.add('dark-theme');
-            const themeToggle = document.getElementById('themeToggle');
-            if (themeToggle) {
-                themeToggle.textContent = '☀️ Light Mode';
-                themeToggle.setAttribute('aria-label', 'Switch to light mode');
-            }
-        } else {
-            document.body.classList.remove('dark-theme');
-            const themeToggle = document.getElementById('themeToggle');
-            if (themeToggle) {
-                themeToggle.textContent = '🌙 Dark Mode';
-                themeToggle.setAttribute('aria-label', 'Switch to dark mode');
-            }
-        }
+        document.body.classList.toggle('dark-theme', enabled);
+        document.getElementById('themeToggle')
+            ?.setAttribute('aria-label', enabled ? 'Switch to light mode' : 'Switch to dark mode');
     }
 
     /**
-     * On phones, the fixed-position Search button is pinned to
+     * On phones, the fixed-position "Show N tournaments" button is pinned to
      * `window.innerHeight` (the layout viewport), which Chrome for Android
      * sizes as if its toolbar were hidden even while it's showing. That
      * leaves the button positioned below the actually-visible visual
      * viewport by the toolbar's height. Track the gap via the
      * visualViewport API and expose it as a CSS custom property so
-     * `.search-button`'s `bottom` offset can compensate; see styles.css.
+     * `.show-results-btn`'s `bottom` offset can compensate; see styles.css.
      */
     initViewportOffsetFix(): void {
         const viewport = window.visualViewport;

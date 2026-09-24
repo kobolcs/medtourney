@@ -65,13 +65,47 @@ jobs:
             exit 1
           fi
 
+      # Map coordinates. Runs on every scrape: locations already in the
+      # committed geocode_cache.json are reused, only new places are looked up
+      # (OpenStreetMap Nominatim, 1 req/s, capped per run - the rest follow on
+      # the next run), with a GeoNames offline fallback for town names buried
+      # in venue text. Never allowed to fail the data update.
+      #
+      # The GeoNames file is kept in the Actions cache and refreshed weekly:
+      # if a download fails, the previous copy is used, so the fallback (and
+      # the ~250 pins that depend on it) never silently drops out for a day.
+      - name: Week key for the GeoNames cache
+        id: geonames-week
+        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore GeoNames towns (geocoding fallback)
+        id: geonames-cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/geonames
+          key: geonames-cities1000-${{ steps.geonames-week.outputs.week }}
+          restore-keys: geonames-cities1000-
+
+      - name: Download GeoNames towns (weekly refresh)
+        if: steps.geonames-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/geonames
+          curl -sSfL -o /tmp/geonames/cities1000.zip https://download.geonames.org/export/dump/cities1000.zip
+          unzip -o -q /tmp/geonames/cities1000.zip -d /tmp/geonames
+
+      - name: Geocode new tournament locations
+        continue-on-error: true
+        run: |
+          python3 geocode_tournaments.py --geonames /tmp/geonames/cities1000.txt --max-lookups 300 2>&1 | tee /tmp/geocode.log
+
       - name: Check if tournaments_data.json was updated
         id: check_changes
         run: |
           # Use git status --porcelain so this also detects the file when it is
           # currently untracked (e.g. after being removed from the repo).
-          git add -N tournaments_data.json tournaments_data_meta.json 2>/dev/null || true
-          if [ -z "$(git status --porcelain tournaments_data.json)" ]; then
+          git add -N tournaments_data.json tournaments_data_meta.json geocode_cache.json 2>/dev/null || true
+          if [ -z "$(git status --porcelain tournaments_data.json geocode_cache.json)" ]; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No changes to tournaments_data.json"
           else
@@ -86,6 +120,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add tournaments_data.json
           [ -f tournaments_data_meta.json ] && git add tournaments_data_meta.json || true
+          [ -f geocode_cache.json ] && git add geocode_cache.json || true
           git commit -m "Update tournament data - $(date +'%Y-%m-%d %H:%M UTC')"
           git push
 
@@ -105,6 +140,7 @@ jobs:
             echo "✅ Successfully processed $TOURNAMENT_COUNT tournaments" >> $GITHUB_STEP_SUMMARY
             echo "📅 Date range: Today to 6 months ahead (dynamic)" >> $GITHUB_STEP_SUMMARY
             echo "🌍 Filtered: European tournaments only (Russia excluded)" >> $GITHUB_STEP_SUMMARY
+            [ -f /tmp/geocode.log ] && echo "🗺️ $(tail -1 /tmp/geocode.log)" >> $GITHUB_STEP_SUMMARY || true
           else
             echo "❌ Failed to generate tournaments_data.json" >> $GITHUB_STEP_SUMMARY
           fi
