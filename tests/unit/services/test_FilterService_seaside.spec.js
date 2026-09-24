@@ -18,24 +18,40 @@ function assertEqual(actual, expected, message) {
     }
 }
 
-const towns = new Set(['benidorm', 'nice']);
+const towns = new Set(['benidorm', 'nice', 'rome', 'roma', 'bar', 'crete']);
 const t = (location, extra = {}) => ({ name: 'X Open', location, category: 'Open', date: new Date(), url: 'u', description: '', ...extra });
 const fs = new FilterService();
 
 console.log('\n🧪 FilterService seaside rule\n' + '='.repeat(60));
 
 test('a listed coastal town counts', () => assertEqual(fs.isSeaside(t('Benidorm, ESP'), towns), true, 'benidorm'));
-test('the geocoder coast flag counts without a listed town', () => assertEqual(fs.isSeaside(t('Matosinhos, POR', { coast: 'atlantic' }), towns), true, 'matosinhos'));
+test('the geocoder coast flag counts without a listed town', () => assertEqual(fs.isSeaside(t('Matosinhos, POR', { lat: 41.18, lng: -8.69, coast: 'atlantic' }), towns), true, 'matosinhos'));
 test('neither -> not seaside', () => assertEqual(fs.isSeaside(t('Madrid, ESP'), towns), false, 'madrid'));
 
+test('coordinates decide: a listed town that is inland is not seaside (Rome)', () => {
+    assertEqual(fs.isSeaside(t('ROMA, ITA', { lat: 41.893, lng: 12.483 }), towns), false, 'roma');
+});
+
+test('coordinates decide: "Chillout Bar" in Slovakia is not Bar, Montenegro', () => {
+    assertEqual(fs.isSeaside(t('Chillout Bar, SVK', { lat: 48.308, lng: 18.084 }), towns), false, 'bar');
+});
+
+test('unplaced: the town list never matches text in brackets ("Tivoli (Rome)")', () => {
+    assertEqual(fs.isSeaside(t('Tivoli (Rome), ITA'), towns), false, 'tivoli');
+});
+
+test('unplaced: a listed coastal town still counts ("Hersonissos Crete")', () => {
+    assertEqual(fs.isSeaside(t('Hotel Royal Belvedere | Hersonissos Crete, GRE'), towns), true, 'crete');
+});
+
 test('Atlantic seaside is tagged Seaside but not Mediterranean', () => {
-    const tags = fs.annotate(t('Matosinhos, POR', { coast: 'atlantic' }), towns).travelTags;
+    const tags = fs.annotate(t('Matosinhos, POR', { lat: 41.18, lng: -8.69, coast: 'atlantic' }), towns).travelTags;
     assertEqual(tags.includes('Seaside'), true, 'Seaside');
     assertEqual(tags.includes('Mediterranean'), false, 'Mediterranean');
 });
 
 test('Mediterranean seaside gets both tags', () => {
-    const tags = fs.annotate(t('Hotel X, ESP', { coast: 'med' }), towns).travelTags;
+    const tags = fs.annotate(t('Hotel X, ESP', { lat: 38.54, lng: -0.13, coast: 'med' }), towns).travelTags;
     assertEqual(tags.includes('Mediterranean') && tags.includes('Seaside'), true, 'both');
 });
 

@@ -293,3 +293,23 @@ class TestAirports:
         ba = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(ba)
         assert {"RU", "BY"} <= ba.EXCLUDED_COUNTRIES
+
+
+class TestSeasideFixes:
+    def test_country_code_segments_are_never_queried_alone(self) -> None:
+        # "Arco- Trentino (ITA)" once matched a place called Ita
+        assert "ITA" not in gt.candidate_queries("Arco- Trentino (ITA)")
+
+    def test_overrides_win_over_cache_and_lookups(self) -> None:
+        cache = {"Village Huelva, ESP": {"lat": 37.27, "lng": -6.94, "q": "huelva", "src": "geonames"},
+                 "Rua Camilo Castelo Branco, POR": {"lat": 39.8, "lng": -7.5, "q": "castelo branco"}}
+        overrides = {"Village Huelva, ESP": [37.9, -6.5], "Rua Camilo Castelo Branco, POR": None}
+        g = gt.Geocoder(cache, search=FakeNominatim(), sleep=lambda _s: None, now=NOW, overrides=overrides)
+        assert g.place("Village Huelva, ESP", 10) == (37.9, -6.5)
+        assert g.place("Rua Camilo Castelo Branco, POR", 10) is None
+
+    def test_overrides_file_is_valid(self) -> None:
+        data = json.loads((ROOT / "data" / "geocode_overrides.json").read_text(encoding="utf-8"))
+        for location, coords in data.items():
+            assert location.rpartition(",")[2].strip() in gt.FED_TO_ISO2
+            assert coords is None or (len(coords) == 2 and -90 <= coords[0] <= 90)

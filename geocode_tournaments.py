@@ -107,7 +107,9 @@ def candidate_queries(head: str) -> list[str]:
 
     if letters(head) < MIN_SEGMENT_LETTERS:
         return []
-    segments = [s for s in SEGMENT_SPLIT.split(head) if letters(s) >= MIN_SEGMENT_LETTERS]
+    # ...and never a bare country code ("Arco- Trentino (ITA)" once matched a place called Ita)
+    segments = [s for s in SEGMENT_SPLIT.split(head)
+                if letters(s) >= MIN_SEGMENT_LETTERS and s.strip().upper() not in FED_TO_ISO2]
     queries = [head]
     for i in range(1, len(segments)):
         q = " ".join(segments[i:])
@@ -258,6 +260,9 @@ class Coast:
 # scripts/build_airports.py). Offline, recomputed every run.
 
 AIRPORTS_FILE = Path(__file__).parent / "data" / "airports.json"
+# Hand-checked fixes for locations the rules get wrong: {"location": [lat, lng] or null}.
+# null = leave unplaced. Applied before the cache and any lookup.
+OVERRIDES_FILE = Path(__file__).parent / "data" / "geocode_overrides.json"
 AIRPORT_SEARCH_DEG = 3  # grid cells searched around a point (~300 km)
 # Prefer a large (international) airport over a nearer small one when it is
 # at most this much further: Hvar -> Split, not the seasonal Brac strip;
@@ -423,6 +428,7 @@ class Geocoder:
         on_progress: Callable[[], None] | None = None,
         geonames: dict[str, dict[str, Place]] | None = None,
         coastline: Callable[[float, float], list[list[tuple[float, float]]]] = overpass_coastline,
+        overrides: dict[str, list[float] | None] | None = None,
     ) -> None:
         self.geonames = geonames
         self.coastline = coastline
@@ -432,6 +438,11 @@ class Geocoder:
         self.now = now or datetime.now(timezone.utc)
         self.on_progress = on_progress
         self.lookups = 0
+        self.overrides: dict[str, list[float] | None] = (
+            overrides if overrides is not None
+            else json.loads(OVERRIDES_FILE.read_text(encoding="utf-8")) if OVERRIDES_FILE.exists()
+            else {}
+        )
         self.offline = False
         self.overpass_down = False
 
@@ -543,7 +554,11 @@ class Geocoder:
         return None
 
     def place(self, location: str, max_lookups: int) -> tuple[float, float] | None:
-        """geocode(), but after a network error keep going from the cache only."""
+        """geocode(), but hand-checked overrides first, and after a network
+        error keep going from the cache only."""
+        if location in self.overrides:
+            fixed = self.overrides[location]
+            return (fixed[0], fixed[1]) if fixed else None
         if not self.offline:
             try:
                 return self.geocode(location, max_lookups)

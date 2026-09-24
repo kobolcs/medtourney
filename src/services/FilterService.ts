@@ -216,14 +216,20 @@ export class FilterService {
     }
 
     /**
-     * The Seaside rule: geocoded within 10 km of the Mediterranean or of
-     * Spain's/Portugal's Atlantic coast (`coast`, set by geocode_tournaments.py
-     * after each scrape), or - for tournaments that couldn't be placed, and
-     * as a safety net - a listed coastal town named in the location text.
+     * The Seaside rule. A placed tournament (lat/lng from
+     * geocode_tournaments.py) is seaside only if its coordinates are within
+     * 10 km of the Mediterranean or Spain's/Portugal's Atlantic coast (`coast`)
+     * - the town list must not override that ("Tivoli (Rome)" is inland,
+     * central Rome ~25 km from the sea, "Chillout Bar" isn't Bar in
+     * Montenegro). The listed coastal towns only help tournaments that
+     * couldn't be placed, and never via text in brackets.
      */
     isSeaside(tournament: Tournament, mediterraneanLocations: Set<string>): boolean {
-        return tournament.coast !== undefined
-            || this.isMediterraneanLocation(tournament.location.toLowerCase(), mediterraneanLocations);
+        if (typeof tournament.lat === 'number' && typeof tournament.lng === 'number') {
+            return tournament.coast !== undefined;
+        }
+        const withoutBrackets = tournament.location.replace(/\([^)]*\)/g, ' ').toLowerCase();
+        return this.isMediterraneanLocation(withoutBrackets, mediterraneanLocations);
     }
 
     isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
