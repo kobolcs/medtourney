@@ -112,7 +112,17 @@ export class MapView {
                 keyboard: true,
                 count,
             } as Leaflet.MarkerOptions & { count: number });
-            marker.bindPopup(() => this.popupHTML(place), { maxWidth: 300 });
+            // Open (never toggle) on click: Leaflet's bindPopup closes an open
+            // popup on the next click, and a touch tap that arrives as two
+            // clicks (touch + synthesized mouse click, seen on iOS WebKit)
+            // would open it and immediately close it again.
+            marker.on('click', () => {
+                if (!this.map) return;
+                L.popup({ maxWidth: 300, offset: L.point(0, -10) })
+                    .setLatLng([place.lat, place.lng])
+                    .setContent(this.popupHTML(place))
+                    .openOn(this.map);
+            });
             return marker;
         });
         this.cluster.addLayers(markers);

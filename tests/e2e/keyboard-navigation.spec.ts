@@ -159,7 +159,10 @@ test.describe('Keyboard Navigation', () => {
     await expect(page.locator('#mediterraneanOnly')).toBeChecked();
   });
 
-  test('should navigate through filter collapse with Enter and Space', async ({ page }) => {
+  test('should navigate through filter collapse with Enter and Space', async ({ page, isMobile }) => {
+    // Phones keep filters in a bottom sheet (no collapsible heading, dates
+    // inside the sheet) - covered by the sheet tests in dark-mode-and-ui.spec.ts
+    test.skip(isMobile, 'Desktop/tablet filter layout');
     // Tab to filter heading
     await page.keyboard.press('Tab'); // Skip link
     await page.keyboard.press('Tab'); // Help button
@@ -261,7 +264,10 @@ test.describe('Keyboard Navigation', () => {
     expect(after).not.toBe(before);
   });
 
-  test('should support keyboard navigation in date inputs', async ({ page }) => {
+  test('should support keyboard navigation in date inputs', async ({ page, isMobile }) => {
+    // Phones keep filters in a bottom sheet (no collapsible heading, dates
+    // inside the sheet) - covered by the sheet tests in dark-mode-and-ui.spec.ts
+    test.skip(isMobile, 'Desktop/tablet filter layout');
     // Focus start date
     const startDate = page.locator('#startDate');
     await startDate.focus();

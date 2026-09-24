@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments, openAdvancedFilters, isoInDays, TournamentFixture } from './_fixtures';
+import { stubTournaments, openAdvancedFilters, openFilters, closeFilters, setMode, isoInDays, TournamentFixture } from './_fixtures';
 
 test.describe('Tournament Search and Filter', () => {
   test.beforeEach(async ({ page }) => {
@@ -47,7 +47,7 @@ test.describe('Tournament Search and Filter', () => {
     await page.getByLabel('Open Category Only').uncheck();
 
     // Seaside mode (mediterraneanOnly)
-    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
+    await setMode(page, 'seaside'); // Seaside mode = mediterraneanOnly
 
     // Check "S50+ (Senior) Category"
     await page.getByLabel(/S50\+.*Senior/i).check();
@@ -121,7 +121,7 @@ test.describe('Tournament Search and Filter', () => {
 
   test('should display empty state when no results', async ({ page }) => {
     // Set very restrictive filters
-    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
+    await setMode(page, 'seaside'); // Seaside mode = mediterraneanOnly
     await page.getByLabel(/S50\+.*Senior/i).check();
     await page.getByLabel(/Women's Tournaments/i).check();
 
@@ -164,6 +164,7 @@ test.describe('Tournament Search and Filter', () => {
     await expect(relaxBtn).toBeVisible();
     await expect(relaxBtn).toContainText('(24)'); // full fixture set, once women-only is lifted
 
+    await closeFilters(page); // phones: the empty state is behind the filters sheet
     await relaxBtn.click();
     await expect(page.getByLabel(/Women's Tournaments/i)).not.toBeChecked();
     await expect(page.locator('.tournament-card').first()).toBeVisible();
@@ -173,7 +174,7 @@ test.describe('Tournament Search and Filter', () => {
   test('should reset filters', async ({ page }) => {
     // Change some filters
     await page.getByLabel('Open Category Only').uncheck();
-    await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
+    await setMode(page, 'seaside'); // Seaside mode = mediterraneanOnly
 
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
@@ -312,6 +313,7 @@ test.describe('Filter state in the URL', () => {
     await page.goto('/?med=1');
     await expect(page.locator('#mediterraneanOnly')).toBeChecked();
 
+    await openFilters(page);
     await page.locator('#clearFiltersBtn').click();
     await expect(page).not.toHaveURL(/[?&]med=/);
   });
@@ -398,6 +400,8 @@ test.describe('No Search button - live results', () => {
     await page.goto('/');
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
+    // Phones: it's the filters sheet's "done" button
+    await openFilters(page);
     const btn = page.locator('#showResultsBtn');
     await expect(btn).toContainText(/show \d+ tournaments?/i);
     await btn.click();

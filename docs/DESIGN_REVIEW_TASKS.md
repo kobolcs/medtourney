@@ -34,8 +34,11 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
   - [x] Removed the "Mediterranean Seaside Only" checkbox from the primary bar -
     the mode switch is its only visible control now (hidden input kept as state).
 - [x] **7. Sticky filter sidebar on desktop** (≥1024px) (`2cd6664`).
-- [ ] **8. Filters in a bottom sheet on phones** – results first, a "Filters (3)" button
-  opens the same filter markup as a sheet with a "Show N tournaments" button.
+- [x] **8. Filters in a bottom sheet on phones** – results first (first card above the
+  fold on a Pixel 5), a "Filters (N)" bar opens the same filter card as a sheet
+  with "Show N tournaments" as its done button; the mode switch and chips stay on
+  the page (`src/services/FilterSheet.ts`). Also fixed on the way: the theme
+  button lost its icon after the first toggle (UIManager overwrote its content).
 - [x] **9. Country list that fits the niche** (`027ecd7`).
   - [x] Grouped by region (Mediterranean, Central, Balkans & Eastern, Nordic & Baltic, British Isles)
   - [x] Type-to-filter input; empty groups hidden; "no match" message echoes the query

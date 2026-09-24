@@ -245,6 +245,28 @@ buried in venue text fall back to an offline match against GeoNames'
 
 ---
 
+### 7. **FilterSheet** (`src/services/FilterSheet.ts`)
+
+**Responsibility**: Phones (`max-width: 768px`) - the filters card as a bottom sheet, results first
+
+**How it works**:
+- One form, no duplication: the existing `.filters-card` gets
+  `filters-card--sheet`, dialog semantics (`role="dialog"`, `aria-modal`)
+  and `inert` while closed; a "Filters (N)" bar (`#openFiltersBtn`, N =
+  active-filter chips) opens it, and its "Show N tournaments" button closes it
+- The Seaside/Senior mode switch and the active-filter chips are *moved*
+  (listeners intact) to `#mobileQuickFilters` above the results, and moved
+  back when the viewport grows past 768px (a `matchMedia` listener)
+- Escape / backdrop tap / close button close it; focus is trapped while
+  open and returns to the bar; a saved "collapsed" state from the old phone
+  collapse toggle is neutralised in sheet mode and restored on leaving it
+- Both the bar and the sheet sit on `--viewport-toolbar-gap`
+  (`UIManager.initViewportOffsetFix`) so they stay above Chrome for
+  Android's toolbar
+- Tablets and desktop are untouched, DOM order included
+
+---
+
 ## Coordination Layer
 
 ### **app.ts** (573 lines, -75% from original)

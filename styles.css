@@ -2716,3 +2716,219 @@ body.dark-theme .map-pin--sea,
 body.dark-theme .map-cluster {
   color: var(--ink);
 }
+
+/* ─────────────────────────────────────────
+   PHONES: FILTERS IN A BOTTOM SHEET
+   (src/services/FilterSheet.ts). Results come first; the filters card is
+   the sheet, the mode switch + chips move above the results, and a
+   "Filters (N)" bar takes the fixed bottom slot. Wider screens unchanged.
+────────────────────────────────────────── */
+.sheet-close,
+.open-filters-btn,
+.sheet-backdrop {
+  display: none;
+}
+
+.mobile-quick-filters {
+  margin-bottom: var(--sp-4);
+}
+
+.mobile-quick-filters .mode-switch {
+  margin-bottom: var(--sp-3);
+}
+
+/* Full page width on phones puts the labels on one line - keep the
+   segments a comfortable touch target anyway */
+.mobile-quick-filters .mode-switch-btn {
+  min-height: 44px;
+}
+
+@media (max-width: 768px) {
+  .filters-card.filters-card--sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--viewport-toolbar-gap, 0px);
+    z-index: 1100;
+    margin: 0;
+    max-height: 85vh;
+    max-height: 85dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 16px 16px 0 0;
+    padding-top: var(--sp-6);
+    padding-bottom: 0;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, .25);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform .25s ease, visibility 0s linear .25s;
+  }
+
+  .filters-card.filters-card--sheet.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform .25s ease;
+  }
+
+  /* grab handle */
+  .filters-card--sheet::before {
+    content: "";
+    position: absolute;
+    top: var(--sp-2);
+    left: 50%;
+    width: 40px;
+    height: 4px;
+    margin-left: -20px;
+    border-radius: 2px;
+    background: var(--border);
+  }
+
+  .filters-card--sheet .sheet-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: var(--sp-2);
+    border: none;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .filters-card--sheet h2 {
+    cursor: default !important;
+  }
+
+  /* Date inputs have a wide intrinsic minimum - let the two-up grid shrink them */
+  .filters-card--sheet .date-range input,
+  .filters-card--sheet .date-input {
+    min-width: 0;
+  }
+
+  /* "Show N tournaments" is the sheet's done button, stuck to its bottom */
+  .filters-card--sheet .show-results-btn {
+    position: sticky;
+    bottom: 0;
+    left: auto;
+    right: auto;
+    width: calc(100% + 2 * var(--sp-5));
+    margin: var(--sp-4) calc(-1 * var(--sp-5)) 0;
+    z-index: 1;
+  }
+
+  .open-filters-btn:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--viewport-toolbar-gap, 0px);
+    z-index: 1000;
+    min-height: 60px;
+    padding: var(--sp-5) var(--sp-8);
+    border: none;
+    background: var(--sea);
+    color: #fff;
+    font: 600 var(--text-lg) 'Inter', sans-serif;
+    box-shadow: 0 -4px 20px rgba(22, 32, 50, .18);
+    cursor: pointer;
+  }
+
+  body.dark-theme .open-filters-btn:not([hidden]) {
+    color: var(--ink);
+  }
+
+  .sheet-backdrop:not([hidden]) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(10, 16, 28, .45);
+  }
+
+  body.sheet-open {
+    overflow: hidden;
+  }
+
+  /* Results first: the results controls in two rows instead of four stacked
+     full-width rows, so the first card is on screen without scrolling -
+     filter box on its own, then List/Map, Sort and Export side by side. */
+  .results-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .results-controls .search-within {
+    flex: 1 1 100%;
+  }
+
+  .results-controls .sort-controls {
+    width: auto;
+    flex: 1 1 auto;
+    gap: var(--sp-2);
+  }
+
+  .results-controls .sort-controls label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .results-controls .sort-select {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .results-controls .export-button {
+    width: auto;
+    min-height: 44px;
+    padding: 0 var(--sp-4);
+  }
+
+  /* Let the header's controls flow together so Export CSV and "Shortlist
+     only" share a row */
+  .results-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .results-header .results-title-group {
+    flex: 1 1 100%;
+  }
+
+  .results-header .results-controls {
+    display: contents;
+  }
+
+  .results-header .shortlist-controls {
+    width: auto;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+
+  /* The tagline + live count line already say what the site is; the long
+     description stays in the page's meta description */
+  .subtitle {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .filters-card.filters-card--sheet,
+  .filters-card.filters-card--sheet.is-open {
+    transition: none;
+  }
+}

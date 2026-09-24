@@ -113,10 +113,12 @@
              Firefox makes scroll containers a Tab stop of their own. Every control inside
              is focusable anyway (focusing one scrolls it into view), so the extra stop
              only adds noise. -->
-        <div class="filters-card" role="search" aria-label="Tournament search filters" aria-expanded="true" tabindex="-1">
+        <div class="filters-card" id="filtersSheet" role="search" aria-label="Tournament search filters" aria-expanded="true" tabindex="-1">
             <div class="filters-title-row">
                 <h2>Search Filters</h2>
                 <button type="button" id="clearFiltersBtn" class="clear-filters-btn" aria-label="Clear all filters">Clear all</button>
+                <!-- Phones only: the card is a bottom sheet there (src/services/FilterSheet.ts) -->
+                <button type="button" class="sheet-close" aria-label="Close filters">&times;</button>
             </div>
 
             <div class="filter-primary">
@@ -379,6 +381,9 @@
         </div>
 
         <div class="results-column">
+        <!-- Phones: the mode switch and active-filter chips are moved here from
+             the filters card, which becomes a bottom sheet (FilterSheet.ts) -->
+        <div id="mobileQuickFilters" class="mobile-quick-filters" hidden></div>
         <div id="loading" class="loading" style="display: none;" role="status" aria-live="polite" aria-busy="true">
             <div class="spinner" aria-hidden="true"></div>
             <p>Fetching tournaments from chess-results.com…</p>
@@ -440,6 +445,12 @@
         </div>
         </div>
         </main>
+
+        <!-- Phones: opens the filters bottom sheet (FilterSheet.ts) -->
+        <button type="button" id="openFiltersBtn" class="open-filters-btn" aria-controls="filtersSheet" aria-expanded="false" hidden>
+            <span aria-hidden="true">&#9776;</span> Filters<span class="open-filters-count"></span>
+        </button>
+        <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
 
         <footer role="contentinfo">
             <p id="lastUpdated" class="last-updated" aria-live="polite">

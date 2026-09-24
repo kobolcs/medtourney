@@ -64,7 +64,8 @@ medtourney/
 │   │   ├── DataService.ts        # 3-tier fetch strategy (319 lines)
 │   │   ├── ExportService.ts      # CSV & iCalendar exports (330 lines)
 │   │   ├── UIManager.ts          # DOM manipulation & rendering (807 lines)
-│   │   └── MapView.ts            # List/Map toggle's map (Leaflet + OSM tiles, lazy-loaded)
+│   │   ├── MapView.ts            # List/Map toggle's map (Leaflet + OSM tiles, lazy-loaded)
+│   │   └── FilterSheet.ts        # Phones (<=768px): filters card as a bottom sheet
 │   └── utils/
 │       ├── Logger.ts             # Logging utility
 │       ├── validators.ts         # Zod runtime schemas for fetched data
@@ -454,9 +455,14 @@ into that same path rather than requiring a Search click.
    checked, so for those "active" means *unchecked*) — otherwise a filter
    that narrows results won't show up in the drawer's badge or auto-open it
 6. Add unit tests in `tests/unit/services/test_FilterService.spec.js`
-7. Add E2E test in `tests/e2e/search-and-filter.spec.ts`. If the new control
-   lives in the drawer, call `openAdvancedFilters(page)` (from
-   `tests/e2e/_fixtures.ts`) before interacting with it — either in the
+7. Add E2E test in `tests/e2e/search-and-filter.spec.ts`. On phones
+   (<= 768px, the Mobile Chrome / Mobile Safari projects) the whole filters
+   card is a bottom sheet (`src/services/FilterSheet.ts`): call
+   `openFilters(page)` before using any control in it and `closeFilters(page)`
+   before touching the results behind it; `setMode(page, mode)` clicks the
+   Seaside/Senior switch, which sits above the results there. If the new
+   control lives in the drawer, call `openAdvancedFilters(page)` (from
+   `tests/e2e/_fixtures.ts`; it opens the sheet first) before interacting with it — either in the
    spec's `beforeEach`, or inline in just the tests that drive it if the spec
    asserts keyboard tab order (see `accessibility.spec.ts` /
    `keyboard-navigation.spec.ts` for that pattern)

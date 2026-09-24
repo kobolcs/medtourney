@@ -768,35 +768,20 @@ export class UIManager {
      * Toggle dark mode
      */
     toggleDarkMode(): void {
-        document.body.classList.toggle('dark-theme');
-        const isDark = document.body.classList.contains('dark-theme');
-
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-            themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-        }
+        this.setDarkMode(!document.body.classList.contains('dark-theme'));
     }
 
     /**
-     * Set dark mode state
+     * Set dark mode state. Only the accessible name changes here - the
+     * button's visible icon (#themeToggleIcon) is app.ts's
+     * updateThemeButtonText(); replacing the button's textContent would
+     * wipe that icon markup and leave "Light Mode" text spilling out of the
+     * round icon button.
      */
     setDarkMode(enabled: boolean): void {
-        if (enabled) {
-            document.body.classList.add('dark-theme');
-            const themeToggle = document.getElementById('themeToggle');
-            if (themeToggle) {
-                themeToggle.textContent = '☀️ Light Mode';
-                themeToggle.setAttribute('aria-label', 'Switch to light mode');
-            }
-        } else {
-            document.body.classList.remove('dark-theme');
-            const themeToggle = document.getElementById('themeToggle');
-            if (themeToggle) {
-                themeToggle.textContent = '🌙 Dark Mode';
-                themeToggle.setAttribute('aria-label', 'Switch to dark mode');
-            }
-        }
+        document.body.classList.toggle('dark-theme', enabled);
+        document.getElementById('themeToggle')
+            ?.setAttribute('aria-label', enabled ? 'Switch to light mode' : 'Switch to dark mode');
     }
 
     /**

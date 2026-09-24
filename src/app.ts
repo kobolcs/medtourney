@@ -19,6 +19,7 @@ import { DataService } from './services/DataService';
 import { ExportService } from './services/ExportService';
 import { UIManager } from './services/UIManager';
 import type { MapView } from './services/MapView';
+import { FilterSheet } from './services/FilterSheet';
 import { Logger } from './utils/Logger';
 import { escapeHTML } from './utils/html';
 import { filterStateToSearchParams, filterStateFromSearchParams, FILTER_PARAM_KEYS } from './utils/filterUrl';
@@ -90,6 +91,7 @@ class TournamentFinder {
     private countrySearchQuery = '';
     private lastEmptyStateRelaxations: { label: string; count: number; apply: () => void }[] = [];
     private mapView: MapView | null = null;
+    private filterSheet: FilterSheet | null = null;
     private currentView: 'list' | 'map' = 'list';
 
     constructor() {
@@ -192,7 +194,11 @@ class TournamentFinder {
      * Attach all event listeners
      */
     private attachEventListeners(): void {
-        document.getElementById('showResultsBtn')?.addEventListener('click', () => this.uiManager.scrollToResults());
+        document.getElementById('showResultsBtn')?.addEventListener('click', () => {
+            this.filterSheet?.hide(false); // phones: it's the sheet's "done" button
+            this.uiManager.scrollToResults();
+        });
+        this.initFilterSheet();
 
         document.querySelectorAll<HTMLButtonElement>('.view-toggle-btn').forEach(btn => {
             btn.addEventListener('click', () => void this.setView(btn.dataset.view === 'map' ? 'map' : 'list'));
@@ -436,6 +442,19 @@ class TournamentFinder {
     /**
      * Initialize collapsible filters
      */
+    /** Phones: filters in a bottom sheet (see FilterSheet). */
+    private initFilterSheet(): void {
+        const card = document.getElementById('filtersSheet');
+        const bar = document.getElementById('openFiltersBtn') as HTMLButtonElement | null;
+        const backdrop = document.getElementById('sheetBackdrop');
+        const slot = document.getElementById('mobileQuickFilters');
+        const movables = [document.querySelector<HTMLElement>('.mode-switch'), document.getElementById('activeFilterChips')]
+            .filter((el): el is HTMLElement => el !== null);
+        if (!card || !bar || !backdrop || !slot) return;
+        this.filterSheet = new FilterSheet(card, bar, backdrop, slot, movables, card.querySelector('h2'));
+        this.filterSheet.init();
+    }
+
     private initCollapsibleFilters(): void {
         const filtersCard = document.querySelector('.filters-card');
         const savedState = this.cacheManager.loadFromCache<string>(this.cacheManager.CACHE_KEYS.FILTERS_COLLAPSED);
@@ -456,6 +475,8 @@ class TournamentFinder {
             filterTitle.setAttribute('aria-expanded', startCollapsed ? 'false' : 'true');
 
             const toggleFilters = (): void => {
+                // Phones: the card is a bottom sheet (FilterSheet), not collapsible
+                if (filtersCard.classList.contains('filters-card--sheet')) return;
                 const isCollapsed = filtersCard.classList.toggle('collapsed');
                 const expanded = isCollapsed ? 'false' : 'true';
                 filtersCard.setAttribute('aria-expanded', expanded);
@@ -727,6 +748,7 @@ class TournamentFinder {
         if (!container) return;
 
         const chips = this.buildActiveFilterChips();
+        this.filterSheet?.setCount(chips.length);
         if (chips.length === 0) {
             container.innerHTML = '';
             container.hidden = true;

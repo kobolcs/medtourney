@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments } from './_fixtures';
+import { stubTournaments, openFilters } from './_fixtures';
 
 /**
  * Results-first layout: auto-search on load, a primary filter bar with
@@ -22,6 +22,7 @@ test.describe('Results-First Layout', () => {
 
     const details = page.locator('#advancedFilters');
     await expect(details).toHaveJSProperty('open', false);
+    await openFilters(page); // phones: the filters live in a bottom sheet
 
     // Primary controls are usable without opening the drawer.
     await expect(page.locator('#startDate')).toBeVisible();
@@ -39,6 +40,7 @@ test.describe('Results-First Layout', () => {
 
   test('clicking "More filters" opens the drawer and reveals advanced controls', async ({ page }) => {
     await page.goto('/');
+    await openFilters(page);
 
     await page.locator('.advanced-summary').click();
 
@@ -52,6 +54,7 @@ test.describe('Results-First Layout', () => {
 
     const badge = page.locator('#advancedFilterCount');
     await expect(badge).toBeHidden();
+    await openFilters(page);
 
     await page.locator('.advanced-summary').click();
     // openOnly ships checked, so unchecking it counts as one active filter...
@@ -65,6 +68,7 @@ test.describe('Results-First Layout', () => {
 
   test('a saved advanced filter preference auto-opens the drawer on reload', async ({ page }) => {
     await page.goto('/');
+    await openFilters(page);
 
     await page.locator('.advanced-summary').click();
     await page.getByLabel('Open Category Only').uncheck();

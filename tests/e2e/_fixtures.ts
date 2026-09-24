@@ -88,7 +88,44 @@ export async function runSearch(page: Page): Promise<void> {
  * keyboard specs that Tab from the top of the document aren't left starting
  * mid-page (and so the skip-link test still sees an unfocused document).
  */
+/**
+ * Phones (<= 768px): filters live in a bottom sheet (FilterSheet.ts) - open
+ * it so its controls can be used. No-op on wider screens.
+ */
+export async function openFilters(page: Page): Promise<void> {
+    const bar = page.locator('#openFiltersBtn');
+    if (!(await bar.isVisible())) return;
+    const sheet = page.locator('#filtersSheet');
+    if (!(await sheet.evaluate(el => el.classList.contains('is-open')))) {
+        await bar.click();
+    }
+    await sheet.locator('.sheet-close').waitFor({ state: 'visible' });
+}
+
+/** Close the phone filters sheet (e.g. before using the results behind it). No-op elsewhere. */
+export async function closeFilters(page: Page): Promise<void> {
+    const sheet = page.locator('#filtersSheet');
+    if (await sheet.evaluate(el => el.classList.contains('is-open'))) {
+        await sheet.locator('.sheet-close').click();
+        await sheet.locator('.sheet-close').waitFor({ state: 'hidden' });
+    }
+}
+
+/**
+ * Click a Seaside/Senior mode button. On phones it sits above the results,
+ * behind the open filters sheet - close the sheet first, then reopen it so
+ * the test can carry on with sheet controls.
+ */
+export async function setMode(page: Page, mode: 'all' | 'seaside' | 'senior' | 'both'): Promise<void> {
+    const sheet = page.locator('#filtersSheet');
+    const wasOpen = await sheet.evaluate(el => el.classList.contains('is-open'));
+    if (wasOpen) await closeFilters(page);
+    await page.locator(`.mode-switch-btn[data-mode="${mode}"]`).click();
+    if (wasOpen) await openFilters(page);
+}
+
 export async function openAdvancedFilters(page: Page): Promise<void> {
+    await openFilters(page);
     const details = page.locator('#advancedFilters');
     const isOpen = await details.evaluate((el) => (el as HTMLDetailsElement).open);
     if (!isOpen) {
