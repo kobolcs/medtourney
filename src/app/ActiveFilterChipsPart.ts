@@ -142,7 +142,7 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         if (s.seniorS60) parts.push('senior60');
         if (s.womenOnly) parts.push('women');
         if (s.youthCategory) parts.push(`youth_${s.youthCategory}`);
-        if (s.countryFilter.length > 0) parts.push(`country_${s.countryFilter.join('+')}`)
+        if (s.countryFilter.length > 0) parts.push(`country_${s.countryFilter.join('+')}`);
         if (s.minDays !== 0) parts.push(`duration_${String(s.minDays)}`);
         return parts.join(',') || 'none';
     }
