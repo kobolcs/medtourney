@@ -35,6 +35,7 @@ export const TournamentSchema = z.object({
         iata: z.string().check(z.regex(/^[A-Z0-9]{3}$/)),
         name: z.string(),
         km: z.int().check(z.gte(1), z.lte(150)),
+        city: z.optional(z.string().check(z.minLength(1), z.maxLength(60))),
     })),
     town: z.optional(z.string().check(z.minLength(1), z.maxLength(120)))
 });

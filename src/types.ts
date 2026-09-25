@@ -18,8 +18,8 @@ export interface Tournament {
     coast?: 'med' | 'atlantic';
     /** Featured seaside: the venue itself is this many metres (<= 500) from OSM's coastline. */
     seaM?: number;
-    /** Travel context: nearest airport with scheduled flights (geocode_tournaments.py, <= 150 km). */
-    airport?: { iata: string; name: string; km: number };
+    /** Travel context: nearest airport with airline routes (geocode_tournaments.py, <= 150 km). */
+    airport?: { iata: string; name: string; km: number; city?: string };
     /** Display town from reverse geocoding (the location text is often a street or venue). */
     town?: string;
     classificationConfidence?: 'high' | 'medium' | 'low';
