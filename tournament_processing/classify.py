@@ -74,7 +74,8 @@ class ClassifyMixin(ProcessorBase):
                 if age < self.MINIMUM_SENIOR_AGE:
                     return True
             except ValueError:
-                pass
+                # Malformed age indicator; treat as not youth/school.
+                return False
 
         return False
 
