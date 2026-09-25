@@ -77,7 +77,7 @@ test.describe('Tournament Search and Filter', () => {
   test('should narrow the country checklist by typed query', async ({ page }) => {
     // Stub data has ESP (Mediterranean) and AUT (Central Europe) tournaments.
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
-    const esp = page.locator('.country-item[data-country="ESP"]');
+    const esp = page.locator('.country-item[data-country="ESP"]').first();
     const aut = page.locator('.country-item[data-country="AUT"]');
     await expect(esp).toBeVisible();
     await expect(aut).toBeVisible();
@@ -100,7 +100,7 @@ test.describe('Tournament Search and Filter', () => {
 
   test('should filter by country', async ({ page }) => {
     // Country filter is now a checkbox list — check Spain's checkbox
-    await page.locator('#countryList input[value="ESP"]').check();
+    await page.locator('#countryList input[value="ESP"]').first().check();
 
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 

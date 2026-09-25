@@ -124,20 +124,20 @@ test.describe('Country list region ticks', () => {
     await medRow.click();
     await expect(med).toBeChecked();
 
-    await expect(page.locator('#countryList input[value="ESP"]')).toBeChecked();
+    await expect(page.locator('#countryList input[value="ESP"]').first()).toBeChecked();
     await expect(page.locator('#countryList input[value="ITA"]')).toBeChecked();
     await expect(page.locator('#countryList input[value="AUT"]')).not.toBeChecked();
     await expect(page.locator('.tournament-card')).toHaveCount(2);
 
     await medRow.click();
     await expect(med).not.toBeChecked();
-    await expect(page.locator('#countryList input[value="ESP"]')).not.toBeChecked();
+    await expect(page.locator('#countryList input[value="ESP"]').first()).not.toBeChecked();
     await expect(page.locator('.tournament-card')).toHaveCount(3);
   });
 
   test('a region tick shows partly-selected as indeterminate', async ({ page }) => {
     const med = page.getByRole('checkbox', { name: 'Select all Mediterranean countries' });
-    await page.locator('#countryList input[value="ESP"]').check();
+    await page.locator('#countryList input[value="ESP"]').first().check();
     await expect(med).not.toBeChecked();
     await expect(med).toHaveJSProperty('indeterminate', true);
 

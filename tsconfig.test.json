@@ -20,6 +20,7 @@
     "src/services/FilterService.ts",
     "src/services/UIManager.ts",
     "src/types.ts",
+    "src/utils/countrySelection.ts",
     "src/utils/timeControl.ts",
     "src/utils/durationLabel.ts",
     "src/utils/mapPlaces.ts"

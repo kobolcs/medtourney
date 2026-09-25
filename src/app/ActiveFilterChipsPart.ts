@@ -8,6 +8,7 @@
 import { FilterState } from '../types';
 import { escapeHTML } from '../utils/html';
 import { FilterPreferencesPart } from './FilterPreferencesPart';
+import { checkedCountryCodes, clearCountries } from '../utils/countrySelection';
 
 /** Active-filter chips and the "More filters" count. */
 export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
@@ -53,8 +54,7 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
             chips.push({
                 label: `${count} ${count === 1 ? 'country' : 'countries'}`,
                 clear: () => {
-                    document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
-                        .forEach(cb => { cb.checked = false; });
+                    clearCountries();
                     this.updateCountryFilterSummary();
                 }
             });
@@ -120,7 +120,7 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         if (el.ratingCategory?.value) count++;
         if (el.youthCategory?.value) count++;
         if (el.minDays && el.minDays.value !== '0') count++;
-        if (document.querySelectorAll('input[name="countryFilter"]:checked').length > 0) count++;
+        if (checkedCountryCodes().length > 0) count++;
 
         const badge = document.getElementById('advancedFilterCount');
         if (badge) {

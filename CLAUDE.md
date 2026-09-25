@@ -90,7 +90,7 @@ To fix violations: run the linters and split the files using the rules above.
 one the next time you work in it, then remove it from this list and from the tool.
 They show as warnings; they fail only if they grow.
 - Files (`KNOWN` in the script): `TournamentProcessor.py` 506, `tests/python/test_geocode.py` 420,
-  `src/services/FilterService.ts` 433, `src/app.ts` 424,
+  `src/services/FilterService.ts` 433, `src/app.ts` 420,
   `tests/e2e/dark-mode-and-ui.spec.ts` 390, `src/services/ExportService.ts` 330,
   `tests/e2e/keyboard-navigation.spec.ts` 329, `src/services/DataService.ts` 319,
   `src/services/UIManager.ts` 306, `TESTING.md` 724, `ARCHITECTURE.md` 611.

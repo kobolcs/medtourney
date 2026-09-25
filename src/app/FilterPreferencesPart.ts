@@ -8,6 +8,7 @@
 import { FilterState } from '../types';
 import { filterStateToSearchParams, filterStateFromSearchParams, FILTER_PARAM_KEYS } from '../utils/filterUrl';
 import { DataFreshnessPart } from './DataFreshnessPart';
+import { setCountryChecked } from '../utils/countrySelection';
 
 /** Saved filter preferences and the filter state in the URL. */
 export abstract class FilterPreferencesPart extends DataFreshnessPart {
@@ -66,12 +67,7 @@ export abstract class FilterPreferencesPart extends DataFreshnessPart {
             filterElements.blitzTime.checked = preferences.blitzTime;
         }
         if (Array.isArray(preferences.countryFilter) && preferences.countryFilter.length > 0) {
-            preferences.countryFilter.forEach((code: string) => {
-                const cb = document.querySelector<HTMLInputElement>(
-                    `input[name="countryFilter"][value="${code}"]`
-                );
-                if (cb) cb.checked = true;
-            });
+            preferences.countryFilter.forEach((code: string) => setCountryChecked(code, true));
             this.updateCountryFilterSummary();
         }
         if (preferences.minDays !== undefined && filterElements.minDays) {
