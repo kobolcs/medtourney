@@ -200,7 +200,7 @@ jobs:
   javascript-tests:
     name: JavaScript/Frontend Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     needs: [typescript-build]
 
     steps:
@@ -224,12 +224,33 @@ jobs:
       env:
         CI: true
 
+    # All service/util unit suites under c8; fails if coverage drops below
+    # the floors in .c8rc.json (services + utils only - DOM code is E2E's job)
+    - name: Service unit tests with coverage
+      run: npm run test:coverage
+      env:
+        CI: true
+
+    - name: Service integration tests
+      run: npm run test:integration:services
+      env:
+        CI: true
+
+    - name: Upload frontend coverage to Codecov
+      uses: codecov/codecov-action@v7
+      with:
+        files: ./coverage/lcov.info
+        flags: frontend
+        fail_ci_if_error: false
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v7
       with:
         name: javascript-test-results
-        path: tests/javascript/
+        path: |
+          tests/javascript/
+          coverage/
         retention-days: 7
 
   meta-tests:
