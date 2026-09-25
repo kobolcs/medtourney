@@ -1,4 +1,4 @@
-"""Tests for geocode_tournaments.py - no network: Nominatim is a fake."""
+"""Tests for the geocoding package (run by geocode_tournaments.py) - no network: Nominatim is a fake."""
 
 import importlib.util
 import json
@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, ClassVar, Dict, List, Optional
 
-import geocode_tournaments as gt
+import geocoding as gt
 
 ROOT = Path(__file__).parent.parent.parent
 NOW = datetime(2026, 9, 24, tzinfo=timezone.utc)

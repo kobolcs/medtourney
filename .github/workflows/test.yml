@@ -34,7 +34,7 @@ jobs:
 
     - name: Run mypy type checking
       run: |
-        mypy TournamentProcessor.py tournament_processing run_scraper.py geocode_tournaments.py --config-file mypy.ini
+        mypy TournamentProcessor.py tournament_processing run_scraper.py geocode_tournaments.py geocoding --config-file mypy.ini
       env:
         CI: true
 

@@ -65,7 +65,8 @@ medtourney/
 ├── tournament_processing/        # TournamentProcessor mixins: excel, time_control, classify, config
 ├── scrape_tournaments.robot      # Robot Framework scraper
 ├── run_scraper.py                # Scraper entry point
-├── geocode_tournaments.py        # Adds lat/lng after each scrape (Nominatim + GeoNames, cached)
+├── geocode_tournaments.py        # CLI run after each scrape; the work is in geocoding/
+├── geocoding/                    # places, geonames, coast, beachfront, airports, nominatim, geocoder, pipeline
 ├── geocode_cache.json            # Geocoding cache - committed, so daily runs only look up new places
 ├── data/southern_coast.json      # Med + Iberian Atlantic coastline points for the Seaside rule
 ├── data/airports.json            # Airports with scheduled flights (card's nearest-airport hint)
