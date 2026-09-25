@@ -86,8 +86,9 @@ class TestScraperMeta:
 
         # Find all defined keywords (lines that don't start with whitespace and aren't comments)
         defined_keywords = set()
-        for line in keywords_section.split("\n"):
-            line = line.strip()
+        for raw in keywords_section.split("\n"):
+            # Drop an inline comment ("Keyword Name    # robocop: off=...")
+            line = re.split(r"\s{2,}#", raw)[0].strip()
             if line and not line.startswith("#") and not line.startswith("["):
                 # This is a keyword definition
                 defined_keywords.add(line)
