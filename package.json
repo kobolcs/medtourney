@@ -71,7 +71,7 @@
     "pwa-ready",
     "chess-results"
   ],
-  "author": "MedTourney Project",
+  "author": "Csaba Köböl",
   "license": "MIT",
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",

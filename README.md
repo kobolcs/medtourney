@@ -6,6 +6,8 @@
 
 A chess tournament finder for two things chess-results.com's own search doesn't do well: **Mediterranean seaside tournaments** and **senior (50+) categories**. Everything else — open events, women's, youth exclusion, rating ceilings, team formats, duration — is there too, but those two are why this exists.
 
+Made by Csaba Köböl.
+
 **Live:** [kobolcs.github.io/medtourney](https://kobolcs.github.io/medtourney/) — no install, no account, results load the moment the page opens.
 
 ![Search filters and the featured tournament card](docs/images/screenshot-light.png)
