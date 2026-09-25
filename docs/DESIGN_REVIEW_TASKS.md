@@ -162,8 +162,10 @@ Source: the same [Design Review artifact](https://claude.ai/artifact/MbEyNbY4mX1
 
 ## Waiting for the daily data run
 
-- [ ] **P1 live:** `town` filled in on cards (0 of 1,674 records had it).
-- [ ] **R1 live:** Corteconcepción out of Seaside (override not yet applied to the data).
+- [~] **P1 live:** `town` filled in on cards - 602 of 1,673 after the 25 Sep run
+  (300 lookups per run, so the rest fill in over the next nights).
+- [x] **R1 live:** Corteconcepción out of Seaside (25 Sep data: 37.9, −6.5, no coast).
+  The 25 Sep run also redeployed Pages by itself (PR #42's trigger works).
 
 ## New
 
