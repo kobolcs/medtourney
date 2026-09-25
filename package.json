@@ -9,7 +9,7 @@
     "build:watch": "tsc --watch",
     "build:prod": "tsc --sourceMap false",
     "build:vite": "vite build",
-    "build:test": "tsc -p tsconfig.test.json",
+    "build:test": "node -e \"require('fs').rmSync('dist-test', { recursive: true, force: true })\" && tsc -p tsconfig.test.json",
     "preview": "vite preview",
     "clean": "rm -rf dist dist-test",
     "rebuild": "npm run clean && npm run build",

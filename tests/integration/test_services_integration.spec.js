@@ -30,8 +30,8 @@ const SAMPLE = [
         category: 'Open, Classical', url: 'https://chess-results.com/tnr1.aspx', description: 'Barcelona Open',
     },
     {
-        name: 'Madrid Classical', location: 'Madrid, ESP', date: new Date('2025-05-15'),
-        category: 'Classical', url: 'https://chess-results.com/tnr2.aspx', description: 'Madrid Classical',
+        name: 'Madrid Classical Invitational', location: 'Madrid, ESP', date: new Date('2025-05-15'),
+        category: 'Classical', url: 'https://chess-results.com/tnr2.aspx', description: 'Madrid Classical Invitational',
     },
     {
         name: 'Athens Rapid', location: 'Athens, GRE', date: new Date('2025-07-01'),
@@ -117,6 +117,7 @@ async function runAllTests() {
         assertEqual(tournaments.length, 3);
 
         const filtered = filter.filterTournaments(tournaments, filterState({ openOnly: true }), new Set());
+        // "Open to all" hides only clearly restricted events: the invitational goes
         assertEqual(filtered.length, 2, 'Barcelona Open + Athens Rapid');
 
         const csv = exporter.buildCSV(filtered);
@@ -190,7 +191,7 @@ async function runAllTests() {
         const sorted = filter.sortTournaments(tournaments, 'name');
         assertEqual(sorted[0].name, 'Athens Rapid');
         assertEqual(sorted[1].name, 'Barcelona Open');
-        assertEqual(sorted[2].name, 'Madrid Classical');
+        assertEqual(sorted[2].name, 'Madrid Classical Invitational');
     });
 
     await test('Realistic flow: search → filter → sort → export CSV + ICS', async () => {
