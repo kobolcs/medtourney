@@ -19,6 +19,7 @@ medtourney/
 │   │   ├── DataService.ts        # 3-tier fetch strategy (319 lines)
 │   │   ├── ExportService.ts      # CSV & iCalendar exports (330 lines)
 │   │   ├── UIManager.ts          # DOM manipulation & rendering (807 lines)
+│   │   ├── ui/                   # UIManager's class chain: UIState -> CardPart -> PaginationPart -> StatusViewsPart
 │   │   ├── MapView.ts            # List/Map toggle's map (Leaflet + OSM tiles, lazy-loaded)
 │   │   └── FilterSheet.ts        # Phones (<=768px): filters card as a bottom sheet
 │   └── utils/
