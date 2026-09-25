@@ -48,7 +48,8 @@ pytest tests/python/ -v -m "not slow and not integration"
 ```
 tests/
 ├── python/
-│   └── test_tournament_processor.py    # Unit tests for TournamentProcessor
+│   ├── conftest.py                     # Fixtures for the TournamentProcessor tests
+│   └── test_tournament_processor_*.py  # Unit tests for TournamentProcessor (dates_region, categories, filters, loading)
 ├── integration/
 │   └── test_scraper_integration.py     # Integration tests for scraper
 ├── fixtures/
@@ -115,10 +116,10 @@ pytest tests/ -v --cov=TournamentProcessor --cov-report=html
 pytest tests/ -v -n auto
 
 # Run specific test file
-pytest tests/python/test_tournament_processor.py -v
+pytest tests/python/test_tournament_processor_*.py -v
 
 # Run specific test function
-pytest tests/python/test_tournament_processor.py::TestTournamentProcessor::test_parse_date_yyyymmdd -v
+pytest tests/python/test_tournament_processor_dates_region.py::TestTournamentProcessor::test_parse_date_yyyymmdd -v
 ```
 
 ### Test Markers
@@ -218,7 +219,7 @@ Coverage settings are in `.coveragerc`:
 
 ## 🧪 Test Details
 
-### Unit Tests (test_tournament_processor.py)
+### Unit Tests (test_tournament_processor_*.py)
 
 **Date Parsing Tests** (Lines 39-110)
 - ✅ YYYYMMDD format (20251128)
@@ -386,7 +387,7 @@ pytest -s
 pytest --tb=long
 
 # Run specific test with debugging
-pytest tests/python/test_tournament_processor.py::TestTournamentProcessor::test_my_test -vv -s
+pytest tests/python/test_tournament_processor_filters.py::TestTournamentProcessor::test_my_test -vv -s
 ```
 
 ## 📈 Continuous Improvement
