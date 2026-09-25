@@ -34,7 +34,7 @@ test.describe('Results-First Layout', () => {
     await expect(page.locator('#mediterraneanOnly')).toBeHidden();
 
     // Advanced-only controls are not visible until the drawer opens.
-    await expect(page.getByLabel('Open Category Only')).toBeHidden();
+    await expect(page.getByLabel('Open to all', { exact: true })).toBeHidden();
     await expect(page.locator('#minDays')).toBeHidden();
   });
 
@@ -45,7 +45,7 @@ test.describe('Results-First Layout', () => {
     await page.locator('.advanced-summary').click();
 
     await expect(page.locator('#advancedFilters')).toHaveJSProperty('open', true);
-    await expect(page.getByLabel('Open Category Only')).toBeVisible();
+    await expect(page.getByLabel('Open to all', { exact: true })).toBeVisible();
     await expect(page.locator('#minDays')).toBeVisible();
   });
 
@@ -58,7 +58,7 @@ test.describe('Results-First Layout', () => {
 
     await page.locator('.advanced-summary').click();
     // openOnly ships checked, so unchecking it counts as one active filter...
-    await page.getByLabel('Open Category Only').uncheck();
+    await page.getByLabel('Open to all', { exact: true }).uncheck();
     // ...and checking S50+ counts as a second.
     await page.getByLabel(/S50\+.*Senior/i).check();
 
@@ -71,7 +71,7 @@ test.describe('Results-First Layout', () => {
     await openFilters(page);
 
     await page.locator('.advanced-summary').click();
-    await page.getByLabel('Open Category Only').uncheck();
+    await page.getByLabel('Open to all', { exact: true }).uncheck();
     // Filter preferences save on change — give the write a moment to land.
     await page.waitForTimeout(300);
 

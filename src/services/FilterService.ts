@@ -11,6 +11,7 @@
 
 import { Tournament, FilterState, Sea } from '../types';
 import { DEFAULT_SEAS, SEA_LABELS, isMediterraneanLocation, isSeaside, seaOf } from '../utils/seas';
+import { isRestrictedEvent } from '../utils/openEvents';
 import { Logger } from '../utils/Logger';
 
 export class FilterService {
@@ -73,7 +74,8 @@ export class FilterService {
             const nameLower = tournament.name.toLowerCase();
 
             // Open category filter
-            if (filterState.openOnly && !this.isOpenCategory(categoryLower)) {
+            // "Open to all": hide only clearly restricted events - few are labelled "Open"
+            if (filterState.openOnly && isRestrictedEvent(nameLower, categoryLower)) {
                 return false;
             }
 

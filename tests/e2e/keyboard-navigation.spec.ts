@@ -120,7 +120,7 @@ test.describe('Keyboard Navigation', () => {
     // shifts with any filter reordering, so focus it directly rather than
     // counting Tab presses.
     await openAdvancedFilters(page);
-    const firstCheckbox = page.getByLabel('Open Category Only');
+    const firstCheckbox = page.getByLabel('Open to all', { exact: true });
     await firstCheckbox.focus();
     await expect(firstCheckbox).toBeFocused();
 

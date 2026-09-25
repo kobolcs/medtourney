@@ -6,7 +6,7 @@ test.describe('Tournament Search and Filter', () => {
     await stubTournaments(page);
     await page.goto('/');
     await expect(page.locator('h1')).toContainText('MedTourney');
-    // Most tests here drive advanced controls (Open Category, Mediterranean
+    // Most tests here drive advanced controls (Open to all, Mediterranean
     // is primary but S50+/Women's/Exclude Youth/country live in the drawer).
     await openAdvancedFilters(page);
   });
@@ -43,8 +43,8 @@ test.describe('Tournament Search and Filter', () => {
   });
 
   test('should filter tournaments with checkboxes', async ({ page }) => {
-    // Uncheck "Open Category Only"
-    await page.getByLabel('Open Category Only').uncheck();
+    // Uncheck "Open to all"
+    await page.getByLabel('Open to all', { exact: true }).uncheck();
 
     // Seaside mode (mediterraneanOnly)
     await setMode(page, 'seaside'); // Seaside mode = mediterraneanOnly
@@ -53,7 +53,7 @@ test.describe('Tournament Search and Filter', () => {
     await page.getByLabel(/S50\+.*Senior/i).check();
 
     // Verify checkboxes are in correct state
-    await expect(page.getByLabel('Open Category Only')).not.toBeChecked();
+    await expect(page.getByLabel('Open to all', { exact: true })).not.toBeChecked();
     await expect(page.locator('#mediterraneanOnly')).toBeChecked();
     await expect(page.getByLabel(/S50\+.*Senior/i)).toBeChecked();
 
@@ -173,7 +173,7 @@ test.describe('Tournament Search and Filter', () => {
 
   test('should reset filters', async ({ page }) => {
     // Change some filters
-    await page.getByLabel('Open Category Only').uncheck();
+    await page.getByLabel('Open to all', { exact: true }).uncheck();
     await setMode(page, 'seaside'); // Seaside mode = mediterraneanOnly
 
     await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
@@ -189,7 +189,7 @@ test.describe('Tournament Search and Filter', () => {
       await expect(page.locator('#loading')).toBeHidden({ timeout: 10000 });
 
       // Verify filters are reset
-      await expect(page.getByLabel('Open Category Only')).toBeChecked();
+      await expect(page.getByLabel('Open to all', { exact: true })).toBeChecked();
       await expect(page.locator('#mediterraneanOnly')).not.toBeChecked();
     }
   });
