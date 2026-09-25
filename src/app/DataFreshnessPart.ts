@@ -18,7 +18,7 @@ export abstract class DataFreshnessPart extends ThemeHelpPart {
         const cacheTimestamp = localStorage.getItem(this.cacheManager.CACHE_KEYS.TOURNAMENTS);
         if (!cacheTimestamp) return null;
         try {
-            const parsed = JSON.parse(cacheTimestamp);
+            const parsed = JSON.parse(cacheTimestamp) as { timestamp?: string | number };
             if (parsed.timestamp) {
                 const date = new Date(parsed.timestamp);
                 if (!isNaN(date.getTime())) return date;

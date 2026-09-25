@@ -6,8 +6,8 @@ test.describe('Seaside rule and beachfront', () => {
   // counts as seaside through the geocoder's coast flag. The Benidorm hotel
   // is a venue 120 m from the sea (seaM) - the featured "beachfront" case.
   const fixtures: TournamentFixture[] = [
-    { name: 'Matosinhos Open', location: 'Matosinhos, POR', lat: 41.18, lng: -8.69, coast: 'atlantic' },
-    { name: 'Benidorm Beach Open', location: 'Gran Hotel Bali (Benidorm), ESP', lat: 38.5315, lng: -0.1635, coast: 'med', seaM: 120,
+    { name: 'Matosinhos Open', location: 'Matosinhos, POR', lat: 41.18, lng: -8.69, coast: 'atlantic' as const },
+    { name: 'Benidorm Beach Open', location: 'Gran Hotel Bali (Benidorm), ESP', lat: 38.5315, lng: -0.1635, coast: 'med' as const, seaM: 120,
       airport: { iata: 'ALC', name: 'Alicante-Elche Miguel Hernández Airport', km: 47 } },
     { name: 'Madrid Open', location: 'Madrid, ESP', lat: 40.42, lng: -3.70 },
   ].map((t, i) => ({

@@ -37,7 +37,7 @@ export abstract class FilterFormPart extends KeyboardPart {
             filtersCard.setAttribute('aria-expanded', 'false');
         }
 
-        const filterTitle = document.querySelector('.filters-card h2') as HTMLElement | null;
+        const filterTitle = document.querySelector<HTMLElement>('.filters-card h2');
         if (filterTitle && filtersCard) {
             // Make the heading an operable, keyboard-accessible toggle button
             // (WCAG 2.1.1 Keyboard + 4.1.2 Name, Role, Value).

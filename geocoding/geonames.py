@@ -95,7 +95,7 @@ def load_geonames(path: Path, iso2s: set[str]) -> dict[str, dict[str, Place]]:
     return index
 
 
-def geonames_match(head: str, places: dict[str, Place]) -> tuple[str, Place] | None:
+def geonames_match(head: str, places: dict[str, Place]) -> tuple[str, Place] | None:  # noqa: C901 - known, see CLAUDE.md
     """Best town named in the location text, or None.
 
     Longest name wins, then biggest town - except that a province/region seat

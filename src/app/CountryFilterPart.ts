@@ -177,7 +177,7 @@ export abstract class CountryFilterPart extends ActiveFilterChipsPart {
             const isSenior = (elements.seniorCategory?.checked ?? false) || (elements.seniorS60?.checked ?? false);
             const shouldDisable = excludeYouth || isSenior;
             youthSelect.disabled = shouldDisable;
-            const youthGroup = youthSelect.closest('.filter-group') as HTMLElement | null;
+            const youthGroup = youthSelect.closest<HTMLElement>('.filter-group');
             if (youthGroup) youthGroup.style.opacity = shouldDisable ? '0.4' : '';
             if (shouldDisable && youthSelect.value !== '') {
                 youthSelect.value = '';

@@ -252,10 +252,10 @@ class TournamentFinder extends ResultsViewPart {
      */
     protected attachFilterChangeListeners(): void {
         const filterElements = this.getFilterElements();
-        const onFilterChange = () => this.handleFilterChange();
+        const onFilterChange = (): void => this.handleFilterChange();
 
         // Attach to all filter inputs so country list updates on every filter change
-        Object.values(filterElements).forEach(element => {
+        Object.values(filterElements).forEach((element: HTMLInputElement | HTMLSelectElement | null) => {
             if (element) {
                 element.addEventListener('change', onFilterChange);
             }
