@@ -20,7 +20,7 @@ export interface TournamentFixture {
     lng?: number;
     coast?: 'med' | 'atlantic';
     seaM?: number;
-    airport?: { iata: string; name: string; km: number };
+    airport?: { iata: string; name: string; km: number; city?: string };
     town?: string;
 }
 

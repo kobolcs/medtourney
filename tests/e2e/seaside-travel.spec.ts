@@ -47,7 +47,7 @@ test.describe('Travel context', () => {
     await stubTournaments(page, [
       { name: 'Benidorm Open', location: 'Benidorm, ESP', lat: 38.54, lng: -0.13, date: isoInDays(7),
         category: 'Open, Classical', url: 'https://chess-results.com/tnr71.aspx?lan=1', description: '',
-        airport: { iata: 'ALC', name: 'Alicante-Elche Miguel Hernández Airport', km: 47 } },
+        airport: { iata: 'ALC', name: 'Alicante-Elche Miguel Hernández Airport', km: 47, city: 'Alicante' } },
       { name: 'Somewhere Open', location: 'Somewhere, UKR', date: isoInDays(8),
         category: 'Open, Classical', url: 'https://chess-results.com/tnr72.aspx?lan=1', description: '' },
     ]);
@@ -55,7 +55,7 @@ test.describe('Travel context', () => {
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
     const hint = page.locator('.tournament-card', { hasText: 'Benidorm Open' }).locator('.airport-hint');
-    await expect(hint).toContainText('✈ ALC · 47 km');
+    await expect(hint).toContainText('✈ Alicante ALC · 47 km');
     await expect(hint).toHaveAttribute('title', /Alicante-Elche Miguel Hernández Airport \(ALC\), about 47 km in a straight line/);
 
     // No airport data -> no hint (e.g. Ukraine: no civilian flights)

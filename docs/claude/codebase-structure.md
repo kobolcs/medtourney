@@ -70,7 +70,8 @@ medtourney/
 ├── geocoding/                    # places, geonames, coast, beachfront, airports, nominatim, geocoder, pipeline
 ├── geocode_cache.json            # Geocoding cache - committed, so daily runs only look up new places
 ├── data/southern_coast.json      # Med + Iberian Atlantic coastline points for the Seaside rule
-├── data/airports.json            # Airports with scheduled flights (card's nearest-airport hint)
+├── data/airports.json            # Airports with airline routes + city (card's nearest-airport hint)
+├── data/airport_cities.json      # City overrides where OurAirports gives a suburb (RMU -> Murcia)
 ├── scripts/                      # build_southern_coast.py, build_airports.py, og-image.html + render-og-image.mjs
 │
 ├── vite.config.mts                # Vite build configuration

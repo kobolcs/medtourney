@@ -147,6 +147,20 @@ function runTests() {
         assertEqual(link.getAttribute('href'), 'https://chess-results.com/tnr1.aspx?x="onmouseover="alert(1)');
     });
 
+    test('Airport hint: city + code, code alone without a city, none without airport', ui => {
+        const airport = { iata: 'XRY', name: 'Jerez Airport', km: 32 };
+        ui.displayTournaments([
+            tournament(1, { airport: { ...airport, city: 'Jerez de la Frontera' } }),
+            tournament(2, { airport }),
+            tournament(3)
+        ]);
+        const hints = [...cards()].map(c => c.querySelector('.airport-hint'));
+        assertEqual(text(hints[0].querySelector('[aria-hidden]')), '✈ Jerez de la Frontera XRY · 32 km');
+        assert(hints[0].title.includes('Jerez Airport (XRY), about 32 km'), hints[0].title);
+        assertEqual(text(hints[1].querySelector('[aria-hidden]')), '✈ XRY · 32 km');
+        assertEqual(hints[2], null);
+    });
+
     test('Category tags drop time-control words', ui => {
         ui.displayTournaments([tournament(1, { category: 'Open, Classical, Senior 50+' })]);
         const tags = [...cards()[0].querySelectorAll('.category-tag')].map(text);

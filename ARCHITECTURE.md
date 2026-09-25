@@ -242,11 +242,11 @@ buried in venue text fall back to an offline match against GeoNames'
   location text and is within 5 km of it), then measured against
   OpenStreetMap's `natural=coastline` via Overpass; set when <= 500 m. The
   venue's coordinates also replace the town-centre pin on the map.
-- `airport: {iata, name, km}` - travel context: the nearest airport with
-  scheduled flights (`data/airports.json`, OurAirports public domain, built
-  by `scripts/build_airports.py`; Russia/Belarus excluded), preferring a
-  large airport if it is at most 40 km further; omitted beyond 150 km.
-  Shown on the card's location line as "✈ ALC · 47 km".
+- `airport: {iata, name, km, city?}` - the nearest airport with airline routes
+  (`data/airports.json`: OurAirports, kept only if a weekly route list has a
+  route; city from `data/airport_cities.json` or OurAirports; no RU/BY),
+  preferring a large airport up to 40 km further; none beyond 150 km.
+  Shown on the card as "✈ Alicante ALC · 47 km" (code alone if no city).
 
 ---
 

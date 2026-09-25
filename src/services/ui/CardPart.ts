@@ -100,15 +100,18 @@ export abstract class CardPart extends UIState {
     }
 
     /**
-     * Travel context on the location line: nearest airport with scheduled
-     * flights, as travellers search for it (IATA code), with the full name in
-     * the tooltip / for screen readers. Distance is straight-line, and says so.
+     * Travel context on the location line: nearest airport with airline
+     * flights, as city + IATA code ("Alicante ALC"; the code alone before the
+     * nightly data run adds the city), with the full name in the tooltip /
+     * for screen readers. Distance is straight-line, and says so.
      */
     protected airportHintHTML(tournament: Tournament): string {
         const a = tournament.airport;
         if (!a) return '';
-        const full = `Nearest airport with scheduled flights: ${a.name} (${a.iata}), about ${a.km} km in a straight line`;
-        return `<span class="airport-hint" title="${escapeHTML(full)}"><span aria-hidden="true">✈ ${escapeHTML(a.iata)} · ${a.km} km</span><span class="sr-only">${escapeHTML(full)}</span></span>`;
+        const full = `Nearest airport with airline flights: ${a.name} (${a.iata}), about ${a.km} km in a straight line`;
+        // City before the code ("Jerez XRY"): a bare X../Q../Z.. code reads like a rail station
+        const label = a.city ? `${a.city} ${a.iata}` : a.iata;
+        return `<span class="airport-hint" title="${escapeHTML(full)}"><span aria-hidden="true">✈ ${escapeHTML(label)} · ${a.km} km</span><span class="sr-only">${escapeHTML(full)}</span></span>`;
     }
 
     /**
