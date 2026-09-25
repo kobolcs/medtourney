@@ -14,8 +14,11 @@
     "noUnusedParameters": false
   },
   "include": [
+    "src/services/CacheManager.ts",
+    "src/services/DataService.ts",
     "src/services/ExportService.ts",
     "src/services/FilterService.ts",
+    "src/services/UIManager.ts",
     "src/types.ts",
     "src/utils/timeControl.ts",
     "src/utils/durationLabel.ts",

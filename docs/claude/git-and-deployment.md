@@ -86,7 +86,7 @@ EOF
    - Type checking (mypy)
    - Linting (ruff, ESLint)
    - TypeScript build
-   - Unit tests (100 tests)
+   - Unit tests (211 tests)
    - Integration tests (8 tests)
    - E2E tests (68 tests)
    - Performance benchmarks

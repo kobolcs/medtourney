@@ -34,7 +34,7 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 ### Key Statistics
 
 - **Version:** 3.1.0
-- **Total Tests:** 290+ (100 service unit, 8 service integration, 68 Playwright E2E per browser, 87 Python backend, 27 Python integration) — all currently passing; see Testing Strategy
+- **Total Tests:** 290+ (211 service unit, 8 service integration, 68 Playwright E2E per browser, 87 Python backend, 27 Python integration) — all currently passing; see Testing Strategy
 - **Bundle Size:** ~33KB gzipped JS + ~8.4KB gzipped CSS for the main bundle (grown from the original 25KB as the results-first redesign, mobile fixes, flag icons, live filtering and the map toggle landed — still deliberately small; see Performance Considerations). The map view (MapView + Leaflet + markercluster, ~54KB gzipped) is lazy-loaded on first use and not part of it
 - **Architecture:** Modular service-oriented (5 specialized services + focused utils)
 - **Technologies:** TypeScript (strict mode), Vite, Playwright, Robot Framework, Python

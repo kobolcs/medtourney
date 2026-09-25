@@ -28,70 +28,9 @@ class LocalStorageMock {
 
 global.localStorage = new LocalStorageMock();
 
-// Simple CacheManager implementation for testing
-class CacheManager {
-    constructor() {
-        this.CACHE_VERSION = '2.3.0';
-        this.CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
-        this.CACHE_KEYS = {
-            TOURNAMENTS: 'medtourney_tournaments',
-            CONFIG: 'medtourney_config',
-            THEME: 'medtourney_theme',
-            FILTERS_COLLAPSED: 'medtourney_filters_collapsed',
-            FILTER_PREFERENCES: 'medtourney_filter_preferences'
-        };
-    }
-
-    saveToCache(key, data) {
-        const cachedData = {
-            data,
-            timestamp: Date.now(),
-            version: this.CACHE_VERSION
-        };
-        localStorage.setItem(key, JSON.stringify(cachedData));
-    }
-
-    loadFromCache(key) {
-        try {
-            const cached = localStorage.getItem(key);
-            if (!cached) return null;
-
-            const parsed = JSON.parse(cached);
-
-            // Version check
-            if (parsed.version !== this.CACHE_VERSION) {
-                localStorage.removeItem(key);
-                return null;
-            }
-
-            // TTL check
-            if (Date.now() - parsed.timestamp > this.CACHE_DURATION) {
-                localStorage.removeItem(key);
-                return null;
-            }
-
-            return parsed.data;
-        } catch (error) {
-            console.error('Cache load error:', error);
-            return null;
-        }
-    }
-
-    clearCache(key) {
-        if (key) {
-            localStorage.removeItem(key);
-        } else {
-            localStorage.clear();
-        }
-    }
-
-    clearAllCaches() {
-        Object.values(this.CACHE_KEYS).forEach(key => {
-            localStorage.removeItem(key);
-        });
-    }
-}
+// The real CacheManager, compiled to dist-test/ by `npm run build:test`
+const { loadProductionModule } = require('../../helpers/production');
+const { CacheManager } = loadProductionModule('services/CacheManager.js');
 
 // Test suite
 function runTests() {
@@ -321,6 +260,43 @@ function runTests() {
 
         assertEqual(cache.loadFromCache('test_true'), true);
         assertEqual(cache.loadFromCache('test_false'), false);
+    });
+
+    // Test 16: Preferences are stored plain, with no version/TTL wrapper
+    test('savePreference / loadPreference round-trip without expiry', () => {
+        const cache = new CacheManager();
+        cache.savePreference('pref', { theme: 'dark' });
+        assertEqual(JSON.parse(localStorage.getItem('pref')), { theme: 'dark' });
+        assertEqual(cache.loadPreference('pref'), { theme: 'dark' });
+        assertNull(cache.loadPreference('missing'));
+    });
+
+    // Test 17: Preferences saved by older versions (wrapped with a timestamp) still load
+    test('loadPreference unwraps the legacy {data, timestamp} format', () => {
+        const cache = new CacheManager();
+        localStorage.setItem('legacy', JSON.stringify({ data: 'light', timestamp: 1, version: '0.1' }));
+        assertEqual(cache.loadPreference('legacy'), 'light');
+        localStorage.setItem('broken', '{not json');
+        assertNull(cache.loadPreference('broken'));
+    });
+
+    // Test 18: Theme and filters-collapsed helpers use their keys
+    test('Theme and filters-collapsed helpers', () => {
+        const cache = new CacheManager();
+        assertNull(cache.getThemePreference());
+        cache.saveThemePreference('dark');
+        assertEqual(cache.getThemePreference(), 'dark');
+        assertEqual(cache.getFiltersCollapsed(), false);
+        cache.saveFiltersCollapsed(true);
+        assertEqual(cache.getFiltersCollapsed(), true);
+    });
+
+    // Test 19: Cache entries carry the package.json version
+    test('Cache version follows package.json', () => {
+        const cache = new CacheManager();
+        cache.saveToCache('v', 1);
+        const stored = JSON.parse(localStorage.getItem('v'));
+        assertEqual(stored.version, require('../../../package.json').version);
     });
 
     console.log('='.repeat(60));

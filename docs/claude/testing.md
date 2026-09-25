@@ -8,7 +8,7 @@
 
 | Test Type | Count | Purpose |
 |-----------|-------|---------|
-| **Service Unit Tests** | 100 tests | Isolated service testing with mocks |
+| **Service Unit Tests** | 211 tests | Real service code (dist-test/), mocked fetch/localStorage/DOM |
 | **Service Integration Tests** | 8 tests | Services working together |
 | **E2E Tests (Playwright)** | 68 tests per project (chromium, firefox, webkit, Mobile Chrome, Mobile Safari, Microsoft Edge - `playwright.config.ts`) | Full browser + mobile-viewport testing |
 | **Performance Benchmarks** | 12 benchmarks | ops/sec measurement |
@@ -22,7 +22,7 @@
 # All tests (290+ tests)
 npm test
 
-# Service unit tests (100 tests) - FAST (~5 seconds)
+# Service unit tests (211 tests) - FAST (~5 seconds)
 npm run test:services
 
 # Individual services

@@ -33,7 +33,7 @@ medtourney/
 │       └── mapPlaces.ts          # Group tournaments into map markers (pure)
 │
 ├── tests/                        # Comprehensive test suite (290+ tests)
-│   ├── unit/                     # Service unit tests (100 tests)
+│   ├── unit/                     # Service unit tests (211 tests)
 │   │   └── services/             # Isolated service testing
 │   ├── integration/              # Service integration tests (8 tests)
 │   ├── e2e/                      # Playwright E2E tests (68 tests)
@@ -140,7 +140,7 @@ The application follows a **modular service-oriented architecture**. Each servic
 
 | Directory | Purpose | Count |
 |-----------|---------|-------|
-| `tests/unit/services/` | Service unit tests | 100 tests |
+| `tests/unit/services/` | Service unit tests | 211 tests |
 | `tests/integration/` | JS service integration + Python scraper integration (mixed dir) | 8 + 27 tests |
 | `tests/e2e/` | Playwright E2E tests | 68 tests per browser |
 | `tests/performance/` | Benchmark tests | 12 benchmarks |
