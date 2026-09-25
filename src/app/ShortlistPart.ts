@@ -16,7 +16,7 @@ export abstract class ShortlistPart extends EmptyStatePart {
         try {
             const saved = localStorage.getItem(this.SHORTLIST_KEY);
             if (saved) {
-                const urls: string[] = JSON.parse(saved);
+                const urls = JSON.parse(saved) as string[];
                 this.shortlist = new Set(urls);
             }
         } catch {
