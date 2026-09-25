@@ -2,13 +2,13 @@
 
 ## Test Coverage Summary
 
-**Total: 296+ Tests** | **Pass Rate: 100%** | **JS unit coverage: ~42% of services/utils (floors in `.c8rc.json`)**
+**Total: 296+ Tests** | **Pass Rate: 100%** | **JS unit coverage: ~88% of services/UI/utils (floors in `.c8rc.json`)**
 
 ### v3.0.0 Tests (Modular Architecture)
 
 | Component | Tests | Coverage | Status |
 |-----------|-------|----------|--------|
-| **Service Unit Tests** | 75 tests | ~42% (see Code Coverage) | ⚠️ 3 suites test copies |
+| **Service Unit Tests** | 211 tests | ~88% (see Code Coverage) | ✅ All run the real code |
 | **Integration Tests** | 10 tests | 100% | ✅ Excellent |
 | **E2E Tests (Playwright)** | 54+ tests | N/A | ✅ Excellent |
 | **Performance Benchmarks** | 12 benchmarks | N/A | ✅ Good |
@@ -16,7 +16,7 @@
 | **Python Integration** | 108 tests | ~95% | ✅ Excellent |
 | **Meta-tests** | 12 tests | N/A | ✅ Good |
 | **Parity Tests** | 8 tests | N/A | ✅ Good |
-| **Total** | **296+ tests** | JS ~42% | ✅ |
+| **Total** | **296+ tests** | JS ~88% | ✅ |
 
 ### Test Breakdown by Category
 
@@ -146,8 +146,8 @@ npm run test:coverage
 open coverage/index.html
 
 # Coverage floors (c8, .c8rc.json) - just under the current numbers,
-# raise them as coverage improves: lines/statements 41%, functions 60%,
-# branches 60%. Scope: src/services/{Cache,Data,Export,Filter}* + src/utils
+# raise them as coverage improves: lines/statements/functions 85%,
+# branches 80%. Scope: src/services (not MapView/FilterSheet) + src/utils
 ```
 
 ### Python Tests
@@ -530,7 +530,7 @@ test('Page is accessible', async ({ page }) => {
 {
   "include": ["dist-test/**/*.js", "src/services/…", "src/utils/**/*.ts"],
   "exclude-after-remap": true,
-  "check-coverage": true, "lines": 41, "statements": 41, "functions": 60, "branches": 60
+  "check-coverage": true, "lines": 85, "statements": 85, "functions": 85, "branches": 80
 }
 ```
 
@@ -540,7 +540,7 @@ test('Page is accessible', async ({ page }) => {
 - JSON: `coverage/coverage-final.json`
 - Text: Console summary
 
-**Current coverage** (Sep 2026): ~42% of lines. Tests load the real code from `dist-test/` (source-mapped to `src/`); CacheManager, DataService and most FilterService tests exercise copies pasted into the spec files, so they count 0%. DOM code (`src/app/`, UIManager, MapView) is covered by Playwright, not c8. CI runs this in the JavaScript/Frontend Tests job
+**Current coverage** (Sep 2026): ~88% of lines. Every unit suite loads the real code from `dist-test/` (source-mapped to `src/`) via `tests/helpers/production.js` - never a copy pasted into the spec (CacheManager, DataService, UIManager and FilterService used to, and had drifted). UIManager runs against the real index.html in jsdom. `src/app/`, MapView and FilterSheet are covered by Playwright, not c8. CI runs this in the JavaScript/Frontend Tests job
 
 ## CI/CD Integration
 
@@ -566,7 +566,7 @@ Type Check → Lint → Build → Unit Tests → Integration → E2E → Deploy
 ### Service Unit Tests
 - ✅ **Isolated** - Each service tested independently
 - ✅ **Fast** - Run in < 5 seconds
-- ⚠️ **Coverage** - ~42% of services/utils, with a floor so it can't drop
+- ✅ **Coverage** - ~88% of services/UI/utils, with a floor so it can't drop
 - ✅ **Mocked** - No external dependencies
 
 ### Integration Tests
@@ -715,5 +715,5 @@ open coverage/index.html
 **Last Updated**: 2025-11-19
 **Total Tests**: 296+
 **Pass Rate**: 100%
-**Coverage**: JS ~42% of services/utils
+**Coverage**: JS ~88% of services/UI/utils
 **Status**: ✅ All tests passing

@@ -205,7 +205,7 @@ export abstract class CardPart extends UIState {
             <div class="tournament-body">
                 <div class="tournament-header">
                     <h3 class="tournament-name">
-                        <a href="${tournament.url}"
+                        <a href="${escapeHTML(tournament.url)}"
                            target="_blank"
                            rel="noopener noreferrer"
                            class="tournament-link"

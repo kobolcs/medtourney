@@ -99,7 +99,7 @@ npm run rebuild                  # Clean + build
 
 # Testing
 npm test                         # All 290+ tests
-npm run test:services            # Unit tests (100 tests)
+npm run test:services            # Unit tests (211 tests)
 npm run test:e2e                 # E2E tests (68 tests)
 npm run test:benchmark           # Performance benchmarks
 npm run test:coverage            # Code coverage report
