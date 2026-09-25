@@ -1,0 +1,9 @@
+# Robocop (Robot Framework linter) - only the length rules from CLAUDE.md
+# "File size guidelines". Run: robocop check
+[tool.robocop.lint]
+select = ["too-long-keyword", "too-long-test-case", "file-too-long"]
+configure = [
+    "too-long-keyword.max_len=40",
+    "too-long-test-case.max_len=40",
+    "file-too-long.max_lines=400",
+]

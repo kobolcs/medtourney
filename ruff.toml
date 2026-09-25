@@ -19,6 +19,7 @@ select = [
     "B",   # flake8-bugbear
     "A",   # flake8-builtins
     "C4",  # flake8-comprehensions
+    "C90", # mccabe complexity (max 10) - see CLAUDE.md "File size guidelines"
     "DTZ", # flake8-datetimez
     "T10", # flake8-debugger
     "EM",  # flake8-errmsg

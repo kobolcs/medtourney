@@ -84,7 +84,7 @@ Scrape Federation
     ${new_count}=    Accumulate Fed Tournaments    ${DOWNLOAD_DIR}/TournamentSearch.xlsx
     Log    Federation ${fed}: ${new_count} new unique tournaments added
 
-Fill Search Form
+Fill Search Form    # robocop: off=too-long-keyword  known, see CLAUDE.md
     [Documentation]    Fill the search form. If a federation is given it is selected first
     ...    because chess-results.com fires an ASP.NET postback that reloads the page —
     ...    dates and max-results must be filled on the post-reload page.

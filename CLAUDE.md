@@ -1,6 +1,6 @@
 # CLAUDE.md - AI Assistant Guide for MedTourney
 
-**Last Updated:** 2026-09-24
+**Last Updated:** 2026-09-25
 **Version:** 3.1.0
 **Purpose:** Comprehensive guide for AI assistants (like Claude) working on the MedTourney codebase
 
@@ -68,6 +68,39 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 ### Code Style
 
 See [docs/claude/code-style.md](docs/claude/code-style.md) for good/bad examples.
+
+### File size guidelines (effective 2026-09-25, revise as needed)
+
+Current thresholds (lines): .py 400, .ts 300, .robot 400, .md 500.
+- Before adding significant code to a file near its threshold, propose a split first.
+- Prefer small cohesive modules: one responsibility per file, functions ≲50 lines,
+  Robot keywords ≲40 lines.
+- Exceptions (generated code, fixtures, data tables, changelogs) are allowed
+  if they are noted in this section.
+
+Enforced in CI (`test.yml`) and pre-commit. Change a number here and in the tool together:
+- File length, all four types: `scripts/check_file_lengths.py` (`LIMITS`, `KNOWN`).
+- TS functions: ESLint `max-lines-per-function` 50 (`.eslintrc.json`).
+- Python functions: Ruff `C901` complexity 10, plus `PLR0915` statements 50 (`ruff.toml`).
+- Robot: Robocop `too-long-keyword` / `too-long-test-case` 40, `file-too-long` 400 (`robocop.toml`).
+
+To fix violations: run the linters and split the files using the rules above.
+
+**Known exceptions.** These were over the limit when the rule came in. Split each
+one the next time you work in it, then remove it from this list and from the tool.
+They show as warnings; they fail only if they grow.
+- Files (`KNOWN` in the script): `TournamentProcessor.py` 506, `tests/python/test_geocode.py` 420,
+  `src/services/FilterService.ts` 433, `src/app.ts` 424,
+  `tests/e2e/dark-mode-and-ui.spec.ts` 390, `src/services/ExportService.ts` 330,
+  `tests/e2e/keyboard-navigation.spec.ts` 329, `src/services/DataService.ts` 319,
+  `src/services/UIManager.ts` 306, `TESTING.md` 724, `ARCHITECTURE.md` 611.
+- TS functions over 50 lines (a warning in the `.eslintrc.json` overrides for their files):
+  `attachEventListeners` (`app.ts`), `updateFilterCompatibility`,
+  `buildEmptyStateRelaxations`, `applyFilterPreferences`, `initKeyboardNavigation`,
+  `fetchTournaments` (`DataService`), `filterTournaments` (`FilterService`),
+  `createTournamentCard` (`CardPart`).
+- Python: `geonames_match` (`geocoding/geonames.py`, `# noqa: C901`).
+- Robot: `Fill Search Form` (`# robocop: off=too-long-keyword`).
 
 
 ### Git Commit Messages

@@ -38,13 +38,29 @@ repos:
 
   # TypeScript/JavaScript linting
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.56.0
+    rev: v8.57.0
     hooks:
       - id: eslint
         files: \.[jt]sx?$
         types: [file]
         additional_dependencies:
-          - eslint@8.56.0
-          - '@typescript-eslint/eslint-plugin@6.0.0'
-          - '@typescript-eslint/parser@6.0.0'
-          - typescript@5.3.0
+          - eslint@8.57.1
+          - '@typescript-eslint/eslint-plugin@8.70.1'
+          - '@typescript-eslint/parser@8.70.1'
+          - typescript@5.9.3
+
+  # File and function length limits - CLAUDE.md "File size guidelines"
+  - repo: local
+    hooks:
+      - id: file-lengths
+        name: file length limits
+        entry: python3 scripts/check_file_lengths.py
+        language: system
+        pass_filenames: false
+        files: \.(py|ts|robot|md)$
+      - id: robocop
+        name: robocop (Robot length rules)
+        entry: robocop check
+        language: system
+        pass_filenames: false
+        files: \.robot$
