@@ -18,7 +18,7 @@ This project uses GitHub Actions for automated deployment to GitHub Pages with V
      - Tree-shaking (removes unused code)
      - Code splitting for better caching
      - Gzip + Brotli compression (.gz + .br files)
-     - Legacy browser support (polyfills for older browsers)
+     - Compiled for Chrome 64 / Firefox 67 / Safari 12 (`build.target`)
    - Verifies build output (dist/ directory)
    - Creates deployment directory with optimized assets
 
@@ -49,8 +49,7 @@ The following files are automatically deployed from `dist/`:
 **Main Assets**:
 - `index.html` - Main HTML page (with asset hash references)
 - `assets/*.js` - Compiled and minified JavaScript bundles
-  - Modern bundle (~27.77 KB)
-  - Legacy bundle (~42.13 KB with polyfills)
+  - Main bundle (~39 KB gzipped); the map chunks load on first use
 - `assets/*.css` - Minified CSS (code-split)
 - `assets/*.gz` - Gzip compressed versions (~8.05 KB modern)
 - `assets/*.br` - Brotli compressed versions (even smaller)
@@ -68,7 +67,7 @@ The following files are automatically deployed from `dist/`:
 - ✅ Code splitting
 - ✅ Compression (Gzip + Brotli)
 - ✅ Cache-busting via content hashes
-- ✅ Legacy browser support
+- ✅ Older browsers: compiled down to Safari 12 / Chrome 64
 
 ### Manual Deployment
 
@@ -200,7 +199,7 @@ https://kobolcs.github.io/medtourney/
   - Tree-shaking removes unused code
   - Terser minification
 - Browser caching enabled (content-hashed filenames)
-- Legacy browser support (automatic polyfills)
+- Compiled down to Safari 12 / Chrome 64 (`build.target`), no polyfills
 - **Performance budgets** (Lighthouse CI):
   - Performance: 85/100
   - Accessibility: 95/100
@@ -228,7 +227,7 @@ Deployment metrics tracked:
    - Test key features
    - Check console for errors
    - Verify compressed assets (.gz, .br) are served
-   - Test on legacy browsers if needed
+   - Test on an older iPad (iOS 12) if needed
 
 3. **Monitoring**:
    - Watch GitHub Actions

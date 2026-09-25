@@ -115,7 +115,7 @@ jobs:
           echo "- ✅ Code splitting" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Gzip compression" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Brotli compression" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Legacy browser support" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Compiled for Safari 12 / Chrome 64+" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Deployed files:**" >> $GITHUB_STEP_SUMMARY
           echo "- index.html" >> $GITHUB_STEP_SUMMARY

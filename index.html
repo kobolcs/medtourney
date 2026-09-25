@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <!-- script-src hashes: the four small inline scripts @vitejs/plugin-legacy
-         injects (modern-browser detection + the old-browser loader). Their
-         bodies are constant across builds (the bundle name is in an
-         attribute); they change only on a plugin upgrade - then
-         site-basics.spec.ts ("no Content-Security-Policy violations") fails
-         and prints the new hash.
+    <!-- No inline scripts: script-src allows only files from this site and
+         Plausible. Anything that must run before first paint goes in a file
+         (e.g. public/theme-init.js). site-basics.spec.ts fails on any CSP
+         violation.
          No frame-ancestors: browsers ignore it in a <meta> policy (it only
          works as an HTTP header, which GitHub Pages can't set). -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://plausible.io 'sha256-ZxAi3a7m9Mzbc+Z1LGuCCK5Xee6reDkEPRas66H9KSo=' 'sha256-+5XkZFazzJo8n0iOP4ti/cLCMUudTf//Mzkb7xNPXIc=' 'sha256-MS6/3FCg4WjP9gwgaBGwLpRCY6fZBgwmhVCdrPrNf3E=' 'sha256-tQjf8gvb2ROOMapIxFvFAYBeUJ0v1HCbOcSmDNXGtDo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com https://plausible.io; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com https://plausible.io; base-uri 'self'; form-action 'self';">
 
     <!-- Primary Meta Tags -->
     <title>MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments</title>

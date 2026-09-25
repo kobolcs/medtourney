@@ -199,11 +199,13 @@ chore: Update dependencies to latest versions
    - Content Security Policy configured for GitHub Pages (a `<meta>` tag in
      `index.html` - Pages can't send headers, so `frame-ancestors` can't be
      used there)
-   - No inline scripts: `script-src` allows only the four inline scripts
-     `@vitejs/plugin-legacy` injects, by sha256. A plugin upgrade changes
-     them; `site-basics.spec.ts` ("no Content-Security-Policy violations")
-     then fails and the console message names the new hash. Anything else
-     that must run before paint goes in a file (e.g. `public/theme-init.js`)
+   - No inline scripts: `script-src` is `'self'` plus Plausible, no hashes.
+     Anything that must run before paint goes in a file (e.g.
+     `public/theme-init.js`); `site-basics.spec.ts` ("no
+     Content-Security-Policy violations") fails on an inline script
+   - Browser support: `build.target` in `vite.config.ts` compiles ES2020 down
+     to Chrome 64 / Firefox 67 / Safari 12, so iOS 12 iPads still work. No
+     `@vitejs/plugin-legacy`: it was dropped in 2026 (pre-2018 browsers only)
    - Be mindful when adding external resources
 
 ### Performance Considerations

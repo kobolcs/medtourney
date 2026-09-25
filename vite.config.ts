@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import legacy from '@vitejs/plugin-legacy';
 import compression from 'vite-plugin-compression';
 
 export default defineConfig({
@@ -45,8 +44,13 @@ export default defineConfig({
     // CSS code splitting
     cssCodeSplit: true,
 
-    // Target modern browsers
-    target: 'es2020',
+    // ES2020 features compiled down to the oldest browsers still in use -
+    // Safari 12 matters: older iPads / iPhones stop at iOS 12, and senior
+    // players are the likeliest to still use one. (These are the versions
+    // @vitejs/plugin-legacy used for its modern bundle; the plugin itself
+    // - a SystemJS bundle for pre-2018 browsers and inline loader scripts
+    // that needed CSP hashes - was dropped.)
+    target: ['es2020', 'chrome64', 'edge79', 'firefox67', 'safari12'],
 
     // Chunk size warnings
     chunkSizeWarningLimit: 500,
@@ -68,11 +72,6 @@ export default defineConfig({
 
   // Plugins
   plugins: [
-    // Legacy browser support (optional - adds polyfills)
-    legacy({
-      targets: ['defaults', 'not IE 11'],
-    }),
-
     // Gzip compression
     compression({
       algorithm: 'gzip',

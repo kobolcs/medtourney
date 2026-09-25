@@ -371,13 +371,13 @@ interface AppConfig {
 - Code splitting for better caching
 - Gzip compression (.gz files)
 - Brotli compression (.br files)
-- Legacy browser support (`@vitejs/plugin-legacy`)
+- Browser targets: ES2020 compiled down to Chrome 64 / Firefox 67 / Safari 12 (iOS 12 iPads) (`build.target`)
 - CSS code splitting
 
 **Bundle Size Reduction**:
 - Before: 80 KB JavaScript (unminified)
-- After: 27.77 KB modern + 42.13 KB legacy
-- Gzipped: 8.05 KB modern + 11.09 KB legacy
+- After (v3.0): 27.77 KB (8.05 KB gzipped); ~39 KB gzipped today, plus the lazy-loaded map
+- No separate legacy bundle since `@vitejs/plugin-legacy` was dropped (2026)
 - **70% reduction** in bundle size
 
 **Build Process**:
