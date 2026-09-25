@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import compression from 'vite-plugin-compression';
+import { compression } from 'vite-plugin-compression2';
 
 export default defineConfig({
   // Base public path when deployed.
@@ -14,14 +14,9 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
 
-    // Rollup options for optimization
-    rollupOptions: {
+    // Rolldown (Vite 8's bundler) options
+    rolldownOptions: {
       output: {
-        // Manual chunks for better caching
-        manualChunks: {
-          // Separate vendor code if we add dependencies
-          // vendor: ['dependency-name'],
-        },
         // Asset naming
         assetFileNames: 'assets/[name]-[hash][extname]',
         chunkFileNames: 'assets/[name]-[hash].js',
@@ -72,26 +67,12 @@ export default defineConfig({
 
   // Plugins
   plugins: [
-    // Gzip compression
-    compression({
-      algorithm: 'gzip',
-      ext: '.gz',
-    }),
-
-    // Brotli compression (better than gzip)
-    compression({
-      algorithm: 'brotliCompress',
-      ext: '.br',
-    }),
+    // Pre-compressed .gz and .br copies next to each asset
+    compression({ algorithms: ['gzip', 'brotliCompress'] }),
   ],
 
   // Dependency optimization
   optimizeDeps: {
     include: [],
-  },
-
-  // TypeScript configuration
-  esbuild: {
-    target: 'es2020',
   },
 });

@@ -3,36 +3,40 @@
  *
  * Provides runtime type validation for data fetched from external sources.
  * Complements TypeScript's compile-time type checking.
+ *
+ * zod/mini: the same validation as full zod with a tree-shakable,
+ * function-style API (z.optional(x), .check(z.minLength(1))). Full zod
+ * 4.6 added ~11 KB gzipped to the main bundle; mini keeps it small.
  */
 
-import { z } from 'zod';
+import { z } from 'zod/mini';
 
 /**
  * Tournament schema - validates tournament data structure
  */
 export const TournamentSchema = z.object({
-    name: z.string().min(1, 'Tournament name is required'),
-    url: z.string().url('Invalid tournament URL'),
-    location: z.string().min(1, 'Location is required'),
-    date: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    name: z.string().check(z.minLength(1, 'Tournament name is required')),
+    url: z.url('Invalid tournament URL'),
+    location: z.string().check(z.minLength(1, 'Location is required')),
+    date: z.string().check(z.refine((val) => !isNaN(Date.parse(val)), {
         message: 'Invalid date format'
-    }),
+    })),
     category: z.string(),
     description: z.string(),
-    timeControl: z.string().optional(),
-    dateTo: z.string().optional(),
+    timeControl: z.optional(z.string()),
+    dateTo: z.optional(z.string()),
     // Map coordinates added by geocode_tournaments.py (absent when a
     // location couldn't be placed)
-    lat: z.number().min(-90).max(90).optional(),
-    lng: z.number().min(-180).max(180).optional(),
-    coast: z.enum(['med', 'atlantic']).optional(),
-    seaM: z.number().int().min(0).max(500).optional(),
-    airport: z.object({
-        iata: z.string().regex(/^[A-Z0-9]{3}$/),
+    lat: z.optional(z.number().check(z.gte(-90), z.lte(90))),
+    lng: z.optional(z.number().check(z.gte(-180), z.lte(180))),
+    coast: z.optional(z.enum(['med', 'atlantic'])),
+    seaM: z.optional(z.int().check(z.gte(0), z.lte(500))),
+    airport: z.optional(z.object({
+        iata: z.string().check(z.regex(/^[A-Z0-9]{3}$/)),
         name: z.string(),
-        km: z.number().int().min(1).max(150),
-    }).optional(),
-    town: z.string().min(1).max(120).optional()
+        km: z.int().check(z.gte(1), z.lte(150)),
+    })),
+    town: z.optional(z.string().check(z.minLength(1), z.maxLength(120)))
 });
 
 /**
@@ -85,7 +89,7 @@ export function validateAppConfig(data: unknown): ValidatedAppConfig {
 export function safeValidateTournaments(data: unknown): {
     success: boolean;
     data?: ValidatedTournamentsArray;
-    error?: z.ZodError;
+    error?: z.core.$ZodError;
 } {
     const result = TournamentsArraySchema.safeParse(data);
     if (result.success) {
@@ -100,7 +104,7 @@ export function safeValidateTournaments(data: unknown): {
 export function safeValidateAppConfig(data: unknown): {
     success: boolean;
     data?: ValidatedAppConfig;
-    error?: z.ZodError;
+    error?: z.core.$ZodError;
 } {
     const result = AppConfigSchema.safeParse(data);
     if (result.success) {
