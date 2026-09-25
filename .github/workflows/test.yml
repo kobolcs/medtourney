@@ -34,7 +34,7 @@ jobs:
 
     - name: Run mypy type checking
       run: |
-        mypy TournamentProcessor.py run_scraper.py geocode_tournaments.py --config-file mypy.ini
+        mypy TournamentProcessor.py tournament_processing run_scraper.py geocode_tournaments.py --config-file mypy.ini
       env:
         CI: true
 
@@ -120,6 +120,7 @@ jobs:
       run: |
         pytest tests/python/test_tournament_processor_*.py -v \
           --cov=TournamentProcessor \
+          --cov=tournament_processing \
           --cov-report=xml \
           --cov-report=term-missing \
           --timeout=120

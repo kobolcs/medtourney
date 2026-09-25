@@ -61,6 +61,7 @@ medtourney/
 │   └── sitemap.xml
 │
 ├── TournamentProcessor.py        # Python backend for scraping
+├── tournament_processing/        # TournamentProcessor mixins: excel, time_control, classify, config
 ├── scrape_tournaments.robot      # Robot Framework scraper
 ├── run_scraper.py                # Scraper entry point
 ├── geocode_tournaments.py        # Adds lat/lng after each scrape (Nominatim + GeoNames, cached)
@@ -156,6 +157,7 @@ The application follows a **modular service-oriented architecture**. Each servic
 | File | Purpose |
 |------|---------|
 | `TournamentProcessor.py` | Python backend for tournament processing |
+| `tournament_processing/` | Its private helpers as mixins (Excel parsing, time control, classification, fallback config) |
 | `scrape_tournaments.robot` | Robot Framework scraper automation |
 | `run_scraper.py` | Scraper entry point |
 | `requirements.txt` | Python dependencies |
