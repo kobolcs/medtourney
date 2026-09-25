@@ -110,6 +110,10 @@ chore: Update dependencies to latest versions
    - Don't add logic to `app.ts` - create/use services
    - Follow dependency injection pattern
    - Keep services isolated and testable
+   - `TournamentFinder` is split into a class chain: state in
+     `src/app/AppState.ts`, methods by concern in `src/app/*Part.ts`, the rest
+     in `app.ts`. A method called from a lower part but defined higher up
+     needs a `protected abstract` declaration in `AppState`
    - **This has drifted:** `app.ts` has grown to 1,643 lines (from 573 at
      the v3.0 refactor) as event wiring, filter-preference persistence,
      the mode switch, active-filter chips, keyboard shortcuts, deep-linking,
@@ -172,7 +176,7 @@ chore: Update dependencies to latest versions
 ### Performance Considerations
 
 1. **Bundle size**
-   - Current: ~36KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~7.6KB gzipped CSS; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `app.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
+   - Current: ~36KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~7.6KB gzipped CSS; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `src/app/ResultsViewPart.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
    - Flag icons (`public/flags/*.png`) are static assets served on demand, not part of this bundle - kept to ~4KB average per flag (rasterized small; several countries' full-detail SVG coats of arms were 30-180KB, wasted at 20px icon size)
    - Avoid large dependencies
    - Use tree-shaking friendly imports

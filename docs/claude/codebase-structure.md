@@ -10,6 +10,7 @@
 medtourney/
 ├── src/                          # TypeScript source code
 │   ├── app.ts                    # Main application coordinator (1,643 lines)
+│   ├── app/                      # TournamentFinder's class chain: AppState (fields, constructor) + one *Part.ts per concern
 │   ├── main.ts                   # Entry point
 │   ├── types.ts                  # Shared TypeScript interfaces
 │   ├── services/                 # Service modules (modular architecture)
@@ -103,6 +104,7 @@ The application follows a **modular service-oriented architecture**. Each servic
 | File | Purpose | Lines |
 |------|---------|-------|
 | `src/app.ts` | Main application coordinator | 1,643 |
+| `src/app/*.ts` | TournamentFinder's class chain: `AppState` -> `ThemeHelpPart` -> ... -> `ResultsViewPart` -> `TournamentFinder` | - |
 | `src/main.ts` | Entry point | 16 |
 | `src/types.ts` | Shared TypeScript interfaces | 50 |
 | `index.html` | Main HTML file | 481 |
