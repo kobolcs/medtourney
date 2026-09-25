@@ -4,30 +4,30 @@ import importlib.util
 import json
 import re
 import urllib.error
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar
 
 import geocoding as gt
 
 ROOT = Path(__file__).parent.parent.parent
-NOW = datetime(2026, 9, 24, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 24, tzinfo=UTC)
 ATLAS = "Hotel Atlas \u2013 Novi Pazar"  # organisers separate venue and town with an en dash
 
 
 class FakeNominatim:
     """Records queries; answers from a {(query, iso2): hit} table."""
 
-    def __init__(self, answers: Optional[Dict[tuple, Dict[str, Any]]] = None) -> None:
+    def __init__(self, answers: dict[tuple, dict[str, Any]] | None = None) -> None:
         self.answers = answers or {}
-        self.queries: List[tuple] = []
+        self.queries: list[tuple] = []
 
-    def __call__(self, query: str, iso2: str) -> Optional[Dict[str, Any]]:
+    def __call__(self, query: str, iso2: str) -> dict[str, Any] | None:
         self.queries.append((query, iso2))
         return self.answers.get((query, iso2))
 
 
-def hit(lat: float, lon: float, kind: str = "city") -> Dict[str, Any]:
+def hit(lat: float, lon: float, kind: str = "city") -> dict[str, Any]:
     return {"lat": str(lat), "lon": str(lon), "addresstype": kind}
 
 
@@ -276,7 +276,7 @@ class TestSeaside:
 
 
 class TestBeachfront:
-    def venue_hit(self, lat: float = 38.5315, lon: float = -0.1635, name: str = "Gran Hotel Bali") -> Dict[str, Any]:
+    def venue_hit(self, lat: float = 38.5315, lon: float = -0.1635, name: str = "Gran Hotel Bali") -> dict[str, Any]:
         return {"lat": str(lat), "lon": str(lon), "category": "tourism", "addresstype": "tourism", "name": name}
 
     def make(self, answers, coastline) -> gt.Geocoder:
@@ -388,7 +388,7 @@ class TestTown:
     def make(self, cache=None, towns=None):
         calls = []
 
-        def reverse(lat: float, lng: float) -> Optional[str]:
+        def reverse(lat: float, lng: float) -> str | None:
             calls.append((lat, lng))
             return (towns or {}).get((round(lat, 2), round(lng, 2)))
 

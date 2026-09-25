@@ -17,9 +17,9 @@ Typical usage example:
 import json
 import logging
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Pattern, Set
+from typing import Any, ClassVar
 
 import openpyxl
 from openpyxl.workbook.workbook import Workbook
@@ -49,7 +49,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
     """
 
     # Precompiled regex patterns for performance
-    REGEX_PATTERNS: ClassVar[Dict[str, Pattern[str]]] = {
+    REGEX_PATTERNS: ClassVar[dict[str, re.Pattern[str]]] = {
         "date_yyyymmdd": re.compile(r"^(\d{8})$"),
         "date_ddmmyyyy_dot": re.compile(r"(\d{1,2})\.(\d{1,2})\.(\d{4})"),
         "date_yyyymmdd_dash": re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})"),
@@ -94,13 +94,13 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
     def __init__(self) -> None:
         """Initialize the TournamentProcessor with empty tournament list."""
         self.logger = logging.getLogger(__name__)
-        self.tournaments: List[Dict[str, Any]] = []
-        self.european_countries: Set[str] = set()
-        self.non_european_countries: Set[str] = set()
-        self.mediterranean_locations: Set[str] = set()
+        self.tournaments: list[dict[str, Any]] = []
+        self.european_countries: set[str] = set()
+        self.non_european_countries: set[str] = set()
+        self.mediterranean_locations: set[str] = set()
         # Stats from the most recent load_and_filter_tournaments() run, used to
         # emit a metadata sidecar file for data-freshness/observability.
-        self.last_run_stats: Dict[str, int] = {
+        self.last_run_stats: dict[str, int] = {
             "rawRows": 0,
             "keptRows": 0,
             "excludedPast": 0,
@@ -109,9 +109,9 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         }
         # Multi-federation accumulator — populated by Accumulate Fed Tournaments,
         # finalised by Finalize Accumulated.
-        self._accumulated: List[Dict[str, Any]] = []
-        self._seen_urls: Set[str] = set()
-        self._accum_stats: Dict[str, int] = {
+        self._accumulated: list[dict[str, Any]] = []
+        self._seen_urls: set[str] = set()
+        self._accum_stats: dict[str, int] = {
             "rawRows": 0,
             "keptRows": 0,
             "excludedPast": 0,
@@ -134,7 +134,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         config_path: Path = Path(__file__).parent / "config.json"
         try:
             with config_path.open(encoding="utf-8") as f:
-                config: Dict[str, List[str]] = json.load(f)
+                config: dict[str, list[str]] = json.load(f)
 
             # Convert lists to sets for O(1) lookup performance
             self.european_countries = set(config["europeanCountries"])
@@ -149,7 +149,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
             self._load_default_config()
 
     @keyword("Load And Filter Tournaments")
-    def load_and_filter_tournaments(self, excel_file: str) -> List[Dict[str, Any]]:
+    def load_and_filter_tournaments(self, excel_file: str) -> list[dict[str, Any]]:
         """Load tournaments from Excel file and filter for European tournaments.
 
         Loads tournament data from an Excel file downloaded from chess-results.com,
@@ -210,7 +210,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         # Data starts on the row after the headers.
         data_start_row = header_row + 1
 
-        tournaments: List[Dict[str, Any]] = []
+        tournaments: list[dict[str, Any]] = []
 
         # Reset per-run stats.
         raw_rows = 0
@@ -219,7 +219,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         excluded_invalid = 0
 
         # Calculate tomorrow once (not in loop) - PERFORMANCE FIX
-        tomorrow: datetime = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        tomorrow: datetime = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
         # Process each row (data starts just after the detected header row)
         for row_idx, row in enumerate(sheet.iter_rows(min_row=data_start_row, values_only=True), start=data_start_row):
@@ -269,7 +269,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
                     date_to_str = ""
 
                 # Build tournament dict
-                tournament: Dict[str, Any] = {
+                tournament: dict[str, Any] = {
                     "name": name,
                     "location": location,
                     "date": parsed_date.strftime("%Y-%m-%d"),
@@ -300,7 +300,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         return tournaments
 
     @keyword("Export Metadata")
-    def export_metadata(self, output_file: str) -> Dict[str, Any]:
+    def export_metadata(self, output_file: str) -> dict[str, Any]:
         """Write a metadata sidecar describing the most recent scrape run.
 
         Captures provenance and filtering stats so consumers can reason about
@@ -313,8 +313,8 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         Returns:
             The metadata dictionary that was written.
         """
-        metadata: Dict[str, Any] = {
-            "generatedAt": datetime.now(timezone.utc).isoformat(),
+        metadata: dict[str, Any] = {
+            "generatedAt": datetime.now(UTC).isoformat(),
             "source": "chess-results.com",
             "rangeMonths": self.RANGE_MONTHS,
             "rawRows": self.last_run_stats.get("rawRows", 0),
@@ -363,7 +363,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         return new_count
 
     @keyword("Finalize Accumulated")
-    def finalize_accumulated(self) -> List[Dict[str, Any]]:
+    def finalize_accumulated(self) -> list[dict[str, Any]]:
         """Return the deduplicated multi-federation tournament list.
 
         Sets self.tournaments and self.last_run_stats to the aggregated totals
@@ -410,14 +410,14 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
             raise TypeError(msg)
 
         # Validate each tournament has required fields
-        required_fields: Set[str] = {"name", "location", "date", "category", "url"}
-        valid_tournaments: List[Dict[str, Any]] = []
+        required_fields: set[str] = {"name", "location", "date", "category", "url"}
+        valid_tournaments: list[dict[str, Any]] = []
 
         for _idx, tournament in enumerate(tournaments):
             if not isinstance(tournament, dict):
                 continue
 
-            missing_fields: Set[str] = required_fields - set(tournament.keys())
+            missing_fields: set[str] = required_fields - set(tournament.keys())
             if missing_fields:
                 continue
 
@@ -431,12 +431,12 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
     @keyword("Filter Tournaments By Criteria")
     def filter_tournaments_by_criteria(
         self,
-        tournaments: List[Dict[str, Any]],
+        tournaments: list[dict[str, Any]],
         open_only: bool = True,
         exclude_youth: bool = True,
         mediterranean_only: bool = False,
         senior_only: bool = False
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Filter tournaments by various criteria.
 
         Applies multiple filters to tournament list including category filters
@@ -468,7 +468,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
             ... )
             Filtered to 15 senior tournaments in Mediterranean
         """
-        filtered: List[Dict[str, Any]] = []
+        filtered: list[dict[str, Any]] = []
 
         for tournament in tournaments:
             category_lower: str = tournament["category"].lower()

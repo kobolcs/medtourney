@@ -13,7 +13,6 @@ Typical usage example:
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
 
 
 def main() -> int:
@@ -44,7 +43,7 @@ def main() -> int:
     # Run robot framework
     robot_file: Path = script_dir / "scrape_tournaments.robot"
 
-    cmd: List[str] = [
+    cmd: list[str] = [
         "robot",
         "--outputdir", str(script_dir / "robot_results"),
         "--loglevel", "INFO",

@@ -17,7 +17,7 @@ Custom markers:
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
@@ -47,7 +47,7 @@ def test_data_dir() -> Path:
 
 
 @pytest.fixture
-def sample_tournament_data() -> List[Dict[str, Any]]:
+def sample_tournament_data() -> list[dict[str, Any]]:
     """Generate sample tournament data for testing.
 
     Provides a list of sample tournaments with various categories and locations,

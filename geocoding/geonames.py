@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Any
 
 from geocoding.places import split_location
 
@@ -66,7 +66,7 @@ def normalise(text: str) -> str:
 
 # (lat, lng, population, flags): flags has "p" when the key is the place's own
 # name (not an alternate) and "a" for a province/region seat
-Place = Tuple[float, float, int, str]
+Place = tuple[float, float, int, str]
 
 
 def flags(place: Place) -> str:

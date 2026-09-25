@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import openpyxl
 import pytest
@@ -20,7 +20,7 @@ def processor() -> TournamentProcessor:
     return TournamentProcessor()
 
 @pytest.fixture
-def sample_tournaments() -> List[Dict[str, Any]]:
+def sample_tournaments() -> list[dict[str, Any]]:
     """Generate sample tournament data for testing.
 
     Returns:

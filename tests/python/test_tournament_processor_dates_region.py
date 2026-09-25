@@ -4,7 +4,7 @@ Shared fixtures (processor, sample_tournaments, sample_excel_file) are in
 tests/python/conftest.py.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -56,19 +56,19 @@ class TestTournamentProcessor:
         dt = datetime(2025, 11, 28)
         date = processor._parse_date(dt)
         # Naive datetime should get UTC timezone added
-        expected = datetime(2025, 11, 28, tzinfo=timezone.utc)
+        expected = datetime(2025, 11, 28, tzinfo=UTC)
         assert date == expected
 
     def test_parse_date_invalid(self, processor):
         """Test invalid date returns current date"""
         date = processor._parse_date("invalid-date")
-        today = datetime.now(timezone.utc)  # _parse_date's fallback is UTC "now"
+        today = datetime.now(UTC)  # _parse_date's fallback is UTC "now"
         assert date.date() == today.date()
 
     def test_parse_date_none(self, processor):
         """Test None returns current date"""
         date = processor._parse_date(None)
-        today = datetime.now(timezone.utc)  # _parse_date's fallback is UTC "now"
+        today = datetime.now(UTC)  # _parse_date's fallback is UTC "now"
         assert date.date() == today.date()
 
 
