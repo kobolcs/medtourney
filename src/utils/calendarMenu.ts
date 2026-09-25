@@ -46,7 +46,9 @@ export function openCalendarMenu(button: HTMLElement, tournament: Tournament): v
     const rect = button.getBoundingClientRect();
     menu.style.top = `${Math.round(rect.bottom + 4)}px`;
     menu.style.left = `${Math.round(Math.max(8, Math.min(rect.left, window.innerWidth - 240)))}px`;
-    document.body.appendChild(menu);
+    // Inside the detail panel's modal <dialog> (the top layer) - anything
+    // outside it would stay behind it whatever its z-index
+    (button.closest('dialog') ?? document.body).appendChild(menu);
     // Near the bottom of the screen: open upwards instead of off-screen
     if (rect.bottom + 4 + menu.offsetHeight > window.innerHeight - 8) {
         menu.style.top = `${Math.round(Math.max(8, rect.top - 4 - menu.offsetHeight))}px`;

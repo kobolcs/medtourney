@@ -23,6 +23,7 @@
     "src/utils/calendarMenu.ts",
     "src/utils/contact.ts",
     "src/utils/countrySelection.ts",
+    "src/utils/detailPanel.ts",
     "src/utils/googleCalendar.ts",
     "src/utils/filterUrl.ts",
     "src/utils/seaPicker.ts",

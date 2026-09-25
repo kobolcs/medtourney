@@ -8,8 +8,9 @@
 import { ShortlistPart } from './ShortlistPart';
 import type { Tournament } from '../types';
 import { closeCalendarMenu, closeCalendarMenuOnScroll, openCalendarMenu } from '../utils/calendarMenu';
+import { initDetailPanel, openDetailPanel } from '../utils/detailPanel';
 
-/** Tournament card actions: calendar, copy link, card click. */
+/** Tournament card actions: calendar, copy link, card click -> detail panel. */
 export abstract class CardActionsPart extends ShortlistPart {
     /**
      * Calendar button on a card: opens a small menu - "Google Calendar" (a
@@ -93,24 +94,32 @@ export abstract class CardActionsPart extends ShortlistPart {
     }
 
     /**
-     * Delegated click handler that makes the whole tournament card open the
-     * tournament's chess-results.com page in a new tab, not just the name
-     * text. Ignores clicks on any link/button inside the card (the name
-     * link, shortlist star, calendar export, copy link) so those keep their
-     * own behavior instead of also triggering this.
+     * A click on a card - or a plain left click on its name - opens the
+     * detail panel on MedTourney instead of leaving for chess-results.com.
+     * The name keeps its chess-results href, so ctrl/middle-click and "open
+     * in new tab" still go there directly. Buttons in the card keep their
+     * own behavior.
      */
     protected initTournamentCardClickDelegation(): void {
+        initDetailPanel();
         const tournamentList = document.getElementById('tournamentList');
-        if (!tournamentList) return;
-
-        tournamentList.addEventListener('click', (e) => {
-            if ((e.target as Element).closest('a, button')) return;
-
-            const card = (e.target as Element).closest<HTMLElement>('.tournament-card');
-            const url = card?.dataset.tournamentUrl;
-            if (url) {
-                window.open(url, '_blank', 'noopener,noreferrer');
-            }
+        tournamentList?.addEventListener('click', (e) => {
+            const target = e.target as Element;
+            if (target.closest('button')) return;
+            const link = target.closest('a');
+            if (link && !link.classList.contains('tournament-link')) return;
+            if (link && (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)) return;
+            const card = target.closest<HTMLElement>('.tournament-card');
+            const tournament = this.findTournamentByUrl(card?.dataset.tournamentUrl);
+            if (!tournament) return;
+            e.preventDefault();
+            this.openTournamentDetail(tournament);
         });
+    }
+
+    /** Open the detail panel for one tournament (cards, map popups, shared ?t= links). */
+    protected openTournamentDetail(tournament: Tournament): void {
+        openDetailPanel(tournament, this.shortlist.has(tournament.url), url => this.toggleShortlist(url));
+        this.trackEvent('Detail Panel');
     }
 }

@@ -73,8 +73,13 @@ export abstract class ResultsViewPart extends FilterFormPart {
         if (this.deepLinkUrl) {
             const target = this.deepLinkUrl;
             this.deepLinkUrl = null;
-            // Defer so the DOM has been painted before we scroll
-            setTimeout(() => this.uiManager.highlightTournament(target), 100);
+            // Defer so the DOM has been painted before we scroll; then show
+            // the shared tournament's details (a shared link's reader is new here)
+            setTimeout(() => {
+                this.uiManager.highlightTournament(target);
+                const shared = this.allTournaments.find(t => t.url === target);
+                if (shared) this.openTournamentDetail(shared);
+            }, 100);
         }
     }
 
