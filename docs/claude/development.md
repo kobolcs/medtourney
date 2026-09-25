@@ -55,7 +55,7 @@ npm run build:vite
 # - Tree-shaking (removes unused code)
 # - Code splitting (better caching)
 # - Gzip + Brotli compression
-# - Legacy browser support
+# - Compiled down to Safari 12 / Chrome 64 (build.target)
 
 # TypeScript build only
 npm run build

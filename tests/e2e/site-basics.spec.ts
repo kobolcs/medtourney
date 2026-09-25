@@ -72,8 +72,8 @@ test.describe('Content-Security-Policy', () => {
     await stubTournaments(page);
     await page.goto('/');
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
-    // A plugin upgrade changes the inline scripts - the message includes the
-    // sha256 to put in index.html's script-src
+    // index.html allows no inline scripts - one added by a build plugin or by
+    // hand shows up here (move it to a file in public/ instead)
     expect(violations).toEqual([]);
   });
 });
