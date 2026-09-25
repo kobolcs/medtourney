@@ -1,11 +1,11 @@
 /**
- * Meta-test: guard against frontend/Vite CI jobs regressing to Node < 20.
+ * Meta-test: guard against CI jobs regressing to Node < 24.
  *
- * Vite 7 (and its toolchain) requires Node 20+. A workflow that builds the
- * frontend, runs Playwright/Lighthouse, type-checks, or deploys must not pin
- * `node-version: '18'` (or any < 20). This test scans every workflow YAML and
- * fails loudly if it finds one, so the production deploy can never silently
- * drop back to Node 18.
+ * The repo targets Node 24 (.nvmrc, package.json engines): Node 20 reached end
+ * of life in April 2026 and jsdom 30 needs 22.22+/24.15+. A workflow that
+ * builds the frontend, runs Playwright/Lighthouse, type-checks, or deploys must
+ * not pin an older `node-version`. This test scans every workflow YAML and
+ * fails loudly if it finds one.
  *
  * Run with: npm run test:workflows
  */
@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 const WORKFLOWS_DIR = path.resolve(__dirname, '..', '..', '.github', 'workflows');
-const MIN_NODE_MAJOR = 20;
+const MIN_NODE_MAJOR = 24;
 
 function findNodeVersions(content) {
     // Matches:  node-version: '18'  /  node-version: 18  /  node-version: "20.x"
