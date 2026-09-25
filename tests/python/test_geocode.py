@@ -256,11 +256,11 @@ class TestSeaside:
         assert self.COAST.coast_of(38.54, -0.12) == "med"  # ~1.4 km
         assert self.COAST.coast_of(38.70, -0.13) is None  # ~19 km inland
 
-    def test_atlantic_only_counts_for_spain_and_portugal(self) -> None:
+    def test_atlantic_counts_for_spain_portugal_and_france_only(self) -> None:
         spain = {"lat": 43.32, "lng": -1.97, "location": "Donostia, ESP"}
         france = {"lat": 43.32, "lng": -1.97, "location": "Hendaye, FRA"}
-        assert gt.seaside_coast(spain, self.COAST) == "atlantic"
-        assert gt.seaside_coast(france, self.COAST) is None
+        assert gt.seaside_coast(spain, self.COAST) == gt.seaside_coast(france, self.COAST) == "atlantic"
+        assert gt.seaside_coast({**france, "location": "Hendaye, ENG"}, self.COAST) is None
 
     def test_coast_regions(self) -> None:
         spec = importlib.util.spec_from_file_location("bsc", ROOT / "scripts" / "build_southern_coast.py")
@@ -270,8 +270,8 @@ class TestSeaside:
         assert bsc.region(-1.98, 43.32) == "atlantic"   # San Sebastián
         assert bsc.region(-8.63, 41.16) == "atlantic"   # Porto
         assert bsc.region(-15.43, 28.12) == "atlantic"  # Las Palmas
-        assert bsc.region(28.98, 41.01) is None         # Istanbul (Bosphorus / Black Sea)
-        assert bsc.region(-1.56, 43.48) is None         # Biarritz (France's Atlantic)
+        assert bsc.region(28.98, 41.01) == "black"      # Istanbul (Bosphorus / Black Sea)
+        assert bsc.region(-1.56, 43.48) == "atlantic"   # Biarritz (France's Atlantic)
         assert bsc.region(10.0, 54.0) is None           # Baltic
 
 

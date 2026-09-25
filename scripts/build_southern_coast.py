@@ -1,10 +1,14 @@
 """Build data/southern_coast.json - the coastline points "Seaside" is measured against.
 
-"Seaside" on MedTourney means: within a few km of the Mediterranean coast
-(incl. Adriatic, Aegean, Tyrrhenian, Balearic, ...) or of the Atlantic
-coasts of Spain and Portugal (Galicia, Cantabria, Algarve, Canaries,
-Madeira, Azores). Not the Black Sea / Sea of Marmara, not France's Atlantic
-coast, not northern seas.
+"Seaside" on MedTourney means: within a few km of one of four seas, each
+point tagged with its sea so the site can offer a sea picker:
+- "med": the Mediterranean (incl. Adriatic, Aegean, Tyrrhenian, Balearic...)
+- "atlantic": the Atlantic coasts of Spain, Portugal and France (Galicia,
+  Cantabria, Algarve, Bay of Biscay up to western Brittany; Canaries,
+  Madeira, Azores) - not the Channel, not northern seas
+- "black": the Black Sea, incl. the Sea of Marmara / Bosphorus and the Sea
+  of Azov
+- "caspian": the Caspian Sea (Baku, Aktau...)
 
 Source: Natural Earth 1:10m coastline (public domain),
 https://github.com/nvkelso/natural-earth-vector (geojson/ne_10m_coastline.geojson).
@@ -29,13 +33,22 @@ MIN_SPACING_KM = 0.5
 # Coast regions as (kind, west, east, south, north) boxes in degrees, checked
 # in order - the first box containing a point decides (None = not seaside).
 REGIONS: list[tuple[str | None, float, float, float, float]] = [
-    # Sea of Marmara / Black Sea: north-east of the Dardanelles
-    (None, 26.6, 36.5, 40.25, 46.0),
+    # Gulf of Saros (Aegean, north of the Gallipoli peninsula) - before the
+    # Black Sea box, whose south-west corner overlaps it; the Sea of Marmara
+    # starts east of it (Şarköy, 27.1°E)
+    ("med", 26.0, 27.0, 40.45, 40.8),
+    # Sea of Marmara / Black Sea / Sea of Azov: north-east of the Dardanelles,
+    # east to Batumi
+    ("black", 26.6, 42.0, 40.25, 47.5),
+    # Caspian Sea
+    ("caspian", 46.5, 55.0, 36.5, 47.5),
     # Bay of Biscay: west of 0°, north of 41°N the Spanish Mediterranean
     # coast has ended (Castellón is ~40°N) - Spain's Cantabrian / Basque
-    # coast counts as Atlantic, France's Biscay coast doesn't
-    ("atlantic", -5.6, -1.75, 41.0, 46.0),
-    (None, -1.75, 0.0, 41.0, 46.0),
+    # coast and France's Biscay coast are Atlantic
+    ("atlantic", -5.6, 0.0, 41.0, 46.0),
+    # France's Atlantic coast north of the Gironde up to western Brittany
+    # (Brest); the Channel coast (north Brittany, ~48.6°N+) is not included
+    ("atlantic", -5.6, -1.0, 46.0, 48.55),
     # Mediterranean basin (incl. Adriatic, Aegean, Tyrrhenian, Balearic...)
     ("med", -5.6, 36.5, 30.0, 46.0),
     # Atlantic Iberia: Gulf of Cadiz, Algarve, Portugal, Galicia
@@ -48,7 +61,7 @@ REGIONS: list[tuple[str | None, float, float, float, float]] = [
 
 
 def region(lon: float, lat: float) -> str | None:
-    """'med', 'atlantic' or None for a coastline point."""
+    """'med', 'atlantic', 'black', 'caspian' or None for a coastline point."""
     for kind, west, east, south, north in REGIONS:
         if west <= lon <= east and south <= lat <= north:
             return kind
@@ -63,7 +76,7 @@ def km(a: tuple[float, float], b: tuple[float, float]) -> float:
 
 def main() -> int:
     geojson = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    out: dict[str, list[list[float]]] = {"med": [], "atlantic": []}
+    out: dict[str, list[list[float]]] = {"med": [], "atlantic": [], "black": [], "caspian": []}
     last: dict[str, tuple[float, float]] = {}
     for feature in geojson["features"]:
         geom = feature["geometry"]
@@ -80,7 +93,8 @@ def main() -> int:
                 out[kind].append([point[0], point[1]])
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(out, separators=(",", ":")), encoding="utf-8")
-    print(f"Wrote {OUT}: {len(out['med'])} Mediterranean + {len(out['atlantic'])} Atlantic points")  # noqa: T201
+    counts = ", ".join(f"{kind} {len(points)}" for kind, points in out.items())
+    print(f"Wrote {OUT}: {counts} coastline points")  # noqa: T201
     return 0
 
 

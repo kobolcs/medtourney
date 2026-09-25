@@ -161,7 +161,7 @@ export abstract class CardPart extends UIState {
         const isShortlisted = this.shortlistedUrls.has(tournament.url);
         const tags = tournament.travelTags ?? [];
 
-        const GEOGRAPHIC_TAGS = new Set(['Mediterranean', 'Seaside', 'Senior-friendly', "Women's"]);
+        const GEOGRAPHIC_TAGS = new Set(['Mediterranean', 'Atlantic', 'Black Sea', 'Caspian', 'Seaside', 'Senior-friendly', "Women's"]);
         const meaningfulTags = tags.filter(t => GEOGRAPHIC_TAGS.has(t));
         const travelTagsHTML = meaningfulTags.length > 0
             ? `<div class="travel-tags">${meaningfulTags.map(t => `<span class="travel-tag">${escapeHTML(t)}</span>`).join('')}</div>`

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { stubTournaments, isoInDays, openAdvancedFilters, TournamentFixture } from './_fixtures';
 
 // Spain is listed twice in the country checklist - under Mediterranean and
-// under Atlantic (Spain & Portugal). The two boxes are one selection.
+// under Atlantic (Spain, Portugal & France). The two boxes are one selection.
 test.describe('Countries listed under two regions', () => {
   const fixtures: TournamentFixture[] = [
     ['Barcelona, ESP', 'Barcelona Open'], ['Porto, POR', 'Porto Open'], ['Rome, ITA', 'Roma Open'],
@@ -34,7 +34,7 @@ test.describe('Countries listed under two regions', () => {
   });
 
   test('the Atlantic region tick selects Spain and Portugal once each', async ({ page }) => {
-    await page.getByRole('checkbox', { name: 'Select all Atlantic (Spain & Portugal) countries' }).check();
+    await page.getByRole('checkbox', { name: 'Select all Atlantic (Spain, Portugal & France) countries' }).check();
     await expect(spain(page).nth(0)).toBeChecked();
     await expect(page.locator('#countryList input[value="POR"]')).toBeChecked();
     await expect(page.locator('.tournament-card')).toHaveCount(2);

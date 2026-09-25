@@ -18,7 +18,7 @@ export interface TournamentFixture {
     description: string;
     lat?: number;
     lng?: number;
-    coast?: 'med' | 'atlantic';
+    coast?: 'med' | 'atlantic' | 'black' | 'caspian';
     seaM?: number;
     airport?: { iata: string; name: string; km: number; city?: string };
     town?: string;

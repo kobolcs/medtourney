@@ -1,4 +1,4 @@
-"""Seaside: distance to the Mediterranean / Iberian Atlantic coast."""
+"""Seaside: distance to the Mediterranean, Atlantic (ES/PT/FR), Black Sea or Caspian coast."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from typing import Any
 
 # --- Seaside: distance to the southern coasts ---------------------------------
 #
-# A placed tournament within SEASIDE_KM of the Mediterranean or of Spain's /
-# Portugal's Atlantic coast gets "coast": "med" | "atlantic", which the site's
-# Seaside filter uses alongside its town list (config.json). Coastline points
+# A placed tournament within SEASIDE_KM of the coast gets "coast": "med" |
+# "atlantic" | "black" | "caspian" (which sea), which the site's Seaside filter
+# and sea picker use alongside its town list (config.json). Coastline points
 # come from Natural Earth (public domain), prebuilt by
 # scripts/build_southern_coast.py into data/southern_coast.json.
 
@@ -37,7 +37,7 @@ class Coast:
         return cls(json.loads(path.read_text(encoding="utf-8")))
 
     def nearest(self, lat: float, lng: float) -> tuple[float, str | None]:
-        """(km, 'med' | 'atlantic') to the nearest coast point in the 5x5 cells around."""
+        """(km, sea) to the nearest coast point in the 5x5 cells around."""
         best_km, best_kind = math.inf, None
         row, col = self._cell(lat, lng)
         for dr in range(-2, 3):
@@ -56,13 +56,13 @@ class Coast:
         return kind if km <= SEASIDE_KM else None
 
 
-# Atlantic seaside is Spain's and Portugal's coast only (e.g. not Hendaye,
-# France, 2 km from the Spanish border).
-ATLANTIC_FEDS = {"ESP", "POR"}
+# Atlantic seaside is Spain's, Portugal's and France's coast only (not e.g. a
+# British federation's event that got placed there).
+ATLANTIC_FEDS = {"ESP", "POR", "FRA"}
 
 
 def seaside_coast(tournament: dict[str, Any], coast: Coast) -> str | None:
-    """'med' / 'atlantic' if the tournament's coordinates are by the sea."""
+    """The sea ('med', 'atlantic', 'black', 'caspian') the tournament is by, or None."""
     kind = coast.coast_of(tournament["lat"], tournament["lng"])
     fed = tournament.get("location", "").rpartition(",")[2].strip().upper()
     if kind == "atlantic" and fed not in ATLANTIC_FEDS:

@@ -9,6 +9,7 @@ import { FilterState } from '../types';
 import { filterStateToSearchParams, filterStateFromSearchParams, FILTER_PARAM_KEYS } from '../utils/filterUrl';
 import { DataFreshnessPart } from './DataFreshnessPart';
 import { setCountryChecked } from '../utils/countrySelection';
+import { setCheckedSeas } from '../utils/seaPicker';
 
 /** Saved filter preferences and the filter state in the URL. */
 export abstract class FilterPreferencesPart extends DataFreshnessPart {
@@ -45,6 +46,7 @@ export abstract class FilterPreferencesPart extends DataFreshnessPart {
         if (preferences.excludeYouth !== undefined && filterElements.excludeYouth) {
             filterElements.excludeYouth.checked = preferences.excludeYouth;
         }
+        if (Array.isArray(preferences.seas) && preferences.seas.length > 0) setCheckedSeas(preferences.seas);
         if (preferences.mediterraneanOnly !== undefined && filterElements.mediterraneanOnly) {
             filterElements.mediterraneanOnly.checked = preferences.mediterraneanOnly;
         }

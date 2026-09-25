@@ -188,6 +188,19 @@
                     </div>
                 </div>
 
+                <!-- Which seas the Seaside mode counts (src/utils/seaPicker.ts). Shown
+                     only in the Seaside / Both modes; defaults to Mediterranean +
+                     Atlantic, what Seaside meant before the other seas were added. -->
+                <fieldset id="seaPicker" class="sea-picker" hidden>
+                    <legend class="filter-section-title">Seas</legend>
+                    <div class="filter-grid filter-grid-compact">
+                        <div class="filter-group"><label><input type="checkbox" name="sea" value="med" checked><span class="checkbox-label">Mediterranean</span></label></div>
+                        <div class="filter-group"><label><input type="checkbox" name="sea" value="atlantic" checked><span class="checkbox-label">Atlantic</span></label></div>
+                        <div class="filter-group"><label><input type="checkbox" name="sea" value="black"><span class="checkbox-label">Black Sea</span></label></div>
+                        <div class="filter-group"><label><input type="checkbox" name="sea" value="caspian"><span class="checkbox-label">Caspian</span></label></div>
+                    </div>
+                </fieldset>
+
                 <!-- The Seaside / Both mode switch buttons above are the only visible
                      control for this; the hidden checkbox stays as the single source
                      of truth that preferences, the URL, chips and the empty-state
@@ -328,8 +341,9 @@
                             <div class="country-item filter-group" data-country="TUR"><label><input type="checkbox" name="countryFilter" value="TUR"><span class="checkbox-label">Turkey</span></label></div>
                         </div>
 
-                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Atlantic (Spain &amp; Portugal) countries"> Atlantic (Spain &amp; Portugal)</label>
+                        <label class="country-group-label"><input type="checkbox" class="country-group-toggle" aria-label="Select all Atlantic (Spain, Portugal &amp; France) countries"> Atlantic (Spain, Portugal &amp; France)</label>
                         <div class="filter-grid">
+                            <div class="country-item filter-group" data-country="FRA"><label><input type="checkbox" name="countryFilter" value="FRA"><span class="checkbox-label">France</span></label></div>
                             <div class="country-item filter-group" data-country="POR"><label><input type="checkbox" name="countryFilter" value="POR"><span class="checkbox-label">Portugal</span></label></div>
                             <div class="country-item filter-group" data-country="ESP"><label><input type="checkbox" name="countryFilter" value="ESP"><span class="checkbox-label">Spain</span></label></div>
                         </div>

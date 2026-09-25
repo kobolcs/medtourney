@@ -29,7 +29,7 @@ export const TournamentSchema = z.object({
     // location couldn't be placed)
     lat: z.optional(z.number().check(z.gte(-90), z.lte(90))),
     lng: z.optional(z.number().check(z.gte(-180), z.lte(180))),
-    coast: z.optional(z.enum(['med', 'atlantic'])),
+    coast: z.optional(z.enum(['med', 'atlantic', 'black', 'caspian'])),
     seaM: z.optional(z.int().check(z.gte(0), z.lte(500))),
     airport: z.optional(z.object({
         iata: z.string().check(z.regex(/^[A-Z0-9]{3}$/)),
