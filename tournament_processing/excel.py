@@ -49,8 +49,8 @@ class ExcelMixin(ProcessorBase):
         try:
             if date_value:
                 return self._parse_date(date_value).strftime("%Y-%m-%d")
-        except Exception:
-            pass
+        except (TypeError, ValueError, AttributeError):
+            return ""
         return ""
 
     def _detect_header_row(
