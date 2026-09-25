@@ -118,7 +118,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        pytest tests/python/test_tournament_processor.py -v \
+        pytest tests/python/test_tournament_processor_*.py -v \
           --cov=TournamentProcessor \
           --cov-report=xml \
           --cov-report=term-missing \

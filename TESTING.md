@@ -509,7 +509,7 @@ test('Page is accessible', async ({ page }) => {
 
 ### 5. Python Backend Tests (47 tests)
 
-**File**: `tests/python/test_tournament_processor.py`
+**File**: `tests/python/test_tournament_processor_*.py` (fixtures in `tests/python/conftest.py`)
 
 **Coverage**: ~95% of backend code
 
