@@ -80,7 +80,7 @@ Current thresholds (lines): .py 400, .ts 300, .robot 400, .md 500.
 
 Enforced in CI (`test.yml`) and pre-commit. Change a number here and in the tool together:
 - File length, all four types: `scripts/check_file_lengths.py` (`LIMITS`, `KNOWN`).
-- TS functions: ESLint `max-lines-per-function` 50 (`.eslintrc.json`).
+- TS functions: ESLint `max-lines-per-function` 50 (`eslint.config.mjs`).
 - Python functions: Ruff `C901` complexity 10, plus `PLR0915` statements 50 (`ruff.toml`).
 - Robot: Robocop `too-long-keyword` / `too-long-test-case` 40, `file-too-long` 400 (`robocop.toml`).
 
@@ -94,7 +94,7 @@ They show as warnings; they fail only if they grow.
   `tests/e2e/dark-mode-and-ui.spec.ts` 390, `src/services/ExportService.ts` 330,
   `tests/e2e/keyboard-navigation.spec.ts` 329, `src/services/DataService.ts` 319,
   `src/services/UIManager.ts` 306, `TESTING.md` 724, `ARCHITECTURE.md` 611.
-- TS functions over 50 lines (a warning in the `.eslintrc.json` overrides for their files):
+- TS functions over 50 lines (a warning in the second block of `eslint.config.mjs`):
   `attachEventListeners` (`app.ts`), `updateFilterCompatibility`,
   `buildEmptyStateRelaxations`, `applyFilterPreferences`, `initKeyboardNavigation`,
   `fetchTournaments` (`DataService`), `filterTournaments` (`FilterService`),

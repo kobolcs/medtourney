@@ -76,7 +76,7 @@ medtourney/
 ├── vite.config.ts                # Vite build configuration
 ├── tsconfig.json                 # TypeScript configuration (strict mode)
 ├── playwright.config.ts          # E2E test configuration
-├── .eslintrc.json                # ESLint rules
+├── eslint.config.mjs             # ESLint rules (flat config)
 ├── ruff.toml                     # Python linting
 ├── .c8rc.json                    # Coverage thresholds
 │
@@ -131,7 +131,7 @@ The application follows a **modular service-oriented architecture**. Each servic
 | `tsconfig.json` | TypeScript compiler configuration (strict mode) |
 | `vite.config.ts` | Vite build configuration |
 | `playwright.config.ts` | Playwright E2E test configuration |
-| `.eslintrc.json` | ESLint rules for TypeScript |
+| `eslint.config.mjs` | ESLint rules for TypeScript (flat config) |
 | `ruff.toml` | Python linting configuration |
 | `.c8rc.json` | Code coverage thresholds |
 | `.pre-commit-config.yaml` | Pre-commit hooks |
