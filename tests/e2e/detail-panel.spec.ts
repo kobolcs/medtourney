@@ -67,7 +67,7 @@ test.describe('Tournament detail panel', () => {
     await panel(page).locator('.calendar-export-btn').click();
     const google = panel(page).locator('.calendar-menu-item[data-action="google"]');
     await expect(google).toBeVisible();
-    await expect(google).toHaveAttribute('href', /calendar\.google\.com/);
+    await expect(google).toHaveAttribute('href', /^https:\/\/calendar\.google\.com\/calendar\/render\?/);
   });
 
   test('the ★ in the panel shortlists the tournament (card star follows)', async ({ page }) => {
