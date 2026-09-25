@@ -30,7 +30,10 @@ medtourney/
 │       ├── filterUrl.ts          # FilterState <-> URLSearchParams (shareable filtered links)
 │       ├── timeControl.ts        # Scraped time control -> "90+30" notation
 │       ├── durationLabel.ts      # Card duration pill ("Fri–Sun · 3 days")
-│       └── mapPlaces.ts          # Group tournaments into map markers (pure)
+│       ├── mapPlaces.ts          # Group tournaments into map markers (pure)
+│       ├── seas.ts               # Seas + the Seaside rule (which coast counts)
+│       ├── seaPicker.ts          # The Seaside mode's sea picker (DOM)
+│       └── countrySelection.ts   # Country checklist selection (countries listed under 2+ regions)
 │
 ├── tests/                        # Comprehensive test suite (290+ tests)
 │   ├── unit/                     # Service unit tests (211 tests)
@@ -69,7 +72,7 @@ medtourney/
 ├── geocode_tournaments.py        # CLI run after each scrape; the work is in geocoding/
 ├── geocoding/                    # places, geonames, coast, beachfront, airports, nominatim, geocoder, pipeline
 ├── geocode_cache.json            # Geocoding cache - committed, so daily runs only look up new places
-├── data/southern_coast.json      # Med + Iberian Atlantic coastline points for the Seaside rule
+├── data/southern_coast.json      # Coastline points per sea (med, atlantic, black, caspian) for the Seaside rule
 ├── data/airports.json            # Airports with airline routes + city (card's nearest-airport hint)
 ├── data/airport_cities.json      # City overrides where OurAirports gives a suburb (RMU -> Murcia)
 ├── scripts/                      # build_southern_coast.py, build_airports.py, og-image.html + render-og-image.mjs

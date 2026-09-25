@@ -232,11 +232,11 @@ buried in venue text fall back to an offline match against GeoNames'
 `cities1000` list. The browser never calls a geocoding service.
 
 **Seaside and beachfront** (same script, same run):
-- `coast: "med" | "atlantic"` - within 10 km of the Mediterranean or of
-  Spain's/Portugal's Atlantic coast, measured against
-  `data/southern_coast.json` (Natural Earth 1:10m coastline, clipped by
-  `scripts/build_southern_coast.py`). `FilterService.isSeaside()` = this flag
-  OR a listed coastal town (`config.json`), so unplaced tournaments still work.
+- `coast: "med" | "atlantic" | "black" | "caspian"` - the sea within 10 km
+  (Atlantic: ES/PT/FR only), from `data/southern_coast.json` (Natural Earth
+  1:10m, clipped per sea by `scripts/build_southern_coast.py`). Seaside
+  (`src/utils/seas.ts`) = this flag in the picked seas (default med +
+  atlantic) OR a listed coastal town (`config.json`) for unplaced ones.
 - `seaM` - featured "Beachfront": only for near-coast tournaments whose venue
   itself is found (Nominatim hotel/hall/club hit that shares a word with the
   location text and is within 5 km of it), then measured against

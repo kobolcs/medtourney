@@ -9,6 +9,7 @@ import { FilterState } from '../types';
 import { escapeHTML } from '../utils/html';
 import { FilterPreferencesPart } from './FilterPreferencesPart';
 import { checkedCountryCodes, clearCountries } from '../utils/countrySelection';
+import { SEA_LABELS, isDefaultSeas } from '../utils/seas';
 
 /** Active-filter chips and the "More filters" count. */
 export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
@@ -28,7 +29,10 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         const s = this.getFilterState();
         const chips: { label: string; clear: () => void }[] = [];
 
-        if (s.mediterraneanOnly) chips.push({ label: '🌊 Seaside', clear: () => this.setCheckbox('mediterraneanOnly', false) });
+        if (s.mediterraneanOnly) {
+            const seas = s.seas && !isDefaultSeas(s.seas) ? `: ${s.seas.map(sea => SEA_LABELS[sea]).join(', ')}` : '';
+            chips.push({ label: `🌊 Seaside${seas}`, clear: () => this.setCheckbox('mediterraneanOnly', false) });
+        }
         if (s.seniorCategory) chips.push({ label: 'Senior 50+', clear: () => this.setCheckbox('seniorCategory', false) });
         if (s.seniorS60) chips.push({ label: 'Senior 60+', clear: () => this.setCheckbox('seniorS60', false) });
         if (s.womenOnly) chips.push({ label: "Women's", clear: () => this.setCheckbox('womenOnly', false) });

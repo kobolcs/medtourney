@@ -94,9 +94,9 @@ function runTests() {
         }
     });
 
-    test('Atlantic has Spain and Portugal; Western and Central Europe are split', () => {
+    test('Atlantic has Spain, Portugal and France; Western and Central Europe are split', () => {
         const g = groups(page());
-        assertEqual(g['Atlantic (Spain & Portugal)'].sort(), ['ESP', 'POR']);
+        assertEqual(g['Atlantic (Spain, Portugal & France)'].sort(), ['ESP', 'FRA', 'POR']);
         for (const code of ['FRA', 'SUI', 'BEL', 'NED', 'LUX', 'AND']) {
             assert(g['Western Europe'].includes(code), `${code} in Western Europe`);
             assert(!g['Central Europe'].includes(code), `${code} not in Central Europe`);
@@ -105,7 +105,7 @@ function runTests() {
         assertEqual(g['Black Sea & Caspian'].sort(), ['AZE', 'BUL', 'GEO', 'ROU', 'TUR', 'UKR']);
     });
 
-    test('Every country is listed, none more than twice, never twice in one region', () => {
+    test('Every country is listed; France in three regions, seven others in two', () => {
         const g = groups(page());
         const count = {};
         for (const [region, codes] of Object.entries(g)) {
@@ -113,9 +113,8 @@ function runTests() {
             codes.forEach(c => { count[c] = (count[c] || 0) + 1; });
         }
         assert(Object.keys(count).length >= 55, 'all countries listed');
-        const twice = Object.keys(count).filter(c => count[c] > 1).sort();
-        assertEqual(twice, ['AZE', 'BUL', 'ESP', 'FRA', 'GEO', 'ROU', 'TUR', 'UKR'], 'countries in two regions');
-        assert(Object.values(count).every(n => n <= 2), 'at most two regions');
+        const multi = Object.fromEntries(Object.entries(count).filter(([, n]) => n > 1).sort());
+        assertEqual(multi, { AZE: 2, BUL: 2, ESP: 2, FRA: 3, GEO: 2, ROU: 2, TUR: 2, UKR: 2 }, 'countries in several regions');
     });
 
     console.log('='.repeat(60));

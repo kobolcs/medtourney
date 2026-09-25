@@ -10,6 +10,8 @@ import { FilterSheet } from '../services/FilterSheet';
 import type { FilterElements } from './AppState';
 import { KeyboardPart } from './KeyboardPart';
 import { checkedCountryCodes, clearCountries } from '../utils/countrySelection';
+import { checkedSeas, initSeaPicker, setCheckedSeas, syncSeaPicker } from '../utils/seaPicker';
+import { DEFAULT_SEAS } from '../utils/seas';
 
 /** The filter form: elements, state, reset, mode switch, date presets, collapsible panel, phone sheet. */
 export abstract class FilterFormPart extends KeyboardPart {
@@ -92,12 +94,14 @@ export abstract class FilterFormPart extends KeyboardPart {
                 this.trackEvent('Mode Switch', { mode });
             });
         });
+        initSeaPicker(() => this.handleFilterChange());
     }
 
     protected syncModeSwitch(): void {
         const med = (document.getElementById('mediterraneanOnly') as HTMLInputElement | null)?.checked ?? false;
         const senior = (document.getElementById('seniorCategory') as HTMLInputElement | null)?.checked ?? false;
         const mode = med && senior ? 'both' : med ? 'seaside' : senior ? 'senior' : 'all';
+        syncSeaPicker(med);
 
         document.querySelectorAll<HTMLButtonElement>('.mode-switch-btn').forEach(btn => {
             const isActive = btn.dataset.mode === mode;
@@ -139,6 +143,7 @@ export abstract class FilterFormPart extends KeyboardPart {
             openOnly: elements.openOnly?.checked ?? true,
             excludeYouth: elements.excludeYouth?.checked ?? true,
             mediterraneanOnly: elements.mediterraneanOnly?.checked ?? false,
+            seas: checkedSeas(),
             seniorCategory: elements.seniorCategory?.checked ?? false,
             womenOnly: elements.womenOnly?.checked ?? false,
             includeTeamTournaments: elements.includeTeamTournaments?.checked ?? false,
@@ -163,6 +168,7 @@ export abstract class FilterFormPart extends KeyboardPart {
         if (el.openOnly)              el.openOnly.checked              = true;
         if (el.excludeYouth)          el.excludeYouth.checked          = true;
         if (el.mediterraneanOnly)     el.mediterraneanOnly.checked     = false;
+        setCheckedSeas(DEFAULT_SEAS);
         if (el.seniorCategory)        el.seniorCategory.checked        = false;
         if (el.seniorS60)             el.seniorS60.checked             = false;
         if (el.womenOnly)             el.womenOnly.checked             = false;

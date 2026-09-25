@@ -7,10 +7,11 @@
  */
 
 import { FilterState } from '../types';
+import { isDefaultSeas, parseSeas } from './seas';
 
 export const FILTER_PARAM_KEYS = [
     'open', 'excludeYouth', 'med', 'senior', 'senior60', 'women',
-    'team', 'tc', 'country', 'dur', 'youthAge', 'rating'
+    'team', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea'
 ] as const;
 
 /**
@@ -27,6 +28,7 @@ export function filterStateToSearchParams(state: FilterState): URLSearchParams {
     if (!state.openOnly) params.set('open', '0');
     if (!state.excludeYouth) params.set('excludeYouth', '0');
     if (state.mediterraneanOnly) params.set('med', '1');
+    if (state.mediterraneanOnly && state.seas && !isDefaultSeas(state.seas)) params.set('sea', state.seas.join(','));
     if (state.seniorCategory) params.set('senior', '1');
     if (state.seniorS60) params.set('senior60', '1');
     if (state.womenOnly) params.set('women', '1');
@@ -56,6 +58,10 @@ export function filterStateFromSearchParams(params: URLSearchParams): Partial<Fi
     if (params.has('open')) preferences.openOnly = params.get('open') !== '0';
     if (params.has('excludeYouth')) preferences.excludeYouth = params.get('excludeYouth') !== '0';
     if (params.has('med')) preferences.mediterraneanOnly = params.get('med') === '1';
+    if (params.has('sea')) {
+        const seas = parseSeas(params.get('sea')!);
+        if (seas.length > 0) preferences.seas = seas;
+    }
     if (params.has('senior')) preferences.seniorCategory = params.get('senior') === '1';
     if (params.has('senior60')) preferences.seniorS60 = params.get('senior60') === '1';
     if (params.has('women')) preferences.womenOnly = params.get('women') === '1';
