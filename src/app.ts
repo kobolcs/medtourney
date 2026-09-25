@@ -8,6 +8,7 @@
 
 import type { SortOption } from './app/AppState';
 import { ResultsViewPart } from './app/ResultsViewPart';
+import { clearCountries } from './utils/countrySelection';
 
 declare global {
     interface Window {
@@ -182,9 +183,7 @@ class TournamentFinder extends ResultsViewPart {
 
         // Clear countries button (shown only when ≥1 country is checked)
         document.getElementById('clearCountriesBtn')?.addEventListener('click', () => {
-            document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked').forEach(cb => {
-                cb.checked = false;
-            });
+            clearCountries();
             this.updateCountryFilterSummary();
             this.saveFilterPreferences();
             void this.searchTournaments();
@@ -265,10 +264,7 @@ class TournamentFinder extends ResultsViewPart {
         const countryList = document.getElementById('countryList');
         if (countryList) {
             countryList.addEventListener('change', (e) => {
-                const target = e.target as HTMLInputElement;
-                if (target.classList.contains('country-group-toggle')) {
-                    this.applyCountryGroupToggle(target);
-                }
+                this.onCountryListChange(e.target as HTMLInputElement);
                 onFilterChange();
                 this.syncCountryGroupToggles();
             });

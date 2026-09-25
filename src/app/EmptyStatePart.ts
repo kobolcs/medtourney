@@ -7,6 +7,7 @@
  */
 import { Tournament, FilterState } from '../types';
 import { CountryFilterPart } from './CountryFilterPart';
+import { clearCountries } from '../utils/countrySelection';
 
 /** Empty state: one-tap relaxations with real result counts. */
 export abstract class EmptyStatePart extends CountryFilterPart {
@@ -87,8 +88,7 @@ export abstract class EmptyStatePart extends CountryFilterPart {
                 label: `Clear the country filter (${base.countryFilter.length} selected)`,
                 count: countWith({ countryFilter: [] }),
                 apply: () => {
-                    document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
-                        .forEach(cb => { cb.checked = false; });
+                    clearCountries();
                     this.updateCountryFilterSummary();
                 }
             });

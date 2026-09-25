@@ -6,6 +6,7 @@
  * TournamentFinder. Methods moved unchanged out of app.ts.
  */
 import { ActiveFilterChipsPart } from './ActiveFilterChipsPart';
+import { checkedCountryCodes, setCountryChecked, syncCountryCopies } from '../utils/countrySelection';
 
 /** Country checklist: available countries, search, region ticks, compatibility with Seaside. */
 export abstract class CountryFilterPart extends ActiveFilterChipsPart {
@@ -146,9 +147,7 @@ export abstract class CountryFilterPart extends ActiveFilterChipsPart {
         });
 
         // --- Direction 2: country selection → Mediterranean ---
-        const selectedCodes = Array.from(
-            document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
-        ).map(cb => cb.value.toUpperCase());
+        const selectedCodes = checkedCountryCodes().map(code => code.toUpperCase());
 
         // Med is compatible when no countries are selected, or at least one has Med tournaments
         const medCompatible = selectedCodes.length === 0 ||
@@ -205,13 +204,24 @@ export abstract class CountryFilterPart extends ActiveFilterChipsPart {
             .filter((cb): cb is HTMLInputElement => cb !== null);
     }
 
+    /** A change inside the country list: a region tick, or one country's box. */
+    protected onCountryListChange(target: HTMLInputElement): void {
+        if (target.classList.contains('country-group-toggle')) {
+            this.applyCountryGroupToggle(target);
+        } else if (target.name === 'countryFilter') {
+            // A country listed under two regions: keep both boxes alike
+            syncCountryCopies(target);
+        }
+    }
+
     /**
      * A region's "select all" tick: (un)check every country currently shown
      * in that region. Countries hidden by the type-to-filter box or by having
      * no results under the other filters are left alone.
      */
     protected applyCountryGroupToggle(toggle: HTMLInputElement): void {
-        this.countryGroupCheckboxes(toggle).forEach(cb => { cb.checked = toggle.checked; });
+        // Via setCountryChecked: a country also listed under another region follows
+        this.countryGroupCheckboxes(toggle).forEach(cb => setCountryChecked(cb.value, toggle.checked));
         this.updateCountryFilterSummary();
         this.trackEvent('Country Group Toggle', { checked: toggle.checked });
     }
@@ -230,17 +240,15 @@ export abstract class CountryFilterPart extends ActiveFilterChipsPart {
         const summary = document.getElementById('countryFilterSummary');
         const clearBtn = document.getElementById('clearCountriesBtn') as HTMLButtonElement | null;
         if (!summary) return;
-        const checked = Array.from(
-            document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
-        );
-        if (checked.length === 0) {
+        const codes = checkedCountryCodes();
+        if (codes.length === 0) {
             summary.textContent = 'All';
             if (clearBtn) clearBtn.hidden = true;
-        } else if (checked.length <= 2) {
-            summary.textContent = checked.map(cb => cb.value).join(', ');
+        } else if (codes.length <= 2) {
+            summary.textContent = codes.join(', ');
             if (clearBtn) clearBtn.hidden = false;
         } else {
-            summary.textContent = `${checked.length} countries`;
+            summary.textContent = `${codes.length} countries`;
             if (clearBtn) clearBtn.hidden = false;
         }
     }

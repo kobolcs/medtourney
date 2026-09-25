@@ -26,7 +26,7 @@ KNOWN = {
     "TournamentProcessor.py": 506,
     "tests/python/test_geocode.py": 420,
     "src/services/FilterService.ts": 433,
-    "src/app.ts": 424,
+    "src/app.ts": 420,
     "tests/e2e/dark-mode-and-ui.spec.ts": 390,
     "src/services/ExportService.ts": 330,
     "tests/e2e/keyboard-navigation.spec.ts": 329,

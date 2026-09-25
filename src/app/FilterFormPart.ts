@@ -9,6 +9,7 @@ import { FilterState } from '../types';
 import { FilterSheet } from '../services/FilterSheet';
 import type { FilterElements } from './AppState';
 import { KeyboardPart } from './KeyboardPart';
+import { checkedCountryCodes, clearCountries } from '../utils/countrySelection';
 
 /** The filter form: elements, state, reset, mode switch, date presets, collapsible panel, phone sheet. */
 export abstract class FilterFormPart extends KeyboardPart {
@@ -146,9 +147,7 @@ export abstract class FilterFormPart extends KeyboardPart {
             blitzTime: elements.blitzTime?.checked ?? true,
             startDate: elements.startDate?.valueAsDate ?? null,
             endDate: elements.endDate?.valueAsDate ?? null,
-            countryFilter: Array.from(
-                document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked')
-            ).map(cb => cb.value),
+            countryFilter: checkedCountryCodes(),
             minDays: elements.minDays?.value === 'weekend' ? 'weekend'
                 : elements.minDays?.value === 'just-weekend' ? 'just-weekend'
                 : (parseInt(elements.minDays?.value ?? '0', 10) || 0),
@@ -176,9 +175,7 @@ export abstract class FilterFormPart extends KeyboardPart {
         if (el.ratingCategory)        el.ratingCategory.value          = '';
 
         // Clear country checkboxes
-        document.querySelectorAll<HTMLInputElement>('input[name="countryFilter"]:checked').forEach(cb => {
-            cb.checked = false;
-        });
+        clearCountries();
         this.updateCountryFilterSummary();
 
         // Reset dates to today → 6 months

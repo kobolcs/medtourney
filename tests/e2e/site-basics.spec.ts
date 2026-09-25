@@ -96,7 +96,7 @@ test.describe('Filter persistence', () => {
 
     await page.locator('.mode-switch-btn[data-mode="seaside"]').click();
     await openAdvancedFilters(page);
-    await page.locator('#countryList input[value="ESP"]').check();
+    await page.locator('#countryList input[value="ESP"]').first().check();
 
     const stored = await page.evaluate(() => localStorage.getItem('medtourney_filter_preferences'));
     expect(stored).toBeTruthy();
