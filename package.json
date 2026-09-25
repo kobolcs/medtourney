@@ -73,6 +73,9 @@
   ],
   "author": "Csaba Köböl",
   "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.56.1",

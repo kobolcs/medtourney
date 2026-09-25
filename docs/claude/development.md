@@ -6,8 +6,8 @@
 
 ### Prerequisites
 
-- **Node.js:** 20+ (Vite 7 requires it; Node 18 also fails the UIManager unit test due to a jsdom/whatwg-url incompatibility)
-- **Python:** 3.11+ (for scraper, backend tests)
+- **Node.js:** 24 (LTS; `.nvmrc`, same as CI). Node 20 reached end of life in April 2026, and jsdom 30 needs 22.22+/24.15+
+- **Python:** 3.11+ (for scraper, backend tests; CI runs 3.14)
 - **npm:** 9+ (package management)
 
 ### Initial Setup
