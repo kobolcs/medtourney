@@ -512,7 +512,8 @@ header h1 {
 }
 
 .mode-switch-btn {
-  flex: 1;
+  /* Sized to the label, so "🌊 Seaside" gets the room it needs */
+  flex: 1 1 auto;
   min-width: 0;
   text-align: center;
   font: 600 var(--text-sm)/1.15 'Inter', sans-serif;
@@ -522,13 +523,10 @@ header h1 {
   background: transparent;
   color: var(--label);
   cursor: pointer;
-  /* Four equal-width segments plus these labels don't fit on one line below
-     ~500px (narrow phones, and the 340px desktop sidebar) - wrap instead of
-     overflowing, with a min-height so the row stays visually even whether a
-     given button wraps to two lines or not. */
-  white-space: normal;
-  overflow-wrap: anywhere;
-  min-height: 2.7em;
+  /* Short labels ("All", "50+"; full names in aria-label/title) so all four
+     fit on one line in the 340px desktop sidebar and on a 360px phone */
+  white-space: nowrap;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1398,6 +1396,8 @@ body.dark-theme .beachfront-pill {
 .tournament-body {
   flex: 1;
   min-width: 0;
+  /* The ☆ is pinned to the top-right corner (.tournament-header-right) */
+  position: relative;
 }
 
 .tournament-header {
@@ -1415,6 +1415,8 @@ body.dark-theme .beachfront-pill {
   color: var(--text);
   line-height: 1.3;
   flex: 1;
+  /* Clear of the pinned ☆ button */
+  padding-right: calc(34px + var(--sp-2));
 }
 
 /* The tournament name IS the link out to chess-results.com. Override the
@@ -1438,11 +1440,15 @@ body.dark-theme .beachfront-pill {
   transform: none;
 }
 
+/* Out of the flow, so a one-line title isn't padded to the button's height
+   and the star never drops onto its own row on a phone */
 .tournament-header-right {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  flex-shrink: 0;
 }
 
 
@@ -2432,25 +2438,36 @@ footer a:hover {
     justify-content: center;
   }
 
-  .tournament-header {
-    flex-direction: column;
+  /* One row of icon buttons instead of two full-width ones: a phone card
+     was ~440px tall (1.5 results per screen). Names stay in aria-label. */
+  .tournament-card {
+    padding: var(--sp-4);
+    gap: var(--sp-3);
   }
 
-  .tournament-header-right {
-    margin-top: var(--sp-2);
-  }
-
-  .tournament-actions {
-    flex-direction: column;
+  .tournament-actions,
+  .tournament-card:hover .tournament-actions,
+  .tournament-card:focus-within .tournament-actions {
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+    padding-top: 0;
+    border-top-color: transparent;
   }
 
   .tournament-actions .calendar-export-btn,
   .tournament-actions .copy-link-btn {
-    width: 100%;
-    min-height: 44px;
-    font-size: var(--text-base);
-    padding: var(--sp-3) var(--sp-5);
+    width: 40px;
+    min-height: 40px;
+    padding: 0;
     justify-content: center;
+  }
+
+  .action-text {
+    display: none;
+  }
+
+  .tournament-name {
+    padding-right: calc(40px + var(--sp-2));
   }
 
   .shortlist-btn {

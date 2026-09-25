@@ -479,12 +479,12 @@ export class UIManager {
                     <button class="calendar-export-btn"
                             data-tournament-url="${escapeHTML(tournament.url)}"
                             aria-label="Add ${escapeHTML(tournament.name)} to calendar">
-                        <span aria-hidden="true">📅</span> Add to Calendar
+                        <span aria-hidden="true">📅</span><span class="action-text"> Add to Calendar</span>
                     </button>
                     <button class="copy-link-btn"
                             data-tournament-url="${escapeHTML(tournament.url)}"
                             aria-label="Copy share link for ${escapeHTML(tournament.name)}">
-                        Copy link
+                        <span aria-hidden="true">🔗</span><span class="action-text"> Copy link</span>
                     </button>
                 </div>
             </div>
