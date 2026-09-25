@@ -45,7 +45,7 @@ chess-results.com lists thousands of tournaments but only lets you filter by fed
 
 ## Development
 
-**Requirements:** Node.js 20+ (Vite 7 needs it), Python 3.11+ if you're touching the scraper.
+**Requirements:** Node.js 24 (see `.nvmrc`), Python 3.11+ if you're touching the scraper (CI runs 3.14).
 
 ```bash
 git clone https://github.com/kobolcs/medtourney.git

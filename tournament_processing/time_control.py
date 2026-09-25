@@ -1,7 +1,6 @@
 """TournamentProcessor mixin: Classical / Rapid / Blitz from the time-control field (FIDE 60-move formula) or the name."""
 
 import re
-from typing import List, Optional
 
 from tournament_processing.base import ProcessorBase
 
@@ -17,7 +16,7 @@ class TimeControlMixin(ProcessorBase):
             return "Rapid"
         return "Classical"
 
-    def _classify_by_fide_formula(self, tc_lower: str) -> Optional[str]:
+    def _classify_by_fide_formula(self, tc_lower: str) -> str | None:
         """Classify time control using the official FIDE 60-move formula.
 
         FIDE formula: total = base_minutes + increment_seconds
@@ -78,7 +77,7 @@ class TimeControlMixin(ProcessorBase):
 
         return None
 
-    def _classify_time_control_field(self, time_control: str) -> Optional[str]:
+    def _classify_time_control_field(self, time_control: str) -> str | None:
         """Classify the time-control field's text alone: an explicit
         "blitz"/"rapid"/"classical"/"standard" keyword if present, else the
         FIDE 60-move formula's guess from the time-control numbers.
@@ -101,7 +100,7 @@ class TimeControlMixin(ProcessorBase):
     def _determine_category(self, name: str, location: str, time_control: str) -> str:
         """Determine tournament category from time control and name."""
         time_classes = {"Classical", "Rapid", "Blitz"}
-        category_parts: List[str] = []
+        category_parts: list[str] = []
 
         tc_class = self._classify_time_control_field(time_control)
 
@@ -148,7 +147,7 @@ class TimeControlMixin(ProcessorBase):
             >>> processor._extract_category('Generic Tournament')
             'Open, Classical'
         """
-        categories: List[str] = []
+        categories: list[str] = []
 
         # Tournament type - use precompiled patterns
         if self.REGEX_PATTERNS["open"].search(text):

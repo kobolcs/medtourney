@@ -49,7 +49,7 @@ The following files are automatically deployed from `dist/`:
 **Main Assets**:
 - `index.html` - Main HTML page (with asset hash references)
 - `assets/*.js` - Compiled and minified JavaScript bundles
-  - Main bundle (~39 KB gzipped); the map chunks load on first use
+  - Main bundle (~33 KB gzipped); the map chunks load on first use
 - `assets/*.css` - Minified CSS (code-split)
 - `assets/*.gz` - Gzip compressed versions (~8.05 KB modern)
 - `assets/*.br` - Brotli compressed versions (even smaller)

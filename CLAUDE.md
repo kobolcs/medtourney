@@ -35,7 +35,7 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 
 - **Version:** 3.1.0
 - **Total Tests:** 290+ (100 service unit, 8 service integration, 68 Playwright E2E per browser, 87 Python backend, 27 Python integration) — all currently passing; see Testing Strategy
-- **Bundle Size:** ~36KB gzipped JS + ~7.6KB gzipped CSS for the main bundle (grown from the original 25KB as the results-first redesign, mobile fixes, flag icons, live filtering and the map toggle landed — still deliberately small; see Performance Considerations). The map view (MapView + Leaflet + markercluster, ~54KB gzipped) is lazy-loaded on first use and not part of it
+- **Bundle Size:** ~33KB gzipped JS + ~8.4KB gzipped CSS for the main bundle (grown from the original 25KB as the results-first redesign, mobile fixes, flag icons, live filtering and the map toggle landed — still deliberately small; see Performance Considerations). The map view (MapView + Leaflet + markercluster, ~54KB gzipped) is lazy-loaded on first use and not part of it
 - **Architecture:** Modular service-oriented (5 specialized services + focused utils)
 - **Technologies:** TypeScript (strict mode), Vite, Playwright, Robot Framework, Python
 
@@ -80,7 +80,7 @@ Current thresholds (lines): .py 400, .ts 300, .robot 400, .md 500.
 
 Enforced in CI (`test.yml`) and pre-commit. Change a number here and in the tool together:
 - File length, all four types: `scripts/check_file_lengths.py` (`LIMITS`, `KNOWN`).
-- TS functions: ESLint `max-lines-per-function` 50 (`.eslintrc.json`).
+- TS functions: ESLint `max-lines-per-function` 50 (`eslint.config.mjs`).
 - Python functions: Ruff `C901` complexity 10, plus `PLR0915` statements 50 (`ruff.toml`).
 - Robot: Robocop `too-long-keyword` / `too-long-test-case` 40, `file-too-long` 400 (`robocop.toml`).
 
@@ -94,7 +94,7 @@ They show as warnings; they fail only if they grow.
   `tests/e2e/dark-mode-and-ui.spec.ts` 390, `src/services/ExportService.ts` 330,
   `tests/e2e/keyboard-navigation.spec.ts` 329, `src/services/DataService.ts` 319,
   `src/services/UIManager.ts` 306, `TESTING.md` 724, `ARCHITECTURE.md` 611.
-- TS functions over 50 lines (a warning in the `.eslintrc.json` overrides for their files):
+- TS functions over 50 lines (a warning in the second block of `eslint.config.mjs`):
   `attachEventListeners` (`app.ts`), `updateFilterCompatibility`,
   `buildEmptyStateRelaxations`, `applyFilterPreferences`, `initKeyboardNavigation`,
   `fetchTournaments` (`DataService`), `filterTournaments` (`FilterService`),
@@ -203,7 +203,7 @@ chore: Update dependencies to latest versions
      Anything that must run before paint goes in a file (e.g.
      `public/theme-init.js`); `site-basics.spec.ts` ("no
      Content-Security-Policy violations") fails on an inline script
-   - Browser support: `build.target` in `vite.config.ts` compiles ES2020 down
+   - Browser support: `build.target` in `vite.config.mts` compiles ES2020 down
      to Chrome 64 / Firefox 67 / Safari 12, so iOS 12 iPads still work. No
      `@vitejs/plugin-legacy`: it was dropped in 2026 (pre-2018 browsers only)
    - Be mindful when adding external resources
@@ -211,7 +211,7 @@ chore: Update dependencies to latest versions
 ### Performance Considerations
 
 1. **Bundle size**
-   - Current: ~36KB gzipped JS (`dist/assets/index-*.js`, modern build) + ~7.6KB gzipped CSS; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `src/app/ResultsViewPart.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
+   - Current: ~33KB gzipped JS (`dist/assets/index-*.js`) + ~8.4KB gzipped CSS - validators use `zod/mini`, full `zod` is ~18KB more; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `src/app/ResultsViewPart.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
    - Flag icons (`public/flags/*.png`) are static assets served on demand, not part of this bundle - kept to ~4KB average per flag (rasterized small; several countries' full-detail SVG coats of arms were 30-180KB, wasted at 20px icon size)
    - Avoid large dependencies
    - Use tree-shaking friendly imports

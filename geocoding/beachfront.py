@@ -9,7 +9,8 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Callable
+from collections.abc import Callable
+from itertools import pairwise
 
 from geocoding.coast import EARTH_DIAMETER_KM
 from geocoding.common import NETWORK_ERRORS, USER_AGENT
@@ -99,7 +100,7 @@ def overpass_coastline(
 def sea_distance_m(lat: float, lng: float, ways: list[list[tuple[float, float]]]) -> int | None:
     """Metres to the nearest coastline segment, or None if none within the search radius."""
     best = min(
-        (metres_to_segment((lat, lng), a, b) for way in ways for a, b in zip(way, way[1:])),
+        (metres_to_segment((lat, lng), a, b) for way in ways for a, b in pairwise(way)),
         default=None,
     )
     return round(best) if best is not None and best <= COASTLINE_SEARCH_M else None

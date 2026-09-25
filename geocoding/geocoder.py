@@ -5,9 +5,10 @@ from __future__ import annotations
 import functools
 import json
 import time
-from datetime import datetime, timedelta, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from geocoding.beachfront import (
     VENUE_CATEGORIES,
@@ -59,7 +60,7 @@ class Geocoder:
         self.cache = cache
         self.search = search
         self.sleep = sleep
-        self.now = now or datetime.now(timezone.utc)
+        self.now = now or datetime.now(UTC)
         self.on_progress = on_progress
         self.lookups = 0
         self.overrides: dict[str, list[float] | None] = (

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from geocoding.airports import AIRPORTS_FILE, Airports
 from geocoding.beachfront import BEACHFRONT_M
@@ -100,7 +101,7 @@ def geocode_file(
     geocoder = Geocoder(cache, search=search, on_progress=save_cache, geonames=geonames, reverse=reverse)
     counts = {"placed": 0, "seaside": 0, "beachfront": 0}
     for t in tournaments:
-        for key, hit in zip(counts, annotate_tournament(t, geocoder, geonames, coast, max_lookups, airports)):
+        for key, hit in zip(counts, annotate_tournament(t, geocoder, geonames, coast, max_lookups, airports), strict=True):
             counts[key] += hit
 
     data_path.write_text(json.dumps(tournaments, indent=2, ensure_ascii=False), encoding="utf-8")

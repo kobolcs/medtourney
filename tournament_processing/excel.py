@@ -1,7 +1,8 @@
 """TournamentProcessor mixin: Reading chess-results.com Excel exports: header row, columns, dates, row cells."""
 
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from collections.abc import Callable
+from datetime import UTC, datetime
+from typing import Any
 
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -13,17 +14,17 @@ class ExcelMixin(ProcessorBase):
 
     def _extract_row_data(
         self,
-        row: Tuple[Any, ...],
-        name_col: Optional[int],
-        location_col: Optional[int],
-        fed_col: Optional[int],
-        date_from_col: Optional[int],
-        date_to_col: Optional[int],
-        time_control_col: Optional[int],
-        db_key_col: Optional[int],
-        event_id_col: Optional[int],
+        row: tuple[Any, ...],
+        name_col: int | None,
+        location_col: int | None,
+        fed_col: int | None,
+        date_from_col: int | None,
+        date_to_col: int | None,
+        time_control_col: int | None,
+        db_key_col: int | None,
+        event_id_col: int | None,
         row_idx: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Extract data from Excel row."""
         return {
             "name": (str(row[name_col]).strip()
@@ -55,7 +56,7 @@ class ExcelMixin(ProcessorBase):
 
     def _detect_header_row(
         self, sheet: Worksheet, max_scan_rows: int = 15
-    ) -> Tuple[int, List[str]]:
+    ) -> tuple[int, list[str]]:
         """Locate the header row in a chess-results.com export.
 
         The export usually keeps headers in row 4, but the leading metadata rows
@@ -73,7 +74,7 @@ class ExcelMixin(ProcessorBase):
             ``headers`` is the lower-cased cell values for that row.
         """
         fallback_row = 4
-        fallback_headers: List[str] = []
+        fallback_headers: list[str] = []
 
         for row_idx in range(1, max_scan_rows + 1):
             headers = [
@@ -108,9 +109,9 @@ class ExcelMixin(ProcessorBase):
         return fallback_row, fallback_headers
 
     def _find_columns(
-        self, headers: List[str]
-    ) -> Tuple[Optional[int], Optional[int], Optional[int], Optional[int],
-               Optional[int], Optional[int], Optional[int], Optional[int]]:
+        self, headers: list[str]
+    ) -> tuple[int | None, int | None, int | None, int | None,
+               int | None, int | None, int | None, int | None]:
         """Resolve the chess-results.com column indices used during parsing.
 
         Returns:
@@ -128,7 +129,7 @@ class ExcelMixin(ProcessorBase):
             self._find_column(headers, ["eventid", "event id"]),
         )
 
-    def _find_column(self, headers: List[str], possible_names: List[str]) -> Optional[int]:
+    def _find_column(self, headers: list[str], possible_names: list[str]) -> int | None:
         """Find column index by matching possible header names.
 
         Searches for column index where header contains any of the possible names.
@@ -159,7 +160,7 @@ class ExcelMixin(ProcessorBase):
                     return idx
         return None
 
-    def _parse_date(self, date_value: Union[str, datetime, int, None]) -> datetime:
+    def _parse_date(self, date_value: str | datetime | int | None) -> datetime:
         """Parse date from various formats and return datetime object.
 
         Supports multiple date formats:
@@ -183,33 +184,33 @@ class ExcelMixin(ProcessorBase):
             datetime(2025, 11, 28, 0, 0)
         """
         if date_value is None:
-            return datetime.now(timezone.utc)
+            return datetime.now(UTC)
 
         # If already a datetime object
         if isinstance(date_value, datetime):
             # Ensure datetime is timezone-aware
-            return date_value if date_value.tzinfo else date_value.replace(tzinfo=timezone.utc)
+            return date_value if date_value.tzinfo else date_value.replace(tzinfo=UTC)
 
         # Try to parse string
         date_str: str = str(date_value).strip()
 
         # Define date format parsers
-        parsers: List[Tuple[str, Callable[[Any, str], datetime]]] = [
+        parsers: list[tuple[str, Callable[[Any, str], datetime]]] = [
             # YYYYMMDD format (chess-results.com format: 20251128)
             ("date_yyyymmdd", lambda _m, s: datetime(
-                int(s[0:4]), int(s[4:6]), int(s[6:8]), tzinfo=timezone.utc
+                int(s[0:4]), int(s[4:6]), int(s[6:8]), tzinfo=UTC
             )),
             # DD.MM.YYYY format
             ("date_ddmmyyyy_dot", lambda m, _s: datetime(
-                int(m[3]), int(m[2]), int(m[1]), tzinfo=timezone.utc
+                int(m[3]), int(m[2]), int(m[1]), tzinfo=UTC
             )),
             # YYYY-MM-DD format
             ("date_yyyymmdd_dash", lambda m, _s: datetime(
-                int(m[1]), int(m[2]), int(m[3]), tzinfo=timezone.utc
+                int(m[1]), int(m[2]), int(m[3]), tzinfo=UTC
             )),
             # DD/MM/YYYY format
             ("date_ddmmyyyy_slash", lambda m, _s: datetime(
-                int(m[3]), int(m[2]), int(m[1]), tzinfo=timezone.utc
+                int(m[3]), int(m[2]), int(m[1]), tzinfo=UTC
             )),
         ]
 
@@ -223,4 +224,4 @@ class ExcelMixin(ProcessorBase):
                     continue
 
         # Default to today if no pattern matched
-        return datetime.now(timezone.utc)
+        return datetime.now(UTC)
