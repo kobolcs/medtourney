@@ -191,7 +191,13 @@ Source: the same [Design Review artifact](https://claude.ai/artifact/MbEyNbY4mX1
   Checked offline against the full 24 Sep data: coast changes only for the
   reported events plus Mula; Irun (was in Galicia via "San Juan") and Recarei
   are placed better; nothing else moves.
-- [ ] **N2. Cards on phones are too tall** (~440px): pin ☆ top-right, Calendar and
+- [x] **N2. Cards on phones are too tall** (~440px): pin ☆ top-right, Calendar and
   Copy link in one row of icon buttons.
-- [ ] **N3. Mode switch labels wrap in the desktop sidebar**: short labels or a 2×2 grid.
-- [ ] **N4. Gap under one-line titles** on desktop (row takes the ☆ button's height).
+  Done (PR #44): ☆ pinned top-right (out of the flow); on phones 📅 / 🔗 icon
+  buttons (40px, names in aria-label), tighter padding, no divider. Pixel 7:
+  240–330px per card.
+- [x] **N3. Mode switch labels wrap in the desktop sidebar**: short labels or a 2×2 grid.
+  Done (PR #44): "All / 🌊 Seaside / 50+ / Both" (full names in aria-label and
+  title), never wrapping, segments sized to their label.
+- [x] **N4. Gap under one-line titles** on desktop (row takes the ☆ button's height).
+  Done with N2 (PR #44): the pinned ☆ no longer sets the header row's height.
