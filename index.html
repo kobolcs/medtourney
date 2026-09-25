@@ -12,7 +12,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com https://plausible.io; base-uri 'self'; form-action 'self';">
 
     <!-- Primary Meta Tags -->
-    <title>MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments</title>
+    <title>MedTourney · Chess Tournament Finder | Mediterranean, Seaside &amp; Senior Tournaments in Europe</title>
     <meta name="title" content="MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments">
     <meta name="description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Search open tournaments, women's events, and vacation-friendly chess competitions. Updated daily from chess-results.com.">
     <meta name="keywords" content="european chess tournaments, mediterranean chess, senior chess tournaments, chess tournament finder, chess-results.com, seaside chess, S50+ chess, open chess tournaments, vacation chess, chess travel">
@@ -24,7 +24,7 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://kobolcs.github.io/medtourney/">
-    <meta property="og:title" content="MedTourney - European Chess Tournament Finder">
+    <meta property="og:title" content="MedTourney · Chess Tournament Finder">
     <meta property="og:description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Updated daily from chess-results.com.">
     <meta property="og:image" content="https://kobolcs.github.io/medtourney/og-image.png">
     <meta property="og:image:width" content="1200">
@@ -36,7 +36,7 @@
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://kobolcs.github.io/medtourney/">
-    <meta property="twitter:title" content="MedTourney - European Chess Tournament Finder">
+    <meta property="twitter:title" content="MedTourney · Chess Tournament Finder">
     <meta property="twitter:description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories.">
     <meta property="twitter:image" content="https://kobolcs.github.io/medtourney/og-image.png">
 
@@ -56,6 +56,7 @@
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "MedTourney",
+      "alternateName": "Chess Tournament Finder",
       "url": "https://kobolcs.github.io/medtourney/",
       "description": "European chess tournament finder with specialized filters for Mediterranean and senior tournaments",
       "applicationCategory": "Sports",
@@ -100,8 +101,8 @@
                         <path d="M20 0v3.6M18.3 1.8h3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
                     </svg>
                     <div class="header-brand">
-                        <h1>MedTourney</h1>
-                        <p class="tagline">Chess by the sea &middot; seniors welcome</p>
+                        <h1>MedTourney<span class="sr-only"> &middot; Chess Tournament Finder</span></h1>
+                        <p class="tagline">Chess Tournament Finder<span class="tagline-extra"> &middot; seaside &amp; seniors</span></p>
                     </div>
                 </div>
                 <!-- Visually hidden: the tagline and live count already say it; kept for
@@ -512,6 +513,9 @@
                 <span id="lastUpdatedWrap" hidden>Data updated <span id="lastUpdatedTime"></span> ·</span>
                 Source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a>
                 · Made by <a href="https://github.com/kobolcs/medtourney" target="_blank" rel="noopener noreferrer" title="MedTourney on GitHub">Csaba Köböl</a>
+                <!-- src/utils/contact.ts: shown only when an address is set; the
+                     mailto: is built on click, never present in the page -->
+                <span id="feedbackWrap" hidden>· <a href="#" id="feedbackLink">Feedback</a></span>
             </p>
         </footer>
     </div>
@@ -540,7 +544,7 @@
                     <ul>
                         <li><strong>Open Category</strong><span>Shows only tournaments open to all skill levels — not invitation-only or club-only events.</span></li>
                         <li><strong>Exclude Youth</strong><span>Hides tournaments aimed at players under 18.</span></li>
-                        <li><strong>Seaside</strong><span>Tournaments within about 10 km of the Mediterranean coast (incl. the Adriatic and Aegean) or the Atlantic coasts of Spain and Portugal, plus well-known coastal towns. A <strong>🏖 Beachfront</strong> badge marks venues found to be within 500 m of the sea.</span></li>
+                        <li><strong>Seaside</strong><span>Tournaments within about 10 km of the sea, plus well-known coastal towns. The <strong>Seas</strong> choice picks which seas count: Mediterranean and Atlantic (Spain, Portugal, France, the Canaries, Madeira, Azores) by default, the Black Sea (incl. Istanbul) and the Caspian if you tick them. Each card says which sea. A <strong>🏖 Beachfront</strong> badge marks venues found to be within 500 m of the sea.</span></li>
                         <li><strong>S50+ / S60+</strong><span>Senior age categories. Checking both shows all senior events (OR logic).</span></li>
                         <li><strong>Rating ceiling</strong><span>U1400–U2200 — shows only club-level tournaments below a rating limit.</span></li>
                         <li><strong>Youth age group</strong><span>Targets a specific under-age group (overrides the exclude-youth filter).</span></li>
@@ -557,7 +561,12 @@
 
                 <div class="help-section">
                     <h3>Shortlist &amp; export</h3>
-                    <p>Click <strong>★</strong> on any card to save it. Use <strong>Export Shortlist</strong> to download all starred tournaments as a single <code class="help-code">.ics</code> file for Google Calendar, Apple Calendar, or Outlook. Hover or focus a card to reveal <strong>Add to Calendar</strong> for a single-tournament export, and <strong>Copy link</strong> to share it directly.</p>
+                    <p>Click <strong>★</strong> on any card to save it. Use <strong>Export Shortlist</strong> to download all starred tournaments as a single <code class="help-code">.ics</code> file for Google Calendar, Apple Calendar, or Outlook. On a card, <strong>Add to Calendar</strong> offers <strong>Google Calendar</strong> (opens in your browser, nothing to install) or a <code class="help-code">.ics</code> download for Outlook, Apple Calendar or Thunderbird; <strong>Copy link</strong> shares the tournament.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Nearest airport</h3>
+                    <p><strong>✈ Alicante ALC · 47 km</strong> on a card is the nearest airport with airline flights, as the crow flies. <strong>✈ none within 150 km</strong> means there is none that close. No airport line at all means we couldn't pin the venue on the map, so we can't tell.</p>
                 </div>
 
                 <div class="help-section">
