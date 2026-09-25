@@ -139,7 +139,30 @@ VENUE_WORDS = {
     "liga", "league", "scoala", "skola", "escola", "cup", "rapid", "blitz",
     "junior", "senior", "memorial", "festival", "turnir", "torneo", "turnaj",
 }
-MAX_NGRAM = 3
+# The first word of many place names, never one alone: "Puerto" is an alternate
+# name of El Puerto de Santa María, and a Puerto de la Cruz pavilion landed
+# there. A longer name starting with one only counts as the place's own name,
+# not an alternate ("Convento de San Francisco" is not Sant Francesc de Formentera).
+GENERIC_PLACE_WORDS = {
+    "puerto", "porto", "port", "san", "sant", "santa", "santo", "sao", "saint", "st",
+    "villa", "vila", "nova", "novo", "bad",
+}
+# Joining words between a venue and its town ("Clube de Xadrez de Sintra")
+CONNECTORS = {
+    "de", "del", "da", "do", "dos", "das", "di", "du", "des", "la", "el", "los", "las",
+    "le", "les", "von", "am", "an", "im", "in", "y", "e", "i",
+}
+# Words that may sit between a town and its province ("Tasnad-judetul Satu Mare")
+ADMIN_WORDS = {
+    "judetul", "judet", "provincia", "province", "prov", "county", "okres", "kraj", "comarca",
+    "region", "regione", "distrito", "district", "municipio", "concelho",
+}
+# Articles that start a place name ("El Campillo", "La Línea", "Il Ciocco")
+ARTICLES = {"el", "la", "los", "las", "il", "lo", "le", "les"}
+# Seats of a province or region share its name, and a location often ends in
+# the province ("... Corteconcepción Huelva"): the town right before it wins.
+PROVINCE_SEATS = {"PPLA", "PPLA2"}
+MAX_NGRAM = 5  # "Los Palacios y Villafranca"
 MIN_NAME_LEN = 4  # shorter alternate names / single words are too ambiguous
 GEONAMES_COLUMNS = 15  # up to the population column of the dump format
 
@@ -150,7 +173,13 @@ def normalise(text: str) -> str:
     return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 
-Place = Tuple[float, float, int]  # (lat, lng, population)
+# (lat, lng, population, flags): flags has "p" when the key is the place's own
+# name (not an alternate) and "a" for a province/region seat
+Place = Tuple[float, float, int, str]
+
+
+def flags(place: Place) -> str:
+    return place[3]
 
 
 def load_geonames(path: Path, iso2s: set[str]) -> dict[str, dict[str, Place]]:
@@ -164,30 +193,65 @@ def load_geonames(path: Path, iso2s: set[str]) -> dict[str, dict[str, Place]]:
             country = cols[8].lower()
             if country not in index:
                 continue
-            place: Place = (round(float(cols[4]), 4), round(float(cols[5]), 4), int(cols[14] or 0))
-            names = {cols[1], cols[2]} | {a for a in cols[3].split(",") if len(a) >= MIN_NAME_LEN}
+            lat, lng, pop = round(float(cols[4]), 4), round(float(cols[5]), 4), int(cols[14] or 0)
+            seat = "a" if cols[7] in PROVINCE_SEATS else ""
+            own = {normalise(cols[1]).strip(), normalise(cols[2]).strip()}
+            alternates = {normalise(a).strip() for a in cols[3].split(",") if len(a) >= MIN_NAME_LEN}
             by_name = index[country]
-            for name in names:
-                key = normalise(name).strip()
-                if key and (key not in by_name or by_name[key][2] < place[2]):
-                    by_name[key] = place
+            for key in own | alternates:
+                if key and (key not in by_name or by_name[key][2] < pop):
+                    by_name[key] = (lat, lng, pop, seat + ("p" if key in own else ""))
     return index
 
 
 def geonames_match(head: str, places: dict[str, Place]) -> tuple[str, Place] | None:
-    """Best town named in the location text, or None."""
-    words = re.findall("[^\\W\\d_]+(?:['\u2019-][^\\W\\d_]+)*", normalise(head))
-    best: tuple[int, int, str, Place] | None = None
+    """Best town named in the location text, or None.
+
+    Longest name wins, then biggest town - except that a province/region seat
+    gives way to a town named right before it ("Corteconcepción Huelva"), and
+    one ending the text after an unknown article-led name ("Pabellón El
+    Campillo Huelva": a village GeoNames doesn't list, in Huelva province)
+    places nothing rather than the capital.
+    """
+    # Numbers stay in as tokens, so "rue Rabelais 66000 Perpignan" never
+    # reads "Rabelais" as the town right before Perpignan
+    words = re.findall("[^\\W_]+(?:['\u2019-][^\\W_]+)*", normalise(head))
+    found: list[tuple[int, int, str, Place]] = []  # (start, length, key, place)
     for n in range(MAX_NGRAM, 0, -1):
         for i in range(len(words) - n + 1):
             gram = words[i:i + n]
-            if n == 1 and (len(gram[0]) < MIN_NAME_LEN or gram[0] in VENUE_WORDS):
+            if n == 1 and (len(gram[0]) < MIN_NAME_LEN or gram[0] in VENUE_WORDS
+                           or gram[0] in GENERIC_PLACE_WORDS):
                 continue
             key = " ".join(gram)
+            if any(c.isdigit() for c in key):
+                continue
             place = places.get(key)
-            if place and (best is None or (n, place[2]) > (best[0], best[1])):
-                best = (n, place[2], key, place)
-    return (best[2], best[3]) if best else None
+            if not place or (gram[0] in GENERIC_PLACE_WORDS and "p" not in flags(place)):
+                continue
+            found.append((i, n, key, place))
+    if not found:
+        return None
+
+    def rank(c: tuple[int, int, str, Place]) -> tuple[int, int]:
+        return c[1], c[3][2]
+
+    best = max(found, key=rank)
+    if "a" not in flags(best[3]):
+        return best[2], best[3]
+    # Right before the seat, skipping "de", "judetul"...
+    prev = best[0] - 1
+    while prev >= 0 and words[prev] in CONNECTORS | ADMIN_WORDS:
+        prev -= 1
+    # ...by its own name ("Campillo" is only an alternate of Campillo de Aragón)
+    town = [c for c in found if c[0] + c[1] - 1 == prev and flags(c[3]) == "p"]
+    if town:
+        best = max(town, key=rank)
+    elif (best[0] + best[1] == len(words) and prev >= 1 and prev == best[0] - 1
+          and words[prev - 1] in ARTICLES and words[prev] not in VENUE_WORDS
+          and not any(c[0] <= prev < c[0] + c[1] and "p" in flags(c[3]) for c in found)):
+        return None
+    return best[2], best[3]
 
 
 def town_from_name(
@@ -506,15 +570,25 @@ class Geocoder:
         return kind in PLACE_TYPES or not single_part
 
     def _fallback(self, location: str) -> tuple[float, float] | None:
-        """GeoNames word match for a Nominatim miss (offline, so free to retry)."""
+        """GeoNames word match for a Nominatim miss (offline, so free to retry).
+
+        Redone on every run, so a better matcher corrects earlier guesses; a
+        beachfront result is kept while the coordinates stay the same.
+        """
         head, iso2 = split_location(location)
+        entry = self.cache.get(location, {})
         if not self.geonames or not iso2 or not head:
-            return None
+            return (entry["lat"], entry["lng"]) if "lat" in entry else None
         match = geonames_match(head, self.geonames.get(iso2, {}))
         if not match:
+            if "lat" in entry:  # an earlier guess no longer holds
+                self.cache[location] = {"miss": "no match", "tried": self.now.isoformat()}
             return None
-        name, (lat, lng, _pop) = match
-        self.cache[location] = {"lat": lat, "lng": lng, "q": name, "src": "geonames"}
+        name, (lat, lng, *_rest) = match
+        new: dict[str, Any] = {"lat": lat, "lng": lng, "q": name, "src": "geonames"}
+        if (entry.get("lat"), entry.get("lng")) == (lat, lng) and "seafront" in entry:
+            new["seafront"] = entry["seafront"]
+        self.cache[location] = new
         return lat, lng
 
     def _recent(self, tried: str | None) -> bool:
@@ -644,9 +718,10 @@ class Geocoder:
     def geocode(self, location: str, max_lookups: int) -> tuple[float, float] | None:
         entry = self.cache.get(location)
         if entry and self._cache_usable(entry):
-            if "lat" in entry:
+            if "lat" in entry and entry.get("src") != "geonames":
                 return entry["lat"], entry["lng"]
-            return self._fallback(location) if entry.get("miss") == "no match" else None
+            redo = entry.get("src") == "geonames" or entry.get("miss") == "no match"
+            return self._fallback(location) if redo else None
 
         head, iso2 = split_location(location)
         queries = candidate_queries(head) if iso2 else []

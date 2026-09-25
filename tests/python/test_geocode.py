@@ -106,11 +106,11 @@ class TestGeocoder:
 class TestGeoNamesFallback:
     PLACES: ClassVar[dict] = {
         "at": {
-            "barnbach": (47.0714, 15.1279, 4178),
-            "graz": (47.0673, 15.442, 303270),
-            "haus": (47.4094, 13.7672, 2500),
-            "bad schwanberg": (46.76, 15.21, 1363),
-            "schwanberg": (46.75, 15.20, 900),
+            "barnbach": (47.0714, 15.1279, 4178, "p"),
+            "graz": (47.0673, 15.442, 303270, "p"),
+            "haus": (47.4094, 13.7672, 2500, "p"),
+            "bad schwanberg": (46.76, 15.21, 1363, "p"),
+            "schwanberg": (46.75, 15.20, 900, "p"),
         }
     }
 
@@ -130,12 +130,12 @@ class TestGeoNamesFallback:
         assert geocoder.cache["Volkshaus Bärnbach, AUT"]["src"] == "geonames"
 
     def test_town_from_tournament_name_when_location_has_none(self) -> None:
-        places = {"ie": {"sligo": (54.2766, -8.4761, 17568)}}
+        places = {"ie": {"sligo": (54.2766, -8.4761, 17568, "p")}}
         t = {"name": "Sligo Chess and Culture Festival", "location": "The Radisson Blu Hotel & Spa, IRL"}
         assert gt.town_from_name(t, places) == (54.2766, -8.4761)
 
     def test_town_from_name_ignores_league_and_school_words(self) -> None:
-        places = {"lv": {"liga": (56.9, 24.1, 5000)}}
+        places = {"lv": {"liga": (56.9, 24.1, 5000, "p")}}
         t = {"name": "Latvijas jaunatnes saha liga", "location": "Aspazijas bulvaris 32, LAT"}
         assert gt.town_from_name(t, places) is None
 
@@ -145,9 +145,78 @@ class TestGeoNamesFallback:
         f = tmp_path / "cities.txt"
         f.write_text("\t".join(row) + "\n", encoding="utf-8")
         index = gt.load_geonames(f, {"at"})
-        assert index["at"]["barnbach"] == (47.0714, 15.1279, 4178)
-        assert index["at"]["baernbach"] == (47.0714, 15.1279, 4178)
+        assert index["at"]["barnbach"] == (47.0714, 15.1279, 4178, "p")
+        assert index["at"]["baernbach"] == (47.0714, 15.1279, 4178, "")
         assert "ba" not in index["at"]  # alternate names under 4 chars are skipped
+
+
+class TestGeoNamesRecheck2:
+    """Inland events the word match once put on the coast (design review, recheck 2)."""
+
+    ES: ClassVar[dict] = {
+        "puerto": (36.5939, -6.233, 88364, ""),  # alternate name of El Puerto de Santa María
+        "puerto de la cruz": (28.4169, -16.5509, 32219, "p"),
+        "san francisco": (38.7057, 1.4289, 2656, ""),  # alternate of Sant Francesc de Formentera
+        "navas": (41.418, 2.186, 22059, "p"),
+        "los palacios y villafranca": (37.1618, -5.9243, 36824, "p"),
+        "huelva": (37.2664, -6.94, 144258, "ap"),
+        "corteconcepcion": (37.9, -6.5, 0, "p"),
+        "campillo": (41.1265, -1.8439, 169, ""),  # alternate of Campillo de Aragón
+    }
+
+    def test_generic_words_never_match_alone(self) -> None:
+        assert gt.geonames_match("I Open de Ajedrez Puerto Moral", self.ES) is None
+
+    def test_generic_led_names_must_be_the_places_own_name(self) -> None:
+        assert gt.geonames_match("Convento de San Francisco", self.ES) is None
+        place = "Pabellón Municipal de Deportes de Puerto de la Cruz Miguel Ángel Díaz Molina."
+        assert gt.geonames_match(place, self.ES)[0] == "puerto de la cruz"
+
+    def test_long_town_names_beat_a_venue_word(self) -> None:
+        match = gt.geonames_match("Los Palacios y Villafranca (Pabellon Jesus Navas)", self.ES)
+        assert match[0] == "los palacios y villafranca"
+
+    def test_town_right_before_its_province_wins(self) -> None:
+        place = "Avda. Juan Ramón Jiménez S/N Plaza del Ayuntamiento Corteconcepción Huelva"
+        assert gt.geonames_match(place, self.ES)[0] == "corteconcepcion"
+
+    def test_unknown_village_before_its_province_places_nothing(self) -> None:
+        assert gt.geonames_match("PABELLÓN CUBIERTO EL CAMPILLO HUELVA", self.ES) is None
+
+    def test_province_seat_after_a_venue_still_matches(self) -> None:
+        places = {"banjaluka": (44.7788, 17.2063, 185042, "ap")}
+        assert gt.geonames_match('Hotel "Bosna" Banjaluka', places)[0] == "banjaluka"
+
+    def test_numbers_separate_a_street_from_the_town(self) -> None:
+        places = {"rabelais": (48.81, 2.23, 100, "p"), "perpignan": (42.6976, 2.8954, 119344, "ap")}
+        place = "Couvent des Minimes 24 rue Francois Rabelais 66000 Perpignan"
+        assert gt.geonames_match(place, places)[0] == "perpignan"
+
+    def test_cached_guesses_are_redone_with_the_current_rules(self) -> None:
+        location = "Convento de San Francisco, ESP"
+        cache = {location: {"lat": 38.7057, "lng": 1.4289, "q": "san francisco", "src": "geonames"}}
+        geocoder, fake = make(cache=cache, geonames={"es": self.ES})
+        assert geocoder.geocode(location, 10) is None
+        assert fake.queries == []
+        assert geocoder.cache[location]["miss"] == "no match"
+
+    def test_redone_guess_keeps_its_beachfront_result(self) -> None:
+        location = "Hotel X Puerto de la Cruz, ESP"
+        front = {"venue": None, "seaM": None, "tried": NOW.isoformat()}
+        cache = {location: {"lat": 28.4169, "lng": -16.5509, "q": "puerto de la cruz", "src": "geonames",
+                            "seafront": front}}
+        geocoder, _ = make(cache=cache, geonames={"es": self.ES})
+        assert geocoder.geocode(location, 10) == (28.4169, -16.5509)
+        assert geocoder.cache[location]["seafront"] == front
+
+    def test_load_geonames_flags_own_names_and_province_seats(self, tmp_path: Path) -> None:
+        row = ["1", "Huelva", "Huelva", "Onuba", "37.26638", "-6.94004", "P", "PPLA2",
+               "ES", "", "", "", "", "", "144258", "", "", "Europe/Madrid", "2024-01-01"]
+        f = tmp_path / "cities.txt"
+        f.write_text("\t".join(row) + "\n", encoding="utf-8")
+        index = gt.load_geonames(f, {"es"})
+        assert index["es"]["huelva"] == (37.2664, -6.94, 144258, "ap")
+        assert index["es"]["onuba"] == (37.2664, -6.94, 144258, "a")
 
 
 class TestGeocodeFile:

@@ -152,3 +152,44 @@ republished as a recheck of merged `main`.
   ignore in a `<meta>` policy.
 - [x] **H2. Mark the map as verified** in the artifact (rendered with real OSM
   tiles on 24 Sep).
+
+---
+
+# Recheck 2 (24 Sep 2026, commit 146c08c)
+
+Source: the same [Design Review artifact](https://claude.ai/artifact/MbEyNbY4mX1c3ESiawJ9jM).
+12 of 14 recheck fixes confirmed.
+
+## Waiting for the daily data run
+
+- [ ] **P1 live:** `town` filled in on cards (0 of 1,674 records had it).
+- [ ] **R1 live:** Corteconcepción out of Seaside (override not yet applied to the data).
+
+## New
+
+- [x] **N1. Guessed town names put inland events in Seaside** (`geocode_tournaments.py`).
+  Puerto Moral, Mula, Los Palacios, El Campillo, Puerto de la Cruz landed on the coast.
+  - [x] Generic place words (puerto, porto, san, santa, santo, são, villa, vila,
+    nova, bad) never match alone; a longer name led by one must be the place's
+    own name, not an alternate ("San Francisco" is only an alternate of Sant
+    Francesc de Formentera)
+  - [x] Names up to 5 words ("Los Palacios y Villafranca" beat "Navas")
+  - [x] A province/region seat gives way to the town right before it
+    ("Corteconcepción Huelva"); after an unknown article-led name ("El Campillo
+    Huelva") it places nothing. Numbers split a street from the town
+    ("rue Rabelais 66000 Perpignan")
+  - [x] GeoNames guesses are redone every run, so old wrong ones in
+    `geocode_cache.json` get corrected
+  - [~] A guess from the event name alone never sets `coast` - not done: tried,
+    and it dropped ~25 real seaside events (Trieste, Aveiro, Maia, Tenerife, La
+    Vila Joiosa...). The generic-word rule already fixes Puerto Moral
+  - [~] GeoNames cities500 - not done: it doesn't list Puerto Moral or El Campillo
+    either. The ES country dump has El Campillo 15 times, all population 0.
+    El Campillo gets an override instead
+  Checked offline against the full 24 Sep data: coast changes only for the
+  reported events plus Mula; Irun (was in Galicia via "San Juan") and Recarei
+  are placed better; nothing else moves.
+- [ ] **N2. Cards on phones are too tall** (~440px): pin ☆ top-right, Calendar and
+  Copy link in one row of icon buttons.
+- [ ] **N3. Mode switch labels wrap in the desktop sidebar**: short labels or a 2×2 grid.
+- [ ] **N4. Gap under one-line titles** on desktop (row takes the ☆ button's height).
