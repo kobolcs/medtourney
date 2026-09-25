@@ -36,6 +36,14 @@ test.describe('SEO metadata', () => {
     expect(data['@type']).toBe('WebApplication');
     expect(data['name']).toContain('MedTourney');
     expect(data['featureList']).toBeTruthy();
+    expect(data['author']).toMatchObject({ '@type': 'Person', name: 'Csaba Köböl' });
+  });
+
+  test('footer credits the author, linking to the GitHub repo', async ({ page }) => {
+    const credit = page.locator('footer a', { hasText: 'Csaba Köböl' });
+    await expect(credit).toHaveAttribute('href', 'https://github.com/kobolcs/medtourney');
+    await expect(page.locator('footer')).toContainText('Made by Csaba Köböl');
+    await expect(page.locator('meta[name="author"]')).toHaveAttribute('content', 'Csaba Köböl');
   });
 
   // Link previews (Facebook, WhatsApp, Slack, X) - public/og-image.png,

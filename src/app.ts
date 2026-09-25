@@ -2,7 +2,7 @@
  * Chess Tournament Finder - Main Application (Refactored)
  * Fetches and displays tournaments from chess-results.com
  *
- * @author MedTourney Project
+ * @author Csaba Köböl
  * @version 3.0.0 (Modular Architecture with Service Layers)
  */
 
