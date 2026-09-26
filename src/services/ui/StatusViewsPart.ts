@@ -8,7 +8,7 @@
 import { escapeHTML } from '../../utils/html';
 import { PaginationPart } from './PaginationPart';
 
-/** Loading, empty, error and staleness states. */
+/** Loading, empty and error states. */
 export abstract class StatusViewsPart extends PaginationPart {
     /**
      * Show loading spinner
@@ -76,14 +76,6 @@ export abstract class StatusViewsPart extends PaginationPart {
         }
     }
 
-    showStalenessBanner(message: string): void {
-        const banner = document.getElementById('staleness-banner');
-        if (banner) {
-            banner.textContent = message;
-            banner.style.display = 'block';
-        }
-    }
-
     /**
      * Show empty state, using any context set by prepareEmptyState().
      */
@@ -123,9 +115,6 @@ export abstract class StatusViewsPart extends PaginationPart {
                         <span aria-hidden="true">🔄</span> Reset All Filters
                     </button>
                 </div>
-                <p class="empty-state-info">
-                    <small>Tournament data is updated daily from chess-results.com</small>
-                </p>
             </div>
         `;
     }

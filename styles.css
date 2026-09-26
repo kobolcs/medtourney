@@ -2626,17 +2626,13 @@ footer a:hover {
 /* Desktop — sticky filters sidebar beside results, so results are visible
    without scrolling past the whole filter panel. Pure layout: same markup,
    same #main-content children, just arranged as two grid columns instead of
-   stacked. #staleness-banner spans both columns as a full-width top banner. */
+   stacked. */
 @media (min-width: 1024px) {
   main {
     display: grid;
     grid-template-columns: 340px 1fr;
     align-items: start;
     gap: var(--sp-6);
-  }
-
-  #staleness-banner {
-    grid-column: 1 / -1;
   }
 
   .filters-card {

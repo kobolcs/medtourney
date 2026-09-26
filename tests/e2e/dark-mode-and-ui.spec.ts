@@ -65,31 +65,24 @@ test.describe('Dark Mode and UI Features', () => {
     await expect(page.locator('#themeToggleIcon')).toHaveText('☀');
   });
 
-  test('footer shows the scrape time from the meta file', async ({ page }) => {
+  test('no "last updated" date or staleness banner is shown to visitors', async ({ page }) => {
+    // Even very old data: update failures alert the owner (GitHub issue),
+    // visitors never see a date or a warning (removed 2026-09-26).
     await page.route('**/tournaments_data_meta.json', route =>
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ generatedAt: '2026-09-23T03:43:02+00:00' }),
+        body: JSON.stringify({ generatedAt: '2020-01-01T00:00:00+00:00' }),
       })
     );
     await page.reload();
-
-    await expect(page.locator('#lastUpdatedWrap')).toBeVisible();
-    await expect(page.locator('#lastUpdatedTime')).toContainText('23 Sept 2026');
-    await expect(page.locator('#lastUpdated')).not.toContainText('…');
-  });
-
-  test('footer hides "Data updated" when no timestamp is known', async ({ page }) => {
-    await page.route('**/tournaments_data_meta.json', route => route.fulfill({ status: 404 }));
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
-    // No placeholder, no "Never" - just the source links.
-    await expect(page.locator('#lastUpdatedWrap')).toBeHidden();
-    await expect(page.locator('#lastUpdated')).not.toContainText(/never|…/i);
-    await expect(page.locator('#lastUpdated')).toContainText('chess-results.com');
+    await expect(page.locator('#headerTournamentCount')).toHaveText(/^[\d,]+ European tournaments$/);
+    await expect(page.locator('footer')).not.toContainText(/updated|days old/i);
+    await expect(page.locator('#staleness-banner')).toHaveCount(0);
+    // chess-results.com stays as one small credit, not the headline
+    await expect(page.locator('footer .data-credit a[href*="chess-results.com"]')).toBeVisible();
   });
 
   test('phones: filters open in a bottom sheet and close again', async ({ page, isMobile }) => {

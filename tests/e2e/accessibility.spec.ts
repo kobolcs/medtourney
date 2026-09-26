@@ -129,10 +129,6 @@ test.describe('Accessibility Tests', () => {
       await expect(resultsCount).toHaveAttribute('aria-live', 'polite');
     }
 
-    // Check last updated timestamp
-    const lastUpdated = page.locator('#lastUpdated');
-    await expect(lastUpdated).toHaveAttribute('aria-live', 'polite');
-
     // Check error messages
     const error = page.locator('#error');
     await expect(error).toHaveAttribute('aria-live', 'assertive');

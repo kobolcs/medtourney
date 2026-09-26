@@ -272,12 +272,6 @@ function runTests() {
         assertEqual(ui.getTournamentByUrl('https://nope.example'), null);
     });
 
-    test('showStalenessBanner shows the message', ui => {
-        ui.showStalenessBanner('Data is 3 days old');
-        assertEqual($('staleness-banner').textContent, 'Data is 3 days old');
-        assertEqual($('staleness-banner').style.display, 'block');
-    });
-
     console.log('='.repeat(60));
     console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${passed + failed} total`);
     console.log(`✨ Pass Rate: ${((passed / (passed + failed)) * 100).toFixed(1)}%\n`);

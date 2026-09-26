@@ -21,7 +21,7 @@ test.describe('Tournament Search and Filter', () => {
     await expect(page.locator('#quickSearch')).toBeVisible();
 
     // Check footer
-    await expect(page.locator('#lastUpdated')).toBeVisible();
+    await expect(page.locator('#footerCredits')).toBeVisible();
     await expect(page.locator('footer a[href*="chess-results.com"]')).toBeVisible();
   });
 
