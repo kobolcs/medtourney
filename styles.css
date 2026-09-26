@@ -2196,6 +2196,12 @@ footer a:hover {
   margin-right: var(--sp-2);
 }
 
+.data-credit {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  opacity: .65;
+}
+
 .note {
   font-size: var(--text-xs);
   opacity: .75;
