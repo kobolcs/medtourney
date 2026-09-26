@@ -121,6 +121,7 @@ export abstract class FilterFormPart extends KeyboardPart {
             seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
             womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
             includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
+            includeLongEvents: document.getElementById('includeLongEvents') as HTMLInputElement | null,
             classicalTime: document.getElementById('classicalTime') as HTMLInputElement | null,
             rapidTime: document.getElementById('rapidTime') as HTMLInputElement | null,
             blitzTime: document.getElementById('blitzTime') as HTMLInputElement | null,
@@ -147,6 +148,7 @@ export abstract class FilterFormPart extends KeyboardPart {
             seniorCategory: elements.seniorCategory?.checked ?? false,
             womenOnly: elements.womenOnly?.checked ?? false,
             includeTeamTournaments: elements.includeTeamTournaments?.checked ?? false,
+            includeLongEvents: elements.includeLongEvents?.checked ?? false,
             classicalTime: elements.classicalTime?.checked ?? true,
             rapidTime: elements.rapidTime?.checked ?? true,
             blitzTime: elements.blitzTime?.checked ?? true,
@@ -173,6 +175,7 @@ export abstract class FilterFormPart extends KeyboardPart {
         if (el.seniorS60)             el.seniorS60.checked             = false;
         if (el.womenOnly)             el.womenOnly.checked             = false;
         if (el.includeTeamTournaments) el.includeTeamTournaments.checked = false;
+        if (el.includeLongEvents)     el.includeLongEvents.checked     = false;
         if (el.classicalTime)         el.classicalTime.checked         = true;
         if (el.rapidTime)             el.rapidTime.checked             = true;
         if (el.blitzTime)             el.blitzTime.checked             = true;

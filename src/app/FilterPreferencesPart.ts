@@ -56,6 +56,9 @@ export abstract class FilterPreferencesPart extends DataFreshnessPart {
         if (preferences.womenOnly !== undefined && filterElements.womenOnly) {
             filterElements.womenOnly.checked = preferences.womenOnly;
         }
+        if (preferences.includeLongEvents !== undefined && filterElements.includeLongEvents) {
+            filterElements.includeLongEvents.checked = preferences.includeLongEvents;
+        }
         if (preferences.includeTeamTournaments !== undefined && filterElements.includeTeamTournaments) {
             filterElements.includeTeamTournaments.checked = preferences.includeTeamTournaments;
         }

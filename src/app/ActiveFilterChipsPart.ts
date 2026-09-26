@@ -37,6 +37,7 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         if (s.seniorS60) chips.push({ label: 'Senior 60+', clear: () => this.setCheckbox('seniorS60', false) });
         if (s.womenOnly) chips.push({ label: "Women's", clear: () => this.setCheckbox('womenOnly', false) });
         if (s.includeTeamTournaments) chips.push({ label: 'Team tournaments', clear: () => this.setCheckbox('includeTeamTournaments', false) });
+        if (s.includeLongEvents) chips.push({ label: 'Season-long events', clear: () => this.setCheckbox('includeLongEvents', false) });
         if (!s.openOnly) chips.push({ label: 'Open category off', clear: () => this.setCheckbox('openOnly', true) });
         if (!s.excludeYouth) chips.push({ label: 'Youth-only included', clear: () => this.setCheckbox('excludeYouth', true) });
 
@@ -119,6 +120,7 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         if (el.excludeYouth && !el.excludeYouth.checked) count++;
         if (el.womenOnly?.checked) count++;
         if (el.includeTeamTournaments?.checked) count++;
+        if (el.includeLongEvents?.checked) count++;
         if (el.seniorCategory?.checked) count++;
         if (el.seniorS60?.checked) count++;
         if (el.ratingCategory?.value) count++;

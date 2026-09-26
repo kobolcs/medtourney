@@ -39,6 +39,8 @@ export interface FilterState {
     seniorCategory: boolean;
     womenOnly: boolean;
     includeTeamTournaments: boolean;
+    /** Show weekly / season-long events (over FilterService.MAX_EVENT_DAYS); missing = false */
+    includeLongEvents?: boolean;
     classicalTime: boolean;
     rapidTime: boolean;
     blitzTime: boolean;

@@ -247,6 +247,14 @@
                         </label>
                         <span id="team-desc" class="sr-only">Include team tournaments (normally excluded)</span>
                     </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="includeLongEvents" aria-describedby="long-desc">
+                            <span class="checkbox-label">Weekly / season-long events</span>
+                        </label>
+                        <span id="long-desc" class="sr-only">Include events running over 3 weeks, such as weekly club leagues (normally excluded)</span>
+                    </div>
                 </div>
 
                 <h3 id="age-group-heading" class="filter-section-title">Age Group</h3>
@@ -552,6 +560,7 @@
                         <li><strong>Rating ceiling</strong><span>U1400–U2200 — shows only club-level tournaments below a rating limit.</span></li>
                         <li><strong>Youth age group</strong><span>Targets a specific under-age group (overrides the exclude-youth filter).</span></li>
                         <li><strong>Time Control</strong><span>Classical, Rapid, or Blitz. All three checked = show everything.</span></li>
+                        <li><strong>Weekly / season-long events</strong><span>Events running over 3 weeks — mostly weekly club leagues — are hidden unless you tick this.</span></li>
                         <li><strong>Duration</strong><span>Weekend-only to multi-week vacations — useful for travel planning.</span></li>
                         <li><strong>Country</strong><span>Tick one or more countries for OR filtering. In Seaside mode, only countries with seaside tournaments are shown.</span></li>
                     </ul>
