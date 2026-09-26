@@ -209,7 +209,8 @@ class TestSchedulePipeline:
 
     def test_fetch_schedules_blocked_stops(self) -> None:
         def refuse(_u: str) -> str:
-            raise pipeline.Blocked("403")
+            status = "403"
+            raise pipeline.Blocked(status)
 
         cache: dict = {}
         stats = pipeline.fetch_schedules_due(
@@ -233,8 +234,8 @@ def test_update_file(tmp_path: Path) -> None:
 
 def test_update_file_with_schedule(tmp_path: Path) -> None:
     data, cache = tmp_path / "data.json", tmp_path / "cache.json"
-    t = {**{"name": "IoW", "url": "https://chess-results.com/tnr1489548.aspx?lan=1",
-             "date": "2026-11-10"}, "dateTo": "2026-11-13"}
+    t = {"name": "IoW", "url": "https://chess-results.com/tnr1489548.aspx?lan=1",
+         "date": "2026-11-10", "dateTo": "2026-11-13"}
     data.write_text(json.dumps([t]), encoding="utf-8")
 
     pages = {

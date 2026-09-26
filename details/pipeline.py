@@ -185,7 +185,7 @@ def annotate(tournaments: list[dict[str, Any]], cache: dict[str, dict[str, Any]]
         found = entry.get("details") if entry else None
         if found:
             details = dict(found)
-            schedule = entry.get("schedule") if entry else None  # type: ignore[union-attr]
+            schedule = entry.get("schedule") if entry else None
             if schedule:
                 details["schedule"] = schedule
             t["details"] = details
