@@ -102,6 +102,20 @@ const withDetails = {
     },
 };
 
+const withSchedule = {
+    ...withDetails,
+    dateTo: '2026-11-13',
+    details: {
+        ...withDetails.details,
+        schedule: [
+            { round: 1, date: '2026-11-10', time: '10:00' },
+            { round: 2, date: '2026-11-10', time: '15:00' },
+            { round: 7, date: '2026-11-13', time: '10:00' },
+        ],
+        regulationsUrl: 'https://example.com/regs.pdf',
+    },
+};
+
 test('chess-results details: format, rating with FIDE page, organizer with website, address', () => {
     const doc = dom(detailPanelHTML(withDetails, false));
     assertEqual(val(doc, 'Format'), '7 rounds · Swiss-System');
@@ -110,6 +124,28 @@ test('chess-results details: format, rating with FIDE page, organizer with websi
     assertEqual(val(doc, 'Organizer'), 'Double Rook · Website');
     assertEqual(row(doc, 'Organizer').querySelector('a').getAttribute('href'), 'https://www.iowchess.com/event');
     assert(val(doc, 'Where').includes('5 Park Rd, Shanklin PO37 6BB'), 'address under the venue');
+});
+
+test('schedule row: rounds listed with date and time', () => {
+    const doc = dom(detailPanelHTML(withSchedule, false));
+    const scheduleRow = row(doc, 'Schedule');
+    assert(scheduleRow, 'Schedule row present');
+    const items = [...scheduleRow.querySelectorAll('li')];
+    assertEqual(items.length, 3);
+    assert(items[0].textContent.includes('Round 1'), items[0].textContent);
+    assert(items[0].textContent.includes('10:00'), items[0].textContent);
+    assert(items[2].textContent.includes('Round 7'), items[2].textContent);
+    // Regulations PDF link
+    const regs = doc.querySelector('.detail-regs-link');
+    assert(regs, 'regulations link present');
+    assertEqual(regs.getAttribute('href'), 'https://example.com/regs.pdf');
+    assert(regs.textContent.includes('PDF'), regs.textContent);
+});
+
+test('without schedule: no Schedule row', () => {
+    const doc = dom(detailPanelHTML(withDetails, false));
+    assertEqual(row(doc, 'Schedule'), undefined, 'no Schedule row without schedule data');
+    assertEqual(doc.querySelector('.detail-regs-link'), null, 'no regs link without regulationsUrl');
 });
 
 test('without details: no Format / Rating / Organizer rows; unplaced map search uses the address', () => {

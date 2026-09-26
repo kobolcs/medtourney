@@ -28,9 +28,11 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
     stats = update_file(Path(args.data), Path(args.cache), max_fetches=args.max_fetches)
+    schedules = stats.get("schedules_fetched", 0)
     logger.info(
-        "Fetched %d pages (%d with details, %d errors); %d tournaments now have details",
-        stats["fetched"], stats["found"], stats["errors"], stats["with_details"],
+        "Fetched %d detail pages (%d with details, %d errors) + %d schedule pages; "
+        "%d tournaments now have details",
+        stats["fetched"], stats["found"], stats["errors"], schedules, stats["with_details"],
     )
     return 0
 
