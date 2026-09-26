@@ -6,6 +6,7 @@
 const { JSDOM } = require('jsdom');
 const { loadProductionModule } = require('../../helpers/production');
 const { detailDates, mapLinks, detailPanelHTML } = loadProductionModule('utils/detailPanel.js');
+const { safeValidateTournaments } = loadProductionModule('utils/validators.js');
 
 let passed = 0;
 let failed = 0;
@@ -91,6 +92,40 @@ test('panel: names and URLs are escaped', () => {
     const doc = dom(detailPanelHTML({ ...base, name: '<img src=x onerror=alert(1)>', url: 'https://x/?a="onmouseover="alert(1)' }, false));
     assertEqual(doc.querySelectorAll('[onerror],[onmouseover]').length, 0);
     assertEqual(doc.querySelector('#detailTitle').textContent, '<img src=x onerror=alert(1)>');
+});
+
+const withDetails = {
+    ...base,
+    details: {
+        organizer: 'Double Rook', rounds: 7, system: 'Swiss-System', rated: ['Rating national', 'Rating international'],
+        fideId: '452939', address: '5 Park Rd, Shanklin PO37 6BB', homepage: 'https://www.iowchess.com/event',
+    },
+};
+
+test('chess-results details: format, rating with FIDE page, organizer with website, address', () => {
+    const doc = dom(detailPanelHTML(withDetails, false));
+    assertEqual(val(doc, 'Format'), '7 rounds · Swiss-System');
+    assertEqual(val(doc, 'Rating'), 'national rating · FIDE-rated · FIDE page');
+    assertEqual(row(doc, 'Rating').querySelector('a').getAttribute('href'), 'https://ratings.fide.com/tournament_information.phtml?event=452939');
+    assertEqual(val(doc, 'Organizer'), 'Double Rook · Website');
+    assertEqual(row(doc, 'Organizer').querySelector('a').getAttribute('href'), 'https://www.iowchess.com/event');
+    assert(val(doc, 'Where').includes('5 Park Rd, Shanklin PO37 6BB'), 'address under the venue');
+});
+
+test('without details: no Format / Rating / Organizer rows; unplaced map search uses the address', () => {
+    const doc = dom(detailPanelHTML(base, false));
+    for (const label of ['Format', 'Rating', 'Organizer']) assertEqual(row(doc, label), undefined, label);
+    const unplaced = { ...withDetails, lat: undefined, lng: undefined };
+    assertEqual(mapLinks(unplaced).google, 'https://www.google.com/maps/search/?api=1&query=5%20Park%20Rd%2C%20Shanklin%20PO37%206BB');
+});
+
+test('schema: malformed details are dropped for that tournament only - the list still loads', () => {
+    const raw = (details) => ({ name: 'A', url: 'https://chess-results.com/tnr1.aspx', location: 'X, FRA',
+        date: '2026-10-01', category: 'Open', description: '', details });
+    const result = safeValidateTournaments([raw({ rounds: 7 }), raw({ rounds: 'seven', homepage: 'not a url' })]);
+    assertEqual(result.success, true, 'whole list still valid');
+    assertEqual(result.data[0].details, { rounds: 7 });
+    assertEqual(result.data[1].details, undefined, 'bad details dropped');
 });
 
 console.log('='.repeat(60));

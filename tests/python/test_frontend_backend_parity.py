@@ -52,15 +52,9 @@ class TestFrontendBackendParity:
 
     def test_mediterranean_cities_in_frontend(self, app_js_content: str):
         """Test that app.js loads Mediterranean cities from config.json"""
-        # In the refactored architecture, mediterraneanLocations is loaded from config.json
-        # Look for: this.mediterraneanLocations = new Set(config.mediterraneanLocations)
-
-        # Check that mediterraneanLocations is initialized
-        init_pattern = r"this\.mediterraneanLocations\s*=\s*new Set\(\)"
-        init_match = re.search(init_pattern, app_js_content)
-        assert init_match, "Could not find mediterraneanLocations initialization in app.js"
-
-        # Check that it's loaded from config
+        # app.js is compiled from src/app.ts; the empty-Set initializer lives in
+        # app/AppState.js (split out when TournamentFinder was refactored).
+        # The important check is that app.ts populates the set from config.
         load_pattern = r"this\.mediterraneanLocations\s*=\s*new Set\(config\.mediterraneanLocations\)"
         load_match = re.search(load_pattern, app_js_content)
         assert load_match, "Could not find mediterraneanLocations loading from config in app.js"

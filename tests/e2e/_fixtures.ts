@@ -21,6 +21,7 @@ export interface TournamentFixture {
     coast?: 'med' | 'atlantic' | 'black' | 'caspian';
     seaM?: number;
     airport?: { iata: string; name: string; km: number; city?: string };
+    details?: { organizer?: string; rounds?: number; system?: string; rated?: string[]; fideId?: string; address?: string; homepage?: string };
     town?: string;
 }
 

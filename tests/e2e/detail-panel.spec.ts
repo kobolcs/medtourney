@@ -6,7 +6,9 @@ import { stubTournaments, isoInDays, TournamentFixture } from './_fixtures';
 const fixtures: TournamentFixture[] = [
   { name: 'Nice Open', location: 'Palais des Congrès, FRA', town: 'Nice', lat: 43.7, lng: 7.26, coast: 'med',
     airport: { iata: 'NCE', name: "Nice-Côte d'Azur Airport", km: 6, city: 'Nice' } },
-  { name: 'Vienna Open', location: 'Vienna, AUT', lat: 48.2, lng: 16.37 },
+  { name: 'Vienna Open', location: 'Vienna, AUT', lat: 48.2, lng: 16.37,
+    details: { organizer: 'Wiener Schachverband', rounds: 9, system: 'Swiss-System', rated: ['Rating international'],
+      fideId: '452939', homepage: 'https://example.org/vienna-open' } },
 ].map((t, i) => ({
   ...t, date: isoInDays(7 * (i + 1)), category: 'Open, Classical',
   url: `https://chess-results.com/tnr3${i}.aspx?lan=1`, description: '',
@@ -85,6 +87,16 @@ test.describe('Tournament detail panel', () => {
     const dark = await page.evaluate(() => document.body.classList.contains('dark-theme'));
     await page.keyboard.press('d');
     expect(await page.evaluate(() => document.body.classList.contains('dark-theme'))).toBe(dark);
+  });
+
+  test('shows the chess-results.com details: format, FIDE page, organizer website', async ({ page }) => {
+    await load(page);
+    await card(page, 'Vienna Open').locator('.tournament-location').click();
+    await expect(panel(page)).toContainText('9 rounds · Swiss-System');
+    await expect(panel(page).getByRole('link', { name: 'FIDE page' }))
+      .toHaveAttribute('href', 'https://ratings.fide.com/tournament_information.phtml?event=452939');
+    await expect(panel(page).getByRole('link', { name: 'Website' })).toHaveAttribute('href', 'https://example.org/vienna-open');
+    await expect(panel(page)).toContainText('Wiener Schachverband');
   });
 
   test('a shared ?t= link opens that tournament\'s details', async ({ page }) => {

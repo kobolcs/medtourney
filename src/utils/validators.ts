@@ -37,7 +37,19 @@ export const TournamentSchema = z.object({
         km: z.int().check(z.gte(1), z.lte(150)),
         city: z.optional(z.string().check(z.minLength(1), z.maxLength(60))),
     })),
-    town: z.optional(z.string().check(z.minLength(1), z.maxLength(120)))
+    town: z.optional(z.string().check(z.minLength(1), z.maxLength(120))),
+    // chess-results.com details (fetch_details.py) - every field optional. A
+    // malformed details object is dropped for that tournament (z.catch), so it
+    // can never fail the whole list and leave the site empty.
+    details: z.catch(z.optional(z.object({
+        organizer: z.optional(z.string().check(z.maxLength(120))),
+        rounds: z.optional(z.int().check(z.gte(1), z.lte(99))),
+        system: z.optional(z.string().check(z.maxLength(60))),
+        rated: z.optional(z.array(z.string().check(z.maxLength(60)))),
+        fideId: z.optional(z.string().check(z.regex(/^\d{1,10}$/))),
+        address: z.optional(z.string().check(z.maxLength(160))),
+        homepage: z.optional(z.url()),
+    })), undefined)
 });
 
 /**
