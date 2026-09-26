@@ -79,6 +79,21 @@ function organizerHTML(t: Tournament): string | null {
     return `${escapeHTML(d.organizer ?? '')}${site}`;
 }
 
+const shortDateFormat: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
+
+/** Compact schedule: "Round 1: Mon, 10 Nov · 10:00", one per line. */
+function scheduleHTML(t: Tournament): string | null {
+    const rounds = t.details?.schedule;
+    if (!rounds?.length) return null;
+    const items = rounds.map(r => {
+        const d = new Date(`${r.date}T12:00:00`);
+        const dateStr = d.toLocaleDateString('en-GB', shortDateFormat);
+        const timeStr = r.time ? ` · ${r.time}` : '';
+        return `<li>Round ${r.round}: ${escapeHTML(dateStr)}${escapeHTML(timeStr)}</li>`;
+    }).join('');
+    return `<ol class="schedule-list">${items}</ol>`;
+}
+
 function airportText(t: Tournament): string | null {
     const a = t.airport;
     if (a) return `${escapeHTML(a.name)} (${escapeHTML(a.iata)})${a.city ? `, ${escapeHTML(a.city)}` : ''} – about ${a.km} km in a straight line`;
@@ -89,6 +104,7 @@ function airportText(t: Tournament): string | null {
 function actionsHTML(t: Tournament, shortlisted: boolean): string {
     const url = escapeHTML(t.url);
     const name = escapeHTML(t.name);
+    const regsUrl = t.details?.regulationsUrl ? escapeHTML(t.details.regulationsUrl) : null;
     return `
         <div class="detail-actions">
             <button type="button" class="shortlist-btn detail-shortlist${shortlisted ? ' shortlisted' : ''}"
@@ -101,6 +117,7 @@ function actionsHTML(t: Tournament, shortlisted: boolean): string {
             <button type="button" class="copy-link-btn" data-tournament-url="${url}"
                     aria-label="Copy share link for ${name}">🔗 Copy link</button>
         </div>
+        ${regsUrl ? `<a class="detail-regs-link" href="${regsUrl}" target="_blank" rel="noopener noreferrer">📄 Tournament regulations (PDF)</a>` : ''}
         <a class="detail-cr-link" href="${url}" target="_blank" rel="noopener noreferrer">
             Registration, players, pairings and results →
         </a>
@@ -123,6 +140,7 @@ export function detailPanelHTML(t: Tournament, shortlisted: boolean): string {
     const sea = t.coast
         ? `${SEA_LABELS[t.coast]} coast${t.seaM !== undefined ? ` · 🏖 venue about ${t.seaM} m from the sea` : ''}`
         : null;
+    const schedule = scheduleHTML(t);
 
     const rows = [
         row('When', escapeHTML(detailDates(t))),
@@ -134,6 +152,7 @@ export function detailPanelHTML(t: Tournament, shortlisted: boolean): string {
         // The short form ("90+30") first when it is complete; a cut one ("90+30…") adds nothing
         tc ? row('Time control', `${tcShort && tcShort !== tc && !tcShort.endsWith('…') ? `<strong>${escapeHTML(tcShort)}</strong> · ` : ''}${escapeHTML(tc)}`) : '',
         format ? row('Format', format) : '',
+        schedule ? row('Schedule', schedule) : '',
         rating ? row('Rating', rating) : '',
         categories.length ? row('Category', categories.map(c => `<span class="category-tag">${escapeHTML(c)}</span>`).join(' ')) : '',
         organizer ? row('Organizer', organizer) : '',

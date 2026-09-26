@@ -1,10 +1,11 @@
-"""Parse a chess-results.com tournament details page (tnrNNN.aspx?turdet=YES).
+"""Parse chess-results.com tournament pages.
 
-The page has a label/value table ("Organizer(s)" | "Double Rook", "Number of
-rounds" | "7", ...). Only the facts a player looking for a tournament needs
-are kept - who runs it, the format, whether it is FIDE-rated (and its FIDE
-page), the venue address, the organizer's homepage. Labels are the page's
-English ones (lan=1).
+Handles two page types:
+- tnrNNN.aspx?turdet=YES — label/value details table (organizer, rounds, …)
+- tnrNNN.aspx?art=14     — playing schedule table (round / date / time)
+
+Labels are English (lan=1). Only the facts a player looking for a
+tournament needs are kept.
 """
 
 from __future__ import annotations
@@ -67,7 +68,7 @@ def _value(table: dict[str, tuple[str, list[str]]], *prefixes: str) -> tuple[str
     return None
 
 
-def parse_details(html: str) -> dict[str, Any]:
+def parse_details(html: str) -> dict[str, Any]:  # noqa: C901 - one function per scraped field
     """The kept facts; keys are left out when the page doesn't have them."""
     table = _table(html)
     out: dict[str, Any] = {}
@@ -101,7 +102,44 @@ def parse_details(html: str) -> dict[str, Any]:
         for text, href in _link_texts(links):
             if text.startswith("Official Homepage") and href.startswith(("http://", "https://")):
                 out["homepage"] = href
+            elif href.lower().endswith(".pdf") and href.startswith(("http://", "https://")):
+                out.setdefault("regulationsUrl", href)
     return out
+
+
+def _parse_time(raw: str) -> str | None:
+    """'1000' → '10:00', '900' → '09:00'; None if unrecognised."""
+    s = raw.strip()
+    if len(s) == 4 and s.isdigit():  # noqa: PLR2004 - HHMM
+        return f"{s[:2]}:{s[2:]}"
+    if len(s) == 3 and s.isdigit():  # noqa: PLR2004 - HMM (e.g. 900 = 09:00)
+        return f"0{s[0]}:{s[1:]}"
+    return None
+
+
+def parse_schedule(html: str) -> list[dict[str, Any]]:
+    """Round list from a ?art=14 schedule page; [] if no schedule found."""
+    m = re.search(
+        r'<h2>Playing schedule</h2>\s*<table[^>]*class="CRs1"[^>]*>(.*?)</table>',
+        html, re.DOTALL | re.IGNORECASE,
+    )
+    if not m:
+        return []
+    parser = _Rows()
+    parser.feed(f"<table>{m.group(1)}</table>")
+    rounds: list[dict[str, Any]] = []
+    for r in parser.rows:
+        if len(r) < 3 or not r[0][0].isdigit():  # noqa: PLR2004 - round / date / time
+            continue
+        date_norm = r[1][0].replace("/", "-")
+        if not re.match(r"\d{4}-\d{2}-\d{2}$", date_norm):
+            continue
+        entry: dict[str, Any] = {"round": int(r[0][0]), "date": date_norm}
+        t = _parse_time(r[2][0])
+        if t:
+            entry["time"] = t
+        rounds.append(entry)
+    return rounds
 
 
 def _link_texts(value: tuple[str, list[str]]) -> list[tuple[str, str]]:

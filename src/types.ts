@@ -5,6 +5,15 @@
 /** A sea a seaside tournament is by (geocode_tournaments.py `coast`) */
 export type Sea = 'med' | 'atlantic' | 'black' | 'caspian';
 
+/** One round from a chess-results.com playing schedule (details/parse.py) */
+export interface ScheduleRound {
+    round: number;
+    /** YYYY-MM-DD */
+    date: string;
+    /** HH:MM (absent if not on the page) */
+    time?: string;
+}
+
 /** chess-results.com tournament details (details/parse.py) */
 export interface TournamentDetails {
     organizer?: string;
@@ -17,6 +26,10 @@ export interface TournamentDetails {
     fideId?: string;
     address?: string;
     homepage?: string;
+    /** Playing schedule from ?art=14 page (multi-day events only) */
+    schedule?: ScheduleRound[];
+    /** PDF regulations/announcement link from the Links section */
+    regulationsUrl?: string;
 }
 
 export interface Tournament {
