@@ -33,7 +33,11 @@ medtourney/
 │       ├── mapPlaces.ts          # Group tournaments into map markers (pure)
 │       ├── seas.ts               # Seas + the Seaside rule (which coast counts)
 │       ├── seaPicker.ts          # The Seaside mode's sea picker (DOM)
-│       └── countrySelection.ts   # Country checklist selection (countries listed under 2+ regions)
+│       ├── countrySelection.ts   # Country checklist selection (countries listed under 2+ regions)
+│       ├── detailPanel.ts        # Tournament detail panel (card click -> details here, not chess-results)
+│       ├── calendarMenu.ts       # Calendar button menu: Google Calendar or .ics
+│       ├── googleCalendar.ts     # "Add to Google Calendar" link
+│       └── contact.ts            # Footer Feedback link (address assembled on click)
 │
 ├── tests/                        # Comprehensive test suite (290+ tests)
 │   ├── unit/                     # Service unit tests (211 tests)

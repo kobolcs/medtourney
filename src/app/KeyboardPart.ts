@@ -6,6 +6,7 @@
  * TournamentFinder. Methods moved unchanged out of app.ts.
  */
 import { CardActionsPart } from './CardActionsPart';
+import { isDetailPanelOpen } from '../utils/detailPanel';
 
 /** Single-key keyboard shortcuts. */
 export abstract class KeyboardPart extends CardActionsPart {
@@ -45,6 +46,7 @@ export abstract class KeyboardPart extends CardActionsPart {
             // browser's own shortcut still fires unmodified.
             const tag = (e.target as HTMLElement).tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (isDetailPanelOpen()) return; // the panel is modal: no page shortcuts behind it
             if (e.ctrlKey || e.metaKey || e.altKey) return;
 
             switch (e.key) {
