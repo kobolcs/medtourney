@@ -71,34 +71,10 @@ export abstract class CardActionsPart extends ShortlistPart {
     }
 
     /**
-     * Delegated click handler for copy-link buttons on tournament cards.
-     * Copies a deep-link URL (?t=<encoded>) to the clipboard and shows brief feedback.
-     */
-    protected initCopyLinkDelegation(): void {
-        document.addEventListener('click', (e) => {
-            const btn = (e.target as Element).closest('.copy-link-btn');
-            if (!btn) return;
-            e.preventDefault();
-
-            const url = (btn as HTMLElement).dataset.tournamentUrl;
-            if (!url) return;
-
-            const shareUrl = `${location.origin}${location.pathname}?t=${encodeURIComponent(url)}`;
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                this.uiManager.showCopyLinkFeedback(btn as HTMLElement);
-                this.trackEvent('Share Link Copied');
-            }).catch(() => {
-                this.uiManager.showError('Could not copy to clipboard. Please copy the URL manually.', 'warning');
-            });
-        });
-    }
-
-    /**
      * A click on a card - or a plain left click on its name - opens the
-     * detail panel on MedTourney instead of leaving for chess-results.com.
-     * The name keeps its chess-results href, so ctrl/middle-click and "open
-     * in new tab" still go there directly. Buttons in the card keep their
-     * own behavior.
+     * detail panel. The name's href is a ?t= deep-link, so ctrl/middle-click
+     * opens MedTourney with the panel pre-loaded. Buttons in the card keep
+     * their own behavior.
      */
     protected initTournamentCardClickDelegation(): void {
         initDetailPanel();

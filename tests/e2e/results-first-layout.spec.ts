@@ -106,6 +106,6 @@ test.describe('Results-First Layout', () => {
 
     const nameLink = firstCard.locator('.tournament-name .tournament-link');
     await expect(nameLink).toBeVisible();
-    await expect(nameLink).toHaveAttribute('href', /^https:\/\/chess-results\.com\//);
+    await expect(nameLink).toHaveAttribute('href', /^\?t=/);
   });
 });

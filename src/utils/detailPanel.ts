@@ -114,13 +114,11 @@ function actionsHTML(t: Tournament, shortlisted: boolean): string {
             </button>
             <button type="button" class="calendar-export-btn" data-tournament-url="${url}"
                     aria-haspopup="menu" aria-expanded="false" aria-label="Add ${name} to calendar">📅 Add to calendar</button>
-            <button type="button" class="copy-link-btn" data-tournament-url="${url}"
-                    aria-label="Copy share link for ${name}">🔗 Copy link</button>
         </div>
         ${regsUrl ? `<a class="detail-regs-link" href="${regsUrl}" target="_blank" rel="noopener noreferrer">📄 Tournament regulations (PDF)</a>` : ''}
-        <a class="detail-cr-link" href="${url}" target="_blank" rel="noopener noreferrer">
+        <button type="button" class="detail-cr-link" data-tournament-url="${url}">
             Registration, players, pairings and results →
-        </a>
+        </button>
 `;
 }
 
@@ -195,6 +193,7 @@ export function openDetailPanel(t: Tournament, shortlisted: boolean, onShortlist
     el.dataset.tournamentUrl = t.url;
     el.querySelector('.detail-close')?.addEventListener('click', () => closeDetailPanel());
     el.querySelector('.detail-shortlist')?.addEventListener('click', () => onShortlist(t.url));
+    el.querySelector('.detail-cr-link')?.addEventListener('click', () => window.open(t.url, '_blank', 'noopener,noreferrer'));
 
     if (!wasOpen) {
         if (typeof el.showModal === 'function') {

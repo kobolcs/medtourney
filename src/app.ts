@@ -155,11 +155,7 @@ class TournamentFinder extends ResultsViewPart {
         // Delegated shortlist toggle
         this.initShortlistDelegation();
 
-        // Delegated copy-link button
-        this.initCopyLinkDelegation();
-
-        // Delegated whole-card click — opens the tournament's chess-results.com
-        // page, matching users' expectation that the card itself is clickable
+        // Delegated whole-card click — opens the detail panel
         this.initTournamentCardClickDelegation();
 
         // Delegated one-tap relaxation buttons (rendered inside empty state)

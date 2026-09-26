@@ -196,19 +196,6 @@ export class UIManager extends StatusViewsPart {
     }
 
     /**
-     * Show brief "Copied!" feedback on a copy-link button.
-     */
-    showCopyLinkFeedback(btn: HTMLElement): void {
-        const original = btn.textContent ?? 'Copy link';
-        btn.textContent = 'Copied!';
-        btn.classList.add('copy-link-btn--copied');
-        setTimeout(() => {
-            btn.textContent = original;
-            btn.classList.remove('copy-link-btn--copied');
-        }, 2000);
-    }
-
-    /**
      * Scroll to and briefly highlight the tournament card matching the given URL.
      * Called after a deep-link search (?t= param) completes rendering.
      */
