@@ -1639,12 +1639,10 @@ body.dark-theme .beachfront-pill {
   font-size: var(--text-sm);
 }
 
-/* Calendar/copy-link are secondary actions: the whole row is collapsed to
-   zero height at rest (not just faded out) so cards don't reserve dead
-   space for buttons nobody's pointing at — it grows in on hover/focus
-   instead. max-height (not height/display) lets this animate without
-   knowing the row's exact height, and keeps the buttons in the tab order
-   and clickable via automation throughout. */
+/* Calendar button is a secondary action: the row collapses to zero height
+   at rest so cards don't reserve dead space — it grows in on hover/focus.
+   max-height (not height/display) lets this animate without knowing the
+   row's exact height, and keeps the button in the tab order throughout. */
 .tournament-actions {
   display: flex;
   gap: var(--sp-3);
@@ -1665,18 +1663,14 @@ body.dark-theme .beachfront-pill {
   border-top-color: var(--mist-light);
 }
 
-.tournament-actions .calendar-export-btn,
-.tournament-actions .copy-link-btn {
+.tournament-actions .calendar-export-btn {
   opacity: 0;
   transition: opacity .15s, background .15s, color .15s, border-color .15s, transform .1s;
 }
 
 .tournament-card:hover .tournament-actions .calendar-export-btn,
-.tournament-card:hover .tournament-actions .copy-link-btn,
 .tournament-card:focus-within .tournament-actions .calendar-export-btn,
-.tournament-card:focus-within .tournament-actions .copy-link-btn,
-.tournament-actions .calendar-export-btn:focus-visible,
-.tournament-actions .copy-link-btn:focus-visible {
+.tournament-actions .calendar-export-btn:focus-visible {
   opacity: 1;
 }
 
@@ -1689,8 +1683,7 @@ body.dark-theme .beachfront-pill {
     border-top-color: var(--mist-light);
   }
 
-  .tournament-actions .calendar-export-btn,
-  .tournament-actions .copy-link-btn {
+  .tournament-actions .calendar-export-btn {
     opacity: 1;
   }
 }
@@ -1743,30 +1736,6 @@ body.dark-theme .beachfront-pill {
   transform: translateY(0);
 }
 
-.copy-link-btn {
-  background: transparent;
-  color: var(--text-muted);
-  border: 1.5px solid var(--border);
-  padding: var(--sp-2) var(--sp-4);
-  min-height: 40px;
-  border-radius: var(--r-md);
-  font-size: var(--text-sm);
-  font-family: inherit;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s;
-}
-
-.copy-link-btn:hover {
-  background: var(--surface-hover);
-  color: var(--text-primary);
-  border-color: var(--text-muted);
-}
-
-.copy-link-btn--copied {
-  color: var(--success, #16a34a);
-  border-color: var(--success, #16a34a);
-}
 
 /* Deep-link highlight pulse */
 @keyframes highlight-pulse {
@@ -2548,8 +2517,7 @@ footer a:hover {
     border-top-color: transparent;
   }
 
-  .tournament-actions .calendar-export-btn,
-  .tournament-actions .copy-link-btn {
+  .tournament-actions .calendar-export-btn {
     width: 40px;
     min-height: 40px;
     padding: 0;
@@ -3219,10 +3187,17 @@ body.dark-theme .map-cluster {
 
 .detail-cr-link {
   display: block;
+  width: 100%;
   padding: var(--sp-3) var(--sp-4);
   border: 1px solid var(--border);
   border-radius: 8px;
   font-weight: 600;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
   text-decoration: none;
 }
 

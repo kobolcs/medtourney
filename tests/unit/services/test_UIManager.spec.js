@@ -129,9 +129,10 @@ function runTests() {
         assertEqual(card.tagName, 'ARTICLE');
         assertEqual(card.getAttribute('aria-label'), 'Open 1');
         assertEqual(card.dataset.tournamentUrl, 'https://chess-results.com/tnr1.aspx');
-        assertEqual(card.querySelector('.tournament-link').getAttribute('href'), 'https://chess-results.com/tnr1.aspx');
+        assert(card.querySelector('.tournament-link').getAttribute('href').includes('?t='), 'tournament-link href is a deep-link');
         assertEqual(card.querySelector('.shortlist-btn').getAttribute('aria-pressed'), 'false');
-        assert(card.querySelector('.calendar-export-btn') && card.querySelector('.copy-link-btn'), 'action buttons');
+        assert(card.querySelector('.calendar-export-btn'), 'calendar action button');
+        assertEqual(card.querySelector('.copy-link-btn'), null, 'copy-link button removed');
     });
 
     test('Card escapes HTML in the name and the link URL', ui => {
@@ -144,7 +145,7 @@ function runTests() {
         assert(text(card.querySelector('.tournament-link')).includes('<img src=x'), 'name shown as text');
         const link = card.querySelector('.tournament-link');
         assertEqual(link.getAttribute('onmouseover'), null, 'no injected attribute');
-        assertEqual(link.getAttribute('href'), 'https://chess-results.com/tnr1.aspx?x="onmouseover="alert(1)');
+        assert(link.getAttribute('href').startsWith('?t='), 'href is a deep-link, not the raw chess-results URL');
     });
 
     test('Airport hint: city + code, code alone without a city, none without airport', ui => {

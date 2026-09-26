@@ -66,15 +66,16 @@ test('panel: every section from the data', () => {
     assertEqual([...row(doc, 'Category').querySelectorAll('.category-tag')].map(text), ['Open', 'Classical']);
 });
 
-test('panel: actions and the chess-results link', () => {
+test('panel: actions and the registration button', () => {
     const doc = dom(detailPanelHTML(base, true));
     const star = doc.querySelector('.shortlist-btn');
     assertEqual(star.getAttribute('aria-pressed'), 'true');
     assertEqual(text(star), '★ Shortlist');
     assertEqual(doc.querySelector('.calendar-export-btn').dataset.tournamentUrl, base.url);
-    assertEqual(doc.querySelector('.copy-link-btn').dataset.tournamentUrl, base.url);
+    assertEqual(doc.querySelector('.copy-link-btn'), null, 'copy-link button removed');
     const cr = doc.querySelector('.detail-cr-link');
-    assertEqual(cr.getAttribute('href'), base.url);
+    assertEqual(cr.tagName, 'BUTTON', 'detail-cr-link is a button');
+    assertEqual(cr.dataset.tournamentUrl, base.url);
     assert(text(cr).startsWith('Registration, players, pairings and results'), text(cr));
 });
 

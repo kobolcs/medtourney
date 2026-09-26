@@ -214,8 +214,7 @@ export abstract class CardPart extends UIState {
             <div class="tournament-body">
                 <div class="tournament-header">
                     <h3 class="tournament-name">
-                        <a href="${escapeHTML(tournament.url)}"
-                           target="_blank"
+                        <a href="${escapeHTML(`?t=${encodeURIComponent(tournament.url)}`)}"
                            rel="noopener noreferrer"
                            class="tournament-link"
                            aria-label="View details for ${escapeHTML(tournament.name)}">
@@ -246,11 +245,6 @@ export abstract class CardPart extends UIState {
                             data-tournament-url="${escapeHTML(tournament.url)}"
                             aria-label="Add ${escapeHTML(tournament.name)} to calendar">
                         <span aria-hidden="true">📅</span><span class="action-text"> Add to Calendar</span>
-                    </button>
-                    <button class="copy-link-btn"
-                            data-tournament-url="${escapeHTML(tournament.url)}"
-                            aria-label="Copy share link for ${escapeHTML(tournament.name)}">
-                        <span aria-hidden="true">🔗</span><span class="action-text"> Copy link</span>
                     </button>
                 </div>
             </div>

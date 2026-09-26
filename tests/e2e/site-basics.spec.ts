@@ -140,6 +140,6 @@ test.describe('Tournament card actions', () => {
     const count = await cards.count();
     await expect(page.locator('.tournament-card .tournament-actions')).toHaveCount(count);
     await expect(page.locator('.tournament-card .calendar-export-btn')).toHaveCount(count);
-    await expect(page.locator('.tournament-card .copy-link-btn')).toHaveCount(count);
+    await expect(page.locator('.tournament-card .calendar-export-btn')).toHaveCount(count);
   });
 });

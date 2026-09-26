@@ -33,14 +33,14 @@ test.describe('Tournament detail panel', () => {
     await expect(panel(page).locator('#detailTitle')).toHaveText('Nice Open');
     await expect(panel(page)).toContainText("Nice-Côte d'Azur Airport (NCE)");
     await expect(panel(page)).toContainText('Mediterranean coast');
-    await expect(panel(page).locator('.detail-cr-link')).toHaveAttribute('href', fixtures[0].url);
+    await expect(panel(page).locator('.detail-cr-link')).toHaveAttribute('data-tournament-url', fixtures[0].url);
     expect(newTabs).toBe(0);
   });
 
-  test('a plain click on the name opens the panel; the name still links to chess-results', async ({ page }) => {
+  test('a plain click on the name opens the panel', async ({ page }) => {
     await load(page);
     const link = card(page, 'Vienna Open').locator('.tournament-link');
-    await expect(link).toHaveAttribute('href', fixtures[1].url);
+    await expect(link).toHaveAttribute('href', /^\?t=/);
     await link.click();
     await expect(panel(page).locator('#detailTitle')).toHaveText('Vienna Open');
   });

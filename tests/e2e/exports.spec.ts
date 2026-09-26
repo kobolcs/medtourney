@@ -75,7 +75,7 @@ test.describe('Export Functionality', () => {
 
     test('should export a tournament to calendar (.ics)', async ({ page }) => {
         await search(page);
-        // Calendar/copy-link are hover-revealed secondary actions on the card.
+        // The calendar button is a hover-revealed secondary action on the card.
         await page.locator('.tournament-card').first().hover();
         // The calendar button opens a menu: Google Calendar or a .ics download
         await page.locator('.calendar-export-btn').first().click();
