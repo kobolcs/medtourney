@@ -158,7 +158,14 @@ function runTests() {
         assertEqual(text(hints[0].querySelector('[aria-hidden]')), '✈ Jerez de la Frontera XRY · 32 km');
         assert(hints[0].title.includes('Jerez Airport (XRY), about 32 km'), hints[0].title);
         assertEqual(text(hints[1].querySelector('[aria-hidden]')), '✈ XRY · 32 km');
-        assertEqual(hints[2], null);
+        assertEqual(hints[2], null, 'venue not placed: no line at all');
+    });
+
+    test('Airport hint: placed but no airport within 150 km says so', ui => {
+        ui.displayTournaments([tournament(1, { lat: 45.1, lng: 25.3 })]);
+        const hint = cards()[0].querySelector('.airport-hint--none');
+        assertEqual(text(hint.querySelector('[aria-hidden]')), '✈ none within 150 km');
+        assert(hint.title.includes('within 150 km'), hint.title);
     });
 
     test('Category tags drop time-control words', ui => {
