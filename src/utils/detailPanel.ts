@@ -102,7 +102,7 @@ function actionsHTML(t: Tournament, shortlisted: boolean): string {
                     aria-label="Copy share link for ${name}">🔗 Copy link</button>
         </div>
         <a class="detail-cr-link" href="${url}" target="_blank" rel="noopener noreferrer">
-            Registration, players, pairings and results on chess-results.com →
+            Registration, players, pairings and results →
         </a>
 `;
 }

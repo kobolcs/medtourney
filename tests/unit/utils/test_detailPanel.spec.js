@@ -75,7 +75,7 @@ test('panel: actions and the chess-results link', () => {
     assertEqual(doc.querySelector('.copy-link-btn').dataset.tournamentUrl, base.url);
     const cr = doc.querySelector('.detail-cr-link');
     assertEqual(cr.getAttribute('href'), base.url);
-    assert(text(cr).startsWith('Registration, players, pairings and results on chess-results.com'), text(cr));
+    assert(text(cr).startsWith('Registration, players, pairings and results'), text(cr));
 });
 
 test('panel: rows without data are left out; no airport within 150 km is said', () => {
