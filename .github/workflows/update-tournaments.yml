@@ -138,7 +138,18 @@ jobs:
           [ -f geocode_cache.json ] && git add geocode_cache.json || true
           [ -f details_cache.json ] && git add details_cache.json || true
           git commit -m "Update tournament data - $(date +'%Y-%m-%d %H:%M UTC')"
-          git push
+          # The scrape takes ~30 min; a PR merged meanwhile moves main and a
+          # plain push is rejected ("fetch first") - that failed the run on
+          # 2026-09-26. Replay the data commit on top of the new main and
+          # retry. Only data files are committed here and the concurrency
+          # group keeps other data runs out, so the rebase has nothing to
+          # conflict with.
+          for attempt in 1 2 3; do
+            git pull --rebase --no-edit origin main && git push && exit 0
+            echo "Push attempt $attempt failed, retrying in 15s"
+            sleep 15
+          done
+          exit 1
 
       # The site keeps serving the last good data when a run fails, so
       # visitors see nothing - this is how the owner finds out. One open
