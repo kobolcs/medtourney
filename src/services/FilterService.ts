@@ -19,6 +19,8 @@ export class FilterService {
     private readonly MAX_FILTER_CACHE_SIZE = 50;
 
     /** Tournament of the Week: an event you'd travel for, not a season-long league. */
+    /** Longer than this = weekly / season-long event, hidden by default */
+    static readonly MAX_EVENT_DAYS = 21;
     private static readonly FEATURED_MIN_DAYS = 5;
     private static readonly FEATURED_MAX_DAYS = 16;
     private static readonly CLUB_EVENT = /\b(circolo|club|klub|kluba|fase|liga|league|vereinsmeisterschaft|clubmeisterschaft|campionato sociale|campeonato social|championnat du club)\b/i;
@@ -114,6 +116,12 @@ export class FilterService {
             }
 
             // Team tournament filter (exclude by default if not explicitly included)
+            // Weekly club leagues / season-long events (e.g. 162 days) aren't
+            // tournaments to travel to - hidden unless asked for
+            if (!filterState.includeLongEvents && this.getTournamentDays(tournament) > FilterService.MAX_EVENT_DAYS) {
+                return false;
+            }
+
             if (!filterState.includeTeamTournaments && this.isTeamTournament(nameLower, categoryLower)) {
                 return false;
             }
@@ -167,6 +175,7 @@ export class FilterService {
             senior: filterState.seniorCategory,
             women: filterState.womenOnly,
             team: filterState.includeTeamTournaments,
+            long: filterState.includeLongEvents ?? false,
             classical: filterState.classicalTime,
             rapid: filterState.rapidTime,
             blitz: filterState.blitzTime,

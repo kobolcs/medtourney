@@ -11,7 +11,7 @@ import { isDefaultSeas, parseSeas } from './seas';
 
 export const FILTER_PARAM_KEYS = [
     'open', 'excludeYouth', 'med', 'senior', 'senior60', 'women',
-    'team', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea'
+    'team', 'long', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea'
 ] as const;
 
 /**
@@ -33,6 +33,7 @@ export function filterStateToSearchParams(state: FilterState): URLSearchParams {
     if (state.seniorS60) params.set('senior60', '1');
     if (state.womenOnly) params.set('women', '1');
     if (state.includeTeamTournaments) params.set('team', '1');
+    if (state.includeLongEvents) params.set('long', '1');
 
     const tcEnabled = [
         state.classicalTime && 'classical',
@@ -66,6 +67,7 @@ export function filterStateFromSearchParams(params: URLSearchParams): Partial<Fi
     if (params.has('senior60')) preferences.seniorS60 = params.get('senior60') === '1';
     if (params.has('women')) preferences.womenOnly = params.get('women') === '1';
     if (params.has('team')) preferences.includeTeamTournaments = params.get('team') === '1';
+    if (params.has('long')) preferences.includeLongEvents = params.get('long') === '1';
 
     if (params.has('tc')) {
         const enabled = new Set(params.get('tc')!.split(',').filter(Boolean));

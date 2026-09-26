@@ -24,6 +24,7 @@ export interface FilterElements {
     seniorCategory: HTMLInputElement | null;
     womenOnly: HTMLInputElement | null;
     includeTeamTournaments: HTMLInputElement | null;
+    includeLongEvents: HTMLInputElement | null;
     classicalTime: HTMLInputElement | null;
     rapidTime: HTMLInputElement | null;
     blitzTime: HTMLInputElement | null;

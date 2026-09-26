@@ -3217,3 +3217,96 @@ body.dark-theme .map-cluster {
     gap: 2px;
   }
 }
+
+/* Phones held sideways (short screens): a compact top so the first tournament
+   is on the first screen - header, mode switch and results heading otherwise
+   fill a 340-360px-tall viewport. The long lines are still read by screen
+   readers (tagline and "updated" status stay in the DOM). */
+@media (max-height: 500px) and (orientation: landscape) {
+  .header-inner {
+    padding-top: var(--sp-2);
+    padding-bottom: var(--sp-2);
+  }
+
+  header h1 {
+    font-size: 1.35rem;
+    margin-bottom: 0;
+  }
+
+  .header-brand .tagline,
+  .header-live {
+    display: none;
+  }
+
+  .mode-switch {
+    margin-bottom: var(--sp-2);
+  }
+
+  .mode-switch-btn {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  /* The count is already on the Filters bar; the heading stays for screen
+     readers. The search / List-Map / sort / shortlist controls stay visible. */
+  .results-header {
+    margin-bottom: var(--sp-2);
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .results-title-group {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .mobile-quick-filters {
+    margin-bottom: var(--sp-2);
+  }
+
+  .mobile-quick-filters .mode-switch-btn {
+    min-height: 40px;
+  }
+
+  .results-container {
+    padding: var(--sp-3);
+  }
+
+  /* One row: search box, List/Map, sort, Shortlist, CSV (a sideways phone is wide enough) */
+  .results-controls {
+    flex-wrap: nowrap;
+  }
+
+  .results-controls .search-within {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  .results-controls .sort-controls {
+    flex: 0 1 auto;
+  }
+
+  .open-filters-btn:not([hidden]) {
+    min-height: 44px;
+    padding: var(--sp-2) var(--sp-5);
+    font-size: var(--text-base);
+  }
+}
+
+/* Small sideways phones (iPhone SE): one row is too tight - the search box
+   gets its own row again */
+@media (max-height: 500px) and (orientation: landscape) and (max-width: 699px) {
+  .results-controls {
+    flex-wrap: wrap;
+  }
+
+  .results-controls .search-within {
+    flex: 1 1 100%;
+  }
+}
