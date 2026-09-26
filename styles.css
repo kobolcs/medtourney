@@ -1426,7 +1426,7 @@ body.dark-theme .beachfront-pill {
 .tournament-date-badge-end,
 .tournament-date-badge-year {
   margin-top: 2px;
-  font-size: .68rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
@@ -2893,6 +2893,15 @@ body.dark-theme .map-cluster {
 
 /* Phones and tablets (<= 1023px - the desktop sidebar starts at 1024px) */
 @media (max-width: 1023px) {
+  /* Phones and tablets: scale up the two smallest type steps so the UI is
+     comfortable to read without glasses. --text-xs: 11.5px → 13px;
+     --text-sm: 14px → 16px (WCAG body-text floor). Every component that
+     uses these variables picks up the increase automatically. */
+  :root {
+    --text-xs: .8125rem;
+    --text-sm: 1rem;
+  }
+
   /* Room for the fixed Filters bar at the bottom of the page */
   body {
     padding-bottom: var(--sp-16);
