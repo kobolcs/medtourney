@@ -78,7 +78,7 @@ export abstract class EmptyStatePart extends CountryFilterPart {
         }
         if (!base.openOnly) {
             relaxations.push({
-                label: 'Re-enable Open Category Only',
+                label: 'Re-enable "Open to all"',
                 count: countWith({ openOnly: true }),
                 apply: () => this.setCheckbox('openOnly', true)
             });

@@ -96,7 +96,11 @@ function runTests() {
         };
 
         const filtered = service.filterTournaments(tournaments, filterState, mediterraneanLocations);
-        assertEqual(filtered.length, 4); // All except Youth tournament (all others have "Open" in category)
+        // "Open to all" hides only clearly restricted events (src/utils/openEvents.ts);
+        // youth is the separate excludeYouth filter (off here), so all 5 remain
+        assertEqual(filtered.length, 5);
+        const withClosed = [...tournaments, { ...tournaments[0], name: 'IM Norm Round Robin', category: 'Classical', url: 'rr' }];
+        assertEqual(service.filterTournaments(withClosed, filterState, mediterraneanLocations).length, 5, 'round robin hidden');
     });
 
     // Test 2: Exclude youth tournaments

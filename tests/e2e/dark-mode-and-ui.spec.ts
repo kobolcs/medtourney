@@ -323,7 +323,7 @@ test.describe('Dark Mode and UI Features', () => {
     // Change some filters
     await page.locator('.mode-switch-btn[data-mode="seaside"]').click(); // Seaside mode = mediterraneanOnly
     await openAdvancedFilters(page);
-    await page.getByLabel('Open Category Only').uncheck();
+    await page.getByLabel('Open to all', { exact: true }).uncheck();
 
     // Wait for filter preferences to be saved (happens on change)
     await page.waitForTimeout(500);
@@ -333,7 +333,7 @@ test.describe('Dark Mode and UI Features', () => {
     await page.waitForLoadState('domcontentloaded');
 
     // Filters should be restored
-    await expect(page.getByLabel('Open Category Only')).not.toBeChecked();
+    await expect(page.getByLabel('Open to all', { exact: true })).not.toBeChecked();
     await expect(page.locator('#mediterraneanOnly')).toBeChecked();
   });
 });

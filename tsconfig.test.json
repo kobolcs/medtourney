@@ -27,6 +27,7 @@
     "src/utils/filterUrl.ts",
     "src/utils/seaPicker.ts",
     "src/utils/seas.ts",
+    "src/utils/openEvents.ts",
     "src/utils/timeControl.ts",
     "src/utils/durationLabel.ts",
     "src/utils/mapPlaces.ts"

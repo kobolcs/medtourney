@@ -86,7 +86,7 @@ export async function runSearch(page: Page): Promise<void> {
 }
 
 /**
- * Open the "More filters" drawer so advanced controls (Open Category Only,
+ * Open the "More filters" drawer so advanced controls ("Open to all",
  * Exclude Youth, Women's, Include Team, Age Group, Duration, Country) become
  * visible and interactable. Blurs the newly-focused summary afterwards so
  * keyboard specs that Tab from the top of the document aren't left starting
