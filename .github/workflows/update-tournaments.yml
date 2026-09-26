@@ -7,6 +7,11 @@ on:
 
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
+    inputs:
+      allow_drop:
+        description: 'Publish even if the count dropped >30% vs the last run (a known, genuine drop)'
+        type: boolean
+        default: false
 
 # One data update at a time: a manual run overlapping the (often delayed)
 # scheduled one made the second push fail ("rejected ... fetch first").
@@ -21,6 +26,7 @@ jobs:
 
     permissions:
       contents: write  # Allow workflow to commit and push
+      issues: write    # Open / close the "data update failed" alert issue
 
     steps:
       - name: Checkout repository
@@ -57,20 +63,15 @@ jobs:
           python3 run_scraper.py
         continue-on-error: false  # Fail workflow if scraper fails
 
+      # Sanity checks before the new data can replace the published copy:
+      # minimum count, no >30% drop vs the last run, time-control and link
+      # columns still filled. Thresholds live in scripts/validate_scrape.py.
       - name: Validate scraped data
+        env:
+          ALLOW_DATA_DROP: ${{ inputs.allow_drop && '1' || '0' }}
         run: |
-          if [ ! -f tournaments_data.json ]; then
-            echo "::error::tournaments_data.json was not generated"
-            exit 1
-          fi
-          COUNT=$(python3 -c "import json; print(len(json.load(open('tournaments_data.json'))))")
-          echo "Scraper produced $COUNT tournaments"
-          # Guard against committing an empty result over good data: a healthy
-          # 6-month European scrape returns hundreds of tournaments.
-          if [ "$COUNT" -lt 10 ]; then
-            echo "::error::Only $COUNT tournaments parsed - refusing to overwrite data (likely a scrape/format failure)"
-            exit 1
-          fi
+          git show HEAD:tournaments_data.json > /tmp/previous_tournaments.json 2>/dev/null || true
+          python3 scripts/validate_scrape.py tournaments_data.json /tmp/previous_tournaments.json
 
       # Map coordinates. Runs on every scrape: locations already in the
       # committed geocode_cache.json are reused, only new places are looked up
@@ -130,6 +131,40 @@ jobs:
           [ -f geocode_cache.json ] && git add geocode_cache.json || true
           git commit -m "Update tournament data - $(date +'%Y-%m-%d %H:%M UTC')"
           git push
+
+      # The site keeps serving the last good data when a run fails, so
+      # visitors see nothing - this is how the owner finds out. One open
+      # issue per outage (later failures add a comment), closed automatically
+      # by the next successful run. Issues reach the repo owner by email and
+      # GitHub mobile push under the default notification settings.
+      - name: Alert - open or update the "data update failed" issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create data-update-failed --color B60205 --description "Nightly tournament update failed" 2>/dev/null || true
+          EXISTING=$(gh issue list --label data-update-failed --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "Failed again on $(date -u +'%Y-%m-%d %H:%M UTC'): $RUN_URL"
+          else
+            BODY=$(printf 'The nightly scrape failed, so the site is still serving the previous data.\n\nRun: %s\n\nThis issue closes itself after the next successful run.' "$RUN_URL")
+            gh issue create --label data-update-failed \
+              --title "Tournament data update failed ($(date -u +%Y-%m-%d))" \
+              --body "$BODY"
+          fi
+
+      - name: Close the alert issue after a successful run
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          for n in $(gh issue list --label data-update-failed --state open --json number --jq '.[].number'); do
+            gh issue close "$n" --comment "Recovered: $RUN_URL"
+          done
 
       - name: Upload Robot Framework logs (on failure)
         if: failure()

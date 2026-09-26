@@ -117,10 +117,9 @@ clearCache(): void
 **Fetch Strategy** (in order):
 1. **Cache** - Load from localStorage if valid
 2. **Local File** - Fetch `tournaments_data.json` from same origin
-3. **CORS Proxies** - Try multiple proxies:
-   - `api.allorigins.win`
-   - `corsproxy.io`
-   - Direct fetch (fallback)
+3. **GitHub Pages URL**, then **GitHub API** (the latter blocked by the CSP)
+   - No CORS proxies and no chess-results.com calls from the browser: removed
+     from the CSP on 2026-09-26
 
 **Key Methods**:
 ```typescript

@@ -73,7 +73,6 @@ export abstract class AppState {
 
     // Deep-link: URL of tournament to highlight after next search (?t= param)
     protected deepLinkUrl: string | null = null;
-    protected headerDateLabel: string | null = null;
     protected countrySearchQuery = '';
     protected lastEmptyStateRelaxations: { label: string; count: number; apply: () => void }[] = [];
     protected mapView: MapView | null = null;

@@ -1,0 +1,61 @@
+name: Live Data Health Check
+
+# Independent of the nightly scrape: reads the *published* site's
+# tournaments_data_meta.json and alerts the owner if it's older than 30h.
+# Catches what the scrape's own failure alert can't: a successful scrape
+# whose deploy failed, or a scheduled run that never started at all.
+# Visitors see nothing either way (the public staleness banner was removed
+# on 2026-09-26) - this issue is the only signal.
+
+on:
+  schedule:
+    - cron: '17 7 * * *'   # a few hours after the 00:00 UTC scrape
+    - cron: '17 19 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      META_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/tournaments_data_meta.json
+      MAX_AGE_HOURS: '30'
+    steps:
+      - name: Check age of the published data
+        id: age
+        run: |
+          if ! META=$(curl -sSfL --retry 3 --retry-delay 20 "$META_URL"); then
+            echo "problem=Could not fetch $META_URL - the site may be down." >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          AGE=$(echo "$META" | python3 -c "
+          import json, sys, datetime as dt
+          g = dt.datetime.fromisoformat(json.load(sys.stdin)['generatedAt'])
+          print(int((dt.datetime.now(dt.timezone.utc) - g).total_seconds() // 3600))")
+          echo "Published data is ${AGE}h old (limit ${MAX_AGE_HOURS}h)"
+          if [ "$AGE" -gt "$MAX_AGE_HOURS" ]; then
+            echo "problem=The live site's tournament data is ${AGE}h old (limit ${MAX_AGE_HOURS}h)." >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Alert - open or update the "data update failed" issue
+        if: steps.age.outputs.problem != ''
+        env:
+          PROBLEM: ${{ steps.age.outputs.problem }}
+          RUNS_URL: ${{ github.server_url }}/${{ github.repository }}/actions
+        run: |
+          gh label create data-update-failed --color B60205 --description "Nightly tournament update failed" 2>/dev/null || true
+          EXISTING=$(gh issue list --label data-update-failed --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "Health check $(date -u +'%Y-%m-%d %H:%M UTC'): $PROBLEM"
+          else
+            BODY=$(printf '%s\n\nCheck the latest "Update Tournament Data Daily" and "Deploy to GitHub Pages" runs: %s\n\nThe next successful scrape closes this issue.' "$PROBLEM" "$RUNS_URL")
+            gh issue create --label data-update-failed \
+              --title "Live tournament data is stale ($(date -u +%Y-%m-%d))" \
+              --body "$BODY"
+          fi
+          exit 1

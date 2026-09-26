@@ -191,9 +191,15 @@ chore: Update dependencies to latest versions
    - Use validators from `src/utils/validators.ts`
    - Sanitize data before rendering
 
-3. **CORS considerations**
-   - DataService uses CORS proxies for chess-results.com
-   - Prefer local `tournaments_data.json` (updated daily)
+3. **Data source (current as of 2026-09-26)**
+   - The browser only loads the published `tournaments_data.json`; it never
+     contacts chess-results.com and the CSP no longer allows the old CORS proxies
+   - Data freshness is not shown to visitors (no "updated" date, no staleness
+     banner). A failed scrape, a failed validation (`scripts/validate_scrape.py`)
+     or stale live data (`data-health.yml`) opens a `data-update-failed`
+     GitHub issue for the owner instead; the next good scrape closes it
+   - chess-results.com appears once as a footer credit and on each
+     tournament's own link - not in the page title, description or copy
 
 4. **CSP headers**
    - Content Security Policy configured for GitHub Pages (a `<meta>` tag in

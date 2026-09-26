@@ -9,13 +9,13 @@
          violation.
          No frame-ancestors: browsers ignore it in a <meta> policy (it only
          works as an HTTP header, which GitHub Pages can't set). -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.allorigins.win https://corsproxy.io https://chess-results.com https://plausible.io; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://plausible.io; base-uri 'self'; form-action 'self';">
 
     <!-- Primary Meta Tags -->
     <title>MedTourney · Chess Tournament Finder | Mediterranean, Seaside &amp; Senior Tournaments in Europe</title>
     <meta name="title" content="MedTourney - European Chess Tournament Finder | Mediterranean & Senior Tournaments">
-    <meta name="description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Search open tournaments, women's events, and vacation-friendly chess competitions. Updated daily from chess-results.com.">
-    <meta name="keywords" content="european chess tournaments, mediterranean chess, senior chess tournaments, chess tournament finder, chess-results.com, seaside chess, S50+ chess, open chess tournaments, vacation chess, chess travel">
+    <meta name="description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Search open tournaments, women's events, and vacation-friendly chess competitions.">
+    <meta name="keywords" content="european chess tournaments, mediterranean chess, senior chess tournaments, chess tournament finder, seaside chess, S50+ chess, open chess tournaments, vacation chess, chess travel">
     <meta name="author" content="Csaba Köböl">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://kobolcs.github.io/medtourney/">
@@ -25,7 +25,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://kobolcs.github.io/medtourney/">
     <meta property="og:title" content="MedTourney · Chess Tournament Finder">
-    <meta property="og:description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories. Updated daily from chess-results.com.">
+    <meta property="og:description" content="Find chess tournaments across Europe with specialized filters for Mediterranean seaside locations and senior (S50+) categories.">
     <meta property="og:image" content="https://kobolcs.github.io/medtourney/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -107,7 +107,7 @@
                 </div>
                 <!-- Visually hidden: the tagline and live count already say it; kept for
                      screen readers (and it's the page's meta description) -->
-                <p class="subtitle sr-only">European Chess Tournament Finder &mdash; Mediterranean seaside and senior (50+) tournaments across Europe, updated daily from chess-results.com</p>
+                <p class="subtitle sr-only">European Chess Tournament Finder &mdash; Mediterranean seaside and senior (50+) tournaments across Europe</p>
                 <p id="headerLiveStatus" class="header-live" aria-live="polite">
                     <span class="live-dot" aria-hidden="true"></span>
                     <span id="headerTournamentCount">Loading tournament data&hellip;</span>
@@ -125,7 +125,6 @@
 
     <div class="container">
         <main role="main" id="main-content">
-        <div id="staleness-banner" class="error-message warning-type" style="display:none;" role="alert" aria-live="polite"></div>
         <!-- tabindex="-1": on desktop the sticky sidebar scrolls (overflow-y: auto), and
              Firefox makes scroll containers a Tab stop of their own. Every control inside
              is focusable anyway (focusing one scrolls it into view), so the extra stop
@@ -449,7 +448,7 @@
         <div id="mobileQuickFilters" class="mobile-quick-filters" hidden></div>
         <div id="loading" class="loading" style="display: none;" role="status" aria-live="polite" aria-busy="true">
             <div class="spinner" aria-hidden="true"></div>
-            <p>Fetching tournaments from chess-results.com…</p>
+            <p>Loading tournaments…</p>
         </div>
 
         <div id="error" class="error-message" style="display: none;" role="alert" aria-live="assertive"></div>
@@ -515,15 +514,14 @@
         <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
 
         <footer role="contentinfo">
-            <p id="lastUpdated" class="last-updated" aria-live="polite">
-                <!-- Hidden until a real timestamp is known (app.ts setFooterTimestamp) -
-                     no "…" placeholder or "Never" while the meta file loads. -->
-                <span id="lastUpdatedWrap" hidden>Data updated <span id="lastUpdatedTime"></span> ·</span>
-                Source: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a>
-                · Made by <a href="https://github.com/kobolcs/medtourney" target="_blank" rel="noopener noreferrer" title="MedTourney on GitHub">Csaba Köböl</a>
+            <!-- No "last updated" date here (removed 2026-09-26): the data is
+                 expected to be current; update failures alert the owner. -->
+            <p id="footerCredits" class="last-updated">
+                Made by <a href="https://github.com/kobolcs/medtourney" target="_blank" rel="noopener noreferrer" title="MedTourney on GitHub">Csaba Köböl</a>
                 <!-- src/utils/contact.ts: shown only when an address is set; the
                      mailto: is built on click, never present in the page -->
                 <span id="feedbackWrap" hidden>· <a href="#" id="feedbackLink">Feedback</a></span>
+                · <span class="data-credit">Tournament data: <a href="https://chess-results.com" target="_blank" rel="noopener noreferrer">chess-results.com</a></span>
             </p>
         </footer>
     </div>
@@ -542,18 +540,18 @@
             <div class="help-modal-body">
                 <div class="help-section">
                     <h3>What is this?</h3>
-                    <p>MedTourney is a search tool for European chess tournaments, with a focus on Mediterranean seaside locations and senior-friendly events. Data is fetched daily from <strong>chess-results.com</strong>.</p>
+                    <p>MedTourney is a search tool for European chess tournaments, with a focus on Mediterranean seaside locations and senior-friendly events. Listings cover the next 6 months and are refreshed regularly.</p>
                 </div>
 
                 <div class="help-section">
                     <h3>Getting started</h3>
-                    <p>Results for the next 6 months load automatically — results update as soon as you change a filter. Click a card to see its details here - dates, venue and map, time control, nearest airport - with a link to chess-results.com for registration, players and results. Your filter settings are saved automatically.</p>
+                    <p>Results for the next 6 months load automatically — results update as soon as you change a filter. Click a card to see its details here - dates, venue and map, time control, nearest airport - with a link to the tournament's official page for registration, players and results. Your filter settings are saved automatically.</p>
                 </div>
 
                 <div class="help-section">
                     <h3>Key filters</h3>
                     <ul>
-                        <li><strong>Open to all</strong><span>Hides events that are clearly not open to everyone — invitational or closed tournaments, round robins and norm events, club championships. Most events on chess-results.com aren't labelled "Open", so everything else is shown.</span></li>
+                        <li><strong>Open to all</strong><span>Hides events that are clearly not open to everyone — invitational or closed tournaments, round robins and norm events, club championships. Most events aren't labelled "Open", so everything else is shown.</span></li>
                         <li><strong>Exclude Youth</strong><span>Hides tournaments aimed at players under 18.</span></li>
                         <li><strong>Seaside</strong><span>Tournaments within about 10 km of the sea, plus well-known coastal towns. The <strong>Seas</strong> choice picks which seas count: Mediterranean and Atlantic (Spain, Portugal, France, the Canaries, Madeira, Azores) by default, the Black Sea (incl. Istanbul) and the Caspian if you tick them. Each card says which sea. A <strong>🏖 Beachfront</strong> badge marks venues found to be within 500 m of the sea.</span></li>
                         <li><strong>S50+ / S60+</strong><span>Senior age categories. Checking both shows all senior events (OR logic).</span></li>

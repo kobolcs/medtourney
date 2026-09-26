@@ -23,6 +23,19 @@ class TimeControlMixin(ProcessorBase):
         (60 moves x inc_sec / 60 sec = inc_sec minutes contribution)
         Blitz: <= 10 min; Rapid: 10 < total < 60; Classical: >= 60.
         """
+        tc_lower = self._normalise_units(tc_lower)
+
+        # "2x15" / "2 x 15 + 5": 15 minutes per player (the "2x" is the
+        # two clocks, not a multiplier on the game length). Unrecognised
+        # before 2026-09-26, so these kids' 15-minute events fell through
+        # to the "Classical" default.
+        per_player = re.match(r"^\s*2\s*[x×]\s*", tc_lower)  # noqa: RUF001 (the multiplication sign is real data)
+        if per_player:
+            tc_lower = tc_lower[per_player.end():]
+            m = re.match(r"^(\d+)[\s.]*(?:min\w*)?[\s.]*(?:/\s*[^\d\s]\S*)?\s*$", tc_lower)
+            if m:  # just "2x15" / "2x15. min. / hráče": no increment
+                return self._total_to_class(int(m.group(1)))
+
         # N+M bare format: "8+3", "90+30", "10+5'" etc.
         m = re.search(r"(\d+)\s*\+\s*(\d+)", tc_lower)
         if m:
@@ -76,6 +89,19 @@ class TimeControlMixin(ProcessorBase):
             return self._total_to_class(base + inc)
 
         return None
+
+    # Minute / second units in other languages and scripts, and a bare "m",
+    # mapped onto "min" / "sec" before the formula runs, as of 2026-09-26.
+    # Without this, "5мин+5 сек" and "10 m + 5 s" matched nothing and were
+    # published as "Classical". Mirrors BASE_RE / INC_RE in the frontend's
+    # src/utils/timeControl.ts.
+    _MINUTE_UNIT_RE = re.compile(r"(\d)\s*(?:мин\w*|хв\w*|perc\w*|dəq\w*|λεπτ\w*|m(?![a-zа-я]))")  # noqa: RUF001 (Cyrillic units are real data)
+    _SECOND_UNIT_RE = re.compile(r"(\d)\s*(?:сек\w*|δευτ\w*|san\w*|mp\b)")
+
+    def _normalise_units(self, tc_lower: str) -> str:
+        """Rewrite non-English / abbreviated minute and second units as "min" / "sec"."""
+        tc_lower = self._MINUTE_UNIT_RE.sub(r"\1min", tc_lower)
+        return self._SECOND_UNIT_RE.sub(r"\1sec", tc_lower)
 
     def _classify_time_control_field(self, time_control: str) -> str | None:
         """Classify the time-control field's text alone: an explicit

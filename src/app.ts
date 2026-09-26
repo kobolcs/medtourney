@@ -73,10 +73,6 @@ class TournamentFinder extends ResultsViewPart {
             // Initialize keyboard navigation
             this.initKeyboardNavigation();
 
-            // Display last updated time from cache, then refine from meta file
-            this.displayLastUpdated();
-            void this.checkDataStaleness();
-
             // Handle deep-link: ?t=<encoded tournament URL>
             const linkedUrl = new URLSearchParams(location.search).get('t');
             if (linkedUrl) {

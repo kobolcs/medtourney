@@ -78,6 +78,8 @@ See [`TESTING.md`](./TESTING.md) for what each suite actually covers and [`ARCHI
 
 `TournamentProcessor.py` + `scrape_tournaments.robot` (Robot Framework, Playwright-based) scrape chess-results.com every day at 00:00 UTC via GitHub Actions: search the next 6 months, download the Excel export, keep European results only, write `tournaments_data.json`, commit it to `main`. GitHub Pages then just serves that static file — the web app has no backend and no database.
 
+Before publishing, `scripts/validate_scrape.py` refuses a scrape that looks broken (under 10 rows, a drop of more than 30% vs the last run, or time-control/link columns gone empty), so the site keeps yesterday's good data. Any failure opens a `data-update-failed` issue, which closes itself after the next good run; `data-health.yml` also checks the live site twice a day and opens the same issue if its data is more than 30 hours old. Visitors never see a date or a warning.
+
 Run it yourself if you're working on the scraper:
 
 ```bash
