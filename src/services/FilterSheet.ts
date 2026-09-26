@@ -96,6 +96,9 @@ export class FilterSheet {
         this.backdrop.hidden = false;
         document.body.classList.add('sheet-open');
         this.bar.setAttribute('aria-expanded', 'true');
+        // Expand advanced filters automatically so all options are scrollable at once.
+        const advanced = this.card.querySelector<HTMLDetailsElement>('#advancedFilters');
+        if (advanced) advanced.open = true;
         this.card.querySelector<HTMLElement>('.sheet-close')?.focus();
     }
 

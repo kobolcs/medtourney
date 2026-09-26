@@ -56,9 +56,11 @@ export class FilterService {
 
         // Apply filters
         const filtered = tournaments.filter(tournament => {
-            // Date range filter
-            if (filterState.startDate && tournament.date < filterState.startDate) {
-                return false;
+            // Date range filter: compare against the tournament's end date so that
+            // ongoing and recently-ended events stay visible (default start = 7 days ago).
+            if (filterState.startDate) {
+                const end = tournament.dateTo ? new Date(`${tournament.dateTo}T12:00:00`) : tournament.date;
+                if (isNaN(end.getTime()) || end < filterState.startDate) return false;
             }
             if (filterState.endDate && tournament.date > filterState.endDate) {
                 return false;

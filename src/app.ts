@@ -37,15 +37,19 @@ class TournamentFinder extends ResultsViewPart {
             // Load configuration
             await this.loadConfig();
 
-            // Set default dates (today to 6 months from now, matching the scraper horizon)
+            // Set default dates: 7 days ago to 6 months from now.
+            // Starting 7 days ago keeps recently-ended events visible while
+            // the filter (effectiveEnd >= startDate) also shows ongoing ones.
             const today = new Date();
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
             const sixMonthsLater = new Date(today);
             sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
 
             const startDateElement = document.getElementById('startDate') as HTMLInputElement | null;
             const endDateElement = document.getElementById('endDate') as HTMLInputElement | null;
 
-            if (startDateElement) startDateElement.valueAsDate = today;
+            if (startDateElement) startDateElement.valueAsDate = sevenDaysAgo;
             if (endDateElement) endDateElement.valueAsDate = sixMonthsLater;
 
             // Load saved filter preferences (URL takes priority over cache)
