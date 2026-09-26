@@ -107,7 +107,13 @@ export abstract class CardPart extends UIState {
      */
     protected airportHintHTML(tournament: Tournament): string {
         const a = tournament.airport;
-        if (!a) return '';
+        if (!a) {
+            // Placed on the map but no airport with flights within 150 km -
+            // say so, rather than leave people wondering whether it was checked
+            if (typeof tournament.lat !== 'number') return '';
+            const none = 'No airport with airline flights within 150 km in a straight line';
+            return `<span class="airport-hint airport-hint--none" title="${none}"><span aria-hidden="true">✈ none within 150 km</span><span class="sr-only">${none}</span></span>`;
+        }
         const full = `Nearest airport with airline flights: ${a.name} (${a.iata}), about ${a.km} km in a straight line`;
         // City before the code ("Jerez XRY"): a bare X../Q../Z.. code reads like a rail station
         const label = a.city ? `${a.city} ${a.iata}` : a.iata;
@@ -141,7 +147,7 @@ export abstract class CardPart extends UIState {
                        class="featured-name-link">${escapeHTML(tournament.name)}</a>
                 </h3>
                 <span class="featured-where">${formatLocation(tournament.location, tournament.town)} · <span class="featured-date">${dateStr}</span></span>
-                <button type="button" class="calendar-export-btn featured-calendar-btn"
+                <button type="button" class="calendar-export-btn featured-calendar-btn" aria-haspopup="menu" aria-expanded="false"
                         data-tournament-url="${escapeHTML(tournament.url)}"
                         aria-label="Add ${escapeHTML(tournament.name)} to calendar"
                         title="Add to calendar"><span aria-hidden="true">📅</span></button>
@@ -236,7 +242,7 @@ export abstract class CardPart extends UIState {
                 </div>
                 ${travelTagsHTML}
                 <div class="tournament-actions">
-                    <button class="calendar-export-btn"
+                    <button class="calendar-export-btn" aria-haspopup="menu" aria-expanded="false"
                             data-tournament-url="${escapeHTML(tournament.url)}"
                             aria-label="Add ${escapeHTML(tournament.name)} to calendar">
                         <span aria-hidden="true">📅</span><span class="action-text"> Add to Calendar</span>

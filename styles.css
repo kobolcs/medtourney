@@ -241,6 +241,13 @@ header::after {
   font-weight: 500;
 }
 
+/* Phones: the ? and theme buttons share the row - keep the tagline one line */
+@media (max-width: 480px) {
+  .tagline-extra {
+    display: none;
+  }
+}
+
 .header-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -1482,6 +1489,54 @@ body.dark-theme .beachfront-pill {
   font-size: var(--text-xs);
   font-weight: 600;
   white-space: nowrap;
+}
+
+.airport-hint--none {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* The calendar button's menu (src/utils/calendarMenu.ts) */
+.calendar-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-1);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.calendar-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 44px;
+  justify-content: center;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.calendar-menu-item small {
+  color: var(--label);
+  font-size: var(--text-xs);
+}
+
+.calendar-menu-item:hover,
+.calendar-menu-item:focus-visible {
+  background: var(--surface-2);
 }
 
 .flag-icon {

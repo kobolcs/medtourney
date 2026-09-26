@@ -156,9 +156,11 @@ test.describe('Export hardening', () => {
 
         // Calendar/copy-link are hover-revealed secondary actions on the card.
         await page.locator('.tournament-card').first().hover();
+        // The calendar button opens a menu: Google Calendar or a .ics download
+        await page.locator('.calendar-export-btn').first().click();
         const [download] = await Promise.all([
             page.waitForEvent('download'),
-            page.locator('.calendar-export-btn').first().click(),
+            page.locator('.calendar-menu-item[data-action="ics"]').click(),
         ]);
         const ics = await readDownload(download);
 
