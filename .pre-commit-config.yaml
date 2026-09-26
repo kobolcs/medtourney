@@ -19,7 +19,7 @@ repos:
       - id: mypy
         additional_dependencies:
           - types-python-dateutil
-        files: ^(TournamentProcessor\.py|run_scraper\.py|geocode_tournaments\.py|tournament_processing/.*\.py|geocoding/.*\.py)$
+        files: ^(TournamentProcessor\.py|run_scraper\.py|geocode_tournaments\.py|tournament_processing/.*\.py|geocoding/.*\.py|fetch_details\.py|details/.*\.py)$
 
   # General file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks

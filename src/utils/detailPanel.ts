@@ -39,7 +39,8 @@ export function mapLinks(t: Tournament): { osm: string; google: string } {
             google: `https://www.google.com/maps/search/?api=1&query=${t.lat},${t.lng}`,
         };
     }
-    const q = encodeURIComponent(t.location);
+    // Not placed: search for the address from chess-results.com, else the venue text
+    const q = encodeURIComponent(t.details?.address ?? t.location);
     return {
         osm: `https://www.openstreetmap.org/search?query=${q}`,
         google: `https://www.google.com/maps/search/?api=1&query=${q}`,
@@ -50,44 +51,45 @@ function row(label: string, valueHTML: string): string {
     return `<div class="detail-row"><dt>${label}</dt><dd>${valueHTML}</dd></div>`;
 }
 
+/** "7 rounds · Swiss-System" */
+function formatText(t: Tournament): string | null {
+    const d = t.details;
+    const parts = [d?.rounds ? `${d.rounds} rounds` : '', d?.system ?? ''].filter(Boolean);
+    return parts.length ? escapeHTML(parts.join(' · ')) : null;
+}
+
+/** "FIDE-rated · national rating" + a link to the FIDE event page */
+function ratingHTML(t: Tournament): string | null {
+    const d = t.details;
+    if (!d?.rated?.length && !d?.fideId) return null;
+    const labels = (d.rated ?? []).map(r => /international/i.test(r) ? 'FIDE-rated' : /national/i.test(r) ? 'national rating' : r);
+    const fide = d.fideId
+        ? ` · <a href="https://ratings.fide.com/tournament_information.phtml?event=${encodeURIComponent(d.fideId)}" target="_blank" rel="noopener noreferrer">FIDE page</a>`
+        : '';
+    return `${escapeHTML(labels.join(' · ') || 'FIDE-rated')}${fide}`;
+}
+
+/** Organizer name + their website */
+function organizerHTML(t: Tournament): string | null {
+    const d = t.details;
+    if (!d?.organizer && !d?.homepage) return null;
+    const site = d.homepage
+        ? `${d.organizer ? ' · ' : ''}<a href="${escapeHTML(d.homepage)}" target="_blank" rel="noopener noreferrer">Website</a>`
+        : '';
+    return `${escapeHTML(d.organizer ?? '')}${site}`;
+}
+
 function airportText(t: Tournament): string | null {
     const a = t.airport;
     if (a) return `${escapeHTML(a.name)} (${escapeHTML(a.iata)})${a.city ? `, ${escapeHTML(a.city)}` : ''} – about ${a.km} km in a straight line`;
     return typeof t.lat === 'number' ? 'None with airline flights within 150 km' : null;
 }
 
-/** The panel's inner HTML (pure - unit-tested). */
-export function detailPanelHTML(t: Tournament, shortlisted: boolean): string {
-    const tc = (t.timeControl ?? '').trim();
-    const tcShort = tc ? formatTimeControl(tc) : '';
-    const categories = t.category.split(',').map(c => c.trim()).filter(Boolean);
-    const maps = mapLinks(t);
-    const venue = t.location.replace(/,\s*[A-Z]{3}$/, '');
-    const airport = airportText(t);
-    const sea = t.coast
-        ? `${SEA_LABELS[t.coast]} coast${t.seaM !== undefined ? ` · 🏖 venue about ${t.seaM} m from the sea` : ''}`
-        : null;
-
-    const rows = [
-        row('When', escapeHTML(detailDates(t))),
-        row('Where', `${formatLocation(t.location, t.town)}${venue && t.town ? `<br><span class="detail-sub">${escapeHTML(venue)}</span>` : ''}
-            <br><a href="${escapeHTML(maps.google)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
-            · <a href="${escapeHTML(maps.osm)}" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>`),
-        sea ? row('Seaside', escapeHTML(sea)) : '',
-        airport ? row('Nearest airport', airport) : '',
-        // The short form ("90+30") first when it is complete; a cut one ("90+30…") adds nothing
-        tc ? row('Time control', `${tcShort && tcShort !== tc && !tcShort.endsWith('…') ? `<strong>${escapeHTML(tcShort)}</strong> · ` : ''}${escapeHTML(tc)}`) : '',
-        categories.length ? row('Category', categories.map(c => `<span class="category-tag">${escapeHTML(c)}</span>`).join(' ')) : '',
-    ].join('');
-
+/** Shortlist / calendar / copy-link buttons and the chess-results.com link. */
+function actionsHTML(t: Tournament, shortlisted: boolean): string {
     const url = escapeHTML(t.url);
     const name = escapeHTML(t.name);
-    return `<div class="detail-body">
-        <div class="detail-header">
-            <h2 id="detailTitle" class="detail-title">${name}</h2>
-            <button type="button" class="detail-close" aria-label="Close details">✕</button>
-        </div>
-        <dl class="detail-rows">${rows}</dl>
+    return `
         <div class="detail-actions">
             <button type="button" class="shortlist-btn detail-shortlist${shortlisted ? ' shortlisted' : ''}"
                     data-tournament-url="${url}" data-tournament-name="${name}" aria-pressed="${shortlisted}"
@@ -102,6 +104,49 @@ export function detailPanelHTML(t: Tournament, shortlisted: boolean): string {
         <a class="detail-cr-link" href="${url}" target="_blank" rel="noopener noreferrer">
             Registration, players, pairings and results on chess-results.com →
         </a>
+`;
+}
+
+/** The panel's inner HTML (pure - unit-tested). */
+export function detailPanelHTML(t: Tournament, shortlisted: boolean): string {
+    const tc = (t.timeControl ?? '').trim();
+    const tcShort = tc ? formatTimeControl(tc) : '';
+    const categories = t.category.split(',').map(c => c.trim()).filter(Boolean);
+    const maps = mapLinks(t);
+    const venue = t.location.replace(/,\s*[A-Z]{3}$/, '');
+    // The full address from chess-results.com, when it says more than the venue text
+    const address = t.details?.address && !venue.includes(t.details.address) ? t.details.address : '';
+    const format = formatText(t);
+    const rating = ratingHTML(t);
+    const organizer = organizerHTML(t);
+    const airport = airportText(t);
+    const sea = t.coast
+        ? `${SEA_LABELS[t.coast]} coast${t.seaM !== undefined ? ` · 🏖 venue about ${t.seaM} m from the sea` : ''}`
+        : null;
+
+    const rows = [
+        row('When', escapeHTML(detailDates(t))),
+        row('Where', `${formatLocation(t.location, t.town)}${venue && t.town ? `<br><span class="detail-sub">${escapeHTML(venue)}</span>` : ''}${address ? `<br><span class="detail-sub">${escapeHTML(address)}</span>` : ''}
+            <br><a href="${escapeHTML(maps.google)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+            · <a href="${escapeHTML(maps.osm)}" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>`),
+        sea ? row('Seaside', escapeHTML(sea)) : '',
+        airport ? row('Nearest airport', airport) : '',
+        // The short form ("90+30") first when it is complete; a cut one ("90+30…") adds nothing
+        tc ? row('Time control', `${tcShort && tcShort !== tc && !tcShort.endsWith('…') ? `<strong>${escapeHTML(tcShort)}</strong> · ` : ''}${escapeHTML(tc)}`) : '',
+        format ? row('Format', format) : '',
+        rating ? row('Rating', rating) : '',
+        categories.length ? row('Category', categories.map(c => `<span class="category-tag">${escapeHTML(c)}</span>`).join(' ')) : '',
+        organizer ? row('Organizer', organizer) : '',
+    ].join('');
+
+    const name = escapeHTML(t.name);
+    return `<div class="detail-body">
+        <div class="detail-header">
+            <h2 id="detailTitle" class="detail-title">${name}</h2>
+            <button type="button" class="detail-close" aria-label="Close details">✕</button>
+        </div>
+        <dl class="detail-rows">${rows}</dl>
+        ${actionsHTML(t, shortlisted)}
     </div>`;
 }
 

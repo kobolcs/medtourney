@@ -5,6 +5,20 @@
 /** A sea a seaside tournament is by (geocode_tournaments.py `coast`) */
 export type Sea = 'med' | 'atlantic' | 'black' | 'caspian';
 
+/** chess-results.com tournament details (details/parse.py) */
+export interface TournamentDetails {
+    organizer?: string;
+    rounds?: number;
+    /** e.g. "Swiss-System", "Round robin" */
+    system?: string;
+    /** e.g. ["Rating national", "Rating international"] */
+    rated?: string[];
+    /** FIDE event id - https://ratings.fide.com/tournament_information.phtml?event=<id> */
+    fideId?: string;
+    address?: string;
+    homepage?: string;
+}
+
 export interface Tournament {
     name: string;
     url: string;
@@ -23,6 +37,8 @@ export interface Tournament {
     seaM?: number;
     /** Travel context: nearest airport with airline routes (geocode_tournaments.py, <= 150 km). */
     airport?: { iata: string; name: string; km: number; city?: string };
+    /** From the chess-results.com details page (fetch_details.py); fields may be missing. */
+    details?: TournamentDetails;
     /** Display town from reverse geocoding (the location text is often a street or venue). */
     town?: string;
     classificationConfidence?: 'high' | 'medium' | 'low';

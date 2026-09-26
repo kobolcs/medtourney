@@ -77,6 +77,9 @@ medtourney/
 ├── geocoding/                    # places, geonames, coast, beachfront, airports, nominatim, geocoder, pipeline
 ├── geocode_cache.json            # Geocoding cache - committed, so daily runs only look up new places
 ├── data/southern_coast.json      # Coastline points per sea (med, atlantic, black, caspian) for the Seaside rule
+├── fetch_details.py              # Adds chess-results.com details (organizer, rounds, FIDE id...) after each scrape
+├── details/                      # parse.py (details page) + pipeline.py (1 req/s, capped, cached)
+├── details_cache.json            # Details cache - committed, so each tournament is fetched once
 ├── data/airports.json            # Airports with airline routes + city (card's nearest-airport hint)
 ├── data/airport_cities.json      # City overrides where OurAirports gives a suburb (RMU -> Murcia)
 ├── scripts/                      # build_southern_coast.py, build_airports.py, og-image.html + render-og-image.mjs
