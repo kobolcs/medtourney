@@ -12,6 +12,7 @@
   /* Palette */
   --ink:          #162032;
   --sea:          #1A5E8A;
+  --on-sea:       #fff;       /* text on a --sea background */
   --sea-hover:    #145079;
   --sea-light:    #E4EFF7;
   --amber:        #8B5A1A;
@@ -79,6 +80,7 @@
 body.dark-theme {
   /* Palette overrides */
   --sea:          #4BA3D6;
+  --on-sea:       #162032;    /* --sea is light here: dark text, not white */
   --sea-hover:    #5DB8EC;
   --sea-light:    #0B2235;
   --amber:        #CE8E36;
@@ -161,7 +163,7 @@ body.dark-theme select {
   top: -48px;
   left: var(--sp-4);
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   padding: var(--sp-3) var(--sp-5);
   border-radius: 0 0 var(--r-md) var(--r-md);
   text-decoration: none;
@@ -577,13 +579,9 @@ header h1 {
 
 .mode-switch-btn.is-active {
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
 }
 
-body.dark-theme .mode-switch-btn.is-active {
-  /* --sea is a lighter blue in dark mode - needs dark text, not white */
-  color: var(--ink);
-}
 
 /* Active-filter chips — shows why the list is short, each removable in one tap */
 .active-filter-chips {
@@ -678,7 +676,7 @@ details#advancedFilters[open] > .advanced-summary::before {
   height: 20px;
   padding: 0 6px;
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   border-radius: 999px;
   font-size: var(--text-xs);
   font-weight: 700;
@@ -760,7 +758,7 @@ details#advancedFilters[open] > .advanced-summary::before {
 
 .date-preset-btn:hover {
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   border-color: var(--sea);
 }
 
@@ -889,7 +887,7 @@ details#advancedFilters[open] > .advanced-summary::before {
   padding: var(--sp-4) var(--sp-8);
   min-height: 52px;
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   border: none;
   border-radius: var(--r-md);
   font-size: var(--text-base);
@@ -1410,15 +1408,12 @@ body.dark-theme .error-message.success-type {
   padding: 3px var(--sp-3);
   border-radius: 20px;
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   font-size: var(--text-xs);
   font-weight: 700;
   white-space: nowrap;
 }
 
-body.dark-theme .beachfront-pill {
-  color: var(--ink);
-}
 
 .tournament-card--mediterranean .tournament-date-badge {
   background: var(--sea-light);
@@ -1729,7 +1724,7 @@ body.dark-theme .beachfront-pill {
   align-items: center;
   justify-content: center;
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   padding: var(--sp-2) var(--sp-5);
   min-height: 40px;
   border-radius: var(--r-md);
@@ -1763,7 +1758,7 @@ body.dark-theme .beachfront-pill {
 
 .calendar-export-btn:hover {
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   transform: translateY(-1px);
 }
 
@@ -2040,7 +2035,7 @@ body.dark-theme .confidence-medium {
 
 .reset-filters-btn {
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   border: none;
   padding: var(--sp-4) var(--sp-8);
   min-height: 52px;
@@ -2109,13 +2104,13 @@ body.dark-theme .confidence-medium {
 
 .pagination-btn:hover:not(:disabled) {
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   border-color: var(--sea);
 }
 
 .pagination-btn.active {
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
   border-color: var(--sea);
   font-weight: 700;
 }
@@ -2764,7 +2759,7 @@ footer a:hover {
 
 .view-toggle-btn.is-active {
   background: var(--sea);
-  color: #fff;
+  color: var(--on-sea);
 }
 
 .map-view {
@@ -2879,7 +2874,6 @@ body.dark-theme .map-canvas .leaflet-tile-pane {
 }
 
 /* --sea is a light blue in dark mode - dark text on it, as on the mode switch */
-body.dark-theme .view-toggle-btn.is-active,
 body.dark-theme .map-pin--sea,
 body.dark-theme .map-cluster {
   color: var(--ink);
@@ -3014,7 +3008,7 @@ body.dark-theme .map-cluster {
     padding: var(--sp-5) var(--sp-8);
     border: none;
     background: var(--sea);
-    color: #fff;
+    color: var(--on-sea);
     font: 600 var(--text-lg) 'Inter', sans-serif;
     box-shadow: 0 -4px 20px rgba(22, 32, 50, .18);
     cursor: pointer;
@@ -3023,10 +3017,6 @@ body.dark-theme .map-cluster {
   .open-filters-results {
     font-weight: 500;
     opacity: .85;
-  }
-
-  body.dark-theme .open-filters-btn:not([hidden]) {
-    color: var(--ink);
   }
 
   .sheet-backdrop:not([hidden]) {
