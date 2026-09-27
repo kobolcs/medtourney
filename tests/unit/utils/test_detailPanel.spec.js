@@ -25,7 +25,7 @@ function assert(condition, message) {
 const base = {
     name: 'Nice Open', location: 'Palais des Congrès, FRA', town: 'Nice', category: 'Open, Classical',
     description: 'Nice Open', url: 'https://chess-results.com/tnr1.aspx?lan=1',
-    date: new Date(2026, 9, 2), dateTo: '2026-10-11', timeControl: '90 minutes + 30 second increment from move 1',
+    date: new Date('2026-10-02'), dateTo: '2026-10-11', timeControl: '90 minutes + 30 second increment from move 1',
     lat: 43.7, lng: 7.26, coast: 'med', seaM: 120,
     airport: { iata: 'NCE', name: "Nice-Côte d'Azur Airport", km: 6, city: 'Nice' },
 };

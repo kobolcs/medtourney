@@ -17,7 +17,7 @@ const MAX_SPAN_DAYS = 10;
 const DAY_MS = 86400000;
 
 function weekday(date: Date): string {
-    return date.toLocaleDateString('en-GB', { weekday: 'short' });
+    return date.toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'UTC' });
 }
 
 export function formatDurationLabel(date: Date, dateTo?: string): string {

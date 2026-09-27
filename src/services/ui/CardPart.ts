@@ -18,7 +18,7 @@ export abstract class CardPart extends UIState {
      * Create tournament card element
      */
     protected formatDateRange(dateFrom: Date, dateTo?: string): string {
-        const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+        const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' };
         if (!dateTo) return dateFrom.toLocaleDateString('en-GB', opts);
 
         const to = new Date(dateTo);
@@ -26,16 +26,16 @@ export abstract class CardPart extends UIState {
             return dateFrom.toLocaleDateString('en-GB', opts);
         }
 
-        const sameYear = dateFrom.getFullYear() === to.getFullYear();
-        const sameMonth = sameYear && dateFrom.getMonth() === to.getMonth();
+        const sameYear = dateFrom.getUTCFullYear() === to.getUTCFullYear();
+        const sameMonth = sameYear && dateFrom.getUTCMonth() === to.getUTCMonth();
 
         if (sameMonth) {
-            const fromDay = dateFrom.toLocaleDateString('en-GB', { day: 'numeric' });
+            const fromDay = dateFrom.toLocaleDateString('en-GB', { day: 'numeric', timeZone: 'UTC' });
             const toFull = to.toLocaleDateString('en-GB', opts);
             return `${fromDay}–${toFull}`;
         }
         if (sameYear) {
-            const fromShort = dateFrom.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            const fromShort = dateFrom.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
             const toFull = to.toLocaleDateString('en-GB', opts);
             return `${fromShort}–${toFull}`;
         }
@@ -51,18 +51,18 @@ export abstract class CardPart extends UIState {
     protected formatDateBadge(date: Date, dateTo?: string): { day: string; month: string; end: string; year: string } {
         const month3 = (d: Date): string =>
             // en-GB renders September as "Sept" (4 chars) - slice to a consistent 3.
-            d.toLocaleDateString('en-GB', { month: 'short' }).slice(0, 3);
-        const day = date.toLocaleDateString('en-GB', { day: 'numeric' });
+            d.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }).slice(0, 3);
+        const day = date.toLocaleDateString('en-GB', { day: 'numeric', timeZone: 'UTC' });
         const month = month3(date);
 
         let end = '';
         const to = dateTo ? new Date(dateTo) : null;
         if (to && !isNaN(to.getTime()) && to.getTime() > date.getTime()) {
-            const toDay = to.toLocaleDateString('en-GB', { day: 'numeric' });
-            const sameMonth = to.getMonth() === date.getMonth() && to.getFullYear() === date.getFullYear();
+            const toDay = to.toLocaleDateString('en-GB', { day: 'numeric', timeZone: 'UTC' });
+            const sameMonth = to.getUTCMonth() === date.getUTCMonth() && to.getUTCFullYear() === date.getUTCFullYear();
             end = sameMonth ? `→ ${toDay}` : `→ ${toDay} ${month3(to)}`;
         }
-        const year = date.getFullYear() !== new Date().getFullYear() ? String(date.getFullYear()) : '';
+        const year = date.getUTCFullYear() !== new Date().getUTCFullYear() ? String(date.getUTCFullYear()) : '';
         return { day, month, end, year };
     }
 

@@ -222,6 +222,7 @@ export abstract class FilterFormPart extends KeyboardPart {
 
                 startDateEl.valueAsDate = today;
                 endDateEl.valueAsDate = end;
+                this.handleFilterChange();
             });
         });
     }
