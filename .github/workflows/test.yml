@@ -445,16 +445,21 @@ jobs:
         retention-days: 7
 
   e2e-smoke-webkit-firefox:
-    name: E2E Smoke (WebKit + Firefox)
+    name: E2E Smoke (${{ matrix.project }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [typescript-build]
-    # Smoke gate: run a focused subset of tests on non-Chromium browsers to
-    # catch browser-specific regressions without tripling CI time.
+    # Smoke gate: run a focused subset of tests on non-Chromium browsers and
+    # the phone projects (the full Chromium job is desktop-only, so the phone
+    # filter sheet went untested) without tripling CI time.
     strategy:
       fail-fast: false
       matrix:
-        project: [firefox, webkit]
+        include:
+          - { project: firefox, browser: firefox, slug: firefox }
+          - { project: webkit, browser: webkit, slug: webkit }
+          - { project: Mobile Chrome, browser: chromium, slug: mobile-chrome }
+          - { project: Mobile Safari, browser: webkit, slug: mobile-safari }
 
     steps:
     - name: Checkout code
@@ -470,13 +475,13 @@ jobs:
       run: npm ci
 
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps ${{ matrix.project }}
+      run: npx playwright install --with-deps ${{ matrix.browser }}
 
     - name: Build TypeScript
       run: npm run build
 
     - name: Run E2E Smoke Tests (${{ matrix.project }})
-      run: npx playwright test --project=${{ matrix.project }} tests/e2e/site-basics.spec.ts tests/e2e/accessibility.spec.ts tests/e2e/filter-controls.spec.ts
+      run: npx playwright test --project="${{ matrix.project }}" tests/e2e/site-basics.spec.ts tests/e2e/accessibility.spec.ts tests/e2e/filter-controls.spec.ts tests/e2e/results-first-layout.spec.ts
       env:
         CI: true
 
@@ -484,7 +489,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v7
       with:
-        name: playwright-smoke-${{ matrix.project }}
+        name: playwright-smoke-${{ matrix.slug }}
         path: playwright-report/
         retention-days: 7
 

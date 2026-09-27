@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stubTournaments, openFilters } from './_fixtures';
+import { stubTournaments, openFilters, openAdvancedFilters } from './_fixtures';
 
 /**
  * Results-first layout: auto-search on load, a primary filter bar with
@@ -29,24 +29,40 @@ test.describe('Results-First Layout', () => {
     await expect(page.locator('#endDate')).toBeVisible();
     await expect(page.getByLabel('Classical / Standard')).toBeVisible();
     await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toBeVisible();
+    // Duration was promoted out of the drawer to the first tier.
+    await expect(page.locator('#minDays')).toBeVisible();
     // The old "Mediterranean Seaside Only" checkbox is gone from view - the
     // mode switch is its only visible control.
     await expect(page.locator('#mediterraneanOnly')).toBeHidden();
 
-    // Advanced-only controls are not visible until the drawer opens.
-    await expect(page.getByLabel('Open to all', { exact: true })).toBeHidden();
-    await expect(page.locator('#minDays')).toBeHidden();
+    // Advanced-only controls are not visible until the drawer opens (the
+    // phone sheet expands the drawer itself when it opens).
+    if (!(await page.locator('#openFiltersBtn').isVisible())) {
+      await expect(page.getByLabel('Open to all', { exact: true })).toBeHidden();
+    }
+  });
+
+  test('the open phone filter sheet is usable while the page behind it is inert', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    await openFilters(page);
+
+    // <main> holds the sheet, so it must not be inert itself - only what surrounds the sheet.
+    await page.locator('#minDays').selectOption({ index: 1 });
+    await page.getByLabel('Open to all', { exact: true }).click();
+    await expect(page.locator('header')).toHaveJSProperty('inert', true);
+    await expect(page.locator('#main-content')).toHaveJSProperty('inert', false);
+
+    await page.locator('#filtersSheet .sheet-close').click();
+    await expect(page.locator('header')).toHaveJSProperty('inert', false);
   });
 
   test('clicking "More filters" opens the drawer and reveals advanced controls', async ({ page }) => {
     await page.goto('/');
-    await openFilters(page);
-
-    await page.locator('.advanced-summary').click();
+    await openAdvancedFilters(page); // clicks the summary unless the phone sheet already opened it
 
     await expect(page.locator('#advancedFilters')).toHaveJSProperty('open', true);
     await expect(page.getByLabel('Open to all', { exact: true })).toBeVisible();
-    await expect(page.locator('#minDays')).toBeVisible();
   });
 
   test('the filter count badge reflects active advanced filters', async ({ page }) => {
@@ -54,9 +70,7 @@ test.describe('Results-First Layout', () => {
 
     const badge = page.locator('#advancedFilterCount');
     await expect(badge).toBeHidden();
-    await openFilters(page);
-
-    await page.locator('.advanced-summary').click();
+    await openAdvancedFilters(page);
     // openOnly ships checked, so unchecking it counts as one active filter...
     await page.getByLabel('Open to all', { exact: true }).uncheck();
     // ...and checking S50+ counts as a second.
@@ -68,9 +82,7 @@ test.describe('Results-First Layout', () => {
 
   test('a saved advanced filter preference auto-opens the drawer on reload', async ({ page }) => {
     await page.goto('/');
-    await openFilters(page);
-
-    await page.locator('.advanced-summary').click();
+    await openAdvancedFilters(page);
     await page.getByLabel('Open to all', { exact: true }).uncheck();
     // Filter preferences save on change — give the write a moment to land.
     await page.waitForTimeout(300);

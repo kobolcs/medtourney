@@ -27,11 +27,7 @@ export abstract class FilterFormPart extends KeyboardPart {
         const movables = [document.querySelector<HTMLElement>('.mode-switch'), document.getElementById('activeFilterChips')]
             .filter((el): el is HTMLElement => el !== null);
         if (!card || !bar || !backdrop || !slot) return;
-        const inertTargets = [
-            document.querySelector<HTMLElement>('header'),
-            document.getElementById('main-content'),
-        ].filter((el): el is HTMLElement => el !== null);
-        this.filterSheet = new FilterSheet(card, bar, backdrop, slot, movables, card.querySelector('h2'), inertTargets);
+        this.filterSheet = new FilterSheet(card, bar, backdrop, slot, movables, card.querySelector('h2'));
         this.filterSheet.init();
     }
 

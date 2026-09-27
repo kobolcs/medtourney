@@ -5,6 +5,7 @@ Tests actual data download with timeout handling for CI/CD environments
 
 import json
 import os
+import shutil
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -13,6 +14,13 @@ import pytest
 
 # Mark tests that actually download data
 pytestmark = pytest.mark.integration
+
+# The two tests that scrape chess-results.com live are opt-in, so `npm test`
+# stays offline and can't fail on the site being slow or down.
+live_scraper = pytest.mark.skipif(
+    os.environ.get("RUN_LIVE_SCRAPER") != "1",
+    reason="Live chess-results.com scrape - set RUN_LIVE_SCRAPER=1 to run",
+)
 
 
 class TestScraperIntegration:
@@ -28,14 +36,15 @@ class TestScraperIntegration:
         """Path to expected JSON output file"""
         return project_root / "tournaments_data.json"
 
-    def test_scraper_can_run_with_timeout(self, project_root):
+    @live_scraper
+    def test_scraper_can_run_with_timeout(self, project_root, tmp_path):
         """
         Test that scraper can run with proper timeout handling
         This test will timeout after 5 minutes to prevent CI/CD hanging
         """
         cmd = [
             "robot",
-            "--outputdir", str(project_root / "robot_results"),
+            "--outputdir", str(tmp_path),  # fresh dir: a reused output.xml can be unparseable
             "--loglevel", "INFO",
             "--consolecolors", "off",
             str(project_root / "scrape_tournaments.robot")
@@ -60,16 +69,23 @@ class TestScraperIntegration:
         except subprocess.TimeoutExpired:
             pytest.fail("Scraper timed out after 5 minutes - needs optimization for CI/CD")
 
-    @pytest.mark.skipif(
-        os.environ.get("CI") == "true",
-        reason="Skip actual download in CI to save time"
-    )
-    def test_scraper_downloads_real_data(self, project_root, expected_json_file):
+    @pytest.fixture
+    def preserved_json_file(self, expected_json_file, tmp_path):
+        """The tracked tournaments_data.json, restored after the test whatever the scraper did"""
+        backup = tmp_path / "tournaments_data.json.bak"
+        if expected_json_file.exists():
+            shutil.copy2(expected_json_file, backup)
+        yield expected_json_file
+        if backup.exists():
+            shutil.copy2(backup, expected_json_file)
+
+    @live_scraper
+    def test_scraper_downloads_real_data(self, project_root, preserved_json_file):
         """
         Test that scraper actually downloads and processes real tournament data
-        SKIPPED in CI/CD environments (use pytest -m "not integration" to skip)
         """
-        # Remove old JSON file if exists
+        expected_json_file = preserved_json_file
+        # Remove the old JSON file so the assertion below sees fresh output
         if expected_json_file.exists():
             expected_json_file.unlink()
 
@@ -202,15 +218,16 @@ class TestScraperIntegration:
         if result.returncode != 0:
             pytest.skip("Browser library not installed - run 'rfbrowser init'")
 
+    @live_scraper
     @pytest.mark.timeout_test
-    def test_scraper_handles_network_timeout(self, project_root):
+    def test_scraper_handles_network_timeout(self, project_root, tmp_path):
         """
         Test that scraper gracefully handles network timeouts
         Uses a very short timeout to simulate CI/CD time constraints
         """
         cmd = [
             "robot",
-            "--outputdir", str(project_root / "robot_results"),
+            "--outputdir", str(tmp_path),  # fresh dir: a reused output.xml can be unparseable
             "--loglevel", "DEBUG",
             "--variable", "TIMEOUT:5s",  # Very short timeout
             str(project_root / "scrape_tournaments.robot")
@@ -260,7 +277,8 @@ class TestScraperPerformance:
         result = subprocess.run(cmd, check=False, capture_output=True, timeout=10)
         elapsed = time.time() - start
 
-        assert result.returncode == 0
+        # 251 is Robot Framework's "info printed" exit code - what --version returns
+        assert result.returncode in (0, 251)
         assert elapsed < 5, f"Robot Framework startup took {elapsed}s (should be < 5s)"
 
     @pytest.mark.performance
