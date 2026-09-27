@@ -43,6 +43,18 @@ class TestTournamentProcessor:
         category = processor._extract_category("Junior Tournament U16")
         assert "Youth" in category
 
+    def test_extract_category_rating_ceiling_not_youth(self, processor):
+        """Adult rating sections (U1600, U1800, U1900, U2400) must not be tagged Youth.
+        C1 regression: the old \\bu\\d+ pattern matched any digit run, so U1600 was
+        classified as Youth and hidden from adult players with youth-exclusion on."""
+        for rating in ("U1600", "U1800", "U1900", "U2400"):
+            category = processor._extract_category(f"Open {rating} Section")
+            assert "Youth" not in category, f"{rating} section wrongly tagged as Youth"
+        # Real youth ages still match
+        for age in ("U8", "U12", "U18", "U21"):
+            category = processor._extract_category(f"Open {age} Championship")
+            assert "Youth" in category, f"{age} should be tagged as Youth"
+
     def test_extract_category_women(self, processor):
         """Test Women category detection"""
         category = processor._extract_category("Women Championship")

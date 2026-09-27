@@ -87,6 +87,12 @@ export abstract class FilterPreferencesPart extends DataFreshnessPart {
         if (preferences.ratingCategory !== undefined && filterElements.ratingCategory) {
             filterElements.ratingCategory.value = preferences.ratingCategory;
         }
+        if (preferences.startDate instanceof Date && filterElements.startDate) {
+            filterElements.startDate.valueAsDate = preferences.startDate;
+        }
+        if (preferences.endDate instanceof Date && filterElements.endDate) {
+            filterElements.endDate.valueAsDate = preferences.endDate;
+        }
     }
 
     /**

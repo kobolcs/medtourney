@@ -86,7 +86,7 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm ci || npm install
+      run: npm ci
 
     - name: TypeScript type check
       run: npm run type-check
@@ -127,7 +127,9 @@ jobs:
 
     - name: Run unit tests
       run: |
-        pytest tests/python/test_tournament_processor_*.py -v \
+        pytest tests/python/test_tournament_processor_*.py \
+          tests/python/test_time_control_units.py \
+          -v \
           --cov=TournamentProcessor \
           --cov=tournament_processing \
           --cov-report=xml \
@@ -213,7 +215,7 @@ jobs:
         node-version: '24'
 
     - name: Install dependencies
-      run: npm ci || npm install
+      run: npm ci
 
     - name: Build TypeScript
       run: npm run build
@@ -275,7 +277,9 @@ jobs:
 
     - name: Run meta-tests
       run: |
-        pytest tests/python/test_scraper_meta.py -v --tb=short
+        pytest tests/python/test_scraper_meta.py \
+          tests/python/test_validate_scrape.py \
+          -v --tb=short
       env:
         CI: true
 
@@ -334,7 +338,7 @@ jobs:
         cache: 'pip'
 
     - name: Install Node dependencies
-      run: npm ci || npm install
+      run: npm ci
 
     - name: Install Python dependencies
       run: |
@@ -408,7 +412,7 @@ jobs:
         cache: 'npm'
 
     - name: Install Node dependencies
-      run: npm ci || npm install
+      run: npm ci
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
@@ -440,6 +444,50 @@ jobs:
         path: playwright-results.json
         retention-days: 7
 
+  e2e-smoke-webkit-firefox:
+    name: E2E Smoke (WebKit + Firefox)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [typescript-build]
+    # Smoke gate: run a focused subset of tests on non-Chromium browsers to
+    # catch browser-specific regressions without tripling CI time.
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [firefox, webkit]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+        cache: 'npm'
+
+    - name: Install Node dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps ${{ matrix.project }}
+
+    - name: Build TypeScript
+      run: npm run build
+
+    - name: Run E2E Smoke Tests (${{ matrix.project }})
+      run: npx playwright test --project=${{ matrix.project }} tests/e2e/site-basics.spec.ts tests/e2e/accessibility.spec.ts tests/e2e/filter-controls.spec.ts
+      env:
+        CI: true
+
+    - name: Upload Smoke Results
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: playwright-smoke-${{ matrix.project }}
+        path: playwright-report/
+        retention-days: 7
+
   lighthouse:
     name: Lighthouse CI (Performance Audit)
     runs-on: ubuntu-latest
@@ -457,7 +505,7 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm ci || npm install
+      run: npm ci
 
     - name: Build with Vite
       run: npm run build:vite

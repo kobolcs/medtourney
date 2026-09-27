@@ -32,7 +32,7 @@ jobs:
 
     - name: Run pip-audit (dependency vulnerability scan)
       run: |
-        pip-audit --requirement requirements.txt --requirement requirements-dev.txt --format json --output audit-python.json || true
+        pip-audit --requirement requirements.txt --requirement requirements-dev.txt --format json --output audit-python.json
 
     - name: Display results
       if: always()
@@ -64,11 +64,11 @@ jobs:
         node-version: '24'
 
     - name: Install dependencies
-      run: npm ci || npm install
+      run: npm ci
 
     - name: Run npm audit
       run: |
-        npm audit --json > audit-npm.json || true
+        npm audit --audit-level=high --json > audit-npm.json
 
     - name: Display results
       if: always()

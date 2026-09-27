@@ -27,7 +27,11 @@ export abstract class FilterFormPart extends KeyboardPart {
         const movables = [document.querySelector<HTMLElement>('.mode-switch'), document.getElementById('activeFilterChips')]
             .filter((el): el is HTMLElement => el !== null);
         if (!card || !bar || !backdrop || !slot) return;
-        this.filterSheet = new FilterSheet(card, bar, backdrop, slot, movables, card.querySelector('h2'));
+        const inertTargets = [
+            document.querySelector<HTMLElement>('header'),
+            document.getElementById('main-content'),
+        ].filter((el): el is HTMLElement => el !== null);
+        this.filterSheet = new FilterSheet(card, bar, backdrop, slot, movables, card.querySelector('h2'), inertTargets);
         this.filterSheet.init();
     }
 
@@ -187,11 +191,13 @@ export abstract class FilterFormPart extends KeyboardPart {
         clearCountries();
         this.updateCountryFilterSummary();
 
-        // Reset dates to today → 6 months
+        // Reset dates to the same defaults used on first load: 7 days ago → 6 months ahead
         const today = new Date();
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const sixMonths = new Date(today);
         sixMonths.setMonth(sixMonths.getMonth() + 6);
-        if (el.startDate) el.startDate.valueAsDate = today;
+        if (el.startDate) el.startDate.valueAsDate = sevenDaysAgo;
         if (el.endDate)   el.endDate.valueAsDate   = sixMonths;
 
         this.saveFilterPreferences();
@@ -222,6 +228,7 @@ export abstract class FilterFormPart extends KeyboardPart {
 
                 startDateEl.valueAsDate = today;
                 endDateEl.valueAsDate = end;
+                this.handleFilterChange();
             });
         });
     }

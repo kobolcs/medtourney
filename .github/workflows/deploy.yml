@@ -1,16 +1,16 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:  # Allow manual trigger
+  # Code pushes: deploy only after all tests pass on main.
   # The daily data commit is pushed with GITHUB_TOKEN, which starts no push
   # workflows - redeploy once that workflow finishes so the new data goes live.
   # (Pages must be set to "GitHub Actions" as its source: "Deploy from a
   # branch" publishes the raw repo, whose index.html doesn't run without Vite.)
   workflow_run:
-    workflows: [ "Update Tournament Data Daily" ]
+    workflows: [ "Run Tests", "Update Tournament Data Daily" ]
     types: [ completed ]
+    branches: [ main ]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -43,7 +43,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm ci
 
       - name: Build with Vite (Production Optimized)
         run: npm run build:vite

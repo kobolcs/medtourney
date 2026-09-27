@@ -11,16 +11,22 @@ import { isDefaultSeas, parseSeas } from './seas';
 
 export const FILTER_PARAM_KEYS = [
     'open', 'excludeYouth', 'med', 'senior', 'senior60', 'women',
-    'team', 'long', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea'
+    'team', 'long', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea',
+    'from', 'to'
 ] as const;
+
+/** ISO date string (YYYY-MM-DD) or null. */
+function toDateParam(d: Date | null): string | null {
+    if (!d) return null;
+    return d.toISOString().slice(0, 10);
+}
 
 /**
  * Encode the parts of filter state worth sharing as a link into query
  * params. Only non-default values are written, so the common case (no
- * filters narrowed) keeps a clean URL. Date range is deliberately left out -
- * the default window shifts with "today" on every visit, so there's no
- * stable "default" to diff against, and the deep-link ?t= param already
- * covers sharing a single tournament.
+ * filters narrowed) keeps a clean URL. Explicit dates are serialised so
+ * a shared/bookmarked link restores the same window; a fresh visit with no
+ * ?from/?to params still gets the rolling default window.
  */
 export function filterStateToSearchParams(state: FilterState): URLSearchParams {
     const params = new URLSearchParams();
@@ -46,6 +52,11 @@ export function filterStateToSearchParams(state: FilterState): URLSearchParams {
     if (state.minDays !== 0) params.set('dur', String(state.minDays));
     if (state.youthCategory) params.set('youthAge', state.youthCategory);
     if (state.ratingCategory) params.set('rating', state.ratingCategory);
+
+    const from = toDateParam(state.startDate);
+    const to = toDateParam(state.endDate);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
 
     return params;
 }
@@ -87,6 +98,15 @@ export function filterStateFromSearchParams(params: URLSearchParams): Partial<Fi
 
     if (params.has('youthAge')) preferences.youthCategory = params.get('youthAge')!;
     if (params.has('rating')) preferences.ratingCategory = params.get('rating')!;
+
+    if (params.has('from')) {
+        const d = new Date(params.get('from')!);
+        if (!isNaN(d.getTime())) preferences.startDate = d;
+    }
+    if (params.has('to')) {
+        const d = new Date(params.get('to')!);
+        if (!isNaN(d.getTime())) preferences.endDate = d;
+    }
 
     return preferences;
 }

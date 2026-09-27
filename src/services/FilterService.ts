@@ -229,7 +229,8 @@ export class FilterService {
     }
 
     private isYouthTournament(name: string, category: string): boolean {
-        const youthPattern = /\b(youth|junior|u\d+|u-\d+|under|młodzie[żz]|juniorów|juniorzy|žiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
+        // 1–2 digit ages (U8–U21) are youth; 3–4 digit numbers (U1600, U1800) are rating ceilings
+        const youthPattern = /\b(youth|junior|u\d{1,2}|u-\d{1,2}|under|młodzie[żz]|juniorów|juniorzy|žiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
         return youthPattern.test(name) || youthPattern.test(category);
     }
 
@@ -243,8 +244,17 @@ export class FilterService {
     }
 
     private isSeniorCategory(category: string, name: string): boolean {
-        const seniorPattern = /\b(s50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50)\b/i;
-        return seniorPattern.test(category) || seniorPattern.test(name);
+        // Explicit S50+ markers — (?!\w) instead of trailing \b so "50+" at end
+        // of string (non-word char, no boundary) is still matched correctly.
+        const s50Pattern = /\b(?:s50\+?|s\s*50\+?|veteran\w*|50\+|50\s*\+|over\s*50|o50)(?!\w)/i;
+        // Specific 60+ / 65+ markers that indicate an older-only event
+        const olderOnlyPattern = /\b(?:s6\d\+?|s\s*6\d\+?|6[05]\+|6[05]\s*\+|over\s*6[05]|o6[05])(?!\w)/i;
+        const text = category + ' ' + name;
+        if (s50Pattern.test(text)) return true;
+        // Generic "senior/senioren/weteran" matches S50+ ONLY when the event
+        // is not exclusively for a higher age group (e.g. "Senior 65+")
+        const genericSenior = /\b(?:senior\w*|weteran\w*)(?!\w)/i;
+        return genericSenior.test(text) && !olderOnlyPattern.test(text);
     }
 
     private isSeniorS60Category(category: string, name: string): boolean {

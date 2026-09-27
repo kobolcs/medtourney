@@ -91,6 +91,14 @@ export abstract class CardActionsPart extends ShortlistPart {
             e.preventDefault();
             this.openTournamentDetail(tournament);
         });
+
+        document.getElementById('featuredTournament')?.addEventListener('click', (e) => {
+            const btn = (e.target as Element).closest<HTMLElement>('.featured-name-btn');
+            if (!btn) return;
+            const tournament = this.findTournamentByUrl(btn.dataset.tournamentUrl);
+            if (!tournament) return;
+            this.openTournamentDetail(tournament);
+        });
     }
 
     /** Open the detail panel for one tournament (cards, map popups, shared ?t= links). */

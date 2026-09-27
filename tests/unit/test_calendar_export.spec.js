@@ -29,8 +29,9 @@ const tests = [
         name: 'Different tournaments yield different UIDs',
         fn: () => {
             const svc = new ExportService();
-            const a = svc.generateStableUID(makeTournament({ date: new Date('2025-03-15') }));
-            const b = svc.generateStableUID(makeTournament({ date: new Date('2025-03-16') }));
+            // UID stability (C6): URL is the key, so different tournaments must differ by URL
+            const a = svc.generateStableUID(makeTournament({ url: 'https://chess-results.com/tnr001.aspx' }));
+            const b = svc.generateStableUID(makeTournament({ url: 'https://chess-results.com/tnr002.aspx' }));
             return a !== b && a.length > 0 && b.length > 0;
         },
     },

@@ -90,8 +90,8 @@ To fix violations: run the linters and split the files using the rules above.
 one the next time you work in it, then remove it from this list and from the tool.
 They show as warnings; they fail only if they grow.
 - Files (`KNOWN` in the script): `TournamentProcessor.py` 506, `tests/python/test_geocode.py` 420,
-  `src/services/FilterService.ts` 433, `src/app.ts` 420,
-  `tests/e2e/dark-mode-and-ui.spec.ts` 390, `src/services/ExportService.ts` 330,
+  `src/services/FilterService.ts` 433, `src/app.ts` 424,
+  `tests/e2e/dark-mode-and-ui.spec.ts` 390, `src/services/ExportService.ts` 357,
   `tests/e2e/keyboard-navigation.spec.ts` 329, `src/services/DataService.ts` 319,
   `src/services/UIManager.ts` 306, `TESTING.md` 724, `ARCHITECTURE.md` 611.
 - TS functions over 50 lines (a warning in the second block of `eslint.config.mjs`):
@@ -147,12 +147,11 @@ chore: Update dependencies to latest versions
      `src/app/AppState.ts`, methods by concern in `src/app/*Part.ts`, the rest
      in `app.ts`. A method called from a lower part but defined higher up
      needs a `protected abstract` declaration in `AppState`
-   - **This has drifted:** `app.ts` has grown to 1,643 lines (from 573 at
-     the v3.0 refactor) as event wiring, filter-preference persistence,
-     the mode switch, active-filter chips, keyboard shortcuts, deep-linking,
-     and shortlist management all accumulated there as the coordination
-     layer. It's not yet back to the 2,267-line pre-refactor monolith this
-     architecture was built to avoid, but it's trending that way -
+   - **This has drifted:** `app.ts` grew to 1,643 lines before the class-chain
+     split; it currently sits around ~420 lines. Further growth is still
+     possible as event wiring accumulates. It's not near the 2,267-line
+     pre-refactor monolith this architecture was built to avoid, but the
+     direction to watch is -
      `filterUrl.ts` (FilterState <-> URLSearchParams) was pulled out as a
      `src/utils/` module rather than left as private methods here, since it
      had no `this` dependency; that's the pattern to follow next time

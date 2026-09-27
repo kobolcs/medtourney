@@ -141,7 +141,11 @@ export class ExportService {
      */
     private eventLines(tournament: Tournament, now: Date): string[] {
         const startDate = this.formatICSDateOnly(tournament.date);
-        const lastDay = tournament.dateTo ? new Date(tournament.dateTo) : tournament.date;
+        // Validate dateTo: must be a valid date and >= startDate; fall back to startDate.
+        const rawEnd = tournament.dateTo ? new Date(tournament.dateTo) : null;
+        const lastDay = rawEnd && !isNaN(rawEnd.getTime()) && rawEnd >= tournament.date
+            ? rawEnd
+            : tournament.date;
         const endDate = this.formatICSDateOnly(this.addDaysUTC(lastDay, 1));
         const dtstamp = this.formatICSDateTimeUTC(now);
         const uid = this.generateStableUID(tournament);
@@ -187,8 +191,12 @@ export class ExportService {
      * normalized name, and normalized location.
      */
     generateStableUID(tournament: Tournament): string {
-        const key = [
-            (tournament.url || '').trim().toLowerCase(),
+        // The tournament URL is the stable, immutable source identity.
+        // Using only the URL means a rescheduling or title correction does
+        // not change the UID and cause calendar duplicates. Fallback to a
+        // hash of the other fields only when no URL is present.
+        const url = (tournament.url || '').trim().toLowerCase();
+        const key = url || [
             this.formatICSDateOnly(tournament.date),
             (tournament.name || '').trim().toLowerCase().replace(/\s+/g, ' '),
             (tournament.location || '').trim().toLowerCase().replace(/\s+/g, ' '),
@@ -258,13 +266,18 @@ export class ExportService {
     // ---------------------------------------------------------------------
 
     /**
-     * Escape special characters for CSV (RFC 4180).
+     * Escape a value for CSV (RFC 4180) with spreadsheet formula injection
+     * prevention (OWASP): leading =, +, -, @ and control chars are neutralised
+     * by prepending a tab character, which spreadsheets treat as plain text.
      */
     private escapeCSV(text: string): string {
-        if (text.includes(',') || text.includes('"') || text.includes('\n') || text.includes('\r')) {
-            return `"${text.replace(/"/g, '""')}"`;
+        // Neutralise formula-injection prefixes before quoting so the
+        // protection survives both quoted and unquoted paths.
+        const safe = /^[=+\-@\t\r]/.test(text) ? '\t' + text : text;
+        if (safe.includes(',') || safe.includes('"') || safe.includes('\n') || safe.includes('\r')) {
+            return `"${safe.replace(/"/g, '""')}"`;
         }
-        return text;
+        return safe;
     }
 
     /**
@@ -281,28 +294,42 @@ export class ExportService {
 
     /**
      * Fold a content line to <=75 octets per RFC 5545 §3.1.
-     * Continuation lines are prefixed with a single space.
+     * Continuation lines are prefixed with a single space (counts toward
+     * the 75-octet limit, so 74 content bytes per continuation).
      *
-     * Note: folding is performed on UTF-16 code units rather than octets; for
-     * the short ASCII fields this app produces, the two are equivalent. Multi-
-     * byte content is folded slightly conservatively, which remains valid.
+     * Folding is done by UTF-8 byte count (not UTF-16 code unit count) so
+     * that multi-byte characters (accented Latin, Greek, Cyrillic) never
+     * produce physical lines longer than the RFC allows. Surrogate pairs
+     * are never split.
      */
     private foldLine(line: string): string {
         const MAX = 75;
-        if (line.length <= MAX) {
-            return line;
-        }
+        const encoder = new TextEncoder();
+        if (encoder.encode(line).length <= MAX) return line;
 
         const chunks: string[] = [];
-        let index = 0;
-        // First line: up to 75 chars.
-        chunks.push(line.slice(index, index + MAX));
-        index += MAX;
-        // Continuation lines: leading space counts toward the 75, so 74 content chars.
-        while (index < line.length) {
-            chunks.push(' ' + line.slice(index, index + (MAX - 1)));
-            index += MAX - 1;
+        let charPos = 0;
+        let isFirst = true;
+
+        while (charPos < line.length) {
+            const maxBytes = isFirst ? MAX : MAX - 1; // continuation: 1 byte for leading space
+            const chunkStart = charPos;
+            let chunkBytes = 0;
+
+            while (charPos < line.length) {
+                const cp = line.codePointAt(charPos)!;
+                const charUnits = cp > 0xFFFF ? 2 : 1; // surrogate pair = 2 UTF-16 units
+                const byteLen = cp <= 0x7F ? 1 : cp <= 0x7FF ? 2 : cp <= 0xFFFF ? 3 : 4;
+                if (chunkBytes + byteLen > maxBytes) break;
+                chunkBytes += byteLen;
+                charPos += charUnits;
+            }
+
+            const chunk = line.slice(chunkStart, charPos);
+            chunks.push(isFirst ? chunk : ' ' + chunk);
+            isFirst = false;
         }
+
         return chunks.join('\r\n');
     }
 

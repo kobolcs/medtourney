@@ -19,7 +19,7 @@ import { SEA_LABELS } from './seas';
 const PANEL_ID = 'tournamentDetail';
 const HISTORY_KEY = 'medtourneyDetail';
 
-const dayFormat: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+const dayFormat: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' };
 
 /** "Fri, 3 Oct 2026 – Sun, 11 Oct 2026 · 9 days" (one day: "Sat, 3 Oct 2026 · 1 day") */
 export function detailDates(t: Tournament): string {
@@ -202,7 +202,9 @@ export function openDetailPanel(t: Tournament, shortlisted: boolean, onShortlist
             el.setAttribute('open', '');
             el.classList.add('detail-panel--fallback-open');
         }
-        history.pushState({ [HISTORY_KEY]: t.url }, '', location.href);
+        const panelUrl = new URL(location.href);
+        panelUrl.searchParams.set('t', t.url);
+        history.pushState({ [HISTORY_KEY]: t.url }, '', panelUrl.toString());
     }
     el.querySelector<HTMLElement>('.detail-close')?.focus();
 }

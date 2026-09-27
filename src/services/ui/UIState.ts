@@ -10,7 +10,11 @@ export abstract class UIState {
     protected itemsPerPage = 10;
     protected filteredTournaments: Tournament[] = [];
     protected shortlistedUrls: Set<string> = new Set();
-    protected emptyStateContext: { totalCount: number; relaxations: { label: string; count: number }[] } | null = null;
+    protected emptyStateContext: {
+        totalCount: number;
+        relaxations: { label: string; count: number }[];
+        countLine?: string;
+    } | null = null;
     protected groupByDate = false;
     protected monthCounts: Map<string, number> = new Map();
 
