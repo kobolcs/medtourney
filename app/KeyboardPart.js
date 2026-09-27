@@ -1,7 +1,20 @@
 import { CardActionsPart } from './CardActionsPart';
 import { isDetailPanelOpen } from '../utils/detailPanel';
+const SHORTCUTS_DISABLED_KEY = 'medtourney_shortcuts_disabled';
 export class KeyboardPart extends CardActionsPart {
+    constructor() {
+        super(...arguments);
+        this.shortcutsDisabled = localStorage.getItem(SHORTCUTS_DISABLED_KEY) === '1';
+    }
     initKeyboardNavigation() {
+        const toggle = document.getElementById('disableShortcutsToggle');
+        if (toggle) {
+            toggle.checked = this.shortcutsDisabled;
+            toggle.addEventListener('change', () => {
+                this.shortcutsDisabled = toggle.checked;
+                localStorage.setItem(SHORTCUTS_DISABLED_KEY, toggle.checked ? '1' : '0');
+            });
+        }
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F1') {
                 e.preventDefault();
@@ -27,6 +40,8 @@ export class KeyboardPart extends CardActionsPart {
             if (isDetailPanelOpen())
                 return;
             if (e.ctrlKey || e.metaKey || e.altKey)
+                return;
+            if (this.shortcutsDisabled && e.key !== 'Escape')
                 return;
             switch (e.key) {
                 case '/': {

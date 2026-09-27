@@ -22,8 +22,17 @@ export class ResultsViewPart extends FilterFormPart {
         this.displayedTournaments = toDisplay;
         this.uiManager.setShortlistedUrls(this.shortlist);
         if (toDisplay.length === 0) {
-            this.lastEmptyStateRelaxations = this.buildEmptyStateRelaxations();
-            this.uiManager.prepareEmptyState(this.allTournaments.length, this.lastEmptyStateRelaxations.map(({ label, count }) => ({ label, count })));
+            if (this.showShortlistOnly && this.shortlist.size > 0) {
+                const n = this.shortlist.size;
+                const matched = this.filteredTournaments.filter(t => this.shortlist.has(t.url)).length;
+                const msg = `${matched} of ${n} saved tournament${n === 1 ? '' : 's'} match your current filters.`
+                    + (matched === 0 ? ' Uncheck "Show saved only" to see all results.' : '');
+                this.uiManager.prepareEmptyState(0, [], msg);
+            }
+            else {
+                this.lastEmptyStateRelaxations = this.buildEmptyStateRelaxations();
+                this.uiManager.prepareEmptyState(this.allTournaments.length, this.lastEmptyStateRelaxations.map(({ label, count }) => ({ label, count })));
+            }
         }
         this.uiManager.displayTournaments(toDisplay, this.currentSort);
         this.uiManager.updateShowResultsButton(toDisplay.length);

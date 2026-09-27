@@ -1,8 +1,14 @@
 import { isDefaultSeas, parseSeas } from './seas';
 export const FILTER_PARAM_KEYS = [
     'open', 'excludeYouth', 'med', 'senior', 'senior60', 'women',
-    'team', 'long', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea'
+    'team', 'long', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea',
+    'from', 'to'
 ];
+function toDateParam(d) {
+    if (!d)
+        return null;
+    return d.toISOString().slice(0, 10);
+}
 export function filterStateToSearchParams(state) {
     const params = new URLSearchParams();
     if (!state.openOnly)
@@ -38,6 +44,12 @@ export function filterStateToSearchParams(state) {
         params.set('youthAge', state.youthCategory);
     if (state.ratingCategory)
         params.set('rating', state.ratingCategory);
+    const from = toDateParam(state.startDate);
+    const to = toDateParam(state.endDate);
+    if (from)
+        params.set('from', from);
+    if (to)
+        params.set('to', to);
     return params;
 }
 export function filterStateFromSearchParams(params) {
@@ -82,6 +94,16 @@ export function filterStateFromSearchParams(params) {
         preferences.youthCategory = params.get('youthAge');
     if (params.has('rating'))
         preferences.ratingCategory = params.get('rating');
+    if (params.has('from')) {
+        const d = new Date(params.get('from'));
+        if (!isNaN(d.getTime()))
+            preferences.startDate = d;
+    }
+    if (params.has('to')) {
+        const d = new Date(params.get('to'));
+        if (!isNaN(d.getTime()))
+            preferences.endDate = d;
+    }
     return preferences;
 }
 //# sourceMappingURL=filterUrl.js.map

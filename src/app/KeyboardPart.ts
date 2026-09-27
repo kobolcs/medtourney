@@ -8,12 +8,22 @@
 import { CardActionsPart } from './CardActionsPart';
 import { isDetailPanelOpen } from '../utils/detailPanel';
 
+const SHORTCUTS_DISABLED_KEY = 'medtourney_shortcuts_disabled';
+
 /** Single-key keyboard shortcuts. */
 export abstract class KeyboardPart extends CardActionsPart {
-    /**
-     * Initialize keyboard navigation
-     */
+    private shortcutsDisabled = localStorage.getItem(SHORTCUTS_DISABLED_KEY) === '1';
+
     protected initKeyboardNavigation(): void {
+        const toggle = document.getElementById('disableShortcutsToggle') as HTMLInputElement | null;
+        if (toggle) {
+            toggle.checked = this.shortcutsDisabled;
+            toggle.addEventListener('change', () => {
+                this.shortcutsDisabled = toggle.checked;
+                localStorage.setItem(SHORTCUTS_DISABLED_KEY, toggle.checked ? '1' : '0');
+            });
+        }
+
         document.addEventListener('keydown', (e: KeyboardEvent) => {
             // F1: Toggle help modal (works even while typing — a dedicated
             // function key has no conflicting "insert this character" use)
@@ -48,6 +58,7 @@ export abstract class KeyboardPart extends CardActionsPart {
             if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
             if (isDetailPanelOpen()) return; // the panel is modal: no page shortcuts behind it
             if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (this.shortcutsDisabled && e.key !== 'Escape') return;
 
             switch (e.key) {
                 case '/': {

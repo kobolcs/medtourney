@@ -202,7 +202,9 @@ export function openDetailPanel(t: Tournament, shortlisted: boolean, onShortlist
             el.setAttribute('open', '');
             el.classList.add('detail-panel--fallback-open');
         }
-        history.pushState({ [HISTORY_KEY]: t.url }, '', location.href);
+        const panelUrl = new URL(location.href);
+        panelUrl.searchParams.set('t', t.url);
+        history.pushState({ [HISTORY_KEY]: t.url }, '', panelUrl.toString());
     }
     el.querySelector<HTMLElement>('.detail-close')?.focus();
 }

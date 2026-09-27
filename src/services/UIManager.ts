@@ -23,8 +23,8 @@ export class UIManager extends StatusViewsPart {
      * wiring clicks via its own delegated listener since these buttons are
      * rendered fresh into the DOM each time showEmptyState() runs.
      */
-    prepareEmptyState(totalCount: number, relaxations: { label: string; count: number }[]): void {
-        this.emptyStateContext = { totalCount, relaxations };
+    prepareEmptyState(totalCount: number, relaxations: { label: string; count: number }[], countLine?: string): void {
+        this.emptyStateContext = { totalCount, relaxations, countLine };
     }
 
     setShortlistedUrls(urls: Set<string>): void {

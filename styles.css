@@ -2361,6 +2361,16 @@ footer a:hover {
   white-space: nowrap;
 }
 
+.help-shortcut-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  font-size: var(--text-sm);
+  color: var(--label);
+  cursor: pointer;
+}
+
 .help-code {
   background: var(--surface-2);
   color: var(--sea);

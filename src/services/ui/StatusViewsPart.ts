@@ -83,9 +83,11 @@ export abstract class StatusViewsPart extends PaginationPart {
         const ctx = this.emptyStateContext;
         this.emptyStateContext = null;
 
-        const countLine = ctx && ctx.totalCount > 0
-            ? `<p class="empty-state-message empty-state-count">0 of ${ctx.totalCount.toLocaleString()} tournaments match your filters.</p>`
-            : `<p class="empty-state-message">We couldn't find any tournaments matching your current filters.</p>`;
+        const countLine = ctx?.countLine
+            ? `<p class="empty-state-message empty-state-count">${escapeHTML(ctx.countLine)}</p>`
+            : ctx && ctx.totalCount > 0
+                ? `<p class="empty-state-message empty-state-count">0 of ${ctx.totalCount.toLocaleString()} tournaments match your filters.</p>`
+                : `<p class="empty-state-message">We couldn't find any tournaments matching your current filters.</p>`;
 
         const relaxations = ctx?.relaxations ?? [];
 
