@@ -35,7 +35,7 @@ MedTourney is an **advanced chess tournament search tool** for discovering Europ
 
 - **Version:** 3.1.0
 - **Total Tests:** 290+ (211 service unit, 8 service integration, 68 Playwright E2E per browser, 87 Python backend, 27 Python integration) — all currently passing; see Testing Strategy
-- **Bundle Size:** ~33KB gzipped JS + ~8.4KB gzipped CSS for the main bundle (grown from the original 25KB as the results-first redesign, mobile fixes, flag icons, live filtering and the map toggle landed — still deliberately small; see Performance Considerations). The map view (MapView + Leaflet + markercluster, ~54KB gzipped) is lazy-loaded on first use and not part of it
+- **Bundle Size:** ~38KB gzipped JS + ~9.2KB gzipped CSS for the main bundle, measured 2026-09-27 (grown from the original 25KB as the results-first redesign, mobile fixes, flag icons, live filtering, the map toggle, tournament details and the #71 review fixes landed — still deliberately small; see Performance Considerations). The map view (MapView + Leaflet + markercluster, ~54KB gzipped) is lazy-loaded on first use and not part of it
 - **Architecture:** Modular service-oriented (5 specialized services + focused utils)
 - **Technologies:** TypeScript (strict mode), Vite, Playwright, Robot Framework, Python
 
@@ -216,7 +216,7 @@ chore: Update dependencies to latest versions
 ### Performance Considerations
 
 1. **Bundle size**
-   - Current: ~33KB gzipped JS (`dist/assets/index-*.js`) + ~8.4KB gzipped CSS - validators use `zod/mini`, full `zod` is ~18KB more; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `src/app/ResultsViewPart.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
+   - Current: ~38KB gzipped JS (`dist/assets/index-*.js`) + ~9.2KB gzipped CSS - validators use `zod/mini` (~8.5KB of that with `validators.ts`), full `zod` is ~18KB more; the map (`MapView-*.js`, `leaflet-*.js`, `leaflet.markercluster-*.js`) loads only when someone opens it - keep it that way (dynamic `import()` in `src/app/ResultsViewPart.ts`/`MapView.ts`) - verify with `npm run build:vite` after any change that feels like it could be heavy
    - Flag icons (`public/flags/*.png`) are static assets served on demand, not part of this bundle - kept to ~4KB average per flag (rasterized small; several countries' full-detail SVG coats of arms were 30-180KB, wasted at 20px icon size)
    - Avoid large dependencies
    - Use tree-shaking friendly imports

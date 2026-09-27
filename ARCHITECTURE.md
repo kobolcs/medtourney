@@ -375,7 +375,7 @@ interface AppConfig {
 
 **Bundle Size Reduction**:
 - Before: 80 KB JavaScript (unminified)
-- After (v3.0): 27.77 KB (8.05 KB gzipped); ~33 KB gzipped today (zod/mini), plus the lazy-loaded map
+- After (v3.0): 27.77 KB (8.05 KB gzipped); ~38 KB gzipped today (zod/mini), plus the lazy-loaded map
 - No separate legacy bundle since `@vitejs/plugin-legacy` was dropped (2026)
 - **70% reduction** in bundle size
 
