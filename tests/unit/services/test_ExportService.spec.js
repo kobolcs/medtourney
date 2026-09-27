@@ -293,7 +293,6 @@ test('C7: 70-char accented name folds within 75-byte limit', () => {
     const svc = new ExportService();
     // 70 accented chars = 140 UTF-8 bytes — should fold
     const longAccented = 'é'.repeat(70); // each é = 2 UTF-8 bytes
-    const line = 'SUMMARY:' + longAccented;
     const folded = svc.buildICSForTournament({ ...tournament, name: longAccented });
     // Every physical line must be <= 75 UTF-8 bytes
     const physicalLines = folded.split('\r\n');
