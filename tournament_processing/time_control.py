@@ -88,8 +88,8 @@ class TimeControlMixin(ProcessorBase):
         # being an 8+3=11 (Rapid) game.
         # Allow an optional dot between the digit and the unit marker so that
         # dotted abbreviations like "10.min.+ 5.sek." are handled correctly.
-        # Also adds U+00B4 ACUTE ACCENT (´) alongside the apostrophe/prime
-        # family so that "5´ + 3"" (chess-results compact notation) classifies
+        # Also adds U+00B4 ACUTE ACCENT alongside the apostrophe/prime
+        # family so that "5[acute] + 3[quote]" (chess-results compact notation) classifies
         # as Blitz instead of falling through to Classical.
         m = re.search(r"(\d+)[\s.]*(h(?:our)?s?|min(?:ute)?s?|['′`´])", tc_lower)  # noqa: RUF001 (deliberate: matches real prime-mark/acute notation)
         if m:

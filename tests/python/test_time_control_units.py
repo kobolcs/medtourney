@@ -60,8 +60,8 @@ def test_bare_number_without_2x_is_left_alone(processor):
     ("time_control", "expected"),
     [
         # C2 regression: acute accent (U+00B4) minute mark — EXCALIBUR 5+3
-        ("5´ + 3\"", "Blitz"),
-        ("10´ + 3\"", "Rapid"),
+        ('5´ + 3"', "Blitz"),
+        ('10´ + 3"', "Rapid"),
         # C2 regression: dotted unit abbreviations (German/Czech style)
         ("10.min.+ 5.sek.", "Rapid"),
         ("5.min.+ 3.sek.", "Blitz"),

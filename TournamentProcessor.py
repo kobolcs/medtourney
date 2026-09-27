@@ -58,7 +58,7 @@ class TournamentProcessor(ExcelMixin, TimeControlMixin, ClassifyMixin, ConfigMix
         "s50": re.compile(r"\bs50\+|s50|senior|veteran|50\+", re.IGNORECASE),
         # International youth keywords: English, Polish, Czech, Slovak, Hungarian, German, French, Spanish, Italian
         "youth": re.compile(
-            r"\bu\d{1,2}\b|youth|junior|under|"  # English (1–2 digit age: U8–U21; U1600+ are rating ceilings)
+            r"\bu\d{1,2}\b|youth|junior|under|"  # English (1-2 digit age: U8-U21; U1600+ are rating ceilings)
             r"żiak|młodzie[żz]|juniorzy|juniorów|"  # Polish (żiak, młodzież, juniorzy, juniorów)
             r"ml[áa]de[žz]|"  # Czech/Slovak (mládež)
             r"ifjúság|junior|"  # Hungarian
