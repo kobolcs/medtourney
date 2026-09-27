@@ -229,7 +229,8 @@ export class FilterService {
     }
 
     private isYouthTournament(name: string, category: string): boolean {
-        const youthPattern = /\b(youth|junior|u\d+|u-\d+|under|młodzie[żz]|juniorów|juniorzy|žiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
+        // 1–2 digit ages (U8–U21) are youth; 3–4 digit numbers (U1600, U1800) are rating ceilings
+        const youthPattern = /\b(youth|junior|u\d{1,2}|u-\d{1,2}|under|młodzie[żz]|juniorów|juniorzy|žiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
         return youthPattern.test(name) || youthPattern.test(category);
     }
 

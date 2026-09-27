@@ -645,6 +645,25 @@ function runTests() {
         assertEqual(filtered.length, 0, 'neither U1600 nor U2000 should match U1800');
     });
 
+    // Test 31a: Rating sections (U1600, U1800...) are NOT excluded by excludeYouth
+    test('C1 regression: adult U1600/U1800 sections survive excludeYouth', () => {
+        const service = new FilterService();
+        const tourns = [
+            { name: 'Southall Congress U1600', location: 'London, ENG', date: new Date('2025-06-01'), category: 'Classical Open', description: '' },
+            { name: 'Zagreb Open U1800 Standard', location: 'Zagreb, CRO', date: new Date('2025-06-01'), category: 'Classical', description: '' },
+            { name: 'Youth Championship U12', location: 'Madrid, ESP', date: new Date('2025-06-01'), category: 'Classical Youth', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: true, mediterraneanOnly: false,
+            seniorCategory: false, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
+            seniorS60: false, youthCategory: ''
+        }, new Set());
+        assertEqual(filtered.length, 2, 'U1600 and U1800 sections survive youth exclusion; U12 is removed');
+        assertEqual(filtered.map(t => t.name).sort().join(','), 'Southall Congress U1600,Zagreb Open U1800 Standard');
+    });
+
     // Test 31: Empty ratingCategory passes everything
     test('Empty ratingCategory does not filter', () => {
         const service = new FilterService();

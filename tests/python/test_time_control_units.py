@@ -54,3 +54,22 @@ def test_move_count_formats_stay_classical(processor, time_control):
 def test_bare_number_without_2x_is_left_alone(processor):
     """A lone "10" could be anything; only the "2x" prefix makes it minutes."""
     assert processor._classify_time_control_field("10") is None
+
+
+@pytest.mark.parametrize(
+    ("time_control", "expected"),
+    [
+        # C2 regression: acute accent (U+00B4) minute mark — EXCALIBUR 5+3
+        ("5´ + 3\"", "Blitz"),
+        ("10´ + 3\"", "Rapid"),
+        # C2 regression: dotted unit abbreviations (German/Czech style)
+        ("10.min.+ 5.sek.", "Rapid"),
+        ("5.min.+ 3.sek.", "Blitz"),
+        # C2 regression: hyphen as base+increment separator (whole string only)
+        ("10-10", "Rapid"),
+        ("5-3", "Blitz"),
+    ],
+)
+def test_c2_previously_falling_through_to_classical(processor, time_control, expected):
+    """Formats confirmed as Classical due to unrecognised notation (fixed in C2)."""
+    assert processor._classify_time_control_field(time_control) == expected

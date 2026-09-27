@@ -52,6 +52,15 @@ class TimeControlMixin(ProcessorBase):
         if m:
             return self._total_to_class(int(m.group(1)) + int(m.group(2)))
 
+        # "N-M" shorthand (e.g. "10-10", "5-3") when the WHOLE string is just
+        # two numbers separated by a hyphen; identical semantics to "N+M".
+        # Not searched as a substring - hyphens appear in date ranges and
+        # multi-session formats ("40-20") where the hyphen is a separator
+        # between control periods, not base+increment.
+        m = re.match(r"^(\d+)\s*-\s*(\d+)$", tc_lower.strip())
+        if m:
+            return self._total_to_class(int(m.group(1)) + int(m.group(2)))
+
         # "N unit [... M sec-unit]" format: "10min plus 3sec", "90 minutes + 30
         # seconds", "45 minutes with 15 second increment", "30 minutes for
         # game with 30 seconds increment", "... with an increment of 10
@@ -77,12 +86,17 @@ class TimeControlMixin(ProcessorBase):
         # "8`+ 3\" por mov" - a real example that was otherwise unrecognized
         # entirely and fell through to the "Classical" default despite
         # being an 8+3=11 (Rapid) game.
-        m = re.search(r"(\d+)\s*(h(?:our)?s?|min(?:ute)?s?|['′`])", tc_lower)  # noqa: RUF001 (deliberate: matches real prime-mark notation)
+        # Allow an optional dot between the digit and the unit marker so that
+        # dotted abbreviations like "10.min.+ 5.sek." are handled correctly.
+        # Also adds U+00B4 ACUTE ACCENT (´) alongside the apostrophe/prime
+        # family so that "5´ + 3"" (chess-results compact notation) classifies
+        # as Blitz instead of falling through to Classical.
+        m = re.search(r"(\d+)[\s.]*(h(?:our)?s?|min(?:ute)?s?|['′`´])", tc_lower)  # noqa: RUF001 (deliberate: matches real prime-mark/acute notation)
         if m:
             val = int(m.group(1))
             base = val * 60 if m.group(2).startswith("h") else val
             m2 = re.search(
-                r"(\d+)\s*(?:s(?:ec|ek|eg|ekunde|econds?|ekundy)?|['′`]{2}|[\"″])",  # noqa: RUF001 (deliberate: double-prime seconds notation)
+                r"(\d+)[\s.]*(?:s(?:ec|ek|eg|ekunde|econds?|ekundy)?|['′`´]{2}|[\"″])",  # noqa: RUF001 (deliberate: double-prime/acute seconds notation)
                 tc_lower[m.end():]
             )
             inc = int(m2.group(1)) if m2 else 0
