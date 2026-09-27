@@ -565,6 +565,10 @@
   "town": null,
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:41.413,22.652": {
+  "town": "Kuklish",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
+ },
  "@town:41.478,-8.470": {
   "town": "Braga",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1093,6 +1097,10 @@
   "town": "Senta",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:46.004,8.951": {
+  "town": "Lugano",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
+ },
  "@town:46.010,8.960": {
   "town": "Lugano",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1372,6 +1380,10 @@
  "@town:47.498,19.040": {
   "town": "Budapest",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:47.500,19.083": {
+  "town": "Budapest",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
  },
  "@town:47.512,16.036": {
   "town": "Mönichkirchen",
@@ -1685,6 +1697,10 @@
   "town": "Mackenbach",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:49.489,8.467": {
+  "town": "Mannheim",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
+ },
  "@town:49.506,6.012": {
   "town": "Schifflange",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1764,6 +1780,10 @@
  "@town:49.902,1.141": {
   "town": "Martin-Église",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:49.939,17.903": {
+  "town": "Opava",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
  },
  "@town:49.965,12.701": {
   "town": "Mariánské Lázně",
@@ -1904,6 +1924,10 @@
  "@town:50.650,13.450": {
   "town": "Seiffen/Erzgebirge",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:50.660,14.038": {
+  "town": "Ústí nad Labem",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
  },
  "@town:50.724,15.171": {
   "town": "Jablonec nad Nisou",
@@ -3359,6 +3383,11 @@
   "q": "czeladz",
   "src": "geonames"
  },
+ "CÍRCULO MERCANTIL (CASCO ANTIGUO), ESP": {
+  "lat": 37.3904,
+  "lng": -5.9943,
+  "q": "CÍRCULO MERCANTIL (CASCO ANTIGUO)"
+ },
  "Círculo Mercantil (casco antiguo), ESP": {
   "lat": 37.3904,
   "lng": -5.9943,
@@ -4095,6 +4124,11 @@
   "q": "banjaluka",
   "src": "geonames"
  },
+ "Hotel \"Sirius\" - Strumica, MKD": {
+  "lat": 41.4129,
+  "lng": 22.6517,
+  "q": "Hotel \"Sirius\" - Strumica"
+ },
  "Hotel Aida (Torrejon de Ardoz), ESP": {
   "lat": 40.4596,
   "lng": -3.4651,
@@ -4197,6 +4231,10 @@
   "lng": -0.4398,
   "q": "cocentaina",
   "src": "geonames"
+ },
+ "Hotel Radin****, SLO": {
+  "miss": "no match",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
  },
  "Hotel Relax U Drsů - Varšavská 2708, CZE": {
   "miss": "no match",
@@ -4732,6 +4770,11 @@
    "tried": "2026-09-24T00:16:01.250879+00:00"
   }
  },
+ "Lugano, SUI": {
+  "lat": 46.0038,
+  "lng": 8.9512,
+  "q": "Lugano"
+ },
  "Luzern, SUI": {
   "lat": 47.0521,
   "lng": 8.3058,
@@ -4802,6 +4845,11 @@
   "lat": 49.9995,
   "lng": 8.2736,
   "q": "Mainz"
+ },
+ "Mannheim, GER": {
+  "lat": 49.4893,
+  "lng": 8.4673,
+  "q": "Mannheim"
  },
  "Marburg, GER": {
   "lat": 50.809,
@@ -5265,6 +5313,10 @@
  "Piata Amzei, ROU": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Pipacsvirág Általános Iskola, HUN": {
+  "miss": "no match",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
  },
  "Planta alta del CC La Sierra, ESP": {
   "miss": "no match",
@@ -6075,6 +6127,10 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Susedgradska 26 b, SRB": {
+  "miss": "no match",
+  "tried": "2026-09-27T04:03:55.135618+00:00"
+ },
  "Suwałki, POL": {
   "lat": 54.1118,
   "lng": 22.9309,
@@ -6648,6 +6704,11 @@
   "lng": 21.6833,
   "q": "ujfeherto",
   "src": "geonames"
+ },
+ "Ústí nad Labem, CZE": {
+  "lat": 50.6603,
+  "lng": 14.0381,
+  "q": "Ústí nad Labem"
  },
  "Československej armády 1171/21, SVK": {
   "miss": "no match",
