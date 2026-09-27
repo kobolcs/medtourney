@@ -313,7 +313,7 @@ export class ExportService {
 
         while (charPos < line.length) {
             const maxBytes = isFirst ? MAX : MAX - 1; // continuation: 1 byte for leading space
-            let chunkStart = charPos;
+            const chunkStart = charPos;
             let chunkBytes = 0;
 
             while (charPos < line.length) {

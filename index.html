@@ -210,101 +210,6 @@
                 <input type="checkbox" id="mediterraneanOnly" hidden>
             </div>
 
-            <details id="advancedFilters">
-                <summary class="advanced-summary">
-                    More filters
-                    <span id="advancedFilterCount" class="advanced-filter-count" hidden>0</span>
-                </summary>
-
-                <div class="filter-grid">
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="openOnly" checked aria-describedby="open-only-desc">
-                            <span class="checkbox-label">Open to all</span>
-                        </label>
-                        <span id="open-only-desc" class="sr-only">Hide tournaments that are clearly not open to everyone: invitational or closed events, round robins and norm events, club championships</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="excludeYouth" checked aria-describedby="exclude-youth-desc">
-                            <span class="checkbox-label">Exclude Youth-Only Tournaments</span>
-                        </label>
-                        <span id="exclude-youth-desc" class="sr-only">Exclude tournaments for players under 18</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="womenOnly" aria-describedby="women-desc">
-                            <span class="checkbox-label">Women's Tournaments</span>
-                        </label>
-                        <span id="women-desc" class="sr-only">Show only women's tournaments</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="includeTeamTournaments" aria-describedby="team-desc">
-                            <span class="checkbox-label">Include Team Tournaments</span>
-                        </label>
-                        <span id="team-desc" class="sr-only">Include team tournaments (normally excluded)</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="includeLongEvents" aria-describedby="long-desc">
-                            <span class="checkbox-label">Weekly / season-long events</span>
-                        </label>
-                        <span id="long-desc" class="sr-only">Include events running over 3 weeks, such as weekly club leagues (normally excluded)</span>
-                    </div>
-                </div>
-
-                <h3 id="age-group-heading" class="filter-section-title">Age Group</h3>
-                <div class="filter-grid" role="group" aria-labelledby="age-group-heading">
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="seniorCategory" aria-describedby="senior-desc">
-                            <span class="checkbox-label">S50+ (Senior) Category</span>
-                        </label>
-                        <span id="senior-desc" class="sr-only">Show only tournaments for players aged 50 and above</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="seniorS60" aria-describedby="senior60-desc">
-                            <span class="checkbox-label">S60+ Category</span>
-                        </label>
-                        <span id="senior60-desc" class="sr-only">Show only tournaments for players aged 60 and above</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label for="ratingCategory">Rating ceiling</label>
-                        <select id="ratingCategory" aria-label="Filter by adult rating category" aria-describedby="rating-cat-desc">
-                            <option value="">Any rating class</option>
-                            <option value="U1400">U1400</option>
-                            <option value="U1600">U1600</option>
-                            <option value="U1800">U1800</option>
-                            <option value="U2000">U2000</option>
-                            <option value="U2200">U2200</option>
-                        </select>
-                        <span id="rating-cat-desc" class="sr-only">Show only tournaments with this rating ceiling in their name or category</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label for="youthCategory">Youth age group</label>
-                        <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
-                            <option value="" title="Use the Exclude Youth-Only Tournaments filter above instead">None</option>
-                            <option value="U8">U8</option>
-                            <option value="U10">U10</option>
-                            <option value="U12">U12</option>
-                            <option value="U14">U14</option>
-                            <option value="U16">U16</option>
-                            <option value="U18">U18</option>
-                            <option value="U20">U20</option>
-                        </select>
-                        <span id="youth-cat-desc" class="sr-only">Selecting an age group overrides the exclude-youth filter and shows only that age group</span>
-                    </div>
-                </div>
-
                 <h3 class="filter-section-title">Duration</h3>
                 <div class="filter-grid">
                     <div class="filter-group">
@@ -434,6 +339,102 @@
                         </div>
                     </div>
                 </div>
+
+            <details id="advancedFilters">
+                <summary class="advanced-summary">
+                    More filters
+                    <span id="advancedFilterCount" class="advanced-filter-count" hidden>0</span>
+                </summary>
+
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="openOnly" checked aria-describedby="open-only-desc">
+                            <span class="checkbox-label">Open to all</span>
+                        </label>
+                        <span id="open-only-desc" class="sr-only">Hide tournaments that are clearly not open to everyone: invitational or closed events, round robins and norm events, club championships</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="excludeYouth" checked aria-describedby="exclude-youth-desc">
+                            <span class="checkbox-label">Exclude Youth-Only Tournaments</span>
+                        </label>
+                        <span id="exclude-youth-desc" class="sr-only">Exclude tournaments for players under 18</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="womenOnly" aria-describedby="women-desc">
+                            <span class="checkbox-label">Women's Tournaments</span>
+                        </label>
+                        <span id="women-desc" class="sr-only">Show only women's tournaments</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="includeTeamTournaments" aria-describedby="team-desc">
+                            <span class="checkbox-label">Include Team Tournaments</span>
+                        </label>
+                        <span id="team-desc" class="sr-only">Include team tournaments (normally excluded)</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="includeLongEvents" aria-describedby="long-desc">
+                            <span class="checkbox-label">Weekly / season-long events</span>
+                        </label>
+                        <span id="long-desc" class="sr-only">Include events running over 3 weeks, such as weekly club leagues (normally excluded)</span>
+                    </div>
+                </div>
+
+                <h3 id="age-group-heading" class="filter-section-title">Age Group</h3>
+                <div class="filter-grid" role="group" aria-labelledby="age-group-heading">
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="seniorCategory" aria-describedby="senior-desc">
+                            <span class="checkbox-label">S50+ (Senior) Category</span>
+                        </label>
+                        <span id="senior-desc" class="sr-only">Show only tournaments for players aged 50 and above</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="seniorS60" aria-describedby="senior60-desc">
+                            <span class="checkbox-label">S60+ Category</span>
+                        </label>
+                        <span id="senior60-desc" class="sr-only">Show only tournaments for players aged 60 and above</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="ratingCategory">Rating ceiling</label>
+                        <select id="ratingCategory" aria-label="Filter by adult rating category" aria-describedby="rating-cat-desc">
+                            <option value="">Any rating class</option>
+                            <option value="U1400">U1400</option>
+                            <option value="U1600">U1600</option>
+                            <option value="U1800">U1800</option>
+                            <option value="U2000">U2000</option>
+                            <option value="U2200">U2200</option>
+                        </select>
+                        <span id="rating-cat-desc" class="sr-only">Show only tournaments with this rating ceiling in their name or category</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="youthCategory">Youth age group</label>
+                        <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
+                            <option value="" title="Use the Exclude Youth-Only Tournaments filter above instead">None</option>
+                            <option value="U8">U8</option>
+                            <option value="U10">U10</option>
+                            <option value="U12">U12</option>
+                            <option value="U14">U14</option>
+                            <option value="U16">U16</option>
+                            <option value="U18">U18</option>
+                            <option value="U20">U20</option>
+                        </select>
+                        <span id="youth-cat-desc" class="sr-only">Selecting an age group overrides the exclude-youth filter and shows only that age group</span>
+                    </div>
+                </div>
+
             </details>
 
             <!-- Filtering is live, so there's no Search button. Below 1024px the
@@ -487,17 +488,27 @@
                             <option value="country">Country</option>
                         </select>
                     </div>
-                    <label class="shortlist-toggle-label" title="Your shortlist is saved in this browser — it won't appear on other devices">
-                        <input type="checkbox" id="showShortlistOnly" aria-label="Show shortlisted tournaments only">
-                        <span>★ Shortlist</span>
-                    </label>
-                    <button id="exportBtn" class="export-button" aria-label="Download the current results as a CSV spreadsheet" title="Download results as CSV (opens in Excel, Google Sheets…)">
-                        <span aria-hidden="true">⤓</span> Download
-                    </button>
-                    <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar" title="Add your shortlist to your calendar (.ics)">
-                        <span aria-hidden="true">📅</span> Shortlist
-                        <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
-                    </button>
+                    <div class="sort-controls">
+                        <label for="pageSizeSelect">Per page</label>
+                        <select id="pageSizeSelect" class="sort-select" aria-label="Results per page">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="results-actions">
+                        <label class="shortlist-toggle-label" title="Your shortlist is saved in this browser — it won't appear on other devices">
+                            <input type="checkbox" id="showShortlistOnly" aria-label="Show shortlisted tournaments only">
+                            <span>★ Shortlist</span>
+                        </label>
+                        <button id="exportBtn" class="export-button" aria-label="Download the current results as a CSV spreadsheet" title="Download results as CSV (opens in Excel, Google Sheets…)">
+                            <span aria-hidden="true">⤓</span> CSV
+                        </button>
+                        <button id="exportShortlistBtn" class="export-button export-shortlist-btn" style="display:none;" aria-label="Export shortlisted tournaments to calendar" title="Add your shortlist to your calendar (.ics)">
+                            <span aria-hidden="true">📅</span> Shortlist
+                            <span id="shortlistCount" class="shortlist-count" style="display:none;">0</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div id="mapView" class="map-view" hidden>

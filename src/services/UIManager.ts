@@ -79,6 +79,12 @@ export class UIManager extends StatusViewsPart {
         this.renderResults();
     }
 
+    setPageSize(n: number): void {
+        this.itemsPerPage = n;
+        this.currentPage = 1;
+        this.renderResults();
+    }
+
     /**
      * Render results with pagination
      */

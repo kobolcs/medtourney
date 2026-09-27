@@ -65,7 +65,7 @@
   --sp-16: 4rem;
 
   /* Type */
-  --text-xs:   .72rem;
+  --text-xs:   .8125rem;
   --text-sm:   .875rem;
   --text-base: 1rem;
   --text-lg:   1.125rem;
@@ -1112,6 +1112,14 @@ body.dark-theme .error-message.success-type {
   border-color: var(--sea);
 }
 
+/* Groups ★ Shortlist, CSV, and Export Shortlist on one line */
+.results-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+
 /* EXPORT BUTTONS - quiet secondary actions, not the page's loudest element */
 .export-button {
   background: transparent;
@@ -1273,6 +1281,35 @@ body.dark-theme .error-message.success-type {
   font-size: var(--text-base);
   font-weight: 700;
   line-height: 1.3;
+}
+
+.featured-name-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: inherit;
+  color: var(--amber);
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+}
+
+.featured-name-btn:hover,
+.featured-name-btn:focus-visible {
+  text-decoration: underline;
+}
+
+.featured-external-link {
+  color: var(--label);
+  font-size: var(--text-xs);
+  text-decoration: none;
+  margin-left: var(--sp-1);
+  vertical-align: super;
+}
+
+.featured-external-link:hover {
+  color: var(--accent);
 }
 
 .featured-name-link {
@@ -2877,12 +2914,9 @@ body.dark-theme .map-cluster {
 
 /* Phones and tablets (<= 1023px - the desktop sidebar starts at 1024px) */
 @media (max-width: 1023px) {
-  /* Phones and tablets: scale up the two smallest type steps so the UI is
-     comfortable to read without glasses. --text-xs: 11.5px → 13px;
-     --text-sm: 14px → 16px (WCAG body-text floor). Every component that
-     uses these variables picks up the increase automatically. */
+  /* Phones and tablets: scale up --text-sm to 1rem (WCAG body-text floor).
+     --text-xs is already 13px globally; no override needed. */
   :root {
-    --text-xs: .8125rem;
     --text-sm: 1rem;
   }
 

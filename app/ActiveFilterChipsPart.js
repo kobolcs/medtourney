@@ -1,6 +1,6 @@
 import { escapeHTML } from '../utils/html';
 import { FilterPreferencesPart } from './FilterPreferencesPart';
-import { checkedCountryCodes, clearCountries } from '../utils/countrySelection';
+import { clearCountries } from '../utils/countrySelection';
 import { SEA_LABELS, isDefaultSeas } from '../utils/seas';
 export class ActiveFilterChipsPart extends FilterPreferencesPart {
     minDaysChipLabel(minDays) {
@@ -34,11 +34,11 @@ export class ActiveFilterChipsPart extends FilterPreferencesPart {
             chips.push({ label: 'Open category off', clear: () => this.setCheckbox('openOnly', true) });
         if (!s.excludeYouth)
             chips.push({ label: 'Youth-only included', clear: () => this.setCheckbox('excludeYouth', true) });
-        const tcOff = [!s.classicalTime && 'Classical', !s.rapidTime && 'Rapid', !s.blitzTime && 'Blitz']
+        const tcOn = [s.classicalTime && 'Classical', s.rapidTime && 'Rapid', s.blitzTime && 'Blitz']
             .filter((v) => Boolean(v));
-        if (tcOff.length > 0) {
+        if (tcOn.length < 3) {
             chips.push({
-                label: `${tcOff.join('/')} off`,
+                label: tcOn.length === 0 ? 'No time control' : tcOn.join(' + ') + (tcOn.length === 1 ? ' only' : ''),
                 clear: () => {
                     this.setCheckbox('classicalTime', true);
                     this.setCheckbox('rapidTime', true);
@@ -112,10 +112,6 @@ export class ActiveFilterChipsPart extends FilterPreferencesPart {
         if (el.ratingCategory?.value)
             count++;
         if (el.youthCategory?.value)
-            count++;
-        if (el.minDays && el.minDays.value !== '0')
-            count++;
-        if (checkedCountryCodes().length > 0)
             count++;
         const badge = document.getElementById('advancedFilterCount');
         if (badge) {

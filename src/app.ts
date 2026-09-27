@@ -127,6 +127,14 @@ class TournamentFinder extends ResultsViewPart {
             });
         }
 
+        // Page size dropdown
+        const pageSizeSelect = document.getElementById('pageSizeSelect') as HTMLSelectElement | null;
+        if (pageSizeSelect) {
+            pageSizeSelect.addEventListener('change', () => {
+                this.uiManager.setPageSize(Number(pageSizeSelect.value));
+            });
+        }
+
         // Quick search input
         const quickSearch = document.getElementById('quickSearch') as HTMLInputElement;
         if (quickSearch) {

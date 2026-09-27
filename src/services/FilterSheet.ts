@@ -47,7 +47,6 @@ export class FilterSheet {
         if (typeof this.mq.addEventListener === 'function') {
             this.mq.addEventListener('change', e => this.setSheetMode(e.matches));
         } else {
-            // @ts-ignore Safari 12 fallback
             this.mq.addListener((e: MediaQueryListEvent) => this.setSheetMode(e.matches));
         }
         this.setSheetMode(this.mq.matches);

@@ -65,6 +65,12 @@ class TournamentFinder extends ResultsViewPart {
                 this.handleSortChange(target.value);
             });
         }
+        const pageSizeSelect = document.getElementById('pageSizeSelect');
+        if (pageSizeSelect) {
+            pageSizeSelect.addEventListener('change', () => {
+                this.uiManager.setPageSize(Number(pageSizeSelect.value));
+            });
+        }
         const quickSearch = document.getElementById('quickSearch');
         if (quickSearch) {
             quickSearch.addEventListener('input', (e) => {

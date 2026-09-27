@@ -75,6 +75,15 @@ export class CardActionsPart extends ShortlistPart {
             e.preventDefault();
             this.openTournamentDetail(tournament);
         });
+        document.getElementById('featuredTournament')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.featured-name-btn');
+            if (!btn)
+                return;
+            const tournament = this.findTournamentByUrl(btn.dataset.tournamentUrl);
+            if (!tournament)
+                return;
+            this.openTournamentDetail(tournament);
+        });
     }
     openTournamentDetail(tournament) {
         openDetailPanel(tournament, this.shortlist.has(tournament.url), url => this.toggleShortlist(url));
