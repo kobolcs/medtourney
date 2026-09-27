@@ -567,7 +567,7 @@ header h1 {
 .mode-btn-sub {
   font-size: 10px;
   font-weight: 400;
-  opacity: 0.75;
+  color: var(--label);
 }
 
 .mode-switch-btn:disabled {
@@ -1552,7 +1552,6 @@ body.dark-theme .beachfront-pill {
 
 .airport-hint--none {
   font-weight: 400;
-  opacity: 0.8;
 }
 
 /* The calendar button's menu (src/utils/calendarMenu.ts) */
