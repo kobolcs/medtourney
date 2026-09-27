@@ -11,9 +11,6 @@ test.describe('Accessibility Tests', () => {
   test('should not have any automatically detectable accessibility issues', async ({ page }) => {
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-      // Color-contrast violations are pre-existing CSS debt tracked separately;
-      // exclude here so this scan guards structural/semantic a11y regressions.
-      .disableRules(['color-contrast'])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -98,24 +95,12 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('should have sufficient color contrast', async ({ page }) => {
-    // Run Axe accessibility scan focused on color contrast
+    // Axe WCAG 2.1 AA scan including color-contrast rule
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2aa'])
-      .disableRules(['color-contrast']) // We'll check manually
       .analyze();
 
-    // Manual spot checks for key elements
-    const h1 = page.locator('h1');
-    const computedStyle = await h1.evaluate((el) => {
-      const style = window.getComputedStyle(el);
-      return {
-        color: style.color,
-        backgroundColor: style.backgroundColor,
-      };
-    });
-
-    // Just verify we can get the styles (actual contrast ratio calculation is complex)
-    expect(computedStyle.color).toBeTruthy();
+    expect(accessibilityScanResults.violations).toEqual([]);
   });
 
   test('should support screen readers with ARIA live regions', async ({ page }) => {
@@ -235,10 +220,8 @@ test.describe('Accessibility Tests', () => {
     // Wait for theme to apply
     await page.waitForTimeout(500);
 
-    // Run accessibility scan in dark mode (contrast excluded — pre-existing debt)
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa'])
-      .disableRules(['color-contrast'])
       .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);

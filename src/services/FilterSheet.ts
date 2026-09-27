@@ -36,12 +36,20 @@ export class FilterSheet {
         private readonly slot: HTMLElement,
         private readonly movables: HTMLElement[],
         private readonly heading: HTMLElement | null,
+        private readonly inertTargets: HTMLElement[] = [],
     ) {
         this.mq = window.matchMedia(SHEET_QUERY);
     }
 
     init(): void {
-        this.mq.addEventListener('change', e => this.setSheetMode(e.matches));
+        // MediaQueryList.addEventListener is Safari 14+; addListener is deprecated
+        // but needed for the Safari 12 build target (vite.config.mts).
+        if (typeof this.mq.addEventListener === 'function') {
+            this.mq.addEventListener('change', e => this.setSheetMode(e.matches));
+        } else {
+            // @ts-ignore Safari 12 fallback
+            this.mq.addListener((e: MediaQueryListEvent) => this.setSheetMode(e.matches));
+        }
         this.setSheetMode(this.mq.matches);
 
         this.bar.addEventListener('click', () => this.show());
@@ -96,6 +104,7 @@ export class FilterSheet {
         this.backdrop.hidden = false;
         document.body.classList.add('sheet-open');
         this.bar.setAttribute('aria-expanded', 'true');
+        for (const el of this.inertTargets) el.inert = true;
         // Expand advanced filters automatically so all options are scrollable at once.
         const advanced = this.card.querySelector<HTMLDetailsElement>('#advancedFilters');
         if (advanced) advanced.open = true;
@@ -111,6 +120,7 @@ export class FilterSheet {
         this.backdrop.hidden = true;
         document.body.classList.remove('sheet-open');
         this.bar.setAttribute('aria-expanded', 'false');
+        for (const el of this.inertTargets) el.inert = false;
         if (returnFocus) this.bar.focus();
     }
 
