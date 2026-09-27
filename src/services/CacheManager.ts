@@ -19,7 +19,7 @@ interface CachedData<T> {
 export class CacheManager {
     // Automatically sync with package.json version
     private readonly CACHE_VERSION = packageJson.version;
-    private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+    private readonly CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours
     private logger = Logger.createScoped('CacheManager');
 
     readonly CACHE_KEYS = {
