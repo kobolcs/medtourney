@@ -2204,12 +2204,12 @@ footer a:hover {
 .data-credit {
   font-size: var(--text-xs);
   font-weight: 400;
-  opacity: .65;
+  color: var(--label);
 }
 
 .note {
   font-size: var(--text-xs);
-  opacity: .75;
+  color: var(--label);
   line-height: 1.6;
   max-width: 580px;
   margin: var(--sp-2) auto;
