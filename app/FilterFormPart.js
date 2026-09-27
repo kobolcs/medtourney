@@ -150,10 +150,12 @@ export class FilterFormPart extends KeyboardPart {
         clearCountries();
         this.updateCountryFilterSummary();
         const today = new Date();
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const sixMonths = new Date(today);
         sixMonths.setMonth(sixMonths.getMonth() + 6);
         if (el.startDate)
-            el.startDate.valueAsDate = today;
+            el.startDate.valueAsDate = sevenDaysAgo;
         if (el.endDate)
             el.endDate.valueAsDate = sixMonths;
         this.saveFilterPreferences();

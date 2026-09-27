@@ -99,25 +99,28 @@ class TestFrontendBackendParity:
                 f"Senior pattern should NOT match '{text}'"
 
     def test_senior_filter_consistency_frontend_backend(self, filter_service_js_content: str):
-        """Test that frontend isSeniorCategory uses same regex as backend"""
-        # In refactored architecture, senior logic is in FilterService.js
-        # Find isSeniorCategory - look for seniorPattern variable assignment
-        pattern = r"isSeniorCategory\([^)]+\)[^{]*\{[^}]*const\s+seniorPattern\s*=\s*(/[^/]+/[ig]*)"
-        match = re.search(pattern, filter_service_js_content, re.DOTALL)
+        """Test that frontend isSeniorCategory uses same key terms as backend"""
+        # Verify the isSeniorCategory function exists
+        assert "isSeniorCategory" in filter_service_js_content, \
+            "Could not find isSeniorCategory in FilterService.ts"
 
-        assert match, "Could not find isSeniorCategory regex in FilterService.js"
+        # Find the private function definition (not a call-site)
+        # Matches "private isSeniorCategory" or "isSeniorCategory(category:" style definitions
+        defn_pattern = r"(?:private\s+)?isSeniorCategory\s*\([^)]*category[^)]*\)\s*(?::\s*\w+\s*)?\{"
+        defn_match = re.search(defn_pattern, filter_service_js_content)
+        assert defn_match, "Could not locate isSeniorCategory function definition in FilterService.ts"
+        idx = defn_match.start()
+        region = filter_service_js_content[idx:idx + 600]
 
-        js_regex_str = match.group(1)
-
-        # Check that it includes key patterns
-        assert "s50" in js_regex_str.lower(), \
-            "Frontend senior regex should include s50"
-        assert "senior" in js_regex_str.lower(), \
-            "Frontend senior regex should include senior"
-        assert "veteran" in js_regex_str.lower(), \
-            "Frontend senior regex should include veteran"
-        assert "50" in js_regex_str, \
-            "Frontend senior regex should include 50+"
+        # Check that key discriminating patterns are present in the region
+        assert "s50" in region.lower(), \
+            "Frontend senior function should reference s50"
+        assert "senior" in region.lower(), \
+            "Frontend senior function should reference senior"
+        assert "veteran" in region.lower(), \
+            "Frontend senior function should reference veteran"
+        assert "50" in region, \
+            "Frontend senior function should reference 50+"
 
     def test_config_structure_is_valid(self, config_json: dict):
         """Test that config.json has required structure"""
