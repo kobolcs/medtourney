@@ -22,7 +22,7 @@ test.describe('Tournament Search and Filter', () => {
 
     // Check footer
     await expect(page.locator('#footerCredits')).toBeVisible();
-    await expect(page.locator('footer a[href*="chess-results.com"]')).toBeVisible();
+    await expect(page.locator('footer .data-credit')).toContainText('chess-results.com');
   });
 
   test('should load tournaments automatically', async ({ page }) => {

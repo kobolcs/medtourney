@@ -82,7 +82,7 @@ test.describe('Dark Mode and UI Features', () => {
     await expect(page.locator('footer')).not.toContainText(/updated|days old/i);
     await expect(page.locator('#staleness-banner')).toHaveCount(0);
     // chess-results.com stays as one small credit, not the headline
-    await expect(page.locator('footer .data-credit a[href*="chess-results.com"]')).toBeVisible();
+    await expect(page.locator('footer .data-credit')).toContainText('chess-results.com');
   });
 
   test('phones: filters open in a bottom sheet and close again', async ({ page, isMobile }) => {

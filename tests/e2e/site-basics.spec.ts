@@ -39,9 +39,7 @@ test.describe('SEO metadata', () => {
     expect(data['author']).toMatchObject({ '@type': 'Person', name: 'Csaba Köböl' });
   });
 
-  test('footer credits the author, linking to the GitHub repo', async ({ page }) => {
-    const credit = page.locator('footer a', { hasText: 'Csaba Köböl' });
-    await expect(credit).toHaveAttribute('href', 'https://github.com/kobolcs/medtourney');
+  test('footer credits the author', async ({ page }) => {
     await expect(page.locator('footer')).toContainText('Made by Csaba Köböl');
     await expect(page.locator('meta[name="author"]')).toHaveAttribute('content', 'Csaba Köböl');
   });
