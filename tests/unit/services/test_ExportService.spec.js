@@ -251,6 +251,73 @@ test('Multi-ICS: empty array throws', () => {
 });
 
 // ---------------------------------------------------------------------------
+// C5: CSV formula injection prevention
+// ---------------------------------------------------------------------------
+test('C5: CSV escapes leading = (formula injection)', () => {
+    const svc = new ExportService();
+    const csv = svc.buildCSV([{ ...tournament, name: '=1+1', location: 'X', category: 'Open', description: '', url: 'https://example.com', date: new Date('2025-06-01') }]);
+    // The =1+1 name must not appear verbatim as a formula
+    assert(!csv.includes('=1+1') || csv.includes('\t=1+1'), 'formula-like value must be neutralised');
+});
+
+test('C5: CSV escapes leading + and @', () => {
+    const svc = new ExportService();
+    for (const prefix of ['+', '-', '@']) {
+        const val = `${prefix}SUM(A1)`;
+        const csv = svc.buildCSV([{ ...tournament, name: val, location: 'X', category: 'Open', description: '', url: 'https://example.com', date: new Date('2025-06-01') }]);
+        assert(!csv.split('\n')[1].includes(`,${val},`), `${prefix} prefix must be neutralised`);
+    }
+});
+
+// ---------------------------------------------------------------------------
+// C6: UID stability when start date changes
+// ---------------------------------------------------------------------------
+test('C6: UID is stable when start date changes', () => {
+    const svc = new ExportService();
+    const uid1 = svc.generateStableUID({ ...tournament });
+    const uid2 = svc.generateStableUID({ ...tournament, date: new Date('2025-06-05') }); // rescheduled
+    assertEqual(uid1, uid2, 'UID must not change when date changes (URL is the key)');
+});
+
+test('C6: two different URL tournaments have distinct UIDs', () => {
+    const svc = new ExportService();
+    const uid1 = svc.generateStableUID(tournament);
+    const uid2 = svc.generateStableUID(tournament2);
+    assert(uid1 !== uid2, 'different URLs must produce distinct UIDs');
+});
+
+// ---------------------------------------------------------------------------
+// C7: ICS Unicode line folding by UTF-8 bytes
+// ---------------------------------------------------------------------------
+test('C7: 70-char accented name folds within 75-byte limit', () => {
+    const svc = new ExportService();
+    // 70 accented chars = 140 UTF-8 bytes — should fold
+    const longAccented = 'é'.repeat(70); // each é = 2 UTF-8 bytes
+    const line = 'SUMMARY:' + longAccented;
+    const folded = svc.buildICSForTournament({ ...tournament, name: longAccented });
+    // Every physical line must be <= 75 UTF-8 bytes
+    const physicalLines = folded.split('\r\n');
+    const encoder = new TextEncoder();
+    for (const physLine of physicalLines) {
+        const bytes = encoder.encode(physLine).length;
+        assert(bytes <= 75, `Line exceeds 75 bytes (${bytes}): "${physLine.slice(0, 20)}..."`);
+    }
+});
+
+test('C7: invalid dateTo falls back to startDate for DTEND', () => {
+    const svc = new ExportService();
+    const ics = svc.buildICSForTournament({ ...tournament, dateTo: 'not-a-date' });
+    // DTEND should be start + 1 day (20250602)
+    assertContains(ics, 'DTEND;VALUE=DATE:20250602', 'invalid dateTo must fall back to start+1');
+});
+
+test('C7: dateTo before startDate falls back to startDate for DTEND', () => {
+    const svc = new ExportService();
+    const ics = svc.buildICSForTournament({ ...tournament, dateTo: '2025-05-30' }); // before 2025-06-01
+    assertContains(ics, 'DTEND;VALUE=DATE:20250602', 'end < start must fall back to start+1');
+});
+
+// ---------------------------------------------------------------------------
 console.log('='.repeat(60));
 console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${passed + failed} total`);
 console.log(`✨ Pass Rate: ${((passed / (passed + failed)) * 100).toFixed(1)}%\n`);
