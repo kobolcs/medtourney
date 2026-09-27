@@ -26,6 +26,7 @@ export class FilterSheet {
     private sheetMode = false;
     private open = false;
     private moved: Moved[] = [];
+    private inerted: HTMLElement[] = [];
     private savedCard: { role: string | null; collapsed: boolean; ariaExpanded: string | null } | null = null;
     private savedHeading: { role: string | null; tabindex: string | null; ariaExpanded: string | null } | null = null;
 
@@ -36,7 +37,6 @@ export class FilterSheet {
         private readonly slot: HTMLElement,
         private readonly movables: HTMLElement[],
         private readonly heading: HTMLElement | null,
-        private readonly inertTargets: HTMLElement[] = [],
     ) {
         this.mq = window.matchMedia(SHEET_QUERY);
     }
@@ -103,7 +103,7 @@ export class FilterSheet {
         this.backdrop.hidden = false;
         document.body.classList.add('sheet-open');
         this.bar.setAttribute('aria-expanded', 'true');
-        for (const el of this.inertTargets) el.inert = true;
+        this.inertBackground();
         // Expand advanced filters automatically so all options are scrollable at once.
         const advanced = this.card.querySelector<HTMLDetailsElement>('#advancedFilters');
         if (advanced) advanced.open = true;
@@ -119,8 +119,24 @@ export class FilterSheet {
         this.backdrop.hidden = true;
         document.body.classList.remove('sheet-open');
         this.bar.setAttribute('aria-expanded', 'false');
-        for (const el of this.inertTargets) el.inert = false;
+        for (const el of this.inerted) el.inert = false;
+        this.inerted = [];
         if (returnFocus) this.bar.focus();
+    }
+
+    /**
+     * Everything but the sheet and its backdrop goes inert while it is open.
+     * The card lives inside <main>, so inerting <main> itself would make the
+     * sheet untappable - inert the siblings along its ancestor chain instead.
+     */
+    private inertBackground(): void {
+        for (let node: HTMLElement = this.card; node.parentElement && node !== document.body; node = node.parentElement) {
+            for (const sibling of Array.from(node.parentElement.children)) {
+                if (sibling === node || sibling === this.backdrop || !(sibling instanceof HTMLElement) || sibling.inert) continue;
+                sibling.inert = true;
+                this.inerted.push(sibling);
+            }
+        }
     }
 
     private setSheetMode(on: boolean): void {

@@ -13,11 +13,7 @@ export class FilterFormPart extends KeyboardPart {
             .filter((el) => el !== null);
         if (!card || !bar || !backdrop || !slot)
             return;
-        const inertTargets = [
-            document.querySelector('header'),
-            document.getElementById('main-content'),
-        ].filter((el) => el !== null);
-        this.filterSheet = new FilterSheet(card, bar, backdrop, slot, movables, card.querySelector('h2'), inertTargets);
+        this.filterSheet = new FilterSheet(card, bar, backdrop, slot, movables, card.querySelector('h2'));
         this.filterSheet.init();
     }
     initCollapsibleFilters() {
