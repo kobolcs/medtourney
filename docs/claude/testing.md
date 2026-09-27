@@ -13,7 +13,7 @@
 | **E2E Tests (Playwright)** | 68 tests per project (chromium, firefox, webkit, Mobile Chrome, Mobile Safari, Microsoft Edge - `playwright.config.ts`) | Full browser + mobile-viewport testing |
 | **Performance Benchmarks** | 12 benchmarks | ops/sec measurement |
 | **Python (scraper, meta, parity)** | 87 tests | `tests/python/` - `TournamentProcessor.py` unit tests plus scraper-metadata and frontend/backend parity checks |
-| **Python Integration** | 27 tests | `tests/integration/` - scraper file/config sanity checks (not live-network) |
+| **Python Integration** | 27 tests | `tests/integration/` - scraper file/config sanity checks, offline by default; the 3 live chess-results.com scrapes run only with `RUN_LIVE_SCRAPER=1` (the tracked `tournaments_data.json` is restored afterwards) |
 | **Total** | **290+ tests** | **100% pass rate** as of this writing - see `npm test` / `pytest` output for current truth |
 
 **What CI runs (`test.yml`):** the full E2E suite on desktop `chromium` only; firefox, webkit,
