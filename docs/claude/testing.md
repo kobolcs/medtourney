@@ -16,6 +16,13 @@
 | **Python Integration** | 27 tests | `tests/integration/` - scraper file/config sanity checks (not live-network) |
 | **Total** | **290+ tests** | **100% pass rate** as of this writing - see `npm test` / `pytest` output for current truth |
 
+**What CI runs (`test.yml`):** the full E2E suite on desktop `chromium` only; firefox, webkit,
+Mobile Chrome and Mobile Safari run a smoke subset (`site-basics`, `accessibility`,
+`filter-controls`, `results-first-layout`). A phone-layout test in any other spec is not
+run in CI unless it forces a phone viewport itself (`page.setViewportSize({ width: 390, height: 844 })`),
+so do that for phone/tablet (<=1023px, bottom-sheet) behaviour, and run
+`--project="Mobile Chrome"` locally when touching it.
+
 ### Running Tests
 
 ```bash
