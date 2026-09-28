@@ -685,6 +685,10 @@
   "town": "Kazanlak",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:42.641,18.109": {
+  "town": "Dubrovnik",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "@town:42.649,18.094": {
   "town": "Dubrovnik",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1177,6 +1181,10 @@
   "town": "Kalocsa",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:46.567,26.914": {
+  "town": "Bacău",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "@town:46.644,21.275": {
   "town": "Gyula",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1389,6 +1397,10 @@
   "town": "Mönichkirchen",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:47.530,25.560": {
+  "town": "Câmpulung Moldovenesc",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "@town:47.532,21.624": {
   "town": "Debrecen",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1569,6 +1581,10 @@
   "town": "Ulm",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:48.525,25.037": {
+  "town": "Kolomyia",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "@town:48.624,22.295": {
   "town": "Uzhhorod",
   "tried": "2026-09-26T03:55:43.361460+00:00"
@@ -1609,6 +1625,10 @@
   "town": "Dolní Němčí",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:48.974,14.474": {
+  "town": "České Budějovice",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "@town:48.975,14.474": {
   "town": "České Budějovice",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1616,6 +1636,10 @@
  "@town:49.012,21.274": {
   "town": "Ľubotice",
   "tried": "2026-09-25T20:23:19.444670+00:00"
+ },
+ "@town:49.013,31.393": {
+  "town": "Шполянська міська громада",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "@town:49.025,20.589": {
   "town": "Levoča",
@@ -1664,6 +1688,10 @@
  "@town:49.232,28.469": {
   "town": "Vinnytsia",
   "tried": "2026-09-26T03:55:43.361460+00:00"
+ },
+ "@town:49.235,20.354": {
+  "town": "Lendak",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "@town:49.252,6.859": {
   "town": "Völklingen",
@@ -1788,6 +1816,10 @@
  "@town:49.965,12.701": {
   "town": "Mariánské Lázně",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:49.982,11.613": {
+  "town": "Bindlach",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "@town:50.028,15.200": {
   "town": "Kolín",
@@ -2124,6 +2156,10 @@
  "@town:52.252,6.795": {
   "town": "Hengelo",
   "tried": "2026-09-25T20:23:19.444670+00:00"
+ },
+ "@town:52.283,-1.583": {
+  "town": "Warwick",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "@town:52.481,-1.900": {
   "town": "Birmingham",
@@ -2578,6 +2614,10 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Armenia, ARM": {
+  "miss": "no match",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "Armádneho generála L. Svobodu 25, SVK": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -2827,6 +2867,11 @@
   "lng": 23.6,
   "q": "cluj-napoca",
   "src": "geonames"
+ },
+ "Bindlach, GER": {
+  "lat": 49.982,
+  "lng": 11.6134,
+  "q": "Bindlach"
  },
  "Bischwiller, FRA": {
   "lat": 48.7682,
@@ -3094,6 +3139,11 @@
   "lng": -0.7426,
   "q": "camberley",
   "src": "geonames"
+ },
+ "Campulung Moldovenesc, ROU": {
+  "lat": 47.5298,
+  "lng": 25.5597,
+  "q": "Campulung Moldovenesc"
  },
  "Canham Turner Centre, ENG": {
   "miss": "no match",
@@ -3484,6 +3534,10 @@
   "lng": 17.5854,
   "q": "Dolní Němčí"
  },
+ "Dom HVIDRE, CRO": {
+  "miss": "no match",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "Domloup, FRA": {
   "lat": 48.0626,
   "lng": -1.5237,
@@ -3693,6 +3747,10 @@
   "lat": 47.5562,
   "lng": 8.8963,
   "q": "Frauenfeld"
+ },
+ "Freizeitheim Diepoldsburg, GER": {
+  "miss": "no match",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "Freizeitzentrum Feffernitz, AUT": {
   "miss": "no match",
@@ -4106,6 +4164,10 @@
  "Horstead Tithe Barn, ENG": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Hostinec U Černého koníčka, CZE": {
+  "miss": "no match",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "Hostomice, CZE": {
   "lat": 49.8253,
@@ -4685,6 +4747,11 @@
   "lng": 12.3747,
   "q": "Leipzig"
  },
+ "Lendak, SVK": {
+  "lat": 49.2347,
+  "lng": 20.3541,
+  "q": "Lendak"
+ },
  "Levoča, SVK": {
   "lat": 49.0251,
   "lng": 20.5887,
@@ -4719,6 +4786,10 @@
   "miss": "no match",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "Liechtensteinov put 12, CRO": {
+  "miss": "no match",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
  "Liptov - Orava, SVK": {
   "lat": 49.1478,
   "lng": 19.28,
@@ -4728,6 +4799,10 @@
   "lat": 49.0836,
   "lng": 19.6128,
   "q": "Liptovsky Mikulas"
+ },
+ "Lisek 52, CZE": {
+  "miss": "no match",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "Ljubinje, BIH": {
   "lat": 42.9517,
@@ -4802,6 +4877,10 @@
   "lat": 49.6936,
   "lng": 13.2572,
   "q": "Líně"
+ },
+ "Lísek 52, CZE": {
+  "miss": "no match",
+  "tried": "2026-09-28T04:02:51.105558+00:00"
  },
  "MDA": {
   "miss": "unplaceable",
@@ -5871,6 +5950,17 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Sede da Associação de Xadrez de Lisboa, POR": {
+  "lat": 38.7251,
+  "lng": -9.1498,
+  "q": "lisboa",
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-09-28T04:02:51.105558+00:00"
+  }
+ },
  "Sede do Glória FC, POR": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -5935,6 +6025,11 @@
   "lng": 21.2257,
   "q": "timisoara",
   "src": "geonames"
+ },
+ "Shpola, UKR": {
+  "lat": 49.0133,
+  "lng": 31.3931,
+  "q": "Shpola"
  },
  "Shrewsbury College - London Road Campus, ENG": {
   "lat": 52.6986,
@@ -6002,6 +6097,12 @@
  "Slovensko, SVK": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Smart Playroom cafe Indjija Kralja Petra 99, SRB": {
+  "lat": 45.0482,
+  "lng": 20.0816,
+  "q": "indjija",
+  "src": "geonames"
  },
  "Snodland, ENG": {
   "lat": 51.3349,
@@ -6126,6 +6227,12 @@
  "Sunstar Hotel, SUI": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Supernova Bacău, ROU": {
+  "lat": 46.5672,
+  "lng": 26.9138,
+  "q": "bacau",
+  "src": "geonames"
  },
  "Susedgradska 26 b, SRB": {
   "miss": "no match",
@@ -6600,6 +6707,12 @@
   "q": "zaragoza",
   "src": "geonames"
  },
+ "ZARAGOZA.  ZARAGOZA CAMPING OCEANO ATLANTICO.  PARKING GRATUITO., ESP": {
+  "lat": 41.6561,
+  "lng": -0.8773,
+  "q": "zaragoza",
+  "src": "geonames"
+ },
  "ZS MERCURY, SVK": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -7025,6 +7138,12 @@
   "lat": 49.5162,
   "lng": 23.2013,
   "q": "самбір",
+  "src": "geonames"
+ },
+ "м.Коломия, UKR": {
+  "lat": 48.525,
+  "lng": 25.0371,
+  "q": "коломия",
   "src": "geonames"
  },
  "Եղեգնաձոր, ARM": {
