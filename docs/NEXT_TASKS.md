@@ -8,13 +8,25 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 
 ## P1 - Data quality (users see this)
 
-- [ ] **1. Find out why 425 tournaments (28%) have no coordinates.** They don't
+- [~] **1. Find out why 425 tournaments (28%) have no coordinates.** They don't
   appear on the map. Geocoding is meant to fill gaps a bit more each day
   (Nominatim + GeoNames, cached), so first check whether these are stuck
   (no match, bad location text) or just waiting their turn. Add a short report
   to `geocode_tournaments.py` (reason per place, e.g. no match, rate-limited,
   not tried yet) and fix the biggest group.
-- [ ] **2. "Senior School" is marked S50+.** `CHESS JUNIOR CHESS TOURNAMENT`
+  - Findings: none were waiting their turn - all had been tried. 364 were "no
+    match" (a venue with no town, e.g. "Haus des Schachsports, AUT") and 60 were
+    a country code only. 335 of them had a `details.address`, and that often
+    includes the town ("..., 1020 Wien").
+  - [x] Try the address when the location misses, and fetch details before
+    geocoding (`geocoding/pipeline.py` `locate`). A trial on copies went from 425
+    to 360 unplaced with 150 of the 300 daily lookups; nothing lost its
+    coordinates.
+  - [ ] What's left is mostly venue-only text with no address ("Schachhaus",
+    "Diverse Orte in OÖ", "wird noch bekannt gegeben") or town-first addresses
+    ("к.к. Боровец , Hotel IGLIKA"). Look again once a few daily runs have
+    used the lookup budget.
+- [x] **2. "Senior School" is marked S50+.** `CHESS JUNIOR CHESS TOURNAMENT`
   (venue "KHADIJA SENIOR SCHOOL", ALB) has both `S50+` and `Youth`. Change
   `_has_senior_category` (`tournament_processing/classify.py`) so the word
   "senior" in school names and venues doesn't count, and let a youth/school
