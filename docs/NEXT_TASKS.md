@@ -26,6 +26,13 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
     "Diverse Orte in OÖ", "wird noch bekannt gegeben") or town-first addresses
     ("к.к. Боровец , Hotel IGLIKA"). Look again once a few daily runs have
     used the lookup budget.
+  - [ ] The GeoNames word match picks up words that aren't towns, and those pins
+    are already live (location keys, not new ones from the address fallback):
+    "C/José **Miranda** Guerra (Gran Canaria)" -> Miranda de Ebro (a street
+    name), "**ΛΥΚΕΙΟ** ΑΓΡΙΑΣ" -> "Lykeio" (the word for "high school"),
+    "Stjepan **Polje**" -> "Polje" ("field"), "Λευκός **Πύργος**" (Thessaloniki)
+    -> Pyrgos. Either skip street-prefix and generic words in
+    `geonames_match`, or add overrides.
 - [x] **2. "Senior School" is marked S50+.** `CHESS JUNIOR CHESS TOURNAMENT`
   (venue "KHADIJA SENIOR SCHOOL", ALB) has both `S50+` and `Youth`. Change
   `_has_senior_category` (`tournament_processing/classify.py`) so the word
