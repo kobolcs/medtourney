@@ -253,7 +253,8 @@ export class FilterService {
         if (s50Pattern.test(text)) return true;
         // Generic "senior/senioren/weteran" matches S50+ ONLY when the event
         // is not exclusively for a higher age group (e.g. "Senior 65+")
-        const genericSenior = /\b(?:senior\w*|weteran\w*)(?!\w)/i;
+        // ("Senior School" is a venue, not an age group)
+        const genericSenior = /\b(?:senior\w*(?!\s+(?:high\s+|secondary\s+)?school)|weteran\w*)(?!\w)/i;
         return genericSenior.test(text) && !olderOnlyPattern.test(text);
     }
 
