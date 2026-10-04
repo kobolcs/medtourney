@@ -27,7 +27,7 @@ const result = buildSeoArtifacts({
 
 assert.equal(result.pages.length, 4, 'one generated page for each useful category');
 assert.match(result.sitemap, /<lastmod>2026-10-04<\/lastmod>/);
-assert.match(result.sitemap, /https:\/\/kobolcs\.github\.io\/medtourney\/discover\/senior\//);
+assert.match(result.sitemap, /^.*<loc>https:\/\/kobolcs\.github\.io\/medtourney\/discover\/senior\/<\/loc>.*$/m);
 assert.doesNotMatch(result.sitemap, /tournaments_data\.json|config\.json|github\.com/);
 
 const classical = result.pages.find(page => page.path.includes('classical'));
