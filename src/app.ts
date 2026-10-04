@@ -3,19 +3,17 @@
  * Fetches and displays tournaments from chess-results.com
  *
  * @author Csaba Köböl
- * @version 3.0.0 (Modular Architecture with Service Layers)
  */
 
+import { initTimeControlToolbar, syncTimeControlToolbar } from './utils/timeControlToolbar';
 import type { SortOption } from './app/AppState';
 import { ResultsViewPart } from './app/ResultsViewPart';
 import { clearCountries } from './utils/countrySelection';
-
 declare global {
     interface Window {
         plausible?: (event: string, options?: { props?: Record<string, string | number | boolean> }) => void;
     }
 }
-
 
 /**
  * Main application class for finding chess tournaments
@@ -54,6 +52,7 @@ class TournamentFinder extends ResultsViewPart {
 
             // Load saved filter preferences (URL takes priority over cache)
             this.loadFilterPreferences();
+            syncTimeControlToolbar();
             this.syncFilterStateToURL();
 
             // Reflect any non-default advanced filters in the drawer badge,
@@ -154,7 +153,7 @@ class TournamentFinder extends ResultsViewPart {
             });
         }
 
-        // Attach filter change listeners to save preferences
+        initTimeControlToolbar(() => this.handleFilterChange());
         this.attachFilterChangeListeners();
 
         // Seaside/Senior mode switch — the review's "front door" control
@@ -354,6 +353,7 @@ class TournamentFinder extends ResultsViewPart {
      * is just this plus a (usually free) fetch and analytics event.
      */
     protected applyFiltersAndRender(): void {
+        syncTimeControlToolbar();
         // Recompute which countries have Mediterranean tournaments and update UI constraints
         this.mediterraneanCountries = this.computeMediterraneanCountries();
         this.updateFilterCompatibility();

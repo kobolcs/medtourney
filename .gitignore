@@ -95,3 +95,8 @@ test-results/
 
 # Scraper artifacts
 downloads/
+
+# DOM verification output
+dist-verify/
+
+node_modules

@@ -112,3 +112,14 @@ export function formatLocation(location: string, town?: string): string {
     const place = (town ?? parts.slice(0, -1).join(',')).trim();
     return place ? `${flag} ${escapeHTML(place)} · ${info.name}` : `${flag} ${info.name}`;
 }
+
+/** Exact trailing federation; venue words must never act as country codes. */
+export function federationCode(location: string): string {
+    return location.split(',').pop()?.trim().toUpperCase() ?? '';
+}
+
+/** Search the city/country text players see on a card as well as its source venue. */
+export function searchableLocation(location: string, town?: string): string {
+    const country = COUNTRY_CODES[federationCode(location)]?.name ?? '';
+    return `${location} ${town ?? ''} ${country}`.toLowerCase();
+}

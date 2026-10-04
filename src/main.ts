@@ -7,6 +7,7 @@
 
 // Import styles
 import '../styles.css';
+import '../workspace.css';
 
 // Import the application
 // Note: The app.ts file is self-initializing via DOMContentLoaded

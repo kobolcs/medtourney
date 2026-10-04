@@ -166,30 +166,6 @@
                     <button type="button" class="date-preset-btn" data-preset="6months">6 Months</button>
                 </div>
 
-                <h3 id="time-control-heading" class="filter-section-title">Time Control</h3>
-                <div class="filter-grid filter-grid-compact" role="group" aria-labelledby="time-control-heading">
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="classicalTime" checked>
-                            <span class="checkbox-label">Classical / Standard</span>
-                        </label>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="rapidTime" checked>
-                            <span class="checkbox-label">Rapid</span>
-                        </label>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="blitzTime" checked>
-                            <span class="checkbox-label">Blitz</span>
-                        </label>
-                    </div>
-                </div>
-
                 <!-- Which seas the Seaside mode counts (src/utils/seaPicker.ts). Shown
                      only in the Seaside / Both modes; defaults to Mediterranean +
                      Atlantic, what Seaside meant before the other seas were added. -->
@@ -449,7 +425,19 @@
         <!-- Phones: the mode switch and active-filter chips are moved here from
              the filters card, which becomes a bottom sheet (FilterSheet.ts) -->
         <div id="mobileQuickFilters" class="mobile-quick-filters" hidden></div>
-        <p class="results-intro">Upcoming chess tournaments across Europe, updated daily — with filters for seaside venues, senior categories, and trip-friendly durations.</p>
+        <fieldset class="time-control-toolbar" aria-describedby="tempoHint">
+            <legend>Time control</legend>
+            <div class="tempo-options">
+                <button type="button" id="allTimeControls" aria-pressed="true">All tempos</button>
+                <label class="tempo-choice"><input type="checkbox" id="classicalTime" checked><span>Classical</span></label>
+                <label class="tempo-choice"><input type="checkbox" id="rapidTime" checked><span>Rapid</span></label>
+                <label class="tempo-choice"><input type="checkbox" id="blitzTime" checked><span>Blitz</span></label>
+            </div>
+            <p id="tempoHint" class="tempo-hint" aria-live="polite">Choose one or more. Clocks show minutes + seconds per move.</p>
+        </fieldset>
+
+        <details class="featured-suggestion"><summary>Seaside suggestion · independent of your filters</summary><div id="featuredTournament" style="display: none;" aria-live="polite"></div></details>
+
         <div id="loading" class="loading" style="display: none;" role="status" aria-live="polite" aria-busy="true">
             <div class="spinner" aria-hidden="true"></div>
             <p>Loading tournaments…</p>
@@ -457,12 +445,11 @@
 
         <div id="error" class="error-message" style="display: none;" role="alert" aria-live="assertive"></div>
 
-        <div id="featuredTournament" style="display: none;" aria-live="polite"></div>
 
         <div id="results" class="results-container" style="display: none;" role="region" aria-label="Tournament search results">
             <div class="results-header">
                 <div class="results-title-group">
-                    <h2 id="resultsHeading" tabindex="-1">Search Results</h2>
+                    <h2 id="resultsHeading" tabindex="-1">Upcoming tournaments</h2>
                     <span id="resultsCount" class="results-count" role="status" aria-live="polite"></span>
                 </div>
                 <div class="results-controls">
@@ -471,8 +458,8 @@
                         <input type="search"
                                id="quickSearch"
                                class="quick-search-input"
-                               placeholder="Filter results…"
-                               aria-label="Search within results by name or location">
+                               placeholder="Search tournament, city or country…"
+                               aria-label="Search within results by name, city or country">
                     </div>
                     <div class="view-toggle" role="group" aria-label="Results view">
                         <button type="button" class="view-toggle-btn is-active" data-view="list" aria-pressed="true">List</button>
@@ -613,7 +600,7 @@
         </div>
     </div>
 
-    <script defer data-domain="kobolcs.github.io/medtourney" src="https://plausible.io/js/script.js"></script>
     <script type="module" src="/src/main.ts"></script>
+    <script defer data-domain="kobolcs.github.io/medtourney" src="https://plausible.io/js/script.js"></script>
 </body>
 </html>

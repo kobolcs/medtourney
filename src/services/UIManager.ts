@@ -121,7 +121,7 @@ export class UIManager extends StatusViewsPart {
 
     /** Year-month key used to detect a month boundary between two dates. */
     protected monthKey(date: Date): string {
-        return `${date.getFullYear()}-${date.getMonth()}`;
+        return `${date.getUTCFullYear()}-${date.getUTCMonth()}`;
     }
 
     /** Total tournaments per month across the whole filtered list (not just the current page). */
@@ -137,7 +137,7 @@ export class UIManager extends StatusViewsPart {
     protected createMonthDivider(date: Date, count: number): HTMLElement {
         const divider = document.createElement('div');
         divider.className = 'month-divider';
-        const label = date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+        const label = date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
         divider.innerHTML = `
             <span class="month-divider-label">${escapeHTML(label)}</span>
             <span class="month-divider-count">${count}</span>

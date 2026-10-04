@@ -1,0 +1,78 @@
+/* Extend MedTourney's navy/sea palette with a compact, readable working surface. */
+:root {
+  --bg: #edf2f6;
+  --stone: #edf2f6;
+  --surface: #ffffff;
+  --surface-2: #f4f7fa;
+  --header-sub: rgba(255,255,255,.76);
+}
+.header-inner, .container { max-width: 1440px; }
+.header-inner { padding-top: 1.25rem; padding-bottom: 1.25rem; align-items: center; }
+.header-brand h1 { font-size: 2rem; }
+.header-live { font-size: .875rem; flex-wrap: wrap; }
+.snapshot-label { border: 1px solid #718093; border-radius: 4px; padding: 0 .45rem; color: #e1edf5; font-size: .8125rem; }
+header::after { height: 4px; }
+.container { padding-top: 1.5rem; }
+.filters-card, .results-container { border-radius: 12px; padding: 1.5rem; }
+.time-control-toolbar { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: .65rem 1.25rem 1rem; margin-bottom: 1rem; }
+.time-control-toolbar legend { padding: 0 .35rem; color: var(--text); font-size: 1rem; font-weight: 600; }
+.tempo-options { display: flex; gap: .5rem; flex-wrap: wrap; }
+.tempo-choice { position: relative; display: inline-flex; cursor: pointer; }
+.tempo-choice input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; z-index: 1; cursor: pointer; }
+.tempo-choice span, #allTimeControls { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .5rem 1.1rem; border: 1px solid var(--border); border-radius: 6px; font: 600 .9375rem/1.3 'Inter', system-ui, sans-serif; background: var(--surface); color: var(--label); }
+.tempo-choice input:checked + span { color: var(--on-sea); background: var(--sea); border-color: var(--sea); }
+.tempo-choice input:checked + span::before { content: '✓'; margin-right: .4rem; }
+.tempo-choice:focus-within, #allTimeControls:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; border-radius: 6px; }
+#allTimeControls { cursor: pointer; font-weight: 500; }
+#allTimeControls[aria-pressed="true"] { color: var(--sea); background: var(--sea-light); border-color: var(--sea); }
+.tempo-hint { font-size: .875rem; line-height: 1.45; margin-top: .65rem; color: var(--label); }
+.featured-suggestion { font-size: .875rem; color: var(--label); margin: 0 0 1rem; }
+.featured-suggestion summary { cursor: pointer; padding: .3rem 0; }
+.featured-suggestion[open] summary { margin-bottom: .5rem; }
+.tournament-list { display: flex; flex-direction: column; }
+.tournament-card { border-radius: 8px; box-shadow: none; padding: 1.25rem; }
+.tournament-name { font-size: 1.125rem; line-height: 1.4; }
+.tournament-location { font-size: .9375rem; }
+.tournament-meta { gap: .5rem; }
+.tournament-format { color: var(--label); font-size: .875rem; margin-top: .5rem; }
+.clock-unconfirmed { font-size: .875rem; color: var(--label); }
+.time-control-badge { font-size: .875rem; white-space: normal; overflow-wrap: anywhere; }
+.tournament-actions { max-height: none; opacity: 1; margin-top: .6rem; overflow: visible; }
+.tournament-actions .calendar-export-btn { pointer-events: auto; opacity: 1; min-height: 44px; width: auto; padding: .5rem .75rem; }
+.tournament-actions .action-text { display: inline; }
+.airport-hint { color: var(--label); }
+.quick-search-input, .sort-select { min-height: 44px; }
+.quick-search-input { font-size: 1rem; }
+.results-header { margin-bottom: 1rem; padding-bottom: 1rem; }
+.results-count { font-size: .875rem; letter-spacing: 0; }
+.shortlist-btn, .view-toggle-btn, .export-btn { min-height: 44px; min-width: 44px; }
+body.dark-theme { --label: #a1bacb; --border: #35506b; }
+@media (min-width: 1024px) {
+  main { grid-template-columns: 300px minmax(0,1fr); }
+  .filters-card { top: 1.5rem; }
+}
+@media (max-width: 1023px) {
+  .container { padding: 1rem 1rem 5.5rem; }
+  .time-control-toolbar { padding: .5rem .75rem .75rem; }
+}
+@media (max-width: 600px) {
+  .header-inner { padding: 1rem; gap: .5rem; }
+  .header-brand h1 { font-size: 1.6rem; }
+  .header-logomark { width: 26px; }
+  .header-title-row { gap: .4rem; }
+  .header-controls { gap: .4rem; }
+  .tagline { font-size: .8125rem; }
+  .header-live { gap: .35rem; margin-top: .4rem; }
+  .tempo-options { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .3rem; }
+  .tempo-choice, .tempo-choice span { width: 100%; }
+  .tempo-choice span, #allTimeControls { font-size: .875rem; padding: .5rem .25rem; }
+  .tempo-choice input:checked + span::before { display: none; }
+  .results-container { padding: 1rem; }
+  .tournament-card { padding: 1rem .75rem; }
+  .tournament-name { font-size: 1rem; }
+  .tournament-date-badge { min-width: 48px; width: 48px; }
+  .featured-suggestion { margin-bottom: .65rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}

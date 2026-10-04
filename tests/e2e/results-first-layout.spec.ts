@@ -22,12 +22,12 @@ test.describe('Results-First Layout', () => {
 
     const details = page.locator('#advancedFilters');
     await expect(details).toHaveJSProperty('open', false);
-    await openFilters(page); // phones: the filters live in a bottom sheet
+    await expect(page.getByLabel('Classical', { exact: true })).toBeVisible();
+    await openFilters(page); // phones: the remaining filters live in a bottom sheet
 
     // Primary controls are usable without opening the drawer.
     await expect(page.locator('#startDate')).toBeVisible();
     await expect(page.locator('#endDate')).toBeVisible();
-    await expect(page.getByLabel('Classical / Standard')).toBeVisible();
     await expect(page.locator('.mode-switch-btn[data-mode="seaside"]')).toBeVisible();
     // Duration was promoted out of the drawer to the first tier.
     await expect(page.locator('#minDays')).toBeVisible();
@@ -121,3 +121,30 @@ test.describe('Results-First Layout', () => {
     await expect(nameLink).toHaveAttribute('href', /^\?t=/);
   });
 });
+
+for (const width of [1440, 390, 320]) {
+  test(`time controls stay usable above results at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    await stubTournaments(page);
+    await page.goto('/');
+    await expect(page.locator('.tournament-card').first()).toBeVisible();
+    const calendar = page.locator('.calendar-export-btn').first();
+    await expect(calendar).toBeVisible();
+    await expect(calendar).toHaveCSS('opacity', '1');
+    const tempo = page.locator('.time-control-toolbar');
+    await expect(tempo).toBeVisible();
+    await expect(page.locator('#filtersSheet')).not.toHaveClass(/is-open/);
+    await page.locator('#rapidTime').uncheck();
+    await page.locator('#blitzTime').uncheck();
+    await expect(page).toHaveURL(/tc=classical/);
+    await page.locator('#allTimeControls').click();
+    await expect(page.locator('#rapidTime')).toBeChecked();
+    await expect(page.locator('#blitzTime')).toBeChecked();
+    const bounds = await tempo.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.x).toBeGreaterThanOrEqual(0);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+    await testInfo.attach(`workspace-${width}`, { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+  });
+}

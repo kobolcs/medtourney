@@ -10,6 +10,7 @@ import { formatLocation } from '../../utils/countries';
 import { formatTimeControl } from '../../utils/timeControl';
 import { formatDurationLabel } from '../../utils/durationLabel';
 import { escapeHTML } from '../../utils/html';
+import { tournamentFormatHTML } from '../../utils/tournamentSummary';
 import { UIState } from './UIState';
 
 /** Tournament cards and the featured banner: date badge, location, pills, actions. */
@@ -76,13 +77,8 @@ export abstract class CardPart extends UIState {
      */
     protected timeControlClassHTML(tournament: Tournament): string {
         const reasons = tournament.classificationReasons ?? [];
-        const cls = reasons.includes('Blitz') ? 'blitz'
-            : reasons.includes('Rapid') ? 'rapid'
-            : reasons.includes('Classical') ? 'classical'
-            : null;
-        if (!cls) return '';
-        const label = cls.charAt(0).toUpperCase() + cls.slice(1);
-        return `<span class="time-control-class time-control-class--${cls}">${label}</span>`;
+        return ['Classical', 'Rapid', 'Blitz'].filter(label => reasons.includes(label))
+            .map(label => `<span class="time-control-class time-control-class--${label.toLowerCase()}" title="Category supplied by the tournament source">${label}</span>`).join('');
     }
 
     /**
@@ -121,7 +117,7 @@ export abstract class CardPart extends UIState {
     }
 
     /**
-     * Render (or hide) the featured "Tournament of the Week" card.
+     * Render (or hide) the featured "Seaside suggestion" card.
      */
     renderFeaturedTournament(tournament: Tournament | null): void {
         const container = document.getElementById('featuredTournament');
@@ -140,8 +136,8 @@ export abstract class CardPart extends UIState {
         // link, plus where and when, and a compact calendar button.
         const beach = tournament.seaM !== undefined;
         container.innerHTML = `
-            <div class="featured-card" role="region" aria-label="Tournament of the Week">
-                <span class="featured-label">${beach ? '<span aria-hidden="true">🏖</span> ' : ''}Tournament of the Week</span>
+            <div class="featured-card" role="region" aria-label="Seaside suggestion">
+                <span class="featured-label">${beach ? '<span aria-hidden="true">🏖</span> ' : ''}Seaside suggestion</span>
                 <h3 class="featured-name">
                     <button type="button" class="featured-name-btn"
                             data-tournament-url="${escapeHTML(tournament.url)}"
@@ -187,10 +183,11 @@ export abstract class CardPart extends UIState {
         // Show raw time control only when it adds info beyond the class label
         const tc = (tournament.timeControl ?? '').trim();
         const TC_CLASS_LABELS = new Set(['classical', 'rapid', 'blitz', '']);
-        const tcDisplay = TC_CLASS_LABELS.has(tc.toLowerCase()) ? '' : formatTimeControl(tc);
+        const mixedClock = /rapid|schnellschach/i.test(tc) && /standard|classical/i.test(tc);
+        const tcDisplay = TC_CLASS_LABELS.has(tc.toLowerCase()) ? '' : mixedClock ? tc : formatTimeControl(tc);
         const timeControlHTML = tcDisplay
             ? `<span class="time-control-badge" title="${escapeHTML(tc)}">${escapeHTML(tcDisplay)}</span>`
-            : '';
+            : '<span class="clock-unconfirmed">Clock not provided</span>';
 
         const timeControlClassHTML = this.timeControlClassHTML(tournament);
         const categoryTagsHTML = this.categoryTagsHTML(tournament);
@@ -242,6 +239,7 @@ export abstract class CardPart extends UIState {
                     ${categoryTagsHTML}
                     ${durationHTML}
                 </div>
+                ${tournamentFormatHTML(tournament)}
                 ${travelTagsHTML}
                 <div class="tournament-actions">
                     <button class="calendar-export-btn" aria-haspopup="menu" aria-expanded="false"

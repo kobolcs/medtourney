@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { copyFileSync } from 'node:fs';
 import { compression } from 'vite-plugin-compression2';
 
 export default defineConfig({
@@ -6,7 +7,7 @@ export default defineConfig({
   // Production/GitHub Pages is served under /medtourney/. For E2E (Playwright)
   // we build/serve at the server root so `page.goto('/')` works against a
   // production-equivalent bundle. Set E2E=1 to opt into the root base.
-  base: process.env.E2E === '1' ? '/' : '/medtourney/',
+  base: process.env.MEDTOURNEY_BASE ?? (process.env.E2E === '1' ? '/' : '/medtourney/'),
 
   // Build configuration
   build: {
@@ -67,6 +68,11 @@ export default defineConfig({
 
   // Plugins
   plugins: [
+    { name: 'medtourney-data', closeBundle() {
+      for (const file of ['tournaments_data.json', 'tournaments_data_meta.json', 'config.json']) {
+        copyFileSync(file, `dist/${file}`);
+      }
+    } },
     // Pre-compressed .gz and .br copies next to each asset
     compression({ algorithms: ['gzip', 'brotliCompress'] }),
   ],
