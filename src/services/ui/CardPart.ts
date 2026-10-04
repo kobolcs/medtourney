@@ -145,8 +145,6 @@ export abstract class CardPart extends UIState {
                     <button type="button" class="featured-name-btn"
                             data-tournament-url="${escapeHTML(tournament.url)}"
                             aria-label="View details: ${escapeHTML(tournament.name)}">${escapeHTML(tournament.name)}</button>
-                    <a href="${escapeHTML(tournament.url)}" target="_blank" rel="noopener noreferrer"
-                       class="featured-external-link" aria-label="Open ${escapeHTML(tournament.name)} on chess-results.com (external)" title="Open on chess-results.com">↗</a>
                 </h3>
                 <span class="featured-where">${formatLocation(tournament.location, tournament.town)} · <span class="featured-date">${dateStr}</span></span>
                 <button type="button" class="calendar-export-btn featured-calendar-btn" aria-haspopup="menu" aria-expanded="false"
