@@ -75,7 +75,7 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 
 ## 2026-10-05 — discovery, trust, and growth follow-up
 
-Completed in branch `improve/trust-and-source-roadmap` (PR will be opened after checks are prepared):
+Completed in branch `improve/trust-and-source-roadmap` (open review: [PR #80](https://github.com/kobolcs/medtourney/pull/80)).
 
 - [x] Keep the featured Seaside suggestion inside MedTourney; keep Chess-Results as an optional link in the detail panel.
 - [x] Correct README positioning and state that event discovery currently depends on one provider.
