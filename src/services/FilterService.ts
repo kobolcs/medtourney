@@ -130,14 +130,13 @@ export class FilterService {
             }
 
             // Time control filters
-            if ((filterState.classicalTime || filterState.rapidTime || filterState.blitzTime)
-                && !(filterState.classicalTime && filterState.rapidTime && filterState.blitzTime)) {
+            if (filterState.classicalTime || filterState.rapidTime || filterState.blitzTime) {
                 const hasMatchingTimeControl =
                     (filterState.classicalTime && this.isClassicalTime(categoryLower)) ||
                     (filterState.rapidTime && this.isRapidTime(categoryLower)) ||
                     (filterState.blitzTime && this.isBlitzTime(categoryLower));
 
-                if (!hasMatchingTimeControl) {
+                if (!hasMatchingTimeControl && !(filterState.classicalTime && filterState.rapidTime && filterState.blitzTime)) {
                     return false;
                 }
             }
