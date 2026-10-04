@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from tournament_processing.base import ProcessorBase
+from tournament_processing.entry_categories import is_youth, senior_ages
 
 
 class ClassifyMixin(ProcessorBase):
@@ -43,41 +44,7 @@ class ClassifyMixin(ProcessorBase):
         Returns:
             True if tournament is for youth/school/juniors, False otherwise.
         """
-        # Youth keywords (international) - expanded
-        youth_pattern = re.compile(
-            r"\bu\d+|u-\d+|youth|junior|junioren|u18|u16|u14|u12|u10|u8|under|"
-            r"żiak|młodzie[żz]|juniorzy|juniorów|ml[áa]de[žz]|ifjúság|jugend|"
-            r"jeune|juvenil|joven|giovani|giovanile",
-            re.IGNORECASE
-        )
-
-        # School keywords (international)
-        school_pattern = re.compile(
-            r"\bschool|schule|école|escuela|scuola|szkoł|škol",
-            re.IGNORECASE
-        )
-
-        # Age restriction patterns (under/u/bis + number less than 50)
-        age_pattern = re.compile(r"\b(under|u|bis)\s*(\d{1,2})\b", re.IGNORECASE)
-
-        # Check for youth/school indicators
-        if youth_pattern.search(full_text):
-            return True
-        if school_pattern.search(full_text):
-            return True
-
-        # Check age restrictions
-        age_match = age_pattern.search(full_text)
-        if age_match:
-            try:
-                age = int(age_match.group(2))
-                if age < self.MINIMUM_SENIOR_AGE:
-                    return True
-            except ValueError:
-                # Malformed age indicator; treat as not youth/school.
-                return False
-
-        return False
+        return is_youth(full_text)
 
     def _is_team_tournament(self, full_text: str) -> bool:
         """Check if tournament is a team tournament.
@@ -110,15 +77,7 @@ class ClassifyMixin(ProcessorBase):
         Returns:
             True if tournament has senior category, False otherwise.
         """
-        # Senior/veteran keywords (expanded)
-        senior_pattern = re.compile(
-            # "Senior School" / "Senior High School" is a venue, not an age group
-            r"\bs50\+|s\s*50\+|s50|senior(?!\s+(?:high\s+|secondary\s+)?school)|senioren|veteran|veteranen|"
-            r"vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50",
-            re.IGNORECASE
-        )
-
-        return bool(senior_pattern.search(category) or senior_pattern.search(name))
+        return self.MINIMUM_SENIOR_AGE in (senior_ages(name) or senior_ages(category))
 
     def _is_european(self, location: str) -> bool:
         """Check if location is in Europe, excluding Russia.

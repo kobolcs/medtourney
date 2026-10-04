@@ -10,6 +10,12 @@ from pathlib import Path
 
 import pytest
 
+from tournament_processing.entry_categories import (
+    is_youth,
+    rating_ceilings,
+    senior_ages,
+    youth_ages,
+)
 from TournamentProcessor import TournamentProcessor
 
 
@@ -33,13 +39,6 @@ class TestFrontendBackendParity:
         """Load app.js content."""
         app_js_path = Path(__file__).parent.parent.parent / "app.js"
         with app_js_path.open(encoding="utf-8") as f:
-            return f.read()
-
-    @pytest.fixture
-    def filter_service_js_content(self) -> str:
-        """Load FilterService source content."""
-        filter_service_js_path = Path(__file__).parent.parent.parent / "src" / "services" / "FilterService.ts"
-        with filter_service_js_path.open(encoding="utf-8") as f:
             return f.read()
 
     def test_mediterranean_cities_in_config(self, config_json: dict, processor: TournamentProcessor):
@@ -98,29 +97,26 @@ class TestFrontendBackendParity:
             assert not pattern.search(text), \
                 f"Senior pattern should NOT match '{text}'"
 
-    def test_senior_filter_consistency_frontend_backend(self, filter_service_js_content: str):
-        """Test that frontend isSeniorCategory uses same key terms as backend"""
-        # Verify the isSeniorCategory function exists
-        assert "isSeniorCategory" in filter_service_js_content, \
-            "Could not find isSeniorCategory in FilterService.ts"
-
-        # Find the private function definition (not a call-site)
-        # Matches "private isSeniorCategory" or "isSeniorCategory(category:" style definitions
-        defn_pattern = r"(?:private\s+)?isSeniorCategory\s*\([^)]*category[^)]*\)\s*(?::\s*\w+\s*)?\{"
-        defn_match = re.search(defn_pattern, filter_service_js_content)
-        assert defn_match, "Could not locate isSeniorCategory function definition in FilterService.ts"
-        idx = defn_match.start()
-        region = filter_service_js_content[idx:idx + 600]
-
-        # Check that key discriminating patterns are present in the region
-        assert "s50" in region.lower(), \
-            "Frontend senior function should reference s50"
-        assert "senior" in region.lower(), \
-            "Frontend senior function should reference senior"
-        assert "veteran" in region.lower(), \
-            "Frontend senior function should reference veteran"
-        assert "50" in region, \
-            "Frontend senior function should reference 50+"
+    def test_entry_category_fixture_contract(self, processor: TournamentProcessor):
+        """Both runtimes use the same source examples (JS assertions run in service CI)."""
+        cases = json.loads((Path(__file__).parents[1] / "fixtures/entry-categories.json").read_text())
+        for case in cases:
+            name = case["name"]
+            assert youth_ages(name) == case["ages"], name
+            assert senior_ages(name) == case["seniors"], name
+            assert rating_ceilings(name) == case["ratings"], name
+            assert is_youth(name) == case["youth"], name
+            assert processor._is_youth_or_school_tournament(name) == case["youth"], name
+            assert processor._has_senior_category("", name) == (50 in case["seniors"]), name
+            tags = processor._extract_category(name).split(", ")
+            assert ("Youth" in tags) == case["youth"], name
+            for age in case["ages"]:
+                assert f"U{age}" in tags, name
+            for rating in case["ratings"]:
+                assert f"U{rating}" in tags, name
+            for age in case["seniors"]:
+                assert f"S{age}+" in tags, name
+        assert "Youth" not in processor._determine_category("Ealing U1600", "Ealing Junior Chess Club", "90+30")
 
     def test_config_structure_is_valid(self, config_json: dict):
         """Test that config.json has required structure"""

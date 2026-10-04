@@ -10,12 +10,13 @@
  */
 
 import { federationCode } from '../utils/countries';
-import { Tournament, FilterState, Sea } from '../types';
-import { DEFAULT_SEAS, SEA_LABELS, isMediterraneanLocation, isSeaside, seaOf } from '../utils/seas';
+import { Tournament, FilterState } from '../types';
+import { DEFAULT_SEAS, SEA_LABELS, seaOf } from '../utils/seas';
 import { isRestrictedEvent } from '../utils/openEvents';
+import { OrderingPart } from './filter/OrderingPart';
 import { Logger } from '../utils/Logger';
 
-export class FilterService {
+export class FilterService extends OrderingPart {
     private filterCache: Map<string, Tournament[]>;
     private readonly MAX_FILTER_CACHE_SIZE = 50;
 
@@ -28,6 +29,7 @@ export class FilterService {
     private readonly logger = Logger.createScoped('FilterService');
 
     constructor() {
+        super();
         this.filterCache = new Map();
     }
 
@@ -85,7 +87,7 @@ export class FilterService {
             }
 
             // Exclude youth filter (bypassed when a specific U-category is targeted)
-            if (filterState.excludeYouth && !filterState.youthCategory && this.isYouthTournament(nameLower, categoryLower)) {
+            if (filterState.excludeYouth && !filterState.youthCategory && this.isYouthTournament(tournament.name, tournament.category)) {
                 return false;
             }
 
@@ -98,18 +100,18 @@ export class FilterService {
             // Senior category filter (S50+ and/or S60+ — OR logic when both checked)
             if (filterState.seniorCategory || filterState.seniorS60) {
                 const matches =
-                    (filterState.seniorCategory && this.isSeniorCategory(categoryLower, nameLower)) ||
-                    (filterState.seniorS60 && this.isSeniorS60Category(categoryLower, nameLower));
+                    (filterState.seniorCategory && this.isSeniorCategory(tournament.category, tournament.name)) ||
+                    (filterState.seniorS60 && this.isSeniorS60Category(tournament.category, tournament.name));
                 if (!matches) return false;
             }
 
             // Youth category filter (e.g. 'U14' shows only that age group)
-            if (filterState.youthCategory && !this.matchesYouthCategory(nameLower, categoryLower, filterState.youthCategory)) {
+            if (filterState.youthCategory && !this.matchesYouthCategory(tournament.name, tournament.category, filterState.youthCategory)) {
                 return false;
             }
 
             // Rating category filter (e.g. 'U1800' shows only that rating ceiling)
-            if (filterState.ratingCategory && !this.matchesRatingCategory(nameLower, categoryLower, filterState.ratingCategory)) {
+            if (filterState.ratingCategory && !this.matchesRatingCategory(tournament.name, tournament.category, filterState.ratingCategory)) {
                 return false;
             }
 
@@ -223,119 +225,6 @@ export class FilterService {
         return { ...tournament, classificationReasons: reasons, travelTags: tags, classificationConfidence: confidence };
     }
 
-    // Category detection methods
-
-    private isOpenCategory(category: string): boolean {
-        return /\bopen\b/i.test(category);
-    }
-
-    private isYouthTournament(name: string, category: string): boolean {
-        // 1–2 digit ages (U8–U21) are youth; 3–4 digit numbers (U1600, U1800) are rating ceilings
-        const youthPattern = /\b(youth|junior|u\d{1,2}|u-\d{1,2}|under|młodzie[żz]|juniorów|juniorzy|žiak|ml[áa]de[žz]|ifjúság|jugend|jeune|juvenil|joven|giovani|giovanile|school|schule|école|escuela|scuola|szkoł|škol)\b/i;
-        return youthPattern.test(name) || youthPattern.test(category);
-    }
-
-    /** The Seaside rule (src/utils/seas.ts): by one of `seas` (default: any of the four). */
-    isSeaside(tournament: Tournament, mediterraneanLocations: Set<string>, seas?: readonly Sea[]): boolean {
-        return isSeaside(tournament, mediterraneanLocations, seas);
-    }
-
-    isMediterraneanLocation(location: string, mediterraneanLocations: Set<string>): boolean {
-        return isMediterraneanLocation(location, mediterraneanLocations);
-    }
-
-    private isSeniorCategory(category: string, name: string): boolean {
-        // Explicit S50+ markers — (?!\w) instead of trailing \b so "50+" at end
-        // of string (non-word char, no boundary) is still matched correctly.
-        const s50Pattern = /\b(?:s50\+?|s\s*50\+?|veteran\w*|50\+|50\s*\+|over\s*50|o50)(?!\w)/i;
-        // Specific 60+ / 65+ markers that indicate an older-only event
-        const olderOnlyPattern = /\b(?:s6\d\+?|s\s*6\d\+?|6[05]\+|6[05]\s*\+|over\s*6[05]|o6[05])(?!\w)/i;
-        const text = category + ' ' + name;
-        if (s50Pattern.test(text)) return true;
-        // Generic "senior/senioren/weteran" matches S50+ ONLY when the event
-        // is not exclusively for a higher age group (e.g. "Senior 65+")
-        // ("Senior School" is a venue, not an age group)
-        const genericSenior = /\b(?:senior\w*(?!\s+(?:high\s+|secondary\s+)?school)|weteran\w*)(?!\w)/i;
-        return genericSenior.test(text) && !olderOnlyPattern.test(text);
-    }
-
-    private isSeniorS60Category(category: string, name: string): boolean {
-        // No trailing \b — the + character is non-word so word boundary after it never fires
-        const s60Pattern = /\b(s60\+?|s\s*60\+?|60\+|60\s*\+|over\s*60|o60)/i;
-        return s60Pattern.test(category) || s60Pattern.test(name);
-    }
-
-    matchesYouthCategory(name: string, category: string, target: string): boolean {
-        // target is like 'U12' — match U12, U-12, U 12 (case-insensitive)
-        const age = target.replace(/^u/i, '');
-        const re = new RegExp(`\\bu[-\\s]?${age}\\b`, 'i');
-        return re.test(name) || re.test(category);
-    }
-
-    matchesRatingCategory(name: string, category: string, target: string): boolean {
-        // target is like 'U1800' — match U1800, U-1800, U 1800 (case-insensitive)
-        const rating = target.replace(/^u/i, '');
-        const re = new RegExp(`\\bu[-\\s]?${rating}\\b`, 'i');
-        return re.test(name) || re.test(category);
-    }
-
-    private isWomenTournament(category: string, name: string): boolean {
-        const womenPattern = /\b(women|ladies|female|femmes|mujeres|donne|kobiet|žen)\b/i;
-        return womenPattern.test(category) || womenPattern.test(name);
-    }
-
-    private isTeamTournament(name: string, category: string): boolean {
-        // Prefix match, like TournamentProcessor._is_team_tournament, so plurals
-        // count too ("Copa por Equipos", "équipes", "teams"); \p{L} instead of
-        // \b because \b doesn't treat "é" as a letter
-        const teamPattern = /(?:^|[^\p{L}])(team|mannschaft|[eé]quipe|equipo|equipa|squadr[ae]|drużyn|družstv)/iu;
-        return teamPattern.test(name) || teamPattern.test(category);
-    }
-
-    private getTournamentDays(tournament: Tournament): number {
-        if (!tournament.dateTo) return 1;
-        const to = new Date(tournament.dateTo);
-        if (isNaN(to.getTime())) return 1;
-        return Math.round((to.getTime() - tournament.date.getTime()) / 86400000) + 1;
-    }
-
-    // True when every day of the tournament falls on a Saturday or Sunday:
-    // 1-day on Sat, 1-day on Sun, or 2-day Sat+Sun.
-    private isJustWeekend(tournament: Tournament): boolean {
-        const days = this.getTournamentDays(tournament);
-        if (days > 2) return false;
-        const startDay = tournament.date.getUTCDay();
-        if (days === 1) return startDay === 6 || startDay === 0;
-        return startDay === 6; // 2-day must start Saturday (→ ends Sunday)
-    }
-
-    // True when the tournament spans ≤5 days AND its date range includes
-    // at least one Saturday (day 6) and one Sunday (day 0).
-    private isLongWeekend(tournament: Tournament): boolean {
-        const days = this.getTournamentDays(tournament);
-        if (days < 2 || days > 5) return false;
-        let hasSat = false;
-        let hasSun = false;
-        for (let i = 0; i < days; i++) {
-            const dow = new Date(tournament.date.getTime() + i * 86400000).getUTCDay();
-            if (dow === 6) hasSat = true;
-            if (dow === 0) hasSun = true;
-        }
-        return hasSat && hasSun;
-    }
-
-    private isClassicalTime(category: string): boolean {
-        return /\b(classic|classical|standard)\b/i.test(category);
-    }
-
-    private isRapidTime(category: string): boolean {
-        return /\brapid\b/i.test(category);
-    }
-
-    private isBlitzTime(category: string): boolean {
-        return /\bblitz\b/i.test(category);
-    }
-
     /**
      * Pick the upcoming seaside tournament to feature: one you'd plan a trip
      * around. Seaside, starts within 30 days, runs FEATURED_MIN_DAYS to
@@ -378,56 +267,4 @@ export class FilterService {
         return candidates[0] ?? null;
     }
 
-    /**
-     * Sort tournaments by specified option
-     */
-    sortTournaments(tournaments: Tournament[], sortBy: string): Tournament[] {
-        const sorted = [...tournaments];
-
-        switch (sortBy) {
-            case 'date-asc':
-                sorted.sort((a, b) => a.date.getTime() - b.date.getTime());
-                break;
-            case 'date-desc':
-                sorted.sort((a, b) => b.date.getTime() - a.date.getTime());
-                break;
-            case 'name':
-                sorted.sort((a, b) => a.name.localeCompare(b.name));
-                break;
-            case 'location':
-                sorted.sort((a, b) => a.location.localeCompare(b.location));
-                break;
-            case 'country':
-                sorted.sort((a, b) => {
-                    const countryA = a.location.split(',').pop()?.trim() || '';
-                    const countryB = b.location.split(',').pop()?.trim() || '';
-                    return countryA.localeCompare(countryB);
-                });
-                break;
-            default:
-                // Default: date ascending
-                sorted.sort((a, b) => a.date.getTime() - b.date.getTime());
-        }
-
-        return sorted;
-    }
-
-    /**
-     * Search within tournaments (quick search)
-     */
-    searchWithinTournaments(tournaments: Tournament[], query: string): Tournament[] {
-        if (!query || query.trim() === '') {
-            return tournaments;
-        }
-
-        const queryLower = query.toLowerCase();
-        return tournaments.filter(tournament => {
-            return (
-                tournament.name.toLowerCase().includes(queryLower) ||
-                tournament.location.toLowerCase().includes(queryLower) ||
-                tournament.category.toLowerCase().includes(queryLower) ||
-                tournament.description.toLowerCase().includes(queryLower)
-            );
-        });
-    }
 }

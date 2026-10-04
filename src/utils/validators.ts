@@ -10,6 +10,7 @@
  */
 
 import { z } from 'zod/mini';
+import { normalizeEntryCategory } from './entryCategories';
 import { normalizeClockCategory } from './timeControl';
 
 /**
@@ -93,7 +94,7 @@ export type ValidatedAppConfig = z.infer<typeof AppConfigSchema>;
  * Helper function to safely parse and validate data
  */
 export function validateTournaments(data: unknown): ValidatedTournamentsArray {
-    return TournamentsArraySchema.parse(data).map(row => ({ ...row, category: normalizeClockCategory(row) }));
+    return TournamentsArraySchema.parse(data).map(row => ({ ...row, category: normalizeEntryCategory({ ...row, category: normalizeClockCategory(row) }) }));
 }
 
 /**
@@ -113,7 +114,7 @@ export function safeValidateTournaments(data: unknown): {
 } {
     const result = TournamentsArraySchema.safeParse(data);
     if (result.success) {
-        return { success: true, data: result.data.map(row => ({ ...row, category: normalizeClockCategory(row) })) };
+        return { success: true, data: result.data.map(row => ({ ...row, category: normalizeEntryCategory({ ...row, category: normalizeClockCategory(row) }) })) };
     }
     return { success: false, error: result.error };
 }
