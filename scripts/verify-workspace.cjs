@@ -8,8 +8,13 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const originalConsole = console;
 let passed = 0;
 function check(name, fn) { fn(); passed++; originalConsole.log(`PASS ${name}`); }
+function stripScriptElements(inputHtml) {
+  const parsed = new JSDOM(inputHtml);
+  for (const scriptEl of parsed.window.document.querySelectorAll('script')) scriptEl.remove();
+  return parsed.window.document.documentElement?.outerHTML || parsed.serialize();
+}
 async function verify(width) {
-  const dom = new JSDOM(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ''), { url: 'https://example.test/?open=0&excludeYouth=0&team=1&long=1', pretendToBeVisual: true });
+  const dom = new JSDOM(stripScriptElements(html), { url: 'https://example.test/?open=0&excludeYouth=0&team=1&long=1', pretendToBeVisual: true });
   const w = dom.window;
   Object.defineProperty(w, 'innerWidth', { value: width });
   w.matchMedia = query => ({ matches: /max-width/.test(query) ? width <= Number(query.match(/(\d+)px/)?.[1] || 1023) : false, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });

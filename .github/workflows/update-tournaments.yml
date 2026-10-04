@@ -102,17 +102,18 @@ jobs:
           curl -sSfL -o /tmp/geonames/cities1000.zip https://download.geonames.org/export/dump/cities1000.zip
           unzip -o -q /tmp/geonames/cities1000.zip -d /tmp/geonames
 
-      - name: Geocode new tournament locations
-        continue-on-error: true
-        run: |
-          python3 geocode_tournaments.py --geonames /tmp/geonames/cities1000.txt --max-lookups 300 2>&1 | tee /tmp/geocode.log
-
       # Organizer, rounds, FIDE page, address, homepage for the detail panel.
-      # 1 request/s, capped per run, cached in details_cache.json (details/pipeline.py)
+      # 1 request/s, capped per run, cached in details_cache.json (details/pipeline.py).
+      # Fetch addresses before geocoding so venue-only locations can use them.
       - name: Fetch tournament details from chess-results.com
         continue-on-error: true
         run: |
           python3 fetch_details.py --max-fetches 300 2>&1 | tee /tmp/details.log
+
+      - name: Geocode new tournament locations
+        continue-on-error: true
+        run: |
+          python3 geocode_tournaments.py --geonames /tmp/geonames/cities1000.txt --max-lookups 300 2>&1 | tee /tmp/geocode.log
 
       - name: Validate final enriched snapshot
         env:

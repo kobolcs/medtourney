@@ -50,7 +50,7 @@ class TournamentProcessor(LoadingMixin, ConfigMixin):
         "date_yyyymmdd_dash": re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})"),
         "date_ddmmyyyy_slash": re.compile(r"(\d{1,2})/(\d{1,2})/(\d{4})"),
         "open": re.compile(r"\bopen\b", re.IGNORECASE),
-        "s50": re.compile(r"\bs50\+|s50|senior|veteran|50\+", re.IGNORECASE),
+        "s50": re.compile(r"\bs50\+|s50|senior(?!\s+(?:high\s+|secondary\s+)?school)|veteran|50\+", re.IGNORECASE),
         # International youth keywords: English, Polish, Czech, Slovak, Hungarian, German, French, Spanish, Italian
         "youth": re.compile(
             r"\bu\d{1,2}\b|youth|junior|under|"  # English (1-2 digit age: U8-U21; U1600+ are rating ceilings)
