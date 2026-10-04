@@ -35,6 +35,18 @@ class TestTournamentProcessor:
         category = processor._extract_category("Veteran Tournament")
         assert "S50+" in category
 
+    def test_extract_category_senior_school_is_not_senior(self, processor):
+        """A "Senior School" venue must not make a junior event S50+ (seen live:
+        "CHESS JUNIOR CHESS TOURNAMENT" at "KHADIJA SENIOR SCHOOL" was tagged S50+)"""
+        for text in ("Chess Junior Chess Tournament Khadija Senior School, ALB",
+                     "Open Rapid Senior High School",
+                     "Cup, Senior Secondary School"):
+            assert "S50+" not in processor._extract_category(text), text
+            assert not processor._has_senior_category("", text.lower()), text
+        # Real senior events still match
+        assert "S50+" in processor._extract_category("Senior Open School Hall")
+        assert processor._has_senior_category("", "seniors championship")
+
     def test_extract_category_youth(self, processor):
         """Test Youth category detection"""
         category = processor._extract_category("Youth U18 Championship")

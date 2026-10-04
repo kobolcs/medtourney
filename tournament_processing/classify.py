@@ -112,7 +112,8 @@ class ClassifyMixin(ProcessorBase):
         """
         # Senior/veteran keywords (expanded)
         senior_pattern = re.compile(
-            r"\bs50\+|s\s*50\+|s50|senior|senioren|veteran|veteranen|"
+            # "Senior School" / "Senior High School" is a venue, not an age group
+            r"\bs50\+|s\s*50\+|s50|senior(?!\s+(?:high\s+|secondary\s+)?school)|senioren|veteran|veteranen|"
             r"vétéran|veterano|weteran|50\+|50\s*\+|over\s*50|o50",
             re.IGNORECASE
         )

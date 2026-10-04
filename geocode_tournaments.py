@@ -16,7 +16,9 @@ Pazar, SRB", "Church Hall, ENG", "42.1381, BUL"), so each is tried as a
 cascade of progressively shorter queries, always restricted to the
 tournament's country. Country- or region-level hits are rejected as too
 coarse - an unplaced tournament is better than a pin in the middle of a
-country.
+country. When the location can't be placed, the venue address from the
+tournament's details page (fetch_details.py, run just before this) is tried
+the same way - it often names the town the location leaves out.
 
 Usage:
     python3 geocode_tournaments.py [--max-lookups N] [--data FILE] [--cache FILE]
