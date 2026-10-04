@@ -16,10 +16,12 @@ for (const width of [1440, 390]) {
     await expect(page.locator('footer #dataFreshness')).toHaveText('Data updated 4 Oct 2026');
     await expect(page.locator('.featured-suggestion')).toHaveJSProperty('open', true);
     await expect(page.locator('.featured-name-btn')).toBeVisible();
+    await expect(page.locator('.featured-external-link')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await testInfo.attach(`seaside-open-${width}`, { body: await page.screenshot(), contentType: 'image/png' });
     await page.locator('.featured-name-btn').click();
     await expect(page.locator('#tournamentDetail')).toHaveJSProperty('open', true);
+    await expect(page.locator('#tournamentDetail .detail-cr-link')).toHaveText('Registration, players, pairings and results →');
   });
 }
 
