@@ -3,6 +3,12 @@
 import re
 
 from tournament_processing.base import ProcessorBase
+from tournament_processing.entry_categories import (
+    is_youth,
+    rating_ceilings,
+    senior_ages,
+    youth_ages,
+)
 
 
 class TimeControlMixin(ProcessorBase):
@@ -167,7 +173,7 @@ class TimeControlMixin(ProcessorBase):
             return numeric
         return ", ".join(dict.fromkeys(classes)) if classes else None
 
-    def _determine_category(self, name: str, location: str, time_control: str) -> str:
+    def _determine_category(self, name: str, _location: str, time_control: str) -> str:
         """Determine tournament category from time control and name."""
         time_classes = {"Classical", "Rapid", "Blitz", "Unknown"}
         category_parts: list[str] = []
@@ -188,7 +194,7 @@ class TimeControlMixin(ProcessorBase):
         # time control (say 60+30=90min, genuinely Classical) would get
         # overridden to "Blitz" just because that word also appears
         # somewhere in the (shared, multi-event) name text.
-        name_category: str = self._extract_category(name + " " + location)
+        name_category: str = self._extract_category(name)
         for cat in name_category.split(", "):
             if cat in time_classes:
                 if tc_class is None and cat not in category_parts:
@@ -222,10 +228,11 @@ class TimeControlMixin(ProcessorBase):
         # Tournament type - use precompiled patterns
         if self.REGEX_PATTERNS["open"].search(text):
             categories.append("Open")
-        if self.REGEX_PATTERNS["s50"].search(text):
-            categories.append("S50+")
-        if self.REGEX_PATTERNS["youth"].search(text):
+        categories.extend(f"S{age}+" for age in senior_ages(text))
+        if is_youth(text):
             categories.append("Youth")
+        categories.extend(f"U{age}" for age in youth_ages(text))
+        categories.extend(f"U{rating}" for rating in rating_ceilings(text))
         if self.REGEX_PATTERNS["women"].search(text):
             categories.append("Women")
 

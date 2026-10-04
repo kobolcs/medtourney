@@ -170,11 +170,10 @@ export abstract class CountryFilterPart extends ActiveFilterChipsPart {
         const youthSelect = elements.youthCategory;
         const youthSelected = (youthSelect?.value ?? '') !== '';
 
-        // Youth selector: disable when exclude-youth or any senior filter is active
+        // A specific youth selection overrides exclusion; only senior selection conflicts.
         if (youthSelect) {
-            const excludeYouth = elements.excludeYouth?.checked ?? false;
             const isSenior = (elements.seniorCategory?.checked ?? false) || (elements.seniorS60?.checked ?? false);
-            const shouldDisable = excludeYouth || isSenior;
+            const shouldDisable = isSenior && !youthSelected;
             youthSelect.disabled = shouldDisable;
             const youthGroup = youthSelect.closest<HTMLElement>('.filter-group');
             if (youthGroup) youthGroup.style.opacity = shouldDisable ? '0.4' : '';

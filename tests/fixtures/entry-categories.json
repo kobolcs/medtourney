@@ -1,0 +1,197 @@
+[
+  {
+    "name": "Twickenham ChampionshipUnder 12",
+    "ages": [
+      12
+    ],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  },
+  {
+    "name": "Hampshire Open 2026U12",
+    "ages": [
+      12
+    ],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  },
+  {
+    "name": "Championship HD12",
+    "ages": [
+      12
+    ],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  },
+  {
+    "name": "Campionatul juniori Open 12",
+    "ages": [
+      12
+    ],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  },
+  {
+    "name": "Open U1800 / U 18",
+    "ages": [
+      18
+    ],
+    "seniors": [],
+    "ratings": [
+      1800
+    ],
+    "youth": true
+  },
+  {
+    "name": "Kadeti do 16 godina",
+    "ages": [
+      16
+    ],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  },
+  {
+    "name": "Open do 12 godini",
+    "ages": [
+      12
+    ],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  },
+  {
+    "name": "III OPEN 60+30 EBANO 2026",
+    "ages": [],
+    "seniors": [],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Open 60+ 30",
+    "ages": [],
+    "seniors": [],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Senior Championship 65+",
+    "ages": [],
+    "seniors": [
+      65
+    ],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "S60+ Championship",
+    "ages": [],
+    "seniors": [
+      60
+    ],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Veteran Tournament",
+    "ages": [],
+    "seniors": [
+      50
+    ],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Senior High School Championship",
+    "ages": [],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  },
+  {
+    "name": "OPEN C Under 1600",
+    "ages": [],
+    "seniors": [],
+    "ratings": [
+      1600
+    ],
+    "youth": false
+  },
+  {
+    "name": "Rotterdam Minor Under 1650",
+    "ages": [],
+    "seniors": [],
+    "ratings": [
+      1650
+    ],
+    "youth": false
+  },
+  {
+    "name": "Open ELO < 1800",
+    "ages": [],
+    "seniors": [],
+    "ratings": [
+      1800
+    ],
+    "youth": false
+  },
+  {
+    "name": "Open Elo≤ 2000",
+    "ages": [],
+    "seniors": [],
+    "ratings": [
+      2000
+    ],
+    "youth": false
+  },
+  {
+    "name": "Open Sub-1800",
+    "ages": [],
+    "seniors": [],
+    "ratings": [
+      1800
+    ],
+    "youth": false
+  },
+  {
+    "name": "Open Elo >= 1800",
+    "ages": [],
+    "seniors": [],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Open Elo > 1800",
+    "ages": [],
+    "seniors": [],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Open Elo 1800",
+    "ages": [],
+    "seniors": [],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Open U18000",
+    "ages": [],
+    "seniors": [],
+    "ratings": [],
+    "youth": false
+  },
+  {
+    "name": "Open bis 14",
+    "ages": [
+      14
+    ],
+    "seniors": [],
+    "ratings": [],
+    "youth": true
+  }
+]
