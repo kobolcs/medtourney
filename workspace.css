@@ -38,7 +38,8 @@ header::after { height: 4px; }
 .clock-unconfirmed { font-size: .875rem; color: var(--label); }
 .time-control-badge { font-size: .875rem; white-space: normal; overflow-wrap: anywhere; }
 .tournament-actions { max-height: none; opacity: 1; margin-top: .6rem; overflow: visible; }
-.tournament-actions .calendar-export-btn { pointer-events: auto; }
+.tournament-actions .calendar-export-btn { pointer-events: auto; opacity: 1; min-height: 44px; width: auto; padding: .5rem .75rem; }
+.tournament-actions .action-text { display: inline; }
 .airport-hint { color: var(--label); }
 .quick-search-input, .sort-select { min-height: 44px; }
 .quick-search-input { font-size: 1rem; }
