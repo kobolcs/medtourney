@@ -25,7 +25,6 @@ LIMITS = {".py": 400, ".ts": 300, ".robot": 400, ".md": 500}
 KNOWN = {
     "tests/python/test_geocode.py": 420,
     "src/app.ts": 424,
-    "tests/e2e/dark-mode-and-ui.spec.ts": 390,
     "src/services/ExportService.ts": 357,
     "tests/e2e/keyboard-navigation.spec.ts": 329,
     "src/services/UIManager.ts": 306,

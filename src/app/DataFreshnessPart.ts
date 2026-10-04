@@ -13,6 +13,11 @@ export abstract class DataFreshnessPart extends ThemeHelpPart {
         const stamp = date ? date.toLocaleDateString('en-GB', {
             day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
         }) : null;
-        countEl.textContent = `${count} tournaments · ${stamp ? `${label} ${stamp}` : `${label}: date unavailable`}`;
+        countEl.textContent = `${count} ${this.allTournaments.length === 1 ? 'tournament' : 'tournaments'}`;
+        const freshness = document.getElementById('dataFreshness');
+        if (freshness) {
+            freshness.textContent = stamp ? `${label} ${stamp}` : `${label}: date unavailable`;
+            freshness.hidden = false;
+        }
     }
 }

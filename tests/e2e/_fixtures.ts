@@ -24,6 +24,7 @@ export interface TournamentFixture {
     details?: { organizer?: string; rounds?: number; system?: string; rated?: string[]; fideId?: string; address?: string; homepage?: string };
     town?: string;
     timeControl?: string;
+    dateTo?: string;
 }
 
 /** ISO YYYY-MM-DD a given number of days from today (UTC). */
