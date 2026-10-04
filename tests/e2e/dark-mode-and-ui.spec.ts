@@ -65,9 +65,8 @@ test.describe('Dark Mode and UI Features', () => {
     await expect(page.locator('#themeToggleIcon')).toHaveText('☀');
   });
 
-  test('no "last updated" date or staleness banner is shown to visitors', async ({ page }) => {
-    // Even very old data: update failures alert the owner (GitHub issue),
-    // visitors never see a date or a warning (removed 2026-09-26).
+  test('unmatched metadata cannot date the loaded snapshot', async ({ page }) => {
+    // A sidecar without the matching row count cannot label these rows.
     await page.route('**/tournaments_data_meta.json', route =>
       route.fulfill({
         status: 200,
@@ -78,7 +77,7 @@ test.describe('Dark Mode and UI Features', () => {
     await page.reload();
     await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
 
-    await expect(page.locator('#headerTournamentCount')).toHaveText(/^[\d,]+ European tournaments$/);
+    await expect(page.locator('#headerTournamentCount')).toHaveText('24 tournaments · Data updated: date unavailable');
     await expect(page.locator('footer')).not.toContainText(/updated|days old/i);
     await expect(page.locator('#staleness-banner')).toHaveCount(0);
     // chess-results.com stays as one small credit, not the headline
