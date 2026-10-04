@@ -26,6 +26,44 @@ def set_town(t: dict[str, Any], geocoder: Geocoder, max_lookups: int) -> None:
         t.pop("town", None)
 
 
+def address_query(t: dict[str, Any]) -> str | None:
+    """The scraped venue address in the location's "text, FED" form.
+
+    "Haus des Schachsports, AUT" + address "Haus des Schachsports, Spielmannplatz 1,
+    1020 Wien" -> "Haus des Schachsports, Spielmannplatz 1, 1020 Wien, AUT".
+    """
+    address = str(t.get("details", {}).get("address") or "").strip()
+    if not address:
+        return None
+    fed = str(t.get("location", "")).rsplit(",", 1)[-1].strip()
+    return f"{address}, {fed}"
+
+
+def locate(
+    t: dict[str, Any],
+    geocoder: Geocoder,
+    geonames: dict[str, dict[str, Place]] | None,
+    max_lookups: int,
+) -> tuple[tuple[float, float] | None, str]:
+    """Coordinates and the cache key they came from.
+
+    The location first; then the details page's address, which often names
+    the town the location leaves out; then a town named in the tournament name.
+    """
+    location = t.get("location", "")
+    coords = geocoder.place(location, max_lookups)
+    if coords is not None:
+        return coords, location
+    address = address_query(t)
+    if address and address != location:
+        coords = geocoder.place(address, max_lookups)
+        if coords is not None:
+            return coords, address
+    if geonames:
+        return town_from_name(t, geonames), location
+    return None, location
+
+
 def annotate_tournament(
     t: dict[str, Any],
     geocoder: Geocoder,
@@ -38,13 +76,10 @@ def annotate_tournament(
 
     Returns (placed, seaside, beachfront) for the run's summary.
     """
-    location = t.get("location", "")
     for key in ("lat", "lng", "coast", "seaM", "airport", "town"):
         t.pop(key, None)
 
-    coords = geocoder.place(location, max_lookups)
-    if coords is None and geonames:
-        coords = town_from_name(t, geonames)
+    coords, location = locate(t, geocoder, geonames, max_lookups)
     if coords is None:
         return False, False, False
     t["lat"], t["lng"] = coords
