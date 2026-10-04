@@ -784,6 +784,10 @@
   "town": "Skopje",
   "tried": "2026-10-01T04:31:51.945083+00:00"
  },
+ "@town:42.036,0.127": {
+  "town": "Barbastro",
+  "tried": "2026-10-04T04:43:48.188391+00:00"
+ },
  "@town:42.142,24.750": {
   "town": "Plovdiv",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -819,6 +823,10 @@
  "@town:42.507,41.872": {
   "town": "Zugdidi",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:42.508,1.521": {
+  "town": "Andorra la Vella",
+  "tried": "2026-10-04T04:43:48.188391+00:00"
  },
  "@town:42.619,25.393": {
   "town": "Kazanlak",
@@ -1896,6 +1904,10 @@
   "town": "Illingen",
   "tried": "2026-10-01T04:31:51.945083+00:00"
  },
+ "@town:48.964,17.176": {
+  "town": "Vacenovice",
+  "tried": "2026-10-04T04:43:48.188391+00:00"
+ },
  "@town:48.968,17.585": {
   "town": "Dolní Němčí",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -2455,6 +2467,10 @@
  "@town:51.962,7.626": {
   "town": "Münster",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:51.977,7.291": {
+  "town": "Billerbeck",
+  "tried": "2026-10-04T04:43:48.188391+00:00"
  },
  "@town:52.042,-0.756": {
   "town": "Milton Keynes",
@@ -3106,6 +3122,12 @@
   "lng": -2.4733,
   "q": "Eibar"
  },
+ "BARBASTRO (Centro de Congresos), ESP": {
+  "lat": 42.0356,
+  "lng": 0.1269,
+  "q": "barbastro",
+  "src": "geonames"
+ },
  "BARCO MSC, ESP": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -3240,6 +3262,12 @@
   "lng": 19.1457,
   "q": "Banská Bystrica"
  },
+ "Barbastro y Estadill, ESP": {
+  "lat": 42.0356,
+  "lng": 0.1269,
+  "q": "barbastro",
+  "src": "geonames"
+ },
  "Barton Peveril College, ENG": {
   "lat": 53.6891,
   "lng": -0.4438,
@@ -3260,6 +3288,11 @@
   "lat": 38.0154,
   "lng": -7.865,
   "q": "Beja"
+ },
+ "Belgrade, SRB": {
+  "lat": 44.8153,
+  "lng": 20.4457,
+  "q": "Belgrade"
  },
  "Benkenstrasse 20, SUI": {
   "miss": "no match",
@@ -3308,6 +3341,11 @@
  "Biblioteca da Escola, POR": {
   "miss": "no match",
   "tried": "2026-10-01T04:31:51.945083+00:00"
+ },
+ "Billerbeck, GER": {
+  "lat": 51.9774,
+  "lng": 7.2909,
+  "q": "Billerbeck"
  },
  "Bindlach, GER": {
   "lat": 49.982,
@@ -4090,6 +4128,10 @@
   "q": "donaghmede",
   "src": "geonames"
  },
+ "Dorozsmai Petőfi S. Művelődési Ház  Szeged-Kiskundorozsma, HUN": {
+  "miss": "no match",
+  "tried": "2026-10-04T04:43:48.188391+00:00"
+ },
  "Dubrovnik, CRO": {
   "lat": 42.6491,
   "lng": 18.094,
@@ -4610,6 +4652,12 @@
   "q": "budapest",
   "src": "geonames"
  },
+ "Grup Escacs Valls Andorra, AND": {
+  "lat": 42.5078,
+  "lng": 1.5211,
+  "q": "andorra",
+  "src": "geonames"
+ },
  "Grzywna, POL": {
   "lat": 53.1549,
   "lng": 18.6125,
@@ -4930,6 +4978,10 @@
   "lng": -0.4398,
   "q": "cocentaina",
   "src": "geonames"
+ },
+ "Hotel Perinthos, GRE": {
+  "miss": "no match",
+  "tried": "2026-10-04T04:43:48.188391+00:00"
  },
  "Hotel Radin****, SLO": {
   "miss": "no match",
@@ -5639,6 +5691,10 @@
  "MDA": {
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "MERCADIA GAMES - Rua Cláudio Nunes, POR": {
+  "miss": "no match",
+  "tried": "2026-10-04T04:43:48.188391+00:00"
  },
  "MGM Bastion Timisoara, ROU": {
   "lat": 45.7537,
@@ -6755,6 +6811,12 @@
   "miss": "no match",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "Sala Sporturilor Paralimpice Loc. Buzau, ROU": {
+  "lat": 45.15,
+  "lng": 26.8333,
+  "q": "buzau",
+  "src": "geonames"
+ },
  "Sala svadbenog salona \"Villa Bella\" Stjepan Polje, BIH": {
   "lat": 43.8801,
   "lng": 18.0745,
@@ -7825,10 +7887,21 @@
   "miss": "no match",
   "tried": "2026-09-30T04:23:48.986869+00:00"
  },
+ "okres Hodonín, CZE": {
+  "lat": 48.9638,
+  "lng": 17.1761,
+  "q": "okres Hodonín"
+ },
  "okres Kroměříž, CZE": {
   "lat": 49.2682,
   "lng": 17.3216,
   "q": "okres Kroměříž"
+ },
+ "okres Opava, CZE": {
+  "lat": 49.9387,
+  "lng": 17.9026,
+  "q": "opava",
+  "src": "geonames"
  },
  "pirmas etapas – Danske Bank (DC Pier), LTU": {
   "miss": "no match",
@@ -7991,6 +8064,17 @@
    "venue": null,
    "seaM": null,
    "tried": "2026-09-24T00:06:33.447660+00:00"
+  }
+ },
+ "Κρήτης 1. Πετρούπολη, GRE": {
+  "lat": 38.0419,
+  "lng": 23.6849,
+  "q": "πετρουπολη",
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-04T04:43:48.188391+00:00"
   }
  },
  "ΛΑΡΙΣΑ, GRE": {
