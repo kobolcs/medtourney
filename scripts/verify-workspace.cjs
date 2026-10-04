@@ -42,7 +42,7 @@ async function verify(width) {
   const change = (id, value) => { const el=d.getElementById(id); el.checked=value; el.dispatchEvent(new w.Event('change', {bubbles:true})); };
   const search = value => { const el=d.getElementById('quickSearch'); el.value=value; el.dispatchEvent(new w.Event('input', {bubbles:true})); };
   check(`${width}: initial real dataset renders`, () => assert(cards().length > 0));
-  check(`${width}: dataset count shown`, () => assert.match(d.getElementById('headerTournamentCount').textContent, /tournaments/));
+  check(`${width}: index count is labeled separately`, () => { assert.match(d.getElementById('headerTournamentCount').textContent, /tournaments in index/); assert.match(d.getElementById('resultsCount').textContent, /found$/); });
   check(`${width}: useful chess facts shown`, () => assert(d.querySelector('.tournament-format')));
   check(`${width}: time controls outside mobile sheet`, () => assert(!d.getElementById('filtersSheet').contains(d.getElementById('classicalTime'))));
   search('Vienna');
