@@ -9,7 +9,6 @@ import { initTimeControlToolbar, syncTimeControlToolbar } from './utils/timeCont
 import type { SortOption } from './app/AppState';
 import { ResultsViewPart } from './app/ResultsViewPart';
 import { clearCountries } from './utils/countrySelection';
-import { initSearchShare } from './utils/shareSearch';
 declare global {
     interface Window {
         plausible?: (event: string, options?: { props?: Record<string, string | number | boolean> }) => void;
@@ -117,8 +116,6 @@ class TournamentFinder extends ResultsViewPart {
         if (exportBtn) {
             exportBtn.addEventListener('click', () => this.exportToCSV());
         }
-
-        initSearchShare();
 
         // Sort dropdown
         const sortSelect = document.getElementById('sortBy') as HTMLSelectElement;

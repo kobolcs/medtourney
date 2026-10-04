@@ -9,6 +9,7 @@ import { ShortlistPart } from './ShortlistPart';
 import type { Tournament } from '../types';
 import { closeCalendarMenu, closeCalendarMenuOnScroll, openCalendarMenu } from '../utils/calendarMenu';
 import { initDetailPanel, openDetailPanel } from '../utils/detailPanel';
+import { initSearchShare } from '../utils/shareSearch';
 
 /** Tournament card actions: calendar, copy link, card click -> detail panel. */
 export abstract class CardActionsPart extends ShortlistPart {
@@ -19,6 +20,7 @@ export abstract class CardActionsPart extends ShortlistPart {
      * tournament's stable URL key (data-tournament-url), not a position.
      */
     protected initCalendarExportDelegation(): void {
+        initSearchShare();
         document.addEventListener('click', (e) => {
             const target = e.target as Element;
             const item = target.closest<HTMLElement>('.calendar-menu-item');
