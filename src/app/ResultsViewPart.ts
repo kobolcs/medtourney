@@ -5,6 +5,7 @@
  * ThemeHelpPart -> DataFreshnessPart -> FilterPreferencesPart -> ActiveFilterChipsPart -> CountryFilterPart -> EmptyStatePart -> ShortlistPart -> CardActionsPart -> KeyboardPart -> FilterFormPart -> ResultsViewPart ->
  * TournamentFinder. Methods moved unchanged out of app.ts.
  */
+import { searchableLocation } from '../utils/countries';
 import { Tournament } from '../types';
 import type { SortOption } from './AppState';
 import { FilterFormPart } from './FilterFormPart';
@@ -44,7 +45,7 @@ export abstract class ResultsViewPart extends FilterFormPart {
         if (shortlistOnly) out = out.filter(t => this.shortlist.has(t.url));
         const q = search.trim().toLowerCase();
         if (q) {
-            out = out.filter(t => t.name.toLowerCase().includes(q) || t.location.toLowerCase().includes(q));
+            out = out.filter(t => t.name.toLowerCase().includes(q) || searchableLocation(t.location, t.town).includes(q));
         }
         return out;
     }

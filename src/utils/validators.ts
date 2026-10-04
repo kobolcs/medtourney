@@ -48,13 +48,13 @@ export const TournamentSchema = z.object({
         rated: z.optional(z.array(z.string().check(z.maxLength(60)))),
         fideId: z.optional(z.string().check(z.regex(/^\d{1,10}$/))),
         address: z.optional(z.string().check(z.maxLength(160))),
-        homepage: z.optional(z.url()),
+        homepage: z.catch(z.optional(z.url()), undefined),
         schedule: z.optional(z.array(z.object({
             round: z.int().check(z.gte(1), z.lte(99)),
             date: z.string().check(z.regex(/^\d{4}-\d{2}-\d{2}$/)),
             time: z.optional(z.string().check(z.regex(/^\d{2}:\d{2}$/))),
         }))),
-        regulationsUrl: z.optional(z.url()),
+        regulationsUrl: z.catch(z.optional(z.url()), undefined),
     })), undefined)
 });
 

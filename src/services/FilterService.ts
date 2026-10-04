@@ -9,6 +9,7 @@
  * - Country filtering
  */
 
+import { federationCode } from '../utils/countries';
 import { Tournament, FilterState, Sea } from '../types';
 import { DEFAULT_SEAS, SEA_LABELS, isMediterraneanLocation, isSeaside, seaOf } from '../utils/seas';
 import { isRestrictedEvent } from '../utils/openEvents';
@@ -68,8 +69,8 @@ export class FilterService {
 
             // Country filter — OR logic across selected codes
             if (filterState.countryFilter.length > 0) {
-                const locationLower = tournament.location.toLowerCase();
-                if (!filterState.countryFilter.some(code => locationLower.includes(code.toLowerCase()))) {
+                const country = federationCode(tournament.location);
+                if (!filterState.countryFilter.some(code => country === code.toUpperCase())) {
                     return false;
                 }
             }
