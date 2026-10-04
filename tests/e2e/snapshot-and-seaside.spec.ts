@@ -11,7 +11,8 @@ for (const width of [1440, 390]) {
     await page.route('**/tournaments_data_meta.json', route => route.fulfill({ contentType: 'application/json',
       body: JSON.stringify({ generatedAt: '2026-10-04T04:54:00Z', keptRows: 1 }) }));
     await page.goto('/');
-    await expect(page.locator('#headerTournamentCount')).toHaveText('1 tournament');
+    await expect(page.locator('#headerTournamentCount')).toHaveText('1 tournament in index');
+    await expect(page.locator('#resultsCount')).toHaveText('1 tournament found');
     await expect(page.locator('#headerLiveStatus')).not.toContainText(/updated|snapshot|Oct 2026/i);
     await expect(page.locator('footer #dataFreshness')).toHaveText('Data updated 4 Oct 2026');
     await expect(page.locator('.featured-suggestion')).toHaveJSProperty('open', true);
@@ -28,7 +29,8 @@ test('no suggestion means no empty accordion; unmatched metadata cannot date loa
   await page.route('**/tournaments_data_meta.json', route => route.fulfill({ contentType: 'application/json',
     body: JSON.stringify({ generatedAt: '2020-01-01T00:00:00Z' }) }));
   await page.goto('/');
-  await expect(page.locator('#headerTournamentCount')).toHaveText('24 tournaments');
+  await expect(page.locator('#headerTournamentCount')).toHaveText('24 tournaments in index');
+  await expect(page.locator('#resultsCount')).toHaveText('24 tournaments found');
   await expect(page.locator('footer #dataFreshness')).toHaveText('Data updated: date unavailable');
   await expect(page.locator('.featured-suggestion')).toBeHidden();
   await expect(page.locator('#staleness-banner')).toHaveCount(0);
