@@ -3064,6 +3064,12 @@ body.dark-theme .map-cluster {
     flex-wrap: wrap;
     align-items: center;
     gap: var(--sp-2);
+    min-width: 0;
+  }
+
+  .results-actions {
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .results-controls .search-within {

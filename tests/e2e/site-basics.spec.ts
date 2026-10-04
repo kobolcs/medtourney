@@ -103,7 +103,7 @@ test.describe('Static files', () => {
     await page.reload();
     await expect(page.locator('.cta')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
-    await expect(page.locator('a[href^="/?t="]').first()).toBeVisible();
+    await expect(page.locator('.events li a').first()).toBeVisible();
   });
 });
 

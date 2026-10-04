@@ -9,7 +9,7 @@ import { initTimeControlToolbar, syncTimeControlToolbar } from './utils/timeCont
 import type { SortOption } from './app/AppState';
 import { ResultsViewPart } from './app/ResultsViewPart';
 import { clearCountries } from './utils/countrySelection';
-import { copyTextToClipboard } from './utils/clipboard';
+import { initSearchShare } from './utils/shareSearch';
 declare global {
     interface Window {
         plausible?: (event: string, options?: { props?: Record<string, string | number | boolean> }) => void;
@@ -118,15 +118,7 @@ class TournamentFinder extends ResultsViewPart {
             exportBtn.addEventListener('click', () => this.exportToCSV());
         }
 
-        document.getElementById('shareSearchBtn')?.addEventListener('click', (event) => {
-            const button = event.currentTarget as HTMLButtonElement;
-            const shareUrl = new URL(location.href);
-            shareUrl.searchParams.delete('t');
-            void copyTextToClipboard(shareUrl.toString()).then(copied => {
-                button.textContent = copied ? 'Link copied' : 'Copy failed';
-                window.setTimeout(() => { button.textContent = 'Share search'; }, 1800);
-            });
-        });
+        initSearchShare();
 
         // Sort dropdown
         const sortSelect = document.getElementById('sortBy') as HTMLSelectElement;
