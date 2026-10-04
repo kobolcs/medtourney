@@ -1,7 +1,7 @@
 /**
  * Unit tests for DataService with HTTP mocking
  * Tests data fetching, caching, validation and the fallback order
- * (cache -> local file -> GitHub Pages -> GitHub API) of the REAL
+ * (network refresh -> validated offline cache) of the REAL
  * DataService, compiled to dist-test/ by `npm run build:test`.
  * Only its injected CacheManager and global fetch are stubbed.
  */
@@ -21,6 +21,10 @@ class StubCacheManager {
 
     saveToCache(key, data) {
         this.cache.set(key, data);
+    }
+
+    loadPreference(key) {
+        return this.loadFromCache(key);
     }
 
     loadFromCache(key) {
@@ -89,6 +93,7 @@ function runTests() {
 
     async function test(name, fn) {
         delete global.fetch;
+        delete global.document;
         try {
             await fn();
             console.log(`✅ ${name}`);
@@ -121,14 +126,14 @@ function runTests() {
     }
 
     async function runAllTests() {
-        await test('Cache hit: returns cached tournaments with Date objects, no fetch', async () => {
+        await test('Offline cache: validated dates returned after trying fresh network', async () => {
             const cache = new StubCacheManager();
             cache.saveToCache(cache.CACHE_KEYS.TOURNAMENTS, [tournament()]);
             const calls = stubFetch({});
             const result = await new DataService(cache).fetchTournaments();
             assertEqual(result.length, 1);
             assert(result[0].date instanceof Date, 'date should be a Date');
-            assertEqual(calls.length, 0, 'fetch calls');
+            assertEqual(calls.length, 3, 'network tried before offline cache');
         });
 
         await test('Local file: validated, cached, dates converted', async () => {
@@ -138,7 +143,7 @@ function runTests() {
             assertEqual(result.map(t => t.name), ['Barcelona Open', 'Athens Open']);
             assert(result[1].date instanceof Date, 'date should be a Date');
             assertEqual(calls[0].url, LOCAL, 'first request is the same-origin file');
-            assertEqual(cache.loadFromCache(cache.CACHE_KEYS.TOURNAMENTS).length, 2, 'cached raw data');
+            assertEqual(cache.loadFromCache(cache.CACHE_KEYS.TOURNAMENTS).rows.length, 2, 'cached raw data');
         });
 
         await test('Local file fails: falls back to GitHub Pages', async () => {
@@ -183,6 +188,103 @@ function runTests() {
         await test('All sources fail: throws', async () => {
             stubFetch({ [LOCAL]: new Error('offline'), [PAGES]: new Error('offline'), [API]: jsonResponse(null, 403) });
             await assertRejects(new DataService(new StubCacheManager()).fetchTournaments(), /all sources/);
+        });
+
+        await test('Fresh network replaces cached old data and records matching metadata', async () => {
+            const cache = new StubCacheManager();
+            cache.saveToCache(cache.CACHE_KEYS.TOURNAMENTS, [tournament({ name: 'Old' })]);
+            stubFetch({ [LOCAL]: jsonResponse([tournament({ name: 'Fresh' })]),
+                'tournaments_data_meta.json': jsonResponse({ generatedAt: '2026-10-04T00:00:00Z', keptRows: 1 }) });
+            const service = new DataService(cache);
+            assertEqual((await service.fetchTournaments())[0].name, 'Fresh');
+            assertEqual(service.getLoadedDataInfo(), { source: 'network', dataUrl: LOCAL, generatedAt: '2026-10-04T00:00:00Z' });
+        });
+
+        await test('Malformed and empty network responses preserve cached good snapshot', async () => {
+            const cache = new StubCacheManager();
+            const previous = { rows: [tournament({ name: 'Last good' })], dataUrl: LOCAL, generatedAt: '2026-10-01T00:00:00Z' };
+            cache.saveToCache(cache.CACHE_KEYS.TOURNAMENTS, previous);
+            stubFetch({ [PAGES]: jsonResponse([]), [LOCAL]: jsonResponse({ wrong: true }) });
+            const service = new DataService(cache);
+            assertEqual((await service.fetchTournaments())[0].name, 'Last good');
+            assertEqual(cache.loadFromCache(cache.CACHE_KEYS.TOURNAMENTS), previous);
+            assertEqual(service.getLoadedDataInfo().source, 'cache');
+            assertEqual(service.getLoadedDataInfo().generatedAt, previous.generatedAt);
+        });
+
+        await test('Expired good cache remains available offline without TTL loading', async () => {
+            const cache = new StubCacheManager();
+            cache.loadPreference = () => ({ rows: [tournament()], dataUrl: LOCAL });
+            cache.loadFromCache = () => null;
+            stubFetch({});
+            const service = new DataService(cache);
+            assertEqual((await service.fetchTournaments()).length, 1);
+            assertEqual(service.getLoadedDataInfo().source, 'cache');
+        });
+
+        await test('Override cannot reuse a good cache from a different upstream', async () => {
+            global.document = { querySelector: () => ({ content: 'https://example.com/public/' }) };
+            const cache = new StubCacheManager();
+            cache.saveToCache(cache.CACHE_KEYS.TOURNAMENTS, [tournament()]);
+            stubFetch({});
+            await assertRejects(new DataService(cache).fetchTournaments(), /all sources/);
+        });
+
+        await test('Invalid cached payload is rejected when network is unavailable', async () => {
+            const cache = new StubCacheManager();
+            cache.saveToCache(cache.CACHE_KEYS.TOURNAMENTS, [tournament({ date: 'broken' })]);
+            stubFetch({});
+            await assertRejects(new DataService(cache).fetchTournaments(), /all sources/);
+        });
+
+        await test('Metadata failure or mismatched count cannot label a valid fresh snapshot', async () => {
+            for (const meta of [new Error('offline'), jsonResponse({ keptRows: 9, generatedAt: '2026-10-04T00:00:00Z' }),
+                jsonResponse({ keptRows: 1, generatedAt: 'broken' })]) {
+                const cache = new StubCacheManager();
+                stubFetch({ [LOCAL]: jsonResponse([tournament()]), 'tournaments_data_meta.json': meta });
+                const service = new DataService(cache);
+                assertEqual((await service.fetchTournaments()).length, 1);
+                assertEqual(service.getLoadedDataInfo().generatedAt, undefined);
+            }
+        });
+
+        await test('Source override loads only upstream data and keeps config same-origin', async () => {
+            global.document = { querySelector: () => ({ content: 'https://example.com/public' }) };
+            const cache = new StubCacheManager();
+            const calls = stubFetch({ 'https://example.com/public/tournaments_data.json': jsonResponse([tournament()]),
+                'config.json': jsonResponse(validConfig) });
+            const service = new DataService(cache);
+            await service.fetchTournaments();
+            await service.loadConfig();
+            assertEqual(calls[0].url, 'https://example.com/public/tournaments_data.json');
+            assert(calls.some(call => call.url === 'config.json'), 'config stays local');
+            assertEqual(cache.loadFromCache(cache.CACHE_KEYS.TOURNAMENTS), null, 'override cache isolated');
+            assert(!calls.some(call => call.url.includes('github')), 'no other data sources');
+        });
+
+        await test('Private source outage falls back to bundled data without caching it as upstream', async () => {
+            global.document = { querySelector: () => ({ content: 'https://example.com/public/' }) };
+            const cache = new StubCacheManager();
+            stubFetch({ 'https://example.com/public/': new Error('upstream unavailable'),
+                [LOCAL]: jsonResponse([tournament({ name: 'Bundled' })]),
+                'tournaments_data_meta.json': jsonResponse({ keptRows: 1, generatedAt: '2026-10-01T00:00:00Z' }) });
+            const service = new DataService(cache);
+            assertEqual((await service.fetchTournaments())[0].name, 'Bundled');
+            assertEqual(service.getLoadedDataInfo(), { source: 'bundled', dataUrl: LOCAL, generatedAt: '2026-10-01T00:00:00Z' });
+            assertEqual(cache.cache.size, 0, 'bundled copy never stored as upstream cache');
+        });
+
+        await test('Validated upstream cache has priority over the private bundled snapshot', async () => {
+            const upstream = 'https://example.com/public/tournaments_data.json';
+            global.document = { querySelector: () => ({ content: 'https://example.com/public/' }) };
+            const cache = new StubCacheManager();
+            cache.saveToCache(`${cache.CACHE_KEYS.TOURNAMENTS}:${upstream}`, { rows: [tournament({ name: 'Cached upstream' })], dataUrl: upstream });
+            const calls = stubFetch({ 'https://example.com/public/': new Error('upstream unavailable'),
+                [LOCAL]: jsonResponse([tournament({ name: 'Bundled' })]) });
+            const service = new DataService(cache);
+            assertEqual((await service.fetchTournaments())[0].name, 'Cached upstream');
+            assertEqual(service.getLoadedDataInfo().source, 'cache');
+            assert(!calls.some(call => call.url === LOCAL), 'bundle not requested with good upstream cache');
         });
 
         await test('loadConfig: cache hit skips fetch', async () => {

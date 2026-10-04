@@ -23,14 +23,12 @@ LIMITS = {".py": 400, ".ts": 300, ".robot": 400, ".md": 500}
 
 # Over the limit on 2026-09-25 - split when next touched, then remove here.
 KNOWN = {
-    "TournamentProcessor.py": 506,
     "tests/python/test_geocode.py": 420,
     "src/services/FilterService.ts": 433,
     "src/app.ts": 424,
     "tests/e2e/dark-mode-and-ui.spec.ts": 390,
     "src/services/ExportService.ts": 357,
     "tests/e2e/keyboard-navigation.spec.ts": 329,
-    "src/services/DataService.ts": 319,
     "src/services/UIManager.ts": 306,
     "TESTING.md": 724,
     "ARCHITECTURE.md": 611,

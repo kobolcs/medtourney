@@ -71,7 +71,7 @@ jobs:
           ALLOW_DATA_DROP: ${{ inputs.allow_drop && '1' || '0' }}
         run: |
           git show HEAD:tournaments_data.json > /tmp/previous_tournaments.json 2>/dev/null || true
-          python3 scripts/validate_scrape.py tournaments_data.json /tmp/previous_tournaments.json
+          python3 scripts/validate_scrape.py tournaments_data.json /tmp/previous_tournaments.json tournaments_data_meta.json
 
       # Map coordinates. Runs on every scrape: locations already in the
       # committed geocode_cache.json are reused, only new places are looked up
@@ -104,8 +104,7 @@ jobs:
 
       # Organizer, rounds, FIDE page, address, homepage for the detail panel.
       # 1 request/s, capped per run, cached in details_cache.json (details/pipeline.py).
-      # Before geocoding: a location the geocoder can't place is retried with
-      # the address, which often names the town (geocoding/pipeline.py locate)
+      # Fetch addresses before geocoding so venue-only locations can use them.
       - name: Fetch tournament details from chess-results.com
         continue-on-error: true
         run: |
@@ -116,18 +115,23 @@ jobs:
         run: |
           python3 geocode_tournaments.py --geonames /tmp/geonames/cities1000.txt --max-lookups 300 2>&1 | tee /tmp/geocode.log
 
-      - name: Check if tournaments_data.json was updated
+      - name: Validate final enriched snapshot
+        env:
+          ALLOW_DATA_DROP: ${{ inputs.allow_drop && '1' || '0' }}
+        run: python3 scripts/validate_scrape.py tournaments_data.json /tmp/previous_tournaments.json tournaments_data_meta.json
+
+      - name: Check if tournament data or metadata was updated
         id: check_changes
         run: |
           # Use git status --porcelain so this also detects the file when it is
           # currently untracked (e.g. after being removed from the repo).
           git add -N tournaments_data.json tournaments_data_meta.json geocode_cache.json details_cache.json 2>/dev/null || true
-          if [ -z "$(git status --porcelain tournaments_data.json geocode_cache.json details_cache.json)" ]; then
+          if [ -z "$(git status --porcelain tournaments_data.json tournaments_data_meta.json geocode_cache.json details_cache.json)" ]; then
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No changes to tournaments_data.json"
+            echo "No data or metadata changes"
           else
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "tournaments_data.json was updated"
+            echo "Data or metadata was updated"
           fi
 
       - name: Commit and push changes
@@ -198,12 +202,12 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          if [ -f tournaments_data.json ]; then
+          if [ "${{ job.status }}" = "success" ] && [ -f tournaments_data.json ]; then
             TOURNAMENT_COUNT=$(python3 -c "import json; print(len(json.load(open('tournaments_data.json'))))")
             echo "✅ Successfully processed $TOURNAMENT_COUNT tournaments" >> $GITHUB_STEP_SUMMARY
-            echo "📅 Date range: Today to 6 months ahead (dynamic)" >> $GITHUB_STEP_SUMMARY
+            echo "📅 Date window: recent and ongoing events to 6 months ahead" >> $GITHUB_STEP_SUMMARY
             echo "🌍 Filtered: European tournaments only (Russia excluded)" >> $GITHUB_STEP_SUMMARY
             [ -f /tmp/geocode.log ] && echo "🗺️ $(tail -1 /tmp/geocode.log)" >> $GITHUB_STEP_SUMMARY || true
           else
-            echo "❌ Failed to generate tournaments_data.json" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Data update failed; the last published snapshot remains available" >> $GITHUB_STEP_SUMMARY
           fi
