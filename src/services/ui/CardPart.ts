@@ -123,6 +123,8 @@ export abstract class CardPart extends UIState {
     renderFeaturedTournament(tournament: Tournament | null): void {
         const container = document.getElementById('featuredTournament');
         if (!container) return;
+        const suggestion = container.closest<HTMLElement>('.featured-suggestion');
+        if (suggestion) suggestion.hidden = !tournament;
 
         if (!tournament) {
             container.style.display = 'none';

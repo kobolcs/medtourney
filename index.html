@@ -454,7 +454,7 @@
             <p id="tempoHint" class="tempo-hint" aria-live="polite">Choose one or more. Clocks show minutes + seconds per move.</p>
         </fieldset>
 
-        <details class="featured-suggestion"><summary>Seaside suggestion · independent of your filters</summary><div id="featuredTournament" style="display: none;" aria-live="polite"></div></details>
+        <details class="featured-suggestion" open hidden><summary>Seaside suggestion · independent of your filters</summary><div id="featuredTournament" style="display: none;" aria-live="polite"></div></details>
 
         <div id="loading" class="loading" style="display: none;" role="status" aria-live="polite" aria-busy="true">
             <div class="spinner" aria-hidden="true"></div>
@@ -533,8 +533,7 @@
         <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
 
         <footer role="contentinfo">
-            <!-- No "last updated" date here (removed 2026-09-26): the data is
-                 expected to be current; update failures alert the owner. -->
+            <p id="dataFreshness" class="last-updated" aria-live="polite" hidden></p>
             <p id="footerCredits" class="last-updated">
                 Made by Csaba Köböl
                 <!-- src/utils/contact.ts: shown only when an address is set; the
