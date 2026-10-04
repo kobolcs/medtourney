@@ -72,7 +72,7 @@ function eventHTML(event, basePath) {
   return `<li><a href="${escapeHTML(detailsUrl)}">${escapeHTML(event.name)}</a><span>${escapeHTML(dateLabel)}${place ? ` · ${escapeHTML(place)}` : ''}${control}</span></li>`;
 }
 
-function pageHTML(definition, events, { basePath, canonicalBase, updated }) {
+function pageHTML(definition, events, { basePath, canonicalBase, updated, robots }) {
   const canonical = `${canonicalBase}discover/${definition.slug}/`;
   const filterUrl = `${basePath}?${definition.params}`;
   return `<!doctype html>
@@ -87,7 +87,7 @@ function pageHTML(definition, events, { basePath, canonicalBase, updated }) {
   <meta property="og:title" content="${escapeHTML(definition.title)} | MedTourney">
   <meta property="og:description" content="${escapeHTML(definition.description)}">
   <meta property="og:url" content="${escapeHTML(canonical)}">
-  <meta name="robots" content="index,follow">
+  <meta name="robots" content="${escapeHTML(robots)}">
   <style>
     :root{color-scheme:light;--ink:#18252b;--muted:#52646a;--line:#d8e1df;--accent:#126d64;--paper:#f7f8f5;--white:#fff}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}main{width:min(900px,100% - 32px);margin:40px auto 72px}.brand{font-weight:750;color:var(--accent);text-decoration:none}.eyebrow{margin:38px 0 4px;color:var(--muted);font-size:.84rem;text-transform:uppercase;letter-spacing:.08em}h1{max-width:720px;margin:0;font-size:clamp(2rem,6vw,3.4rem);line-height:1.08;letter-spacing:-.04em}p{max-width:700px;color:var(--muted)}.intro{font-size:1.1rem}.meta{font-size:.9rem}.cta{display:inline-flex;align-items:center;min-height:48px;margin:14px 0 28px;padding:0 18px;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;text-decoration:none}.cta:focus-visible,a:focus-visible{outline:3px solid #e39c30;outline-offset:3px}.events{padding:0;margin:18px 0 30px;list-style:none;border-top:1px solid var(--line)}.events li{padding:15px 0;border-bottom:1px solid var(--line)}.events li a{color:var(--accent);font-weight:700}.events li span{display:block;color:var(--muted);font-size:.93rem}.note{padding:14px 16px;border-left:3px solid #e39c30;background:#fff}.footer{margin-top:32px;font-size:.9rem}
     @media(max-width:600px){main{width:calc(100% - 28px);margin:24px auto 48px}.events li{padding:13px 0}}
@@ -107,7 +107,7 @@ function pageHTML(definition, events, { basePath, canonicalBase, updated }) {
 </main></body></html>`;
 }
 
-export function buildSeoArtifacts({ tournaments, generatedAt, basePath = '/medtourney/', canonicalBase = DEFAULT_PUBLIC_BASE, now = new Date() }) {
+export function buildSeoArtifacts({ tournaments, generatedAt, basePath = '/medtourney/', canonicalBase = DEFAULT_PUBLIC_BASE, robots = 'index,follow', now = new Date() }) {
   if (!Array.isArray(tournaments) || !tournaments.length) throw new Error('Tournament snapshot is empty');
   if (!Number.isFinite(Date.parse(generatedAt))) throw new Error('Tournament metadata has no valid generatedAt date');
   const base = `/${basePath.split('/').filter(Boolean).join('/')}${basePath.split('/').filter(Boolean).length ? '/' : ''}`;
@@ -124,17 +124,17 @@ export function buildSeoArtifacts({ tournaments, generatedAt, basePath = '/medto
   }).filter(Boolean);
   const htmlPages = selected.map(definition => ({
     path: join('discover', definition.slug, 'index.html'),
-    html: pageHTML(definition, definition.events, { basePath: base, canonicalBase: canonical, updated: lastmod }),
+    html: pageHTML(definition, definition.events, { basePath: base, canonicalBase: canonical, updated: lastmod, robots }),
   }));
   const urls = [canonical, ...selected.map(page => `${canonical}discover/${page.slug}/`)];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${escapeHTML(url)}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`;
   return { pages: htmlPages, sitemap };
 }
 
-export async function generateSeoPages({ root = process.cwd(), basePath = process.env.MEDTOURNEY_BASE ?? '/medtourney/', canonicalBase = process.env.MEDTOURNEY_CANONICAL_BASE ?? DEFAULT_PUBLIC_BASE } = {}) {
+export async function generateSeoPages({ root = process.cwd(), basePath = process.env.MEDTOURNEY_BASE ?? '/medtourney/', canonicalBase = process.env.MEDTOURNEY_CANONICAL_BASE ?? DEFAULT_PUBLIC_BASE, robots = process.env.MEDTOURNEY_ROBOTS ?? 'index,follow' } = {}) {
   const tournaments = JSON.parse(await readFile(join(root, 'tournaments_data.json'), 'utf8'));
   const metadata = JSON.parse(await readFile(join(root, 'tournaments_data_meta.json'), 'utf8'));
-  const artifacts = buildSeoArtifacts({ tournaments, generatedAt: metadata.generatedAt, basePath, canonicalBase });
+  const artifacts = buildSeoArtifacts({ tournaments, generatedAt: metadata.generatedAt, basePath, canonicalBase, robots });
   const dist = join(root, 'dist');
   for (const page of artifacts.pages) {
     const output = join(dist, page.path);

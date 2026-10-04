@@ -44,10 +44,12 @@ const rootBuild = buildSeoArtifacts({
   generatedAt: '2026-10-04T04:43:43Z',
   basePath: '/',
   canonicalBase: 'https://medtourney-private.example/',
+  robots: 'noindex,nofollow',
   now: new Date('2026-10-04T12:00:00Z'),
 });
 assert.match(rootBuild.pages[0].html, /href="\/\?tc=classical"/);
 assert.match(rootBuild.pages[0].html, /href="https:\/\/medtourney-private\.example\/discover\/classical\//);
+assert.match(rootBuild.pages[0].html, /<meta name="robots" content="noindex,nofollow">/);
 
 assert.throws(() => buildSeoArtifacts({ tournaments: [], generatedAt: '2026-10-04' }), /empty/);
 assert.throws(() => buildSeoArtifacts({ tournaments: rows, generatedAt: 'invalid' }), /generatedAt/);
