@@ -108,9 +108,10 @@ Fill Search Form    # robocop: off=too-long-keyword  known, see CLAUDE.md
     END
 
     # Step 2: fill dates (must come AFTER postback — postback resets date fields)
-    ${start_iso}=    Get Current Date    result_format=%Y-%m-%d
+    ${today_iso}=    Get Current Date    time_zone=UTC    result_format=%Y-%m-%d
     ${days}=    Evaluate    ${DATE_RANGE_MONTHS} * 30
-    ${end_iso}=    Add Time To Date    ${start_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
+    ${start_iso}=    Subtract Time From Date    ${today_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
+    ${end_iso}=    Add Time To Date    ${today_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
     Log    Date range: ${start_iso} to ${end_iso} (${DATE_RANGE_MONTHS} months), fed=${fed}
     Set Browser Timeout    10s
     Run Keyword And Return Status    Fill Text    input[type="date"] >> nth=0    ${start_iso}

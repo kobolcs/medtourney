@@ -30,18 +30,18 @@ class TestTournamentProcessor:
         tournaments = processor.load_and_filter_tournaments(sample_excel_file)
 
         # Should load 2 European tournaments (Barcelona and Athens)
-        # Dubai, Moscow (Russia), and past tournament should be filtered out
+        # Dubai and Moscow (Russia) are excluded; yesterday remains in the lookback.
         assert len(tournaments) >= 1  # At least Barcelona and Athens
 
         # Check all tournaments are European
         for t in tournaments:
             assert processor._is_european(t["location"])
 
-        # Check no past tournaments
-        tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        # Check the seven-day lookback
+        earliest = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=7)
         for t in tournaments:
             tournament_date = datetime.strptime(t["date"], "%Y-%m-%d")
-            assert tournament_date >= tomorrow
+            assert tournament_date >= earliest
 
     def test_load_excel_missing_file(self, processor):
         """Test loading from non-existent file raises error"""
@@ -135,8 +135,8 @@ class TestTournamentProcessor:
             + stats["excludedNonEuropean"]
             + stats["excludedInvalid"]
         )
-        # The sample sheet contains past and non-European rows that get excluded.
-        assert stats["excludedPast"] >= 1
+        # Yesterday is retained; only older ended events are excluded.
+        assert stats["excludedPast"] == 0
         assert stats["excludedNonEuropean"] >= 1
 
     def test_export_metadata_writes_expected_fields(self, processor, sample_excel_file, tmp_path):
