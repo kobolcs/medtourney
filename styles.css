@@ -1118,6 +1118,28 @@ body.dark-theme .error-message.success-type {
   flex-shrink: 0;
 }
 
+.discover-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  margin: var(--sp-8) 0 var(--sp-5);
+  padding: var(--sp-4) 0;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+.discover-links h2 {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+.discover-links a {
+  color: var(--sea);
+  text-underline-offset: 3px;
+}
+
 /* EXPORT BUTTONS - quiet secondary actions, not the page's loudest element */
 .export-button {
   background: transparent;
@@ -3042,6 +3064,13 @@ body.dark-theme .map-cluster {
     flex-wrap: wrap;
     align-items: center;
     gap: var(--sp-2);
+    min-width: 0;
+  }
+
+  .results-actions {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .results-controls .search-within {

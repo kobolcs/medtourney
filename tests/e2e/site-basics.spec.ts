@@ -84,6 +84,27 @@ test.describe('Static files', () => {
       expect((await res.text()).length).toBeGreaterThan(0);
     });
   }
+
+  test('generated discovery pages stay inside MedTourney and fit desktop and phone widths', async ({ page, request }) => {
+    for (const slug of ['classical', 'rapid', 'senior', 'seaside']) {
+      const response = await request.get(`/discover/${slug}/`);
+      expect(response.status()).toBe(200);
+      const html = await response.text();
+      expect(html).toContain(`<h1>`);
+      expect(html).not.toMatch(/href="https?:\/\/chess-results\.com/i);
+    }
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/discover/classical/');
+    await expect(page.locator('h1')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1440);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.reload();
+    await expect(page.locator('.cta')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    await expect(page.locator('.events li a').first()).toBeVisible();
+  });
 });
 
 test.describe('Filter persistence', () => {
@@ -139,5 +160,22 @@ test.describe('Tournament card actions', () => {
     await expect(page.locator('.tournament-card .tournament-actions')).toHaveCount(count);
     await expect(page.locator('.tournament-card .calendar-export-btn')).toHaveCount(count);
     await expect(page.locator('.tournament-card .calendar-export-btn')).toHaveCount(count);
+    await cards.first().click();
+    await expect(page.locator('.copy-event-link-btn')).toBeVisible();
   });
+});
+
+test('Share search copies the current filters without opening the source site', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: async (value: string) => { (window as any).__copiedText = value; } },
+    });
+  });
+  await stubTournaments(page);
+  await page.goto('/?senior=1');
+  await expect(page.locator('.tournament-card').first()).toBeVisible({ timeout: 10000 });
+  await page.locator('#shareSearchBtn').click();
+  await expect.poll(() => page.evaluate(() => (window as any).__copiedText as string | undefined)).toContain('senior=1');
+  expect(await page.evaluate(() => (window as any).__copiedText)).not.toContain('chess-results.com');
 });

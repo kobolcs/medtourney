@@ -15,6 +15,7 @@ import { escapeHTML } from './html';
 import { formatLocation } from './countries';
 import { formatTimeControl } from './timeControl';
 import { SEA_LABELS } from './seas';
+import { copyTextToClipboard } from './clipboard';
 
 const PANEL_ID = 'tournamentDetail';
 const HISTORY_KEY = 'medtourneyDetail';
@@ -100,7 +101,7 @@ function airportText(t: Tournament): string | null {
     return typeof t.lat === 'number' ? 'None with airline flights within 150 km' : null;
 }
 
-/** Shortlist / calendar / copy-link buttons and the chess-results.com link. */
+/** Shortlist / calendar / share buttons and the source event link. */
 function actionsHTML(t: Tournament, shortlisted: boolean): string {
     const url = escapeHTML(t.url);
     const name = escapeHTML(t.name);
@@ -114,6 +115,7 @@ function actionsHTML(t: Tournament, shortlisted: boolean): string {
             </button>
             <button type="button" class="calendar-export-btn" data-tournament-url="${url}"
                     aria-haspopup="menu" aria-expanded="false" aria-label="Add ${name} to calendar">📅 Add to calendar</button>
+            <button type="button" class="copy-event-link-btn" aria-label="Copy event link: ${name}">Copy event link</button>
         </div>
         ${regsUrl ? `<a class="detail-regs-link" href="${regsUrl}" target="_blank" rel="noopener noreferrer">📄 Tournament regulations (PDF)</a>` : ''}
         <button type="button" class="detail-cr-link" data-tournament-url="${url}">
@@ -193,6 +195,15 @@ export function openDetailPanel(t: Tournament, shortlisted: boolean, onShortlist
     el.dataset.tournamentUrl = t.url;
     el.querySelector('.detail-close')?.addEventListener('click', () => closeDetailPanel());
     el.querySelector('.detail-shortlist')?.addEventListener('click', () => onShortlist(t.url));
+    el.querySelector<HTMLButtonElement>('.copy-event-link-btn')?.addEventListener('click', (event) => {
+        const button = event.currentTarget as HTMLButtonElement;
+        const shareUrl = new URL(location.href);
+        shareUrl.searchParams.set('t', t.url);
+        void copyTextToClipboard(shareUrl.toString()).then(copied => {
+            button.textContent = copied ? 'Event link copied' : 'Copy failed';
+            window.setTimeout(() => { button.textContent = 'Copy event link'; }, 1800);
+        });
+    });
     el.querySelector('.detail-cr-link')?.addEventListener('click', () => window.open(t.url, '_blank', 'noopener,noreferrer'));
 
     if (!wasOpen) {

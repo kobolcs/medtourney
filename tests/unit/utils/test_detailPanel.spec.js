@@ -72,7 +72,7 @@ test('panel: actions and the registration button', () => {
     assertEqual(star.getAttribute('aria-pressed'), 'true');
     assertEqual(text(star), '★ Shortlist');
     assertEqual(doc.querySelector('.calendar-export-btn').dataset.tournamentUrl, base.url);
-    assertEqual(doc.querySelector('.copy-link-btn'), null, 'copy-link button removed');
+    assertEqual(doc.querySelector('.copy-event-link-btn').textContent, 'Copy event link');
     const cr = doc.querySelector('.detail-cr-link');
     assertEqual(cr.tagName, 'BUTTON', 'detail-cr-link is a button');
     assertEqual(cr.dataset.tournamentUrl, base.url);

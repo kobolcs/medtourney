@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { copyFileSync } from 'node:fs';
 import { compression } from 'vite-plugin-compression2';
+import { generateSeoPages } from './scripts/seo-pages.mjs';
 
 export default defineConfig({
   // Base public path when deployed.
@@ -73,6 +74,7 @@ export default defineConfig({
         copyFileSync(file, `dist/${file}`);
       }
     } },
+    { name: 'medtourney-seo-pages', closeBundle() { return generateSeoPages(); } },
     // Pre-compressed .gz and .br copies next to each asset
     compression({ algorithms: ['gzip', 'brotliCompress'] }),
   ],
