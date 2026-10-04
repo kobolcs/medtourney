@@ -3068,6 +3068,7 @@ body.dark-theme .map-cluster {
   }
 
   .results-actions {
+    flex: 1 1 100%;
     flex-wrap: wrap;
     min-width: 0;
   }
