@@ -664,6 +664,24 @@ function runTests() {
         assertEqual(filtered.map(t => t.name).sort().join(','), 'Senior Open S50+,Veteran Championship');
     });
 
+    // Test 30b: "Senior School" is a venue, not an age group
+    test('Senior filter ignores "Senior School" / "Senior High School"', () => {
+        const service = new FilterService();
+        const tourns = [
+            { name: 'Khadija Senior School Rapid', location: 'X', date: new Date('2025-06-01'), category: 'Rapid', description: '' },
+            { name: 'Senior High School Cup', location: 'X', date: new Date('2025-06-01'), category: 'Classical', description: '' },
+            { name: 'Seniors Open', location: 'X', date: new Date('2025-06-01'), category: 'Classical', description: '' },
+        ];
+        const filtered = service.filterTournaments(tourns, {
+            openOnly: false, excludeYouth: false, mediterraneanOnly: false,
+            seniorCategory: true, womenOnly: false, includeTeamTournaments: true,
+            classicalTime: false, rapidTime: false, blitzTime: false,
+            startDate: null, endDate: null, countryFilter: [], minDays: 0,
+            seniorS60: false, youthCategory: ''
+        }, new Set());
+        assertEqual(filtered.map(t => t.name).join(','), 'Seniors Open');
+    });
+
     // Test 31a: Rating sections (U1600, U1800...) are NOT excluded by excludeYouth
     test('C1 regression: adult U1600/U1800 sections survive excludeYouth', () => {
         const service = new FilterService();
