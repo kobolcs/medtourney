@@ -63,9 +63,9 @@ jobs:
           mkdir -p _site
           # Copy Vite build output (optimized, minified, compressed)
           cp -r dist/* _site/
-          # Copy additional files not handled by Vite
+          # Copy crawler policy. Vite generates the sitemap from the current
+          # tournament snapshot so category URLs and lastmod stay in sync.
           cp robots.txt _site/
-          cp sitemap.xml _site/
           # Copy data files
           [ -f tournaments_data.json ] && cp tournaments_data.json _site/ || echo "No tournament data"
           [ -f tournaments_data_meta.json ] && cp tournaments_data_meta.json _site/ || echo "No tournament metadata"

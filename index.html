@@ -506,6 +506,9 @@
                             <input type="checkbox" id="showShortlistOnly" aria-label="Show shortlisted tournaments only">
                             <span>★ Shortlist</span>
                         </label>
+                        <button id="shareSearchBtn" class="export-button share-search-btn" type="button" aria-label="Copy a link to this tournament search">
+                            <span aria-hidden="true">↗</span> Share search
+                        </button>
                         <button id="exportBtn" class="export-button" aria-label="Download the current results as a CSV spreadsheet" title="Download results as CSV (opens in Excel, Google Sheets…)">
                             <span aria-hidden="true">⤓</span> CSV
                         </button>
@@ -523,6 +526,13 @@
             <div id="tournamentList" class="tournament-list"></div>
         </div>
         </div>
+        <nav class="discover-links" aria-label="Browse tournament categories">
+            <h2>Browse tournament categories</h2>
+            <a href="%BASE_URL%discover/classical/">Classical chess tournaments</a>
+            <a href="%BASE_URL%discover/rapid/">Rapid chess tournaments</a>
+            <a href="%BASE_URL%discover/senior/">Senior chess tournaments</a>
+            <a href="%BASE_URL%discover/seaside/">Seaside chess tournaments</a>
+        </nav>
         </main>
 
         <!-- Phones: opens the filters bottom sheet (FilterSheet.ts) -->
@@ -589,7 +599,7 @@
 
                 <div class="help-section">
                     <h3>Shortlist &amp; export</h3>
-                    <p>Click <strong>★</strong> on any card to save it. Use <strong>Export Shortlist</strong> to download all starred tournaments as a single <code class="help-code">.ics</code> file for Google Calendar, Apple Calendar, or Outlook. On a card, <strong>Add to Calendar</strong> offers <strong>Google Calendar</strong> (opens in your browser, nothing to install) or a <code class="help-code">.ics</code> download for Outlook, Apple Calendar or Thunderbird; <strong>Copy link</strong> shares the tournament.</p>
+                    <p>Click <strong>★</strong> on any card to save it. Use <strong>Export Shortlist</strong> to download all starred tournaments as a single <code class="help-code">.ics</code> file for Google Calendar, Apple Calendar, or Outlook. Use <strong>Share search</strong> to copy your current filters, or <strong>Copy event link</strong> in the detail panel to share one tournament. On a card, <strong>Add to Calendar</strong> offers <strong>Google Calendar</strong> or a <code class="help-code">.ics</code> download.</p>
                 </div>
 
                 <div class="help-section">

@@ -20,6 +20,7 @@
     "test:phase2": "npm run build:test && node tests/javascript/test_phase2_features.spec.js",
     "test:calendar": "npm run build:test && node tests/unit/test_calendar_export.spec.js",
     "test:workflows": "node tests/unit/test_workflow_node_version.spec.js",
+    "test:seo": "node tests/unit/test_seo_pages.mjs",
     "test:services:cache": "npm run build:test && node tests/unit/services/test_CacheManager.spec.js",
     "test:services:filter": "npm run build:test && node tests/unit/services/test_FilterService.spec.js",
     "test:services:export": "npm run build:test && node tests/unit/services/test_ExportService.spec.js",
