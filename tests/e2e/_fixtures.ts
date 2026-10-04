@@ -23,6 +23,7 @@ export interface TournamentFixture {
     airport?: { iata: string; name: string; km: number; city?: string };
     details?: { organizer?: string; rounds?: number; system?: string; rated?: string[]; fideId?: string; address?: string; homepage?: string };
     town?: string;
+    timeControl?: string;
 }
 
 /** ISO YYYY-MM-DD a given number of days from today (UTC). */
@@ -56,6 +57,7 @@ export function defaultFixtures(): TournamentFixture[] {
             // Seaside comes from the geocoder's coast flag once a place has coordinates
             ...(isMed ? { coast: 'med' as const } : {}),
             date: isoInDays(n * 7),
+            timeControl: '90+30',
             category: cat.join(', '),
             url: `https://chess-results.com/tnr${n}.aspx?lan=1`,
             description: `Tournament ${n} description`,

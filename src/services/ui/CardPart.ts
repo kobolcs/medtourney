@@ -77,6 +77,7 @@ export abstract class CardPart extends UIState {
      */
     protected timeControlClassHTML(tournament: Tournament): string {
         const reasons = tournament.classificationReasons ?? [];
+        if (/\bunknown\b/i.test(tournament.category)) return '<span class="time-control-class time-control-class--unknown">Clock unconfirmed</span>';
         return ['Classical', 'Rapid', 'Blitz'].filter(label => reasons.includes(label))
             .map(label => `<span class="time-control-class time-control-class--${label.toLowerCase()}" title="Category supplied by the tournament source">${label}</span>`).join('');
     }
@@ -87,7 +88,7 @@ export abstract class CardPart extends UIState {
      * repeating "Blitz" in both a colored pill and a plain string.
      */
     protected categoryTagsHTML(tournament: Tournament): string {
-        const TIME_WORDS = /^(classical|standard|rapid|blitz)$/i;
+        const TIME_WORDS = /^(classical|standard|rapid|blitz|unknown)$/i;
         const tokens = tournament.category
             .split(',')
             .map(t => t.trim())

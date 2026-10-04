@@ -52,14 +52,15 @@ class TimeControlMixin(ProcessorBase):
         if m:
             return self._total_to_class(int(m.group(1)) + int(m.group(2)))
 
-        # "N-M" shorthand (e.g. "10-10", "5-3") when the WHOLE string is just
-        # two numbers separated by a hyphen; identical semantics to "N+M".
+        # Equal hyphen clocks give minutes per player (Hungarian "10-10").
+        # Preserve the existing base/increment interpretation for unequal pairs.
         # Not searched as a substring - hyphens appear in date ranges and
         # multi-session formats ("40-20") where the hyphen is a separator
         # between control periods, not base+increment.
         m = re.match(r"^(\d+)\s*-\s*(\d+)$", tc_lower.strip())
         if m:
-            return self._total_to_class(int(m.group(1)) + int(m.group(2)))
+            increment = 0 if m.group(1) == m.group(2) else int(m.group(2))
+            return self._total_to_class(int(m.group(1)) + increment)
 
         # "N unit [... M sec-unit]" format: "10min plus 3sec", "90 minutes + 30
         # seconds", "45 minutes with 15 second increment", "30 minutes for
@@ -114,32 +115,61 @@ class TimeControlMixin(ProcessorBase):
 
     def _normalise_units(self, tc_lower: str) -> str:
         """Rewrite non-English / abbreviated minute and second units as "min" / "sec"."""
+        spanish_minutes = {"cinco": "5", "seis": "6", "siete": "7", "ocho": "8"}
+        tc_lower = re.sub(
+            r"\b(cinco|seis|siete|ocho)(?=\s+minutos?\b)",
+            lambda m: spanish_minutes[m.group(1)], tc_lower,
+        )
         tc_lower = self._MINUTE_UNIT_RE.sub(r"\1min", tc_lower)
         return self._SECOND_UNIT_RE.sub(r"\1sec", tc_lower)
 
+    def _classify_mixed_clocks(self, tc_lower: str) -> str | None:
+        """Separate explicitly delimited event clocks, not comma-separated periods."""
+        parts = re.split(
+            r"\s*[;|\n]\s*|\s+/\s+|\s+and\s+|\s+(?=(?:blitz|rapid|classical|standard)\s*:?\s*\d)",
+            tc_lower,
+        )
+        if len(parts) <= 1:
+            return None
+        labelled = all(self._explicit_time_classes(part) for part in parts)
+        compact = all(re.fullmatch(r"\d+\s*\+\s*\d+", part.strip()) for part in parts)
+        separator = re.search(r"\s+/\s+|\s+and\s+|\|", tc_lower)
+        if not labelled and not (compact and separator):
+            return None
+        classes = [self._classify_time_control_field(part) for part in parts]
+        return ", ".join(dict.fromkeys(value for value in classes if value))
+
+    @staticmethod
+    def _explicit_time_classes(tc_lower: str) -> list[str]:
+        """Keep every stated format when no single numeric clock resolves it."""
+        return [label for keyword, label in [
+            ("blitz", "Blitz"), ("rapid", "Rapid"), ("classical", "Classical"),
+            ("standard", "Classical"),
+        ] if keyword in tc_lower]
+
     def _classify_time_control_field(self, time_control: str) -> str | None:
-        """Classify the time-control field's text alone: an explicit
-        "blitz"/"rapid"/"classical"/"standard" keyword if present, else the
-        FIDE 60-move formula's guess from the time-control numbers.
-        """
+        """Prefer a recognised numeric clock; preserve independent mixed formats."""
         if not time_control:
             return None
-
         tc_lower = time_control.lower()
-        if "blitz" in tc_lower:
-            return "Blitz"
-        if "rapid" in tc_lower:
-            return "Rapid"
-        if "classical" in tc_lower or "standard" in tc_lower:
-            return "Classical"
-
-        # FIDE 60-move formula: total = base_minutes + increment_seconds
-        # Blitz: total <= 10 min; Rapid: 10 < total < 60; Classical: >= 60
-        return self._classify_by_fide_formula(tc_lower)
+        mixed = self._classify_mixed_clocks(tc_lower)
+        if mixed:
+            return mixed
+        classes = self._explicit_time_classes(tc_lower)
+        # A move-count or additional period is not a verified single clock.
+        # Retain its explicit source label rather than guessing a new category.
+        periods = re.search(r"\b40\s*/|/\s*40\b|\b40\s+moves|\brest\b", tc_lower)
+        if classes and (periods or len(re.findall(r"\d+\s*\+\s*\d+", tc_lower)) > 1):
+            return ", ".join(dict.fromkeys(classes))
+        clock_text = re.sub(r"^(?:rapid|blitz|classical|standard)\s*:?\s*(?=\d)", "", tc_lower)
+        numeric = self._classify_by_fide_formula(clock_text)
+        if numeric:
+            return numeric
+        return ", ".join(dict.fromkeys(classes)) if classes else None
 
     def _determine_category(self, name: str, location: str, time_control: str) -> str:
         """Determine tournament category from time control and name."""
-        time_classes = {"Classical", "Rapid", "Blitz"}
+        time_classes = {"Classical", "Rapid", "Blitz", "Unknown"}
         category_parts: list[str] = []
 
         tc_class = self._classify_time_control_field(time_control)
@@ -178,14 +208,14 @@ class TimeControlMixin(ProcessorBase):
             text: Tournament name and location text to analyze.
 
         Returns:
-            Comma-separated string of detected categories. Returns 'Open, Classical'
+            Comma-separated string of detected categories. Returns 'Open, Unknown'
             if no categories detected.
 
         Example:
             >>> processor._extract_category('Barcelona Open S50+ Rapid')
             'Open, S50+, Rapid'
             >>> processor._extract_category('Generic Tournament')
-            'Open, Classical'
+            'Open, Unknown'
         """
         categories: list[str] = []
 
@@ -200,15 +230,9 @@ class TimeControlMixin(ProcessorBase):
             categories.append("Women")
 
         # Time control (important for filtering) - use precompiled patterns
-        if self.REGEX_PATTERNS["blitz"].search(text):
-            categories.append("Blitz")
-        elif self.REGEX_PATTERNS["rapid"].search(text):
-            categories.append("Rapid")
-        elif self.REGEX_PATTERNS["classical"].search(text) or not any(pattern.search(text) for pattern in [
-            self.REGEX_PATTERNS["blitz"],
-            self.REGEX_PATTERNS["rapid"],
-            self.REGEX_PATTERNS["classical"]
-        ]):
-            categories.append("Classical")
+        detected = [label for key, label in [
+            ("blitz", "Blitz"), ("rapid", "Rapid"), ("classical", "Classical"),
+        ] if self.REGEX_PATTERNS[key].search(text)]
+        categories.extend(detected or ["Unknown"])
 
-        return ", ".join(categories) if categories else "Open, Classical"
+        return ", ".join(categories) if categories != ["Unknown"] else "Open, Unknown"

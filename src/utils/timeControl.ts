@@ -123,11 +123,26 @@ function hoursMinutesToMinutes(s: string): string {
     return s.replace(/\b(\d):(\d{2})\b/g, (_, h: string, mm: string) => String(Number(h) * 60 + Number(mm)));
 }
 
+/** Separate event clocks must not collapse to the first format's badge. */
+function hasIndependentClocks(text: string): boolean {
+    const parts = text.split(/\s*[;|\n]\s*|\s+\/\s+|\s+and\s+|\s+(?=(?:blitz|rapid|classical|standard)\s*:?\s*\d)/i);
+    const clocks = parts.filter(part => BASE_RE.test(part) || /\d+\s*\+\s*\d+/.test(part));
+    return clocks.length > 1;
+}
+
+function normaliseSpanishMinutes(text: string): string {
+    const minutes: Record<string, string> = { cinco: '5', seis: '6', siete: '7', ocho: '8' };
+    return text.replace(/\b(cinco|seis|siete|ocho)(?=\s+minutos?\b)/gi,
+        word => minutes[word.toLowerCase()]!);
+}
+
 export function formatTimeControl(raw: string): string {
     const tc = raw.trim();
     if (!tc) return tc;
     if (NOT_A_TIME_CONTROL_RE.test(tc)) return '';
-    const text = hoursMinutesToMinutes(normaliseQuotes(tc));
+    const normalised = hoursMinutesToMinutes(normaliseQuotes(normaliseSpanishMinutes(tc)));
+    if (hasIndependentClocks(normalised)) return tc;
+    const text = normalised.replace(/^(?:rapid|blitz|standard|classical)\s*:?\s*(?=\d)/i, '');
 
     const bare = text.match(BARE_RE);
     if (bare) return `${Number(bare[1])}+${Number(bare[2])}`;
@@ -153,4 +168,45 @@ export function formatTimeControl(raw: string): string {
 
     const suffix = MULTI_PERIOD_RE.test(text) ? '…' : '';
     return `${minutes}+${increment}${suffix}`;
+}
+
+/** FIDE A.1/B.1 category for a recognised single clock; no guess for periods or labels. */
+export function classifySingleClock(raw: string): 'Blitz' | 'Rapid' | 'Classical' | null {
+    const clock = formatTimeControl(raw).match(/^(\d+)\+(\d+)$/);
+    if (!clock) return null;
+    // Base minutes + 60 increments in seconds, converted to minutes.
+    const total = Number(clock[1]) + Number(clock[2]);
+    if (total <= 10) return 'Blitz';
+    return total < 60 ? 'Rapid' : 'Classical';
+}
+
+interface ClockCategorySource {
+    name: string;
+    category: string;
+    timeControl?: string;
+}
+
+function explicitClockCategories(text: string): string[] {
+    const labels: [RegExp, string][] = [
+        [/\bblitz/i, 'Blitz'], [/\brapid/i, 'Rapid'], [/\bclassic|classical|standard\b/i, 'Classical'],
+    ];
+    return labels.filter(([pattern]) => pattern.test(text)).map(([, label]) => label);
+}
+
+/** Repair older source categories while keeping age, gender and entry-format tags. */
+export function normalizeClockCategory(tournament: ClockCategorySource): string {
+    const raw = tournament.timeControl?.trim() ?? '';
+    const numeric = classifySingleClock(raw);
+    const formatted = formatTimeControl(raw);
+    // Existing period labels carry source information that a partial clock cannot replace.
+    if (!numeric && (formatted.endsWith('…') || /\b40\s*\/|\/\s*40\b|\brest\b/i.test(raw))) {
+        return tournament.category;
+    }
+    let clocks = numeric ? [numeric] : explicitClockCategories(raw);
+    if (!clocks.length && hasIndependentClocks(raw)) return tournament.category;
+    if (!clocks.length) clocks = explicitClockCategories(tournament.name);
+    if (!clocks.length) clocks = ['Unknown'];
+    const tags = tournament.category.split(',').map(tag => tag.trim()).filter(tag =>
+        tag && !/^(?:classical|standard|rapid|blitz|unknown)$/i.test(tag));
+    return [...new Set([...tags, ...clocks])].join(', ');
 }

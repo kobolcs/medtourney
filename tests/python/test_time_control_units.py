@@ -65,11 +65,49 @@ def test_bare_number_without_2x_is_left_alone(processor):
         # C2 regression: dotted unit abbreviations (German/Czech style)
         ("10.min.+ 5.sek.", "Rapid"),
         ("5.min.+ 3.sek.", "Blitz"),
-        # C2 regression: hyphen as base+increment separator (whole string only)
-        ("10-10", "Rapid"),
+        # Equal hyphen clocks are minutes per player, as in the frontend.
+        ("10-10", "Blitz"),
         ("5-3", "Blitz"),
     ],
 )
 def test_c2_previously_falling_through_to_classical(processor, time_control, expected):
     """Formats confirmed as Classical due to unrecognised notation (fixed in C2)."""
     assert processor._classify_time_control_field(time_control) == expected
+
+
+@pytest.mark.parametrize(
+    ("time_control", "expected"),
+    [
+        ("Rapid: 5+3", "Blitz"),
+        ("Rapid: 10+0", "Blitz"),
+        ("Rapid: 10-10", "Blitz"),
+        ("Rapid 10 minutes", "Blitz"),
+        ("cinco minutos finish", "Blitz"),
+        ("seis minutos finish", "Blitz"),
+        ("siete minutos finish", "Blitz"),
+        ("Ocho minutos finish", "Blitz"),
+        ("15+10 / 3+2", "Rapid, Blitz"),
+        ("Rapid: 15 min + 10 sec; Blitz: 3 min + 2 sec", "Rapid, Blitz"),
+        ("Rapid 15+10 Blitz 3+2", "Rapid, Blitz"),
+        ("Rapid and Blitz", "Rapid, Blitz"),
+        ("60+0", "Classical"),
+        ("59+0", "Rapid"),
+        ("10+0", "Blitz"),
+        ("10+1", "Rapid"),
+        ("Rapid: 40/90+30, 30+30", "Rapid"),
+        ("90 min; 30 min", "Classical"),
+    ],
+)
+def test_verified_clock_accuracy(processor, time_control, expected):
+    assert processor._classify_time_control_field(time_control) == expected
+
+
+@pytest.mark.parametrize("time_control", ["", "10", "Fischer Kurz"])
+def test_ambiguous_clock_does_not_default_to_classical(processor, time_control):
+    assert processor._determine_category("Generic Tournament", "", time_control) == "Open, Unknown"
+    assert processor._determine_category("Open Rapid", "", time_control) == "Open, Rapid"
+
+
+def test_mixed_name_formats_are_preserved_as_fallback(processor):
+    assert processor._determine_category("Open Rapid and Blitz", "", "") == "Open, Blitz, Rapid"
+    assert processor._determine_category("Open Rapid and Blitz", "", "90+30") == "Classical, Open"

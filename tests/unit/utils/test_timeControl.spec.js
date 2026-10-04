@@ -6,7 +6,7 @@
  */
 
 const { loadProductionModule } = require('../../helpers/production');
-const { formatTimeControl } = loadProductionModule('utils/timeControl.js');
+const { formatTimeControl, classifySingleClock, normalizeClockCategory } = loadProductionModule('utils/timeControl.js');
 
 let passed = 0;
 let failed = 0;
@@ -74,6 +74,14 @@ check('3/2', '3+2');
 check('15/5', '15+5');
 check('2x15', '15+0');
 check('10-10', '10+0');
+check('cinco minutos finish', '5+0');
+check('seis minutos finish', '6+0');
+check('siete minutos finish', '7+0');
+check('Ocho minutos finish', '8+0');
+check('Rapid: 10+0', '10+0');
+check('15+10 / 3+2', '15+10 / 3+2');
+check('Rapid: 15 min + 10 sec; Blitz: 3 min + 2 sec', 'Rapid: 15 min + 10 sec; Blitz: 3 min + 2 sec');
+check('Rapid 15+10 Blitz 3+2', 'Rapid 15+10 Blitz 3+2');
 check('Rapid (15-15/all)', '15+0');
 check('90-90 min/All + 30 sec/move', '90+30');
 check("15'' eklemesiz tempo", '15+0');
@@ -103,6 +111,44 @@ check('10', '10');
 check('Fischer Kurz', 'Fischer Kurz');
 check('', '');
 
+for (const [input, expected] of [
+    ['10-10', 'Blitz'], ['Rapid: 5+3', 'Blitz'], ['Rapid: 10+0', 'Blitz'],
+    ['10+1', 'Rapid'], ['59+0', 'Rapid'], ['60+0', 'Classical'],
+    ['cinco minutos finish', 'Blitz'], ['', null], ['10', null], ['Standard', null],
+    ['15+10 / 3+2', null], ['40/90+30, 30+30', null],
+]) {
+    const actual = classifySingleClock(input);
+    if (actual === expected) passed++;
+    else {
+        console.log(`❌ Category ${JSON.stringify(input)}: expected ${expected}, got ${actual}`);
+        failed++;
+    }
+}
+
 console.log('='.repeat(60));
+for (const [source, expected] of [
+    [{ name: 'Open', category: 'Open, Rapid', timeControl: '10-10' }, 'Open, Blitz'],
+    [{ name: 'Open Rapid', category: 'Open, Rapid', timeControl: 'Rapid: 5+3' }, 'Open, Blitz'],
+    [{ name: 'Open', category: 'Open, Classical', timeControl: 'cinco minutos finish' }, 'Open, Blitz'],
+    [{ name: 'Senior Open', category: 'S50+, Open, Classical, Unknown', timeControl: '15+10' }, 'S50+, Open, Rapid'],
+    [{ name: 'Open', category: 'Open, Classical' }, 'Open, Unknown'],
+    [{ name: 'Open', category: 'Open, Classical', timeControl: '10' }, 'Open, Unknown'],
+    [{ name: 'Open', category: 'Open, Classical', timeControl: 'Fischer Kurz' }, 'Open, Unknown'],
+    [{ name: 'Open RapidPlay', category: 'Open, Classical' }, 'Open, Rapid'],
+    [{ name: 'Open Blitz', category: 'Open, Unknown', timeControl: '10' }, 'Open, Blitz'],
+    [{ name: 'Open Classical', category: 'Open, Classical' }, 'Open, Classical'],
+    [{ name: 'Women Open', category: 'Women, Open, Classical', timeControl: 'Rapid' }, 'Women, Open, Rapid'],
+    [{ name: 'Festival', category: 'Open, Blitz', timeControl: 'Rapid: 15+10; Blitz: 3+2' }, 'Open, Blitz, Rapid'],
+    [{ name: 'Open Blitz', category: 'Open, Classical', timeControl: '40/90+30, 30+30' }, 'Open, Classical'],
+    [{ name: 'Open', category: 'Open, Rapid', timeControl: '90 min; 30 min' }, 'Open, Rapid'],
+]) {
+    const actual = normalizeClockCategory(source);
+    if (actual === expected) passed++;
+    else {
+        console.log(`❌ Normalize ${JSON.stringify(source)}: expected ${expected}, got ${actual}`);
+        failed++;
+    }
+}
+
 console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${passed + failed} total`);
 process.exit(failed > 0 ? 1 : 0);

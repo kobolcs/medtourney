@@ -702,6 +702,14 @@ function runTests() {
     });
 
     console.log('='.repeat(60));
+    test('All tempos keeps Unknown; a specific tempo excludes it', () => {
+        const service = new FilterService();
+        const rows = [{ name: 'Open', location: 'Vienna, AUT', date: new Date(), category: 'Open, Unknown', description: '' }];
+        const state = { countryFilter: [], minDays: 0, includeTeamTournaments: true, includeLongEvents: true, classicalTime: true, rapidTime: true, blitzTime: true };
+        assertEqual(service.filterTournaments(rows, state, []).length, 1);
+        assertEqual(service.filterTournaments(rows, { ...state, rapidTime: false, blitzTime: false }, []).length, 0);
+    });
+
     console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${passed + failed} total`);
     console.log(`✨ Pass Rate: ${((passed / (passed + failed)) * 100).toFixed(1)}%\n`);
 
