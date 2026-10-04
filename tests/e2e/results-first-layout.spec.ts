@@ -128,6 +128,9 @@ for (const width of [1440, 390, 320]) {
     await stubTournaments(page);
     await page.goto('/');
     await expect(page.locator('.tournament-card').first()).toBeVisible();
+    const calendar = page.locator('.calendar-export-btn').first();
+    await expect(calendar).toBeVisible();
+    await expect(calendar).toHaveCSS('opacity', '1');
     const tempo = page.locator('.time-control-toolbar');
     await expect(tempo).toBeVisible();
     await expect(page.locator('#filtersSheet')).not.toHaveClass(/is-open/);
