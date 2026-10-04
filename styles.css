@@ -1320,18 +1320,6 @@ body.dark-theme .error-message.success-type {
   text-decoration: underline;
 }
 
-.featured-external-link {
-  color: var(--label);
-  font-size: var(--text-xs);
-  text-decoration: none;
-  margin-left: var(--sp-1);
-  vertical-align: super;
-}
-
-.featured-external-link:hover {
-  color: var(--accent);
-}
-
 .featured-name-link {
   color: var(--amber);
   text-decoration: none;
