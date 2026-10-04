@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main, develop, claude/* ]
   pull_request:
-    branches: [ main, develop ]
   schedule:
     # Run daily at 2 AM UTC (cron format: minute hour day month weekday)
     - cron: '0 2 * * *'
