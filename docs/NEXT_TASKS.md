@@ -98,7 +98,7 @@ Completed in branch `improve/trust-and-source-roadmap` (open review: [PR #80](ht
 
 ### P2 — Product, discovery, and retention
 
-- [ ] Clarify “events in index” versus “events matching filters” in the header/results count.
+- [x] Clarify “events in index” versus “events matching filters” in the header/results count ([PR #81](https://github.com/kobolcs/medtourney/pull/81)).
 - [ ] Show event-level source and freshness in the detail panel.
 - [ ] Test the full find → detail → shortlist → calendar/share journey with European OTB players on desktop and phone widths.
 - [ ] Add privacy-conscious action tracking for detail opens, shortlist adds, exports, shares, and official-source clicks; establish a Search Console baseline.
