@@ -136,7 +136,7 @@ export class FilterService {
                     (filterState.rapidTime && this.isRapidTime(categoryLower)) ||
                     (filterState.blitzTime && this.isBlitzTime(categoryLower));
 
-                if (!hasMatchingTimeControl) {
+                if (!hasMatchingTimeControl && !(filterState.classicalTime && filterState.rapidTime && filterState.blitzTime)) {
                     return false;
                 }
             }

@@ -93,7 +93,7 @@ class TestTournamentProcessor:
     def test_extract_category_default(self, processor):
         """Test default category when nothing matches"""
         category = processor._extract_category("Generic Tournament")
-        assert "Classical" in category  # Should default to Classical
+        assert category == "Open, Unknown"
 
     def test_extract_category_multiple(self, processor):
         """Test multiple categories"""
@@ -236,10 +236,8 @@ class TestTournamentProcessor:
         assert "Classical" in category
         assert "Blitz" not in category
 
-    def test_determine_category_keyword_overrides_formula(self, processor):
-        """An explicit 'Rapid'/'Classical' label in the source data is
-        trusted even where the formula would (in isolation) agree or
-        disagree - organizers' own labels take priority over inference."""
+    def test_determine_category_numeric_clock_overrides_keyword(self, processor):
+        """A recognised numeric clock takes priority over an informal label."""
         category = processor._determine_category("Open", "Budapest, HUN", "Rapid: 8 minutes with 3 second increment")
         assert "Rapid" in category
 

@@ -10,6 +10,7 @@
  */
 
 import { z } from 'zod/mini';
+import { normalizeClockCategory } from './timeControl';
 
 /**
  * Tournament schema - validates tournament data structure
@@ -92,7 +93,7 @@ export type ValidatedAppConfig = z.infer<typeof AppConfigSchema>;
  * Helper function to safely parse and validate data
  */
 export function validateTournaments(data: unknown): ValidatedTournamentsArray {
-    return TournamentsArraySchema.parse(data);
+    return TournamentsArraySchema.parse(data).map(row => ({ ...row, category: normalizeClockCategory(row) }));
 }
 
 /**
@@ -112,7 +113,7 @@ export function safeValidateTournaments(data: unknown): {
 } {
     const result = TournamentsArraySchema.safeParse(data);
     if (result.success) {
-        return { success: true, data: result.data };
+        return { success: true, data: result.data.map(row => ({ ...row, category: normalizeClockCategory(row) })) };
     }
     return { success: false, error: result.error };
 }
