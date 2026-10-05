@@ -14,9 +14,12 @@ for (let n = 0; n < 3; n++) {
   add(`Rapid ${n}`, 'Rapid', '2026-11-02');
   add(`Senior ${n}`, 'Classical, S50+', '2026-11-03');
   add(`Coastal ${n}`, 'Blitz', '2026-11-04', 'med');
+  add(`Senior Open ${n}`, '', '2026-11-05');
+  add(`Atlantic ${n}`, 'Rapid', '2026-11-06', 'atlantic');
 }
 add('Past classical', 'Classical', '2026-10-01');
 add('Malformed', 'Classical', 'not-a-date');
+add('Black Sea event', 'Rapid', '2026-11-07', 'black');
 
 const result = buildSeoArtifacts({
   tournaments: rows,
@@ -37,6 +40,7 @@ assert.match(classical.html, /href="\/medtourney\/\?tc=classical"/);
 assert.match(classical.html, /href="\/medtourney\/\?t=https%3A%2F%2Fchess-results\.com%2Ftnr1\.aspx%3Flan%3D1"/);
 assert.doesNotMatch(classical.html, /href="https:\/\/chess-results\.com/);
 assert.doesNotMatch(classical.html, /Past classical|Malformed/);
+assert.match(classical.html, /href=\"\\/medtourney\\/\\?tc=classical&amp;open=0&amp;excludeYouth=0&amp;team=1&amp;long=1\"/);
 assert.match(classical.html, /rel="canonical" href="https:\/\/kobolcs\.github\.io\/medtourney\/discover\/classical\//);
 
 const rootBuild = buildSeoArtifacts({
