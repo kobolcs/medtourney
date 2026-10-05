@@ -4,7 +4,7 @@
 [![Run Tests](https://github.com/kobolcs/medtourney/actions/workflows/test.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/test.yml)
 [![Security Scanning](https://github.com/kobolcs/medtourney/actions/workflows/security.yml/badge.svg)](https://github.com/kobolcs/medtourney/actions/workflows/security.yml)
 
-A chess tournament finder for two things chess-results.com's own search doesn't do well: **Mediterranean seaside tournaments** and **senior (50+) categories**. Everything else — open events, women's, youth exclusion, rating ceilings, team formats, duration — is there too, but those two are why this exists.
+A focused discovery and trip-planning layer for European over-the-board chess events. MedTourney combines tournament filters with Mediterranean/seaside and senior (50+) views, actual-clock time-control classification, and practical travel context.
 
 Made by Csaba Köböl.
 
@@ -14,7 +14,7 @@ Made by Csaba Köböl.
 
 ## Why this exists
 
-chess-results.com lists thousands of tournaments but only lets you filter by federation and date. If you're a chess player who also wants a coastal holiday, or a 50+ player looking for age-appropriate events, you're scrolling through everything by hand. MedTourney scrapes the same source daily and adds the filters that search was missing.
+Chess-Results already provides extensive tournament search and results. MedTourney complements it with a focused player workflow: compare events across the European feed, identify senior or coastal options, interpret clock settings consistently, and plan around the venue. Current event discovery relies on Chess-Results alone, so events absent from its search are absent here too. Additional sources are being evaluated where data quality and reuse permission support them.
 
 ## Features
 
@@ -77,9 +77,9 @@ See [`TESTING.md`](./TESTING.md) for what each suite actually covers and [`ARCHI
 
 ## How the data gets here
 
-`TournamentProcessor.py` + `scrape_tournaments.robot` (Robot Framework, Playwright-based) scrape chess-results.com every day at 00:00 UTC via GitHub Actions: search the next 6 months, download the Excel export, keep European results only, write `tournaments_data.json`, commit it to `main`. GitHub Pages then just serves that static file — the web app has no backend and no database.
+`TournamentProcessor.py` + `scrape_tournaments.robot` (Robot Framework, Playwright-based) collect the next six months of events from the Chess-Results tournament search every day at 00:00 UTC via GitHub Actions, download the Excel export, keep European results, and write `tournaments_data.json`. Detail enrichment also reads Chess-Results event pages; it is the same provider, not a second discovery source. GitHub Pages serves the static JSON — the web app has no backend or database.
 
-Before publishing, `scripts/validate_scrape.py` refuses a scrape that looks broken (under 10 rows, a drop of more than 30% vs the last run, or time-control/link columns gone empty), so the site keeps yesterday's good data. Any failure opens a `data-update-failed` issue, which closes itself after the next good run; `data-health.yml` also checks the live site twice a day and opens the same issue if its data is more than 30 hours old. Visitors never see a date or a warning.
+Before publishing, `scripts/validate_scrape.py` refuses a scrape that looks broken (under 10 rows, a drop of more than 30% vs the last run, or time-control/link columns gone empty), so the site keeps yesterday's validated snapshot. Any failure opens a `data-update-failed` issue, which closes itself after the next good run; `data-health.yml` also checks the live site twice a day and opens the same issue if its data is more than 30 hours old. The app shows the last successful snapshot date in the footer.
 
 Run it yourself if you're working on the scraper:
 

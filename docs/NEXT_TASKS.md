@@ -71,3 +71,43 @@ Legend: `[x]` done · `[~]` partly done · `[ ]` not started
 - [ ] **Scraper Excel-download diagnostic** (saves the page state when a
   download fails). It was deleted on 2026-09-23. Only rebuild it if download
   failures come back.
+
+
+## 2026-10-05 — discovery, trust, and growth follow-up
+
+Completed in branch `improve/trust-and-source-roadmap` (open review: [PR #80](https://github.com/kobolcs/medtourney/pull/80)).
+
+- [x] Keep the featured Seaside suggestion inside MedTourney; keep Chess-Results as an optional link in the detail panel.
+- [x] Correct README positioning and state that event discovery currently depends on one provider.
+- [x] Add the existing SEO-generation test to pull-request CI.
+
+### P1 — Add source breadth safely
+
+- [x] Verify that the search/export pipeline and event-page enrichment are both Chess-Results; data-hosting mirrors are not independent sources.
+- [x] Research candidate sources. FIDE's calendar requires written permission before content is reproduced or stored. The Czech Chess Federation's event calendar is a promising country pilot, but its reuse terms and feed access are not confirmed.
+- [ ] Confirm a reusable feed or written permission for one source before ingestion. No source has been contacted.
+- [ ] Pilot a bounded sample and report unique eligible OTB listings, overlap, cancellations, field completeness, freshness, and correction rate.
+- [ ] Preserve provider IDs, source URLs, fetched/checked dates, and conflicting-field provenance; deduplicate conservatively and keep separate event sections/tempo variants separate.
+- [ ] Validate source rows individually and publish only after a reviewable diff and quality threshold pass.
+
+### P1 — Listing trust and data operations
+
+- [ ] Add a correction/report action for wrong dates, venues, eligibility, or time controls.
+- [ ] Detect duplicates, inverted/implausible dates, cancellations, and suspicious clock classifications before publish.
+- [ ] Show scrape/enrichment omissions in workflow results while retaining the last known-good snapshot.
+
+### P2 — Product, discovery, and retention
+
+- [x] Clarify “events in index” versus “events matching filters” in the header/results count ([PR #81](https://github.com/kobolcs/medtourney/pull/81)).
+- [ ] Show event-level source and freshness in the detail panel.
+- [ ] Test the full find → detail → shortlist → calendar/share journey with European OTB players on desktop and phone widths.
+- [ ] Add privacy-conscious action tracking for detail opens, shortlist adds, exports, shares, and official-source clicks; establish a Search Console baseline.
+- [ ] Improve the four category pages with accurate coverage/classification explanations before adding more SEO pages.
+- [ ] Evaluate saved-search or followable-calendar alerts after repeat-use data supports them.
+
+### P3 — Later
+
+- [ ] Consider localization based on visitor and search-query data.
+- [ ] Consider organizer-submitted corrections or feeds once provenance and moderation are established.
+
+**Guardrails:** keep the product Europe-focused and static-first; event cards/category pages stay on MedTourney; do not scrape or republish where reuse permission is unclear; treat the 2,000–3,000-user goal as a target, not a forecast, until “user” and the baseline metric are defined.
