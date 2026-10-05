@@ -15,7 +15,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections.abc import Callable, Iterable
-from datetime import datetime
+from datetime import date
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -60,12 +60,12 @@ def _valid_row(row: Any, country: str) -> dict[str, Any] | None:
     url = source_url(row.get("source_url"))
     name = row.get("name")
     city = row.get("city")
-    date = row.get("date")
-    end_date = row.get("end_date") or date
+    start_value = row.get("date")
+    end_date = row.get("end_date") or start_value
     country_code = row.get("country_code")
     try:
-        start_date = datetime.strptime(str(date), "%Y-%m-%d")
-        finish_date = datetime.strptime(str(end_date), "%Y-%m-%d")
+        start_date = date.fromisoformat(str(start_value))
+        finish_date = date.fromisoformat(str(end_date))
     except ValueError:
         return None
     if finish_date < start_date:
@@ -80,7 +80,7 @@ def _valid_row(row: Any, country: str) -> dict[str, Any] | None:
         "city": city.strip(),
         "country": row.get("country") if isinstance(row.get("country"), str) else "",
         "countryCode": country,
-        "date": date,
+        "date": start_value,
         "dateTo": end_date,
         "category": row.get("category") if isinstance(row.get("category"), str) else "",
         "timeControl": row.get("time_control") if isinstance(row.get("time_control"), str) else "",
@@ -94,14 +94,16 @@ def fetch_page(url: str) -> dict[str, Any]:
         with urllib.request.urlopen(request, timeout=20) as response:
             payload: Any = json.loads(response.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as err:
-        raise RuntimeError(f"TourneyRadar request failed: {err}") from err
+        message = f"TourneyRadar request failed: {err}"
+        raise RuntimeError(message) from err
     valid_shape = (
         isinstance(payload, dict)
         and isinstance(payload.get("data"), list)
         and isinstance(payload.get("meta"), dict)
     )
     if not valid_shape:
-        raise RuntimeError("TourneyRadar response did not match the documented data/meta shape")
+        message = "TourneyRadar response did not match the documented data/meta shape"
+        raise RuntimeError(message)
     return payload
 
 
@@ -121,12 +123,14 @@ def build_report(
     for country in countries:
         code = country.strip().upper()
         if not re.fullmatch(r"[A-Z]{2}", code):
-            raise ValueError(f"Invalid country code: {country!r}")
+            message = f"Invalid country code: {country!r}"
+            raise ValueError(message)
         page = 1
         stats = {"apiRows": 0, "validRows": 0, "overlap": 0, "candidates": 0}
         while True:
             if request_count >= MAX_REQUESTS:
-                raise RuntimeError(f"Request cap ({MAX_REQUESTS}) reached; report is incomplete")
+                message = f"Request cap ({MAX_REQUESTS}) reached; report is incomplete"
+                raise RuntimeError(message)
             if request_count:
                 sleep(REQUEST_INTERVAL_S)
             query = urllib.parse.urlencode({"country": code, "upcoming": "true", "limit": PAGE_SIZE, "page": page})
@@ -135,7 +139,8 @@ def build_report(
             rows = payload["data"]
             meta = payload["meta"]
             if not isinstance(rows, list) or not isinstance(meta.get("hasMore"), bool):
-                raise RuntimeError("TourneyRadar response has invalid pagination fields")
+                message = "TourneyRadar response has invalid pagination fields"
+                raise TypeError(message)
             api_rows += len(rows)
             stats["apiRows"] += len(rows)
             for raw in rows:
