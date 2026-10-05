@@ -13,7 +13,8 @@ export abstract class DataFreshnessPart extends ThemeHelpPart {
         const stamp = date ? date.toLocaleDateString('en-GB', {
             day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
         }) : null;
-        countEl.textContent = `${count} ${this.allTournaments.length === 1 ? 'tournament' : 'tournaments'}`;
+        const noun = this.allTournaments.length === 1 ? 'tournament' : 'tournaments';
+        countEl.textContent = `${count} ${noun} in index`;
         const freshness = document.getElementById('dataFreshness');
         if (freshness) {
             freshness.textContent = stamp ? `${label} ${stamp}` : `${label}: date unavailable`;
