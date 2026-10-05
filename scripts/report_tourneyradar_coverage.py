@@ -107,6 +107,33 @@ def fetch_page(url: str) -> dict[str, Any]:
     return payload
 
 
+def _record_rows(
+    rows: list[Any],
+    country: str,
+    existing_ids: set[str],
+    candidate_by_id: dict[str, dict[str, Any]],
+    overlap_ids: set[str],
+    stats: dict[str, int],
+) -> tuple[int, int]:
+    rejected_rows = duplicate_rows = 0
+    for raw in rows:
+        row = _valid_row(raw, country)
+        if row is None:
+            rejected_rows += 1
+            continue
+        stats["validRows"] += 1
+        identifier = row["eventId"]
+        if identifier in existing_ids:
+            overlap_ids.add(identifier)
+            stats["overlap"] += 1
+        elif identifier in candidate_by_id:
+            duplicate_rows += 1
+        else:
+            candidate_by_id[identifier] = row
+            stats["candidates"] += 1
+    return rejected_rows, duplicate_rows
+
+
 def build_report(
     countries: Iterable[str],
     existing_ids: set[str],
@@ -143,21 +170,11 @@ def build_report(
                 raise TypeError(message)
             api_rows += len(rows)
             stats["apiRows"] += len(rows)
-            for raw in rows:
-                row = _valid_row(raw, code)
-                if row is None:
-                    rejected_rows += 1
-                    continue
-                stats["validRows"] += 1
-                identifier = row["eventId"]
-                if identifier in existing_ids:
-                    overlap_ids.add(identifier)
-                    stats["overlap"] += 1
-                elif identifier in candidate_by_id:
-                    duplicate_rows += 1
-                else:
-                    candidate_by_id[identifier] = row
-                    stats["candidates"] += 1
+            rejected_count, duplicate_count = _record_rows(
+                rows, code, existing_ids, candidate_by_id, overlap_ids, stats
+            )
+            rejected_rows += rejected_count
+            duplicate_rows += duplicate_count
             if not meta["hasMore"]:
                 break
             page += 1
