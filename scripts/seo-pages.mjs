@@ -11,7 +11,7 @@ const pages = [
     heading: 'Classical chess tournaments in Europe',
     intro: 'Upcoming events whose tournament listing identifies the format as Classical or Standard. Check the official event page for the current regulations and entry details.',
     token: /^(classical|standard)$/i,
-    params: 'tc=classical',
+    params: 'tc=classical&open=0&excludeYouth=0&team=1&long=1',
     filter: event => hasCategory(event, /^(classical|standard)$/i),
   },
   {
@@ -21,7 +21,7 @@ const pages = [
     heading: 'Rapid chess tournaments in Europe',
     intro: 'Upcoming events whose tournament listing identifies the format as Rapid. Confirm the clock and event details on the official source before you travel.',
     token: /rapid/i,
-    params: 'tc=rapid',
+    params: 'tc=rapid&open=0&excludeYouth=0&team=1&long=1',
     filter: event => hasCategory(event, /^rapid$/i),
   },
   {
@@ -31,8 +31,8 @@ const pages = [
     heading: 'Senior chess tournaments in Europe',
     intro: 'Events with a senior age label in the tournament listing. Age eligibility can vary by event; use the organizer page to confirm the exact rules.',
     token: /senior|s\d{2}\+/i,
-    params: 'senior=1',
-    filter: event => hasCategory(event, /^(?:senior|s\d{2}\+)$/i),
+    params: 'senior=1&open=0&excludeYouth=0&team=1&long=1',
+    filter: event => /(?:\bsenior\b|\bs\s*(?:50|60|65|70|75|80)\s*\+?|\b(?:o|over)\s*(?:50|60|65|70|75|80)\b|\bvet[eé]ran)/i.test(`${event.name ?? ''} ${event.category ?? ''}`),
   },
   {
     slug: 'seaside',
@@ -41,8 +41,8 @@ const pages = [
     heading: 'Seaside chess tournaments in Europe',
     intro: 'These venues are tagged as coastal by MedTourney location data. The tag describes the venue area; it does not mean the playing hall is on the beach.',
     token: /coast/i,
-    params: 'med=1',
-    filter: event => Boolean(event.coast),
+    params: 'med=1&sea=med,atlantic&open=0&excludeYouth=0&team=1&long=1',
+    filter: event => ['med', 'atlantic'].includes(String(event.coast ?? '').toLowerCase()),
   },
 ];
 
