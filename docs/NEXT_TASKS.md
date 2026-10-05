@@ -85,6 +85,7 @@ Completed in branch `improve/trust-and-source-roadmap` (open review: [PR #80](ht
 
 - [x] Verify that the search/export pipeline and event-page enrichment are both Chess-Results; data-hosting mirrors are not independent sources.
 - [x] Research candidate sources. FIDE's calendar requires written permission before content is reproduced or stored. The Czech Chess Federation's event calendar is a promising country pilot, but its reuse terms and feed access are not confirmed.
+- [x] Add a read-only TourneyRadar coverage report that deduplicates by Chess-Results event ID and stages unmatched URLs for review; it does not publish API records.
 - [ ] Confirm a reusable feed or written permission for one source before ingestion. No source has been contacted.
 - [ ] Pilot a bounded sample and report unique eligible OTB listings, overlap, cancellations, field completeness, freshness, and correction rate.
 - [ ] Preserve provider IDs, source URLs, fetched/checked dates, and conflicting-field provenance; deduplicate conservatively and keep separate event sections/tempo variants separate.
