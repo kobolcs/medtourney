@@ -1,4 +1,12 @@
 {
+ "*, CRO": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "-, AUT": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "08468 Reichenbach, GER": {
   "lat": 50.6228,
   "lng": 12.3034,
@@ -28,6 +36,10 @@
  "11.ZŠ Zlín-Malenovice, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "11.ZŠ Zlín-Malenovice, tř. Svobody 868, CZE": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "18. Novembra iela 161, LAT": {
   "miss": "no match",
@@ -76,6 +88,14 @@
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "42.1381,24.7416, BUL": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "491907, ESP": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "6300 Kalocsa Közösségi Ház Hunyadi János utca 82, HUN": {
   "lat": 46.5298,
   "lng": 18.9728,
@@ -105,6 +125,10 @@
   "lng": 17.3201,
   "q": "balatonbereny",
   "src": "geonames"
+ },
+ "88 Hotel & Spa, ARM": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "8900 Zalaegerszeg, HUN": {
   "lat": 46.837,
@@ -163,6 +187,14 @@
  "@town:32.666,-16.925": {
   "town": "Funchal",
   "tried": "2026-09-30T04:23:48.986869+00:00"
+ },
+ "@town:34.777,32.425": {
+  "town": "Paphos",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:34.917,33.628": {
+  "town": "Larnaca",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:35.149,33.334": {
   "town": "Strovolos",
@@ -492,6 +524,10 @@
   "town": "Cheste",
   "tried": "2026-09-30T04:23:48.986869+00:00"
  },
+ "@town:39.505,46.344": {
+  "town": "Goris",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:39.519,2.534": {
   "town": "Calvià",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -564,6 +600,10 @@
   "town": "Yerevan",
   "tried": "2026-09-30T04:23:48.986869+00:00"
  },
+ "@town:40.199,44.471": {
+  "town": "Yerevan",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:40.259,-5.978": {
   "town": "Abadía",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -588,6 +628,10 @@
   "town": "Khatay",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:40.379,49.802": {
+  "town": "Baku",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:40.400,-3.659": {
   "town": "Madrid",
   "tried": "2026-09-30T04:23:48.986869+00:00"
@@ -604,6 +648,10 @@
   "town": "Torrejón de Ardoz",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:40.469,49.769": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:40.477,-3.710": {
   "town": "Madrid",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -612,9 +660,21 @@
   "town": "Alcalá de Henares",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:40.517,44.756": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:40.530,44.696": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:40.532,44.723": {
   "town": null,
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:40.571,45.812": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:40.618,47.150": {
   "town": "Yevlakh",
@@ -636,9 +696,21 @@
   "town": "Collado Villalba",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:40.680,46.360": {
+  "town": "Ganja",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:40.682,46.361": {
   "town": "Ganja",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:40.781,43.900": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:40.793,43.846": {
+  "town": "Gyumri",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:40.901,-7.931": {
   "town": "Castro Daire",
@@ -691,6 +763,10 @@
  "@town:41.327,19.819": {
   "town": "Tirana",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:41.328,19.818": {
+  "town": "Tirana",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:41.353,21.549": {
   "town": "Prilep",
@@ -844,6 +920,10 @@
   "town": "Dubrovnik",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:42.651,18.079": {
+  "town": "Dubrovnik",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:42.686,26.326": {
   "town": "Sliven",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -888,6 +968,10 @@
   "town": "Dimitrovgrad",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:43.052,17.436": {
+  "town": "Grad Ploče",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:43.056,17.433": {
   "town": "Grad Ploče",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -895,6 +979,10 @@
  "@town:43.081,25.629": {
   "town": "Veliko Tarnovo",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:43.082,25.632": {
+  "town": "Veliko Tarnovo",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:43.097,12.564": {
   "town": "Assisi",
@@ -956,6 +1044,10 @@
   "town": "Astigarraga",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:43.297,17.018": {
+  "town": "Makarska",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:43.312,-1.899": {
   "town": "Errenteria",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -992,6 +1084,10 @@
   "town": "Pleven",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:43.512,16.440": {
+  "town": "Split",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:43.540,28.534": {
   "town": "Shabla",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1012,6 +1108,10 @@
   "town": "Kraljevo",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:43.761,15.783": {
+  "town": "Grad Vodice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:43.808,28.580": {
   "town": "Mangalia",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1024,9 +1124,21 @@
   "town": "Sanremo",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:43.818,18.356": {
+  "town": "Istočna Ilidža",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:43.849,18.356": {
   "town": "Novi Grad",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:43.857,18.413": {
+  "town": "Mjesna zajednica Trg oslobođenja-Centar",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:43.860,18.439": {
+  "town": "Sarajevo",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:43.880,18.075": {
   "town": "Kresevo",
@@ -1059,6 +1171,10 @@
  "@town:44.200,17.909": {
   "town": null,
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:44.202,17.904": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:44.271,19.886": {
   "town": "Valjevo",
@@ -1152,6 +1268,10 @@
   "town": "Indjija",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:45.050,18.755": {
+  "town": "Bošnjaci",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:45.050,18.756": {
   "town": "Bošnjaci",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1184,6 +1304,18 @@
   "town": "Slavonski Brod",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:45.162,18.016": {
+  "town": "Slavonski Brod",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:45.182,18.181": {
+  "town": "Općina Garčin",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:45.226,13.595": {
+  "town": "Grad Poreč",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:45.252,19.837": {
   "town": "Novi Sad",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1204,9 +1336,21 @@
   "town": "Grad Rijeka",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:45.331,17.597": {
+  "town": "Općina Brestovac",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:45.331,17.677": {
+  "town": "Grad Požega",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:45.340,17.685": {
   "town": "Grad Požega",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:45.344,19.002": {
+  "town": "Vukovar",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:45.386,8.201": {
   "town": "Santhià",
@@ -1220,6 +1364,10 @@
   "town": "Grad Sisak",
   "tried": "2026-09-29T04:38:11.853933+00:00"
  },
+ "@town:45.491,18.094": {
+  "town": "Grad Našice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:45.498,9.943": {
   "town": "Castelcovati",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1231,6 +1379,10 @@
  "@town:45.555,18.695": {
   "town": "Osijek",
   "tried": "2026-09-30T04:23:48.986869+00:00"
+ },
+ "@town:45.566,18.620": {
+  "town": "Višnjevac",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:45.599,9.885": {
   "town": "Palazzolo sull'Oglio",
@@ -1288,6 +1440,10 @@
   "town": "Orăștie",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:45.834,16.064": {
+  "town": "Zagreb",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:45.870,8.982": {
   "town": "Mendrisio",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1315,6 +1471,10 @@
  "@town:45.931,20.090": {
   "town": "Senta",
   "tried": "2026-10-03T04:13:57.040118+00:00"
+ },
+ "@town:45.935,16.658": {
+  "town": "Cirkvena",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:46.004,8.951": {
   "town": "Lugano",
@@ -1368,6 +1528,10 @@
   "town": "Szeged",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:46.257,16.149": {
+  "town": "Druškovec",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:46.268,6.263": {
   "town": "Veigy-Foncenex",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1419,6 +1583,10 @@
  "@town:46.567,26.914": {
   "town": "Bacău",
   "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
+ "@town:46.617,14.283": {
+  "town": "Klagenfurt",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:46.644,21.275": {
   "town": "Gyula",
@@ -1524,6 +1692,10 @@
   "town": "Burgdorf",
   "tried": "2026-09-26T03:55:43.361460+00:00"
  },
+ "@town:47.066,15.452": {
+  "town": "Graz",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:47.067,15.442": {
   "town": "Graz",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1596,6 +1768,10 @@
   "town": "Rankweil",
   "tried": "2026-10-02T04:29:01.367899+00:00"
  },
+ "@town:47.284,12.572": {
+  "town": "Uttendorf",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:47.300,22.000": {
   "town": "Diosig",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1615,6 +1791,10 @@
  "@town:47.389,8.550": {
   "town": "Zurich",
   "tried": "2026-09-25T20:23:19.444670+00:00"
+ },
+ "@town:47.414,9.742": {
+  "town": "Dornbirn",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:47.429,18.914": {
   "town": "Törökbálint",
@@ -1668,6 +1848,10 @@
   "town": "Romanshorn",
   "tried": "2026-09-26T03:55:43.361460+00:00"
  },
+ "@town:47.568,16.528": {
+  "town": "Raiding",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:47.579,7.647": {
   "town": "Riehen",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1675,6 +1859,10 @@
  "@town:47.583,12.167": {
   "town": "Kufstein",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:47.583,12.169": {
+  "town": "Kufstein",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:47.633,26.250": {
   "town": "Suceava",
@@ -1704,13 +1892,25 @@
   "town": "Gmund",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:47.774,16.328": {
+  "town": "Bad Sauerbrunn",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:47.774,16.480": {
   "town": "Antau/Otava",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:47.776,13.072": {
+  "town": "Salzburg",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:47.798,13.046": {
   "town": "Salzburg",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:47.799,13.044": {
+  "town": "Salzburg",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:47.799,22.863": {
   "town": "Satu Mare",
@@ -1740,6 +1940,14 @@
   "town": "Gmunden",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:47.945,13.225": {
+  "town": "Neumarkt am Wallersee",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:47.960,14.774": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:47.965,16.214": {
   "town": "Bad Vöslau",
   "tried": "2026-10-02T04:29:01.367899+00:00"
@@ -1748,6 +1956,10 @@
   "town": "Nové Zámky",
   "tried": "2026-09-30T04:23:48.986869+00:00"
  },
+ "@town:47.995,16.275": {
+  "town": "Traiskirchen",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:47.996,7.852": {
   "town": "Freiburg im Breisgau",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1755,6 +1967,10 @@
  "@town:48.005,10.593": {
   "town": "Bad Wörishofen",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:48.006,16.271": {
+  "town": "Traiskirchen",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:48.017,16.265": {
   "town": "Pfaffstätten",
@@ -1771,6 +1987,10 @@
  "@town:48.137,11.575": {
   "town": "Munich",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:48.139,14.228": {
+  "town": "Neuhofen an der Krems",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:48.146,17.132": {
   "town": "Bratislava",
@@ -1836,6 +2056,10 @@
   "town": "Korneuburg",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:48.366,15.414": {
+  "town": "Spitz",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:48.395,15.520": {
   "town": "Dürnstein",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -1868,6 +2092,10 @@
   "town": "Böblingen",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:48.697,16.681": {
+  "town": "Herrnbaumgarten",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:48.714,21.258": {
   "town": "Košice",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -1892,6 +2120,10 @@
   "town": "Znojmo",
   "tried": "2026-09-29T04:38:11.853933+00:00"
  },
+ "@town:48.871,14.395": {
+  "town": "Chlumec",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:48.923,24.712": {
   "town": "Ivano-Frankivsk",
   "tried": "2026-09-30T04:23:48.986869+00:00"
@@ -1899,6 +2131,10 @@
  "@town:48.931,18.562": {
   "town": "Tužina",
   "tried": "2026-09-25T20:23:19.444670+00:00"
+ },
+ "@town:48.954,17.379": {
+  "town": "Veselí nad Moravou",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:48.956,8.920": {
   "town": "Illingen",
@@ -1952,9 +2188,17 @@
   "town": "Valaská Dubová",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:49.182,16.561": {
+  "town": "Brno",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.192,16.611": {
   "town": "Brno",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:49.193,16.607": {
+  "town": "Brno",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:49.195,16.608": {
   "town": "Brno",
@@ -1963,6 +2207,10 @@
  "@town:49.198,8.112": {
   "town": "Landau in der Pfalz",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:49.212,16.608": {
+  "town": "Brno",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:49.223,18.739": {
   "town": "Žilina",
@@ -1988,9 +2236,17 @@
   "town": "Völklingen",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:49.261,13.902": {
+  "town": "Strakonice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.268,17.322": {
   "town": "Rataje",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:49.298,13.756": {
+  "town": "Střelské Hoštice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:49.302,6.945": {
   "town": "Riegelsberg",
@@ -2004,13 +2260,25 @@
   "town": "Vsetín",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:49.352,16.402": {
+  "town": "Předklášteří",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.409,8.695": {
   "town": "Heidelberg",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:49.414,14.658": {
+  "town": "Tábor",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.443,7.769": {
   "town": "Kaiserslautern",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:49.472,17.112": {
+  "town": "Prostějov",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:49.474,7.585": {
   "town": "Mackenbach",
@@ -2027,6 +2295,18 @@
  "@town:49.516,23.201": {
   "town": "Sambir",
   "tried": "2026-09-26T03:55:43.361460+00:00"
+ },
+ "@town:49.523,16.261": {
+  "town": "Bystřice nad Pernštejnem",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:49.530,16.006": {
+  "town": "Jámy",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:49.538,18.393": {
+  "town": "Ostravice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:49.548,18.211": {
   "town": "Frenštát pod Radhoštěm",
@@ -2052,6 +2332,18 @@
   "town": "Worms",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:49.637,18.720": {
+  "town": "Bystřice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:49.643,13.837": {
+  "town": "Nepomuk",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:49.666,16.742": {
+  "town": "Chornice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.683,18.350": {
   "town": "Frýdek-Místek",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -2071,6 +2363,10 @@
  "@town:49.785,23.647": {
   "town": "Horodok",
   "tried": "2026-09-26T03:55:43.361460+00:00"
+ },
+ "@town:49.786,13.979": {
+  "town": null,
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:49.794,9.951": {
   "town": "Würzburg",
@@ -2100,6 +2396,10 @@
   "town": "Dobczyce",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:49.882,18.054": {
+  "town": "Hrabyně",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.886,8.802": {
   "town": "Groß-Zimmern",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -2108,13 +2408,25 @@
   "town": "Martin-Église",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:49.912,13.977": {
+  "town": "Zdice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.939,17.903": {
   "town": "Opava",
   "tried": "2026-09-27T04:03:55.135618+00:00"
  },
+ "@town:49.956,16.356": {
+  "town": "Řetůvka",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:49.965,12.701": {
   "town": "Mariánské Lázně",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:49.967,12.701": {
+  "town": "Mariánské Lázně",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:49.974,16.394": {
   "town": "Ústí nad Orlicí",
@@ -2132,6 +2444,14 @@
   "town": "Pardubice",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:50.044,14.435": {
+  "town": "Prague",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:50.050,14.317": {
+  "town": "Prague",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:50.062,19.937": {
   "town": "Krakow",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -2148,6 +2468,14 @@
   "town": "Prague",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:50.098,14.468": {
+  "town": "Prague",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:50.108,14.475": {
+  "town": "Prague",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:50.111,8.682": {
   "town": "Frankfurt",
   "tried": "2026-10-03T04:13:57.040118+00:00"
@@ -2155,6 +2483,14 @@
  "@town:50.124,13.770": {
   "town": "Lužná",
   "tried": "2026-10-02T04:29:01.367899+00:00"
+ },
+ "@town:50.124,14.452": {
+  "town": "Prague",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "@town:50.133,14.550": {
+  "town": "Prague",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:50.134,14.416": {
   "town": "Prague",
@@ -2172,9 +2508,17 @@
   "town": "Lysá nad Labem",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:50.203,14.840": {
+  "town": "Lysá nad Labem",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:50.209,15.833": {
   "town": "Hradec Králové",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:50.214,15.813": {
+  "town": "Hradec Králové",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:50.229,17.205": {
   "town": "Jeseník",
@@ -2203,6 +2547,10 @@
  "@town:50.299,10.467": {
   "town": "Bad Königshofen im Grabfeld",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:50.303,15.170": {
+  "town": "Rožďalovice",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:50.304,12.344": {
   "town": "Markneukirchen",
@@ -2235,6 +2583,10 @@
  "@town:50.461,13.418": {
   "town": "Chomutov",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:50.480,14.939": {
+  "town": "Bakov nad Jizerou",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:50.495,12.135": {
   "town": "Plauen",
@@ -2280,6 +2632,10 @@
   "town": "Jablonec nad Nisou",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:50.748,14.530": {
+  "town": "Skalice u České Lípy",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:50.758,14.556": {
   "town": "Nový Bor",
   "tried": "2026-09-25T03:51:13.867488+00:00"
@@ -2300,9 +2656,17 @@
   "town": "Chemnitz",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:50.850,4.349": {
+  "town": "Brussels",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:50.860,9.677": {
   "town": "Bad Hersfeld",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "@town:50.879,4.701": {
+  "town": "Leuven",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:50.880,12.082": {
   "town": "Gera",
@@ -2340,6 +2704,10 @@
   "town": "Döbeln",
   "tried": "2026-09-25T03:51:13.867488+00:00"
  },
+ "@town:51.154,3.231": {
+  "town": "Oostkamp",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:51.212,24.709": {
   "town": "Kovel",
   "tried": "2026-09-29T04:38:11.853933+00:00"
@@ -2359,6 +2727,10 @@
  "@town:51.317,9.500": {
   "town": "Kassel",
   "tried": "2026-10-03T04:13:57.040118+00:00"
+ },
+ "@town:51.320,-0.139": {
+  "town": "Greater London",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "@town:51.331,-0.270": {
   "town": "Epsom and Ewell",
@@ -2648,6 +3020,10 @@
   "town": "Grudziądz",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "@town:53.500,-2.350": {
+  "town": "Salford",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "@town:53.506,17.997": {
   "town": "Bysław",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -2886,6 +3262,12 @@
   "miss": "no match",
   "tried": "2026-09-30T04:23:48.986869+00:00"
  },
+ "ASKÖ Sportzentrum Maxglan, Eichetstraße 29-31 – 1. Stock, 5020 Salzburg, AUT": {
+  "lat": 47.7994,
+  "lng": 13.044,
+  "q": "salzburg",
+  "src": "geonames"
+ },
  "ASKÖ Sportzentrum Salzburg-Maxglan, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -2995,6 +3377,19 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "American Academy - Larnaca, CYP": {
+  "lat": 34.9175,
+  "lng": 33.6282,
+  "q": "American Academy - Larnaca",
+  "seafront": {
+   "venue": [
+    34.91745,
+    33.62822
+   ],
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
+ },
  "Annemasse, FRA": {
   "lat": 46.1934,
   "lng": 6.2341,
@@ -3007,6 +3402,12 @@
  "Antigo Lagar Quinta S. Vicente, POR": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Anton Sattler Gasse 92-96, 1220 Wien Sportplatz TV Kagran, AUT": {
+  "lat": 48.2085,
+  "lng": 16.3721,
+  "q": "wien",
+  "src": "geonames"
  },
  "Anton Sattler Gasse 92-96, AUT": {
   "miss": "no match",
@@ -3034,9 +3435,18 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Aris ClubHouse, CYP": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "Armenia, ARM": {
   "miss": "no match",
   "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
+ "Armenia, Tsaghkadzor, Tandzaghbyur Street 34/1., ARM": {
+  "lat": 40.5298,
+  "lng": 44.6962,
+  "q": "Armenia, Tsaghkadzor, Tandzaghbyur Street 34/1."
  },
  "Armádneho generála L. Svobodu 25, SVK": {
   "miss": "no match",
@@ -3220,6 +3630,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Bakov nad Jizerou, CZE": {
+  "lat": 50.4801,
+  "lng": 14.9388,
+  "q": "Bakov nad Jizerou"
+ },
  "Baku, AZE": {
   "lat": 40.3756,
   "lng": 49.8328,
@@ -3371,6 +3786,11 @@
   "lng": 14.1101,
   "q": "Bled"
  },
+ "Bobycentrum hotel, Brno, CZE": {
+  "lat": 49.2122,
+  "lng": 16.608,
+  "q": "Bobycentrum hotel, Brno"
+ },
  "Bobycentrum hotel, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -3397,6 +3817,12 @@
   "lat": 46.4907,
   "lng": 11.3398,
   "q": "bozen",
+  "src": "geonames"
+ },
+ "Bošnjaci (1-3 kolo), CRO": {
+  "lat": 45.0503,
+  "lng": 18.7556,
+  "q": "bosnjaci",
   "src": "geonames"
  },
  "Brace Dronjak 11, SRB": {
@@ -3489,6 +3915,10 @@
   "lat": 47.0571,
   "lng": 7.6237,
   "q": "Burgdorf"
+ },
+ "Burgenland, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "Businesspark Sursee, SUI": {
   "lat": 47.1709,
@@ -3588,6 +4018,10 @@
  "CVČ Domino-Chrenová, SVK": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "CYP": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "CZE": {
   "miss": "unplaceable",
@@ -3792,6 +4226,12 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Centrum VUT Tržnice, Zelný trh 250, 602 00 Brno, CZE": {
+  "lat": 49.1952,
+  "lng": 16.608,
+  "q": "brno",
+  "src": "geonames"
+ },
  "Cercul Militar Mangalia, ROU": {
   "lat": 43.8162,
   "lng": 28.5766,
@@ -3809,6 +4249,11 @@
  "Cernigov hotel, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Cernigov hotel, Hradec Kralove, CZE": {
+  "lat": 50.2144,
+  "lng": 15.8135,
+  "q": "Cernigov hotel, Hradec Kralove"
  },
  "Chatham, ENG": {
   "lat": 51.3819,
@@ -3839,6 +4284,11 @@
  "Chillout Bar, SVK": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Chlumec, CZE": {
+  "lat": 48.871,
+  "lng": 14.3953,
+  "q": "Chlumec"
  },
  "Chomutov, CZE": {
   "lat": 50.4606,
@@ -3888,6 +4338,12 @@
    "tried": "2026-09-24T00:16:01.250879+00:00"
   }
  },
+ "Clublokal des SCDonaustadt - 1210 Wien - Anton Sattler Gasse 92, AUT": {
+  "lat": 48.2085,
+  "lng": 16.3721,
+  "q": "wien",
+  "src": "geonames"
+ },
  "Cluj-Napoca, ROU": {
   "lat": 46.7694,
   "lng": 23.59,
@@ -3909,6 +4365,12 @@
   "lat": 40.6483,
   "lng": -3.982,
   "q": "Collado Villalba (Madrid)"
+ },
+ "College Garden Hotel, 2540 Bad Vöslau, Johann Strauß-Str. 2, AUT": {
+  "lat": 47.9653,
+  "lng": 16.2136,
+  "q": "bad voslau",
+  "src": "geonames"
  },
  "College Garden Hotel, AUT": {
   "miss": "no match",
@@ -3938,6 +4400,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Continental hotel, Marianske Lazne, CZE": {
+  "lat": 49.9673,
+  "lng": 12.7014,
+  "q": "Continental hotel, Marianske Lazne"
+ },
  "Convento de San Francisco, ESP": {
   "miss": "no match",
   "tried": "2026-09-25T20:23:19.444670+00:00"
@@ -3945,6 +4412,11 @@
  "Cosmopolitan Bobycentrum, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Coulsdon, ENG": {
+  "lat": 51.32,
+  "lng": -0.1394,
+  "q": "Coulsdon"
  },
  "Couvent des Minimes 24 rue Francois Rabelais 66000 Perpignan, FRA": {
   "lat": 42.6976,
@@ -4117,6 +4589,12 @@
   "miss": "no match",
   "tried": "2026-09-28T04:02:51.105558+00:00"
  },
+ "Dom HVIDRE, ul. Stjepana Marjanovića 2, Sl.Brod, CRO": {
+  "lat": 45.1616,
+  "lng": 18.0163,
+  "q": "brod",
+  "src": "geonames"
+ },
  "Domloup, FRA": {
   "lat": 48.0626,
   "lng": -1.5237,
@@ -4127,6 +4605,11 @@
   "lng": -6.1618,
   "q": "donaghmede",
   "src": "geonames"
+ },
+ "Dornbirn, AUT": {
+  "lat": 47.4136,
+  "lng": 9.7424,
+  "q": "Dornbirn"
  },
  "Dorozsmai Petőfi S. Művelődési Ház  Szeged-Kiskundorozsma, HUN": {
   "miss": "no match",
@@ -4166,6 +4649,11 @@
   "lat": 53.1761,
   "lng": 18.3025,
   "q": "Dąbrowa Chełmińska"
+ },
+ "Dětské dopravní centrum, Bratří Čapků 4, Prostějov, CZE": {
+  "lat": 49.4721,
+  "lng": 17.1118,
+  "q": "Prostějov"
  },
  "Dětské dopravní centrum, CZE": {
   "miss": "no match",
@@ -4215,6 +4703,10 @@
  "ESP": {
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "EST": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "Ealing Junior Chess Club, ENG": {
   "lat": 51.5122,
@@ -4377,6 +4869,17 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Fizuli 2-15 Baku, AZE": {
+  "lat": 40.3777,
+  "lng": 49.892,
+  "q": "baku",
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
+ },
  "Focșani, ROU": {
   "lat": 45.6973,
   "lng": 27.1857,
@@ -4447,6 +4950,12 @@
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "GH Burchhart, 3451 Atzelsdorf, Liechtensteingasse 2 (Nähe Sieghartskirchen), AUT": {
+  "lat": 48.2553,
+  "lng": 16.0122,
+  "q": "sieghartskirchen",
+  "src": "geonames"
+ },
  "GH Burchhart, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -4487,9 +4996,30 @@
   "q": "riga",
   "src": "geonames"
  },
+ "Garčin, CRO": {
+  "lat": 45.1824,
+  "lng": 18.181,
+  "q": "Garčin"
+ },
+ "Gasthaus Maria, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "Gasthaus Schlögl, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Gasthaus Schlögl, Untere Hauptstraße 11, 7042 Antau, AUT": {
+  "lat": 47.7738,
+  "lng": 16.4798,
+  "q": "antau",
+  "src": "geonames"
+ },
+ "Gasthof Veigl, 3382 Loosdorf, Linzerstraße 2, AUT": {
+  "lat": 48.2,
+  "lng": 15.4,
+  "q": "loosdorf",
+  "src": "geonames"
  },
  "Gasthof Veigl, AUT": {
   "miss": "no match",
@@ -4514,6 +5044,17 @@
  "Genussquelle Rosalia, AUT": {
   "miss": "no match",
   "tried": "2026-09-24T03:32:08.871672+00:00"
+ },
+ "Genussquelle Rosalia, Schulstraße 14, 7202 Bad Sauerbrunn, AUT": {
+  "lat": 47.7744,
+  "lng": 16.3284,
+  "q": "bad sauerbrunn",
+  "src": "geonames"
+ },
+ "Ginzkeygasse 2, 9020 Klagenfurt, AUT": {
+  "lat": 46.6173,
+  "lng": 14.2831,
+  "q": "Ginzkeygasse 2, 9020 Klagenfurt"
  },
  "Ginzkeygasse 2, AUT": {
   "miss": "no match",
@@ -4640,6 +5181,12 @@
   "miss": "no match",
   "tried": "2026-10-01T04:31:51.945083+00:00"
  },
+ "Großer Minoritensaal, Mariahilferplatz 3, 8020 Graz, AUT": {
+  "lat": 47.0673,
+  "lng": 15.442,
+  "q": "graz",
+  "src": "geonames"
+ },
  "Grudziądz, POL": {
   "lat": 53.4841,
   "lng": 18.7537,
@@ -4673,6 +5220,11 @@
   "lng": 15.094,
   "q": "leoben",
   "src": "geonames"
+ },
+ "Gəncə, AZE": {
+  "lat": 40.6798,
+  "lng": 46.3597,
+  "q": "Gəncə"
  },
  "H. Manto 84, LTU": {
   "miss": "no match",
@@ -4760,6 +5312,15 @@
   "q": "lienz",
   "src": "geonames"
  },
+ "Hangár 19, CZE": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "Hans-Webersdorferstr. 27, 5020 Salzburg, AUT": {
+  "lat": 47.7761,
+  "lng": 13.0717,
+  "q": "Hans-Webersdorferstr. 27, 5020 Salzburg"
+ },
  "Hans-Webersdorferstr. 27, AUT": {
   "miss": "no match",
   "tried": "2026-09-30T04:23:48.986869+00:00"
@@ -4768,6 +5329,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Hauptstraße 43, 2171 Herrnbaumgarten, AUT": {
+  "lat": 48.6965,
+  "lng": 16.681,
+  "q": "Hauptstraße 43, 2171 Herrnbaumgarten"
+ },
  "Hauptstraße 43, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -4775,6 +5341,12 @@
  "Haus des Schachsports, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Haus des Schachsports, Spielmannplatz 1, 1020 Wien, AUT": {
+  "lat": 48.2085,
+  "lng": 16.3721,
+  "q": "wien",
+  "src": "geonames"
  },
  "Heidelberg, GER": {
   "lat": 49.4094,
@@ -4846,9 +5418,18 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Horstead Tithe Barn, Rectory Road, Horstead, NR12 7EP, ENG": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "Hostinec U Černého koníčka, CZE": {
   "miss": "no match",
   "tried": "2026-09-28T04:02:51.105558+00:00"
+ },
+ "Hostinec U Černého koníčka, Žižkova tř. 220/15, České Budějovice, CZE": {
+  "lat": 48.9747,
+  "lng": 14.4743,
+  "q": "České Budějovice"
  },
  "Hostomice, CZE": {
   "lat": 49.8253,
@@ -4899,6 +5480,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Hotel Beograd, Istocno Sarajevo, BIH": {
+  "lat": 43.8184,
+  "lng": 18.3562,
+  "q": "Hotel Beograd, Istocno Sarajevo"
+ },
  "Hotel Bosna - kristalna sala od 18.30h, BIH": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -4935,6 +5521,12 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Hotel Goldenes Schiff, Mittergasse 5, 3620 Spitz in der Wachau, AUT": {
+  "lat": 48.3656,
+  "lng": 15.4142,
+  "q": "spitz",
+  "src": "geonames"
+ },
  "Hotel Gstaaderhof, SUI": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -4943,9 +5535,21 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Hotel IBIS Styles, Waltendorfer Gürtel 8, 8010 Graz, AUT": {
+  "lat": 47.0673,
+  "lng": 15.442,
+  "q": "graz",
+  "src": "geonames"
+ },
  "Hotel Ibis Styles, AUT": {
   "miss": "no match",
   "tried": "2026-09-29T04:38:11.853933+00:00"
+ },
+ "Hotel Ibis Styles, Waltendorfer Gürtel 8, 8010 Graz, AUT": {
+  "lat": 47.0673,
+  "lng": 15.442,
+  "q": "graz",
+  "src": "geonames"
  },
  "Hotel Kalnik, CRO": {
   "lat": 46.1283,
@@ -5008,6 +5612,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Hotel Saraj, Sarajevo, BIH": {
+  "lat": 43.8597,
+  "lng": 18.4392,
+  "q": "Hotel Saraj, Sarajevo"
+ },
  "Hotel Schloss Ragaz, SUI": {
   "lat": 47.006,
   "lng": 9.5027,
@@ -5034,6 +5643,16 @@
   "miss": "no match",
   "tried": "2026-09-25T20:23:19.444670+00:00"
  },
+ "Hotel Tolero, Obala kralja Petra Krešimira IV. 1, Ploče, CRO": {
+  "lat": 43.0524,
+  "lng": 17.4361,
+  "q": "Ploče",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
+ },
  "Hotel Transilvania, ROU": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -5042,9 +5661,20 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Hrabyně, CZE": {
+  "lat": 49.8816,
+  "lng": 18.0544,
+  "q": "Hrabyně"
+ },
  "Huť Barbora, CZE": {
   "miss": "no match",
   "tried": "2026-10-02T04:29:01.367899+00:00"
+ },
+ "Huť Barbora, Jince, CZE": {
+  "lat": 49.7862,
+  "lng": 13.9787,
+  "q": "jince",
+  "src": "geonames"
  },
  "Hvar, CRO": {
   "lat": 43.1739,
@@ -5065,6 +5695,10 @@
  "IRL": {
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "ISL": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "ITA": {
   "miss": "unplaceable",
@@ -5159,6 +5793,23 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Jeremenkova 1835/106, Praha 4 - Krč, CZE": {
+  "lat": 50.0439,
+  "lng": 14.435,
+  "q": "Jeremenkova 1835/106, Praha 4 - Krč"
+ },
+ "Jeremenkova 1835/106, Praha 4 -Krč, zastávka bus Na Strži, CZE": {
+  "lat": 50.088,
+  "lng": 14.4208,
+  "q": "praha",
+  "src": "geonames"
+ },
+ "Jeremenkova 1835/106, Praha 4-Krč, bus zastávka Na Strži, CZE": {
+  "lat": 50.088,
+  "lng": 14.4208,
+  "q": "praha",
+  "src": "geonames"
+ },
  "Jesenik, CZE": {
   "lat": 50.2294,
   "lng": 17.2046,
@@ -5201,6 +5852,21 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "JÖSSAS, Stremayrgasse 15, 8010 Graz, AUT": {
+  "lat": 47.0657,
+  "lng": 15.452,
+  "q": "JÖSSAS, Stremayrgasse 15, 8010 Graz"
+ },
+ "Jámy, CZE": {
+  "lat": 49.5303,
+  "lng": 16.0061,
+  "q": "Jámy"
+ },
+ "Jídelna ZŠ Svážná Brno - Nový Lískovec, CZE": {
+  "lat": 49.1823,
+  "lng": 16.5606,
+  "q": "Nový Lískovec"
+ },
  "Jūras iela 23/25 k-6, LAT": {
   "miss": "no match",
   "tried": "2026-09-30T04:23:48.986869+00:00"
@@ -5213,10 +5879,18 @@
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "KOS": {
+  "miss": "unplaceable",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "Kaiserslautern, GER": {
   "lat": 49.4432,
   "lng": 7.769,
   "q": "Kaiserslautern"
+ },
+ "Kalvariengürtel 56, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "Kamianets-Podilskyi, UKR": {
   "lat": 48.6781,
@@ -5274,6 +5948,11 @@
   "lng": -0.0321,
   "q": "Kingston"
  },
+ "Kino dvorana dom kulture, Bošnjaci, CRO": {
+  "lat": 45.0502,
+  "lng": 18.7553,
+  "q": "Bošnjaci"
+ },
  "Kino dvorana dom kulture, CRO": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -5285,6 +5964,12 @@
  "Kirchplatz 4, GER": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Klubovna SK Prostějov, CZE": {
+  "lat": 49.4719,
+  "lng": 17.1118,
+  "q": "prostejov",
+  "src": "geonames"
  },
  "Klubovna ŠK Ústí nad Orlicí, CZE": {
   "lat": 49.9739,
@@ -5391,6 +6076,12 @@
  "Kulturzentrum, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Kulturzentrum, Kirchengasse 33, 7083 Purbach, AUT": {
+  "lat": 47.9129,
+  "lng": 16.6956,
+  "q": "purbach",
+  "src": "geonames"
  },
  "Kuopio, FIN": {
   "lat": 62.8925,
@@ -5504,6 +6195,11 @@
   "lng": 20.3541,
   "q": "Lendak"
  },
+ "Leuven, BEL": {
+  "lat": 50.8792,
+  "lng": 4.7012,
+  "q": "Leuven"
+ },
  "Levoča, SVK": {
   "lat": 49.0251,
   "lng": 20.5887,
@@ -5546,6 +6242,16 @@
   "miss": "no match",
   "tried": "2026-09-28T04:02:51.105558+00:00"
  },
+ "Liechtensteinov put 12, Dubrovnik, CRO": {
+  "lat": 42.6505,
+  "lng": 18.0792,
+  "q": "Liechtensteinov put 12, Dubrovnik",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
+ },
  "Liptov - Orava, SVK": {
   "lat": 49.1478,
   "lng": 19.28,
@@ -5566,6 +6272,12 @@
    "seaM": null,
    "tried": "2026-10-02T04:29:01.367899+00:00"
   }
+ },
+ "Lisek 52, Bystrice n. P., 593 01, CZE": {
+  "lat": 49.6366,
+  "lng": 18.7204,
+  "q": "bystrice",
+  "src": "geonames"
  },
  "Lisek 52, CZE": {
   "miss": "no match",
@@ -5673,6 +6385,11 @@
   "lng": 13.2572,
   "q": "Líně"
  },
+ "Lísek 52, Bystřice nad Pernštejnem 593 01, CZE": {
+  "lat": 49.523,
+  "lng": 16.2611,
+  "q": "Bystřice nad Pernštejnem 593 01"
+ },
  "Lísek 52, CZE": {
   "miss": "no match",
   "tried": "2026-09-28T04:02:51.105558+00:00"
@@ -5767,6 +6484,11 @@
  "Masarykova 1233/82, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Masazir, AZE": {
+  "lat": 40.4692,
+  "lng": 49.7686,
+  "q": "Masazir"
  },
  "Mavromichali 28, GRE": {
   "miss": "no match",
@@ -5894,6 +6616,12 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Na Smetance 505/1, 120 00 Praha 2- Vinohrady, CZE": {
+  "lat": 50.088,
+  "lng": 14.4208,
+  "q": "praha",
+  "src": "geonames"
+ },
  "Na Smetance 505/1, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -5917,6 +6645,21 @@
   "lng": 45.407,
   "q": "Naxçıvan"
  },
+ "Našice, CRO": {
+  "lat": 45.4908,
+  "lng": 18.0938,
+  "q": "Našice"
+ },
+ "Nepomuk, CZE": {
+  "lat": 49.6428,
+  "lng": 13.8373,
+  "q": "Nepomuk"
+ },
+ "Neumarkt am Wallersee, AUT": {
+  "lat": 47.945,
+  "lng": 13.2253,
+  "q": "Neumarkt am Wallersee"
+ },
  "New Chicago Žilina, SVK": {
   "lat": 49.2231,
   "lng": 18.7394,
@@ -5927,6 +6670,10 @@
   "lat": 54.9738,
   "lng": -1.6132,
   "q": "Newcastle upon Tyne"
+ },
+ "Niederösterreich, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "Nine Mile Ride School, ENG": {
   "miss": "no match",
@@ -5964,6 +6711,11 @@
  "Náměstí B. Hrozného 1737/31, CZE": {
   "miss": "no match",
   "tried": "2026-09-25T03:51:13.867488+00:00"
+ },
+ "Náměstí B. Hrozného 1737/31, Lysá nad Labem, CZE": {
+  "lat": 50.2027,
+  "lng": 14.8404,
+  "q": "Náměstí B. Hrozného 1737/31, Lysá nad Labem"
  },
  "Náměstí B. Hroznéno 1737/31, CZE": {
   "miss": "no match",
@@ -6007,6 +6759,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Olympik hotel, Prague, CZE": {
+  "lat": 50.0984,
+  "lng": 14.4683,
+  "q": "Olympik hotel, Prague"
+ },
  "Orgovánová 5, SVK": {
   "miss": "no match",
   "tried": "2026-10-03T04:13:57.040118+00:00"
@@ -6019,6 +6776,10 @@
   "lat": 45.5549,
   "lng": 18.6954,
   "q": "Osijek"
+ },
+ "Osnovna škola FINIDA, CRO": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "Ostrava, CZE": {
   "lat": 49.8354,
@@ -6091,6 +6852,12 @@
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "POŽEŠKA 45 BRESTOVAC, CRO": {
+  "lat": 45.3306,
+  "lng": 17.5969,
+  "q": "brestovac",
+  "src": "geonames"
+ },
  "Pabellon Polideportivo de Castro del Rio (Cordoba), ESP": {
   "lat": 37.6942,
   "lng": -4.4702,
@@ -6155,6 +6922,18 @@
  "Palác Morava, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Palác Morava, Malinovského nám. 603/4 Brno, CZE": {
+  "lat": 49.1952,
+  "lng": 16.608,
+  "q": "brno",
+  "src": "geonames"
+ },
+ "Palác Morava, Malinovského nám. 603/4, 602 00 Brno-střed, CZE": {
+  "lat": 49.1934,
+  "lng": 16.6071,
+  "q": "brno-stred",
+  "src": "geonames"
  },
  "Panellinion Cafe, GRE": {
   "miss": "no match",
@@ -6259,6 +7038,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Penzion Rodina, Chornice, CZE": {
+  "lat": 49.6664,
+  "lng": 16.7419,
+  "q": "Chornice"
+ },
  "Peterborough, ENG": {
   "lat": 52.5726,
   "lng": -0.2427,
@@ -6277,6 +7061,11 @@
  "Pfarrheim, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Pfarrheim, Dr. Paul Iby Platz 1, 7321 Raiding, AUT": {
+  "lat": 47.5675,
+  "lng": 16.528,
+  "q": "Pfarrheim, Dr. Paul Iby Platz 1, 7321 Raiding"
  },
  "Pfarrsaal St. Otto, GER": {
   "miss": "no match",
@@ -6357,9 +7146,19 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Područna škola Cirkvena, Trg slobode 1, Cirkvena, CRO": {
+  "lat": 45.9351,
+  "lng": 16.6581,
+  "q": "Cirkvena"
+ },
  "Područna škola Druškovec, CRO": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Područna škola Druškovec, Druškovec 4B, CRO": {
+  "lat": 46.2567,
+  "lng": 16.1495,
+  "q": "Druškovec 4B"
  },
  "Polideportivo Nuevo C/ Dr. Marañon, ESP": {
   "lat": 42.6294,
@@ -6561,6 +7360,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Resort Sepetná, Ostravice, CZE": {
+  "lat": 49.5381,
+  "lng": 18.3932,
+  "q": "Ostravice"
+ },
  "Restaurant Prezident Deva, ROU": {
   "lat": 45.8833,
   "lng": 22.9,
@@ -6576,6 +7380,12 @@
  "Restoran \"Štefova klet\", CRO": {
   "miss": "no match",
   "tried": "2026-10-03T04:13:57.040118+00:00"
+ },
+ "Restoran \"Štefova klet\", Gornja Dubrava 21, CRO": {
+  "lat": 45.8336,
+  "lng": 16.0636,
+  "q": "dubrava",
+  "src": "geonames"
  },
  "Restoran ESNAF - Aerodrom, MKD": {
   "lat": 41.9842,
@@ -6676,6 +7486,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Rožďalovice, CZE": {
+  "lat": 50.3035,
+  "lng": 15.17,
+  "q": "Rožďalovice"
+ },
  "Rua António Sérgio, POR": {
   "miss": "no match",
   "tried": "2026-09-24T03:32:08.871672+00:00"
@@ -6691,6 +7506,10 @@
   "lng": -8.4696,
   "q": "oliveira",
   "src": "geonames"
+ },
+ "Rue Egide Van Ophemstraat 46, BEL": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "Ruščica, CRO": {
   "lat": 45.139,
@@ -6744,6 +7563,12 @@
  "SK OAZA, CZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "SK OAZA, Jeremenkova 1835/106, Praha 4-Krč, stanice autobusu Na Strži, CZE": {
+  "lat": 50.088,
+  "lng": 14.4208,
+  "q": "praha",
+  "src": "geonames"
  },
  "SK Rockaden Umeås klubblokal, SWE": {
   "miss": "no match",
@@ -6917,6 +7742,11 @@
   "lng": 8.2006,
   "q": "Santhià"
  },
+ "Sarajevo, BIH": {
+  "lat": 43.8571,
+  "lng": 18.4126,
+  "q": "Sarajevo"
+ },
  "Sc. Gim. Prof. Nicolae Simache, ROU": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -6942,6 +7772,12 @@
  "Schloss Rothschild - Kristallsaal, AUT": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Schloss Rothschild - Kristallsaal, Schlossweg 2, A-3340 Waidhofen an der Ybbs NÖ, AUT": {
+  "lat": 47.96,
+  "lng": 14.7736,
+  "q": "waidhofen an der ybbs",
+  "src": "geonames"
  },
  "Schweizerhof****, SUI": {
   "miss": "no match",
@@ -6993,6 +7829,10 @@
   "lng": 22.8397,
   "q": "Seinäjoki"
  },
+ "Sek. SRI Seremban, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "Seminarraum Freiwillige Feuerwehr Tillmitsch, AUT": {
   "lat": 46.812,
   "lng": 15.5168,
@@ -7016,6 +7856,10 @@
   "lat": 37.3886,
   "lng": -5.9953,
   "q": "Sevilla"
+ },
+ "Shah Mat Masters, CYP": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "Shanklin, ENG": {
   "lat": 50.6288,
@@ -7192,6 +8036,16 @@
   "q": "spittal",
   "src": "geonames"
  },
+ "Split, CRO": {
+  "lat": 43.5116,
+  "lng": 16.44,
+  "q": "Split",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
+ },
  "Sporthalle Kaserne, SUI": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -7199,6 +8053,11 @@
  "Sporto g. 3, LTU": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Sportska dvorana T. Pirc, A. Kanižlića 14a, Požega, CRO": {
+  "lat": 45.3311,
+  "lng": 17.6765,
+  "q": "Požega"
  },
  "Sportska dvorana T. Pirc, CRO": {
   "miss": "no match",
@@ -7338,6 +8197,12 @@
   "lng": 18.4108,
   "q": "Székesfehérvár"
  },
+ "TJ Kobylisy, CZE": {
+  "lat": 50.1237,
+  "lng": 14.4521,
+  "q": "kobylisy",
+  "src": "geonames"
+ },
  "TUR": {
   "miss": "unplaceable",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -7382,6 +8247,12 @@
   "q": "ternopil",
   "src": "geonames"
  },
+ "The Army & Navy Club, 36-39 Pall Mall, London SW1Y 5JN, ENG": {
+  "lat": 51.5085,
+  "lng": -0.1257,
+  "q": "london",
+  "src": "geonames"
+ },
  "The Army & Navy Club, ENG": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -7399,6 +8270,10 @@
  "The Radisson Blu Hotel & Spa, IRL": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "The White Swan, ENG": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "The Wrekin Housing Group, ENG": {
   "miss": "no match",
@@ -7445,6 +8320,17 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Tribuswinkel Fuhrmannsaal, AUT": {
+  "lat": 48.0062,
+  "lng": 16.2707,
+  "q": "tribuswinkel",
+  "src": "geonames"
+ },
+ "Tribuswinkel, AUT": {
+  "lat": 47.9955,
+  "lng": 16.2747,
+  "q": "Tribuswinkel"
+ },
  "Trieste Nh Hotel, ITA": {
   "lat": 45.6495,
   "lng": 13.7768,
@@ -7485,6 +8371,11 @@
   "miss": "no match",
   "tried": "2026-09-24T03:32:08.871672+00:00"
  },
+ "Turnhalle der Mittelschule I, Fischergries32, Kufstein, AUT": {
+  "lat": 47.583,
+  "lng": 12.1692,
+  "q": "Kufstein"
+ },
  "Tv. Nova de Teibas, POR": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -7494,6 +8385,14 @@
   "lng": -0.3377,
   "q": "twickenham",
   "src": "geonames"
+ },
+ "Tělocvična objektu Fitness centra, CZE": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "U Staré pošty, CZE": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "UKR": {
   "miss": "unplaceable",
@@ -7517,6 +8416,11 @@
   "lat": 48.3985,
   "lng": 9.9912,
   "q": "Ulm"
+ },
+ "Uttendorf, AUT": {
+  "lat": 47.2844,
+  "lng": 12.5724,
+  "q": "Uttendorf"
  },
  "Užupio kavinė, LTU": {
   "miss": "no match",
@@ -7586,9 +8490,18 @@
    "tried": "2026-09-24T00:06:33.447660+00:00"
   }
  },
+ "Vereinstreff St. Veit/Glan, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "Verevi Motel. H. Raudsepa 2, EST": {
   "miss": "no match",
   "tried": "2026-10-02T04:29:01.367899+00:00"
+ },
+ "Veselí nad Moravou, CZE": {
+  "lat": 48.9541,
+  "lng": 17.379,
+  "q": "Veselí nad Moravou"
  },
  "Viešbutis „Panorama”; Seinų g. 4, LTU": {
   "miss": "no match",
@@ -7634,6 +8547,39 @@
   "lng": -2.6614,
   "q": "Vitoria - Gasteiz"
  },
+ "Višnjevac, CRO": {
+  "lat": 45.566,
+  "lng": 18.6198,
+  "q": "Višnjevac"
+ },
+ "Vodice (CRO), CRO": {
+  "lat": 43.7608,
+  "lng": 15.7828,
+  "q": "vodice",
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
+ },
+ "Vojenské ubytovací zařízení Praha 6, CZE": {
+  "lat": 50.088,
+  "lng": 14.4208,
+  "q": "praha",
+  "src": "geonames"
+ },
+ "Volicija 5, Apfel Arena Makarska, CRO": {
+  "lat": 43.2969,
+  "lng": 17.0178,
+  "q": "makarska",
+  "src": "geonames",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
+ },
  "Volicija 5, CRO": {
   "miss": "no match",
   "tried": "2026-09-26T03:55:43.361460+00:00"
@@ -7648,10 +8594,23 @@
   "miss": "no match",
   "tried": "2026-10-02T04:29:01.367899+00:00"
  },
+ "Volkshochschule Amstette, Anzengruberstraße 3, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "Vorarlberg, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "Vrsac, SRB": {
   "lat": 45.12,
   "lng": 21.2988,
   "q": "Vrsac"
+ },
+ "Vukovar, CRO": {
+  "lat": 45.3444,
+  "lng": 19.0024,
+  "q": "Vukovar"
  },
  "Vysokoškolákov 6, SVK": {
   "miss": "no match",
@@ -7751,6 +8710,16 @@
  "Xanthoudidou 22, GRE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Yasamal, AZE": {
+  "lat": 40.3794,
+  "lng": 49.8019,
+  "q": "Yasamal",
+  "seafront": {
+   "venue": null,
+   "seaM": null,
+   "tried": "2026-10-05T04:23:23.438279+00:00"
+  }
  },
  "Yenişehir Sayapark Yenişehir/MERSİN, TUR": {
   "lat": 36.812,
@@ -7862,6 +8831,10 @@
   "q": "zaragoza",
   "src": "geonames"
  },
+ "diverse, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "hotel \"Putnik\", SRB": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
@@ -7883,9 +8856,19 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "jídelna Biologického centra AV ČR, Branišovská 1160/31, 370 05 České Budějovice, CZE": {
+  "lat": 48.9745,
+  "lng": 14.4743,
+  "q": "ceske budejovice",
+  "src": "geonames"
+ },
  "jídelna Biologického centra AV ČR, CZE": {
   "miss": "no match",
   "tried": "2026-09-30T04:23:48.986869+00:00"
+ },
+ "mehrere, AUT": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
  },
  "okres Hodonín, CZE": {
   "lat": 48.9638,
@@ -7907,9 +8890,20 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "pivovar Vorkloster Předklášteří, CZE": {
+  "lat": 49.3525,
+  "lng": 16.4024,
+  "q": "vorkloster",
+  "src": "geonames"
+ },
  "prane Stadiumit Air Albania, ALB": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "prane Stadiumit Air Albania, Tirana, ALB": {
+  "lat": 41.3281,
+  "lng": 19.8184,
+  "q": "Tirana"
  },
  "several, SRB": {
   "miss": "no match",
@@ -7960,6 +8954,11 @@
  "İzmir küç 5, AZE": {
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
+ },
+ "Řetůvka, CZE": {
+  "lat": 49.9558,
+  "lng": 16.356,
+  "q": "Řetůvka"
  },
  "ŠK Alkaloid, MKD": {
   "miss": "no match",
@@ -8298,6 +9297,11 @@
   "miss": "no match",
   "tried": "2026-09-23T22:10:29.705329+00:00"
  },
+ "Туристически учебен център \"Момина крепост\", Ксилифор, Велико Търново, BUL": {
+  "lat": 43.0821,
+  "lng": 25.6321,
+  "q": "Велико Търново"
+ },
  "Хотел \"Цептер\" - Врњачка Бања, SRB": {
   "lat": 43.6222,
   "lng": 20.8929,
@@ -8344,6 +9348,14 @@
    "tried": "2026-09-25T20:23:19.444670+00:00"
   }
  },
+ "к.к. Боровец , Hotel IGLIKA****, BUL": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
+ "к.к. Боровец ,Hotel IGLIKA****, BUL": {
+  "miss": "no match",
+  "tried": "2026-10-05T04:23:23.438279+00:00"
+ },
  "к.к. Боровец, BUL": {
   "miss": "no match",
   "tried": "2026-09-29T04:38:11.853933+00:00"
@@ -8378,10 +9390,26 @@
   "q": "тернопіль",
   "src": "geonames"
  },
+ "Գորիս, ARM": {
+  "lat": 39.5052,
+  "lng": 46.3442,
+  "q": "Գորիս"
+ },
  "Եղեգնաձոր, ARM": {
   "lat": 39.7601,
   "lng": 45.3302,
   "q": "Եղեգնաձոր"
+ },
+ "Երևան /Կոմիտաս 37, ARM": {
+  "lat": 40.1776,
+  "lng": 44.5126,
+  "q": "երեւան",
+  "src": "geonames"
+ },
+ "Երևան, ARM": {
+  "lat": 40.1777,
+  "lng": 44.5126,
+  "q": "Երևան"
  },
  "Նոր Նորքի 6-րդ զանգված, ARM": {
   "lat": 40.1879,
@@ -8392,6 +9420,18 @@
   "lat": 39.8395,
   "lng": 45.6711,
   "q": "ջերմուկ",
+  "src": "geonames"
+ },
+ "գ․ Ախուրյան, ARM": {
+  "lat": 40.7808,
+  "lng": 43.9004,
+  "q": "ախուրյան",
+  "src": "geonames"
+ },
+ "ք․ Հրազդան, ARM": {
+  "lat": 40.5169,
+  "lng": 44.7559,
+  "q": "հրազդան",
   "src": "geonames"
  }
 }
