@@ -822,7 +822,7 @@
   ]
  },
  "1317720": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Landesschachverband M-V",
    "rounds": 9,
@@ -834,45 +834,7 @@
    "fideId": "472141",
    "address": "Ostseebad Heringsdorf (Usedom)",
    "homepage": "https://lsvmv.de/senioren/osem_heringsdorf_2026.php"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-25"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-26"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-30"
-   },
-   {
-    "round": 7,
-    "date": "2026-12-01"
-   },
-   {
-    "round": 8,
-    "date": "2026-12-02"
-   },
-   {
-    "round": 9,
-    "date": "2026-12-03"
-   }
-  ]
+  }
  },
  "1318353": {
   "fetched": "2026-10-05T04:13:48+00:00",
@@ -912,7 +874,7 @@
   }
  },
  "1321252": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Claudio Boschetti - Swiss CHess Tour",
    "rounds": 5,
@@ -923,29 +885,7 @@
    ],
    "address": "Waldhotel**** Buolstrasse 3, CH-7270 Davos Platz",
    "homepage": "http://www.swisschesstour.com"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1321687": {
   "fetched": "2026-10-05T04:13:48+00:00",
@@ -1208,7 +1148,7 @@
   "schedule": []
  },
  "1322370": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -1217,11 +1157,10 @@
    ],
    "address": "Lublin",
    "homepage": "https://www.chessmanager.com/tournaments/4996614202327040"
-  },
-  "schedule": []
+  }
  },
  "1322371": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 5,
    "system": "Swiss-System",
@@ -1231,11 +1170,10 @@
    ],
    "address": "Lublin",
    "homepage": "https://www.chessmanager.com/tournaments/5124845769326592"
-  },
-  "schedule": []
+  }
  },
  "1322372": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -1244,8 +1182,7 @@
    ],
    "address": "Lublin",
    "homepage": "https://www.chessmanager.com/tournaments/5416738994520064"
-  },
-  "schedule": []
+  }
  },
  "1322440": {
   "fetched": "2026-09-30T04:25:26+00:00",
@@ -1958,14 +1895,13 @@
   ]
  },
  "1336130": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Wolfgang Fiedler",
    "rounds": 9,
    "system": "Swiss-System",
    "address": "BINZ Ifa Hotel"
-  },
-  "schedule": []
+  }
  },
  "1337130": {
   "fetched": "2026-10-05T04:13:48+00:00",
@@ -2785,6 +2721,15 @@
    }
   ]
  },
+ "1352589": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Schachverband Sachsen",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "address": "Dresden"
+  }
+ },
  "1352599": {
   "fetched": "2026-10-05T04:13:48+00:00",
   "details": {
@@ -3559,12 +3504,12 @@
   }
  },
  "1356330": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Anaitasuna-Kakute Xake Taldea",
    "rounds": 9,
    "system": "Swiss-System",
-   "address": "https://www.google.com/maps/place/Zubiaurre+Elkargunea/@43.1769566,-2.3133549,17",
+   "address": "NUEVA SEDE: Fronton Gurea, Aingeru kalea 4, 20720 Azkoitia.",
    "homepage": "https://www.anaitasuna-kakute.com/sanandresazkoitia"
   }
  },
@@ -4184,7 +4129,7 @@
   }
  },
  "1362036": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Godinn Chess Club",
    "rounds": 6,
@@ -4194,33 +4139,7 @@
    ],
    "address": "Skjólbrekka Mývatn",
    "homepage": "http://www.godinn.is"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-19"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-20"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-20"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-22"
-   }
-  ]
+  }
  },
  "1362094": {
   "fetched": "2026-10-05T04:13:48+00:00",
@@ -5412,7 +5331,7 @@
   }
  },
  "1404438": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Österreichischer Schachbund / Austria chess Federation",
    "rounds": 11,
@@ -5424,53 +5343,7 @@
    "fideId": "481883",
    "homepage": "http://www.chess.at",
    "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2026_11_29_ÖSB_2026_2027_1BL_Ausschreibung.pdf"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-25"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-26"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2027-03-10"
-   },
-   {
-    "round": 7,
-    "date": "2027-03-11"
-   },
-   {
-    "round": 8,
-    "date": "2027-03-12"
-   },
-   {
-    "round": 9,
-    "date": "2027-03-12"
-   },
-   {
-    "round": 10,
-    "date": "2027-03-13"
-   },
-   {
-    "round": 11,
-    "date": "2027-03-14"
-   }
-  ]
+  }
  },
  "1404735": {
   "fetched": "2026-09-30T04:25:26+00:00",
@@ -5727,7 +5600,7 @@
   ]
  },
  "1405166": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ÖSB",
    "rounds": 7,
@@ -5739,37 +5612,7 @@
    "address": "Mayrhofen, St.Veit",
    "homepage": "http://www.chess.at",
    "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2026_11_29_Ausschreibung_1FBL_2026_2027.pdf"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2027-03-12"
-   },
-   {
-    "round": 6,
-    "date": "2027-03-13"
-   },
-   {
-    "round": 7,
-    "date": "2027-03-14"
-   }
-  ]
+  }
  },
  "1406034": {
   "fetched": "2026-09-27T04:04:13+00:00",
@@ -5862,8 +5705,9 @@
   }
  },
  "1406078": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
+   "organizer": "Fundacja KSz Polonia Wrocław",
    "rounds": 8,
    "system": "Swiss-System",
    "rated": [
@@ -5871,8 +5715,7 @@
    ],
    "address": "Wrocław",
    "homepage": "https://www.chessmanager.com/tournaments/5294240670285824"
-  },
-  "schedule": []
+  }
  },
  "1406080": {
   "fetched": "2026-09-30T04:25:26+00:00",
@@ -5888,7 +5731,7 @@
   "schedule": []
  },
  "1406195": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Hampshire Junior Chess Association",
    "rounds": 6,
@@ -5901,7 +5744,7 @@
   }
  },
  "1406257": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Hampshire Junior Chess Association",
    "rounds": 6,
@@ -5914,7 +5757,7 @@
   }
  },
  "1406259": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Hampshire Junior Chess Association",
    "rounds": 6,
@@ -5927,7 +5770,7 @@
   }
  },
  "1406264": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Hampshire Junior Chess Association",
    "rounds": 6,
@@ -5940,7 +5783,7 @@
   }
  },
  "1406273": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Hampshire Junior Chess Association",
    "rounds": 6,
@@ -6617,7 +6460,7 @@
   ]
  },
  "1415920": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Lajosmizsei Sakk Kör",
    "rounds": 7,
@@ -7047,7 +6890,7 @@
   }
  },
  "1423439": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK Ottenschlag",
    "rounds": 7,
@@ -7060,7 +6903,7 @@
   }
  },
  "1423444": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK Ottenschlag",
    "rounds": 7,
@@ -7711,7 +7554,7 @@
   }
  },
  "1432758": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ŠK Zikuda Turnov, z.s.",
    "rounds": 9,
@@ -9985,7 +9828,7 @@
   ]
  },
  "1451595": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Comissão Técnica de Xadrez da Câmara Municipal do Seixal",
    "rounds": 9,
@@ -10051,7 +9894,7 @@
   }
  },
  "1451932": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "FUNDACJA KSz Polonia Wrocław",
    "rounds": 5,
@@ -10062,8 +9905,7 @@
    ],
    "address": "Wrocław",
    "homepage": "https://www.chessmanager.com/tournaments/5153234404638720"
-  },
-  "schedule": []
+  }
  },
  "1452069": {
   "fetched": "2026-10-05T04:13:48+00:00",
@@ -11699,7 +11541,7 @@
   }
  },
  "1459745": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Sainbayar Tserendorj, IA, IO, FST",
    "rounds": 5,
@@ -11710,32 +11552,10 @@
    ],
    "address": "Parkside Yards, Southall, UB1 1GH",
    "homepage": "https://londonfidecongress.com/southall-congress"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1459746": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Sainbayar Tserendorj, IA, IO, FST",
    "rounds": 5,
@@ -11746,32 +11566,10 @@
    ],
    "address": "Parkside Yards, Southall, UB1 1GH",
    "homepage": "https://londonfidecongress.com/southall-congress"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1459747": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Sainbayar Tserendorj, IA, IO, FST",
    "rounds": 5,
@@ -11782,29 +11580,7 @@
    ],
    "address": "Parkside Yards, Southall, UB1 1GH",
    "homepage": "https://londonfidecongress.com/southall-congress"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1459748": {
   "fetched": "2026-09-30T04:25:26+00:00",
@@ -11928,7 +11704,7 @@
   }
  },
  "1459765": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "A.Sainbayar",
    "rounds": 5,
@@ -12027,7 +11803,7 @@
   "schedule": []
  },
  "1460753": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -12039,7 +11815,7 @@
   }
  },
  "1460754": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -12051,7 +11827,7 @@
   }
  },
  "1460755": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -12063,7 +11839,7 @@
   }
  },
  "1460756": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -12518,7 +12294,7 @@
   }
  },
  "1465179": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Club Deportivo Tossal de la Cala",
    "rounds": 1,
@@ -12680,7 +12456,7 @@
   ]
  },
  "1466290": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SIA KA21",
    "rounds": 8,
@@ -12689,7 +12465,7 @@
   }
  },
  "1466291": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SIA KA21",
    "rounds": 8,
@@ -12698,7 +12474,7 @@
   }
  },
  "1466293": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SIA KA21",
    "rounds": 8,
@@ -12711,7 +12487,7 @@
   }
  },
  "1466294": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SIA KA21",
    "rounds": 8,
@@ -13265,7 +13041,7 @@
   }
  },
  "1468279": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Arkadiusz Matczyński",
    "rounds": 7,
@@ -13275,7 +13051,7 @@
   }
  },
  "1468280": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Arkadiusz Matczyński",
    "rounds": 7,
@@ -13310,7 +13086,7 @@
   }
  },
  "1468900": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Arkadiusz Matczyński",
    "rounds": 7,
@@ -13320,7 +13096,7 @@
   }
  },
  "1468901": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Arkadiusz Matczyński",
    "rounds": 7,
@@ -13820,7 +13596,7 @@
   ]
  },
  "1469869": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "IO PERE REGINALDO HUIX (2256134)",
    "rounds": 7,
@@ -13830,37 +13606,7 @@
    ],
    "address": "BARCO MSC",
    "homepage": "http://www.crucerodeajedrez.com"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2024-10-28"
-   },
-   {
-    "round": 2,
-    "date": "2024-10-29"
-   },
-   {
-    "round": 3,
-    "date": "2024-10-29"
-   },
-   {
-    "round": 4,
-    "date": "2024-10-31"
-   },
-   {
-    "round": 5,
-    "date": "2024-11-01"
-   },
-   {
-    "round": 6,
-    "date": "2024-11-01"
-   },
-   {
-    "round": 7,
-    "date": "2024-11-02"
-   }
-  ]
+  }
  },
  "1469887": {
   "fetched": "2026-10-01T04:32:54+00:00",
@@ -13874,7 +13620,7 @@
   "schedule": []
  },
  "1470134": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -13883,37 +13629,7 @@
    ],
    "address": "Czeladź",
    "homepage": "https://www.chessmanager.com/tournaments/4915994579566592"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-22"
-   }
-  ]
+  }
  },
  "1470180": {
   "fetched": "2026-10-06T05:03:35+00:00",
@@ -15786,7 +15502,7 @@
   }
  },
  "1476055": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Icelandic Chess Federation & Reykjavik Chess Club",
    "rounds": 9,
@@ -15909,133 +15625,31 @@
   }
  },
  "1476877": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "biedrība \"Kaissa\" sadarbībā ar Latvijas Šaha federāciju",
    "rounds": 8,
    "system": "Swiss-System",
    "address": "Vaidavas 6, 011 kabinets, Rīga"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-22"
-   }
-  ]
+  }
  },
  "1476878": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "biedrība \"Kaissa\" sadarbībā ar Latvijas Šaha federāciju",
    "rounds": 8,
    "system": "Swiss-System",
    "address": "Vaidavas 6, 011 kabinets, Rīga"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-21"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-22"
-   }
-  ]
+  }
  },
  "1476880": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "biedrība \"Kaissa\" sadarbībā ar Latvijas Šaha federāciju",
    "rounds": 8,
    "system": "Swiss-System",
    "address": "Rīga, Vaidavas 6, kabinets 011"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1476881": {
   "fetched": "2026-09-30T04:25:26+00:00",
@@ -16180,7 +15794,7 @@
   }
  },
  "1477465": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Chess club \"Rudar\" Kostolac",
    "system": "Round robin",
@@ -16188,11 +15802,10 @@
     "Rating international"
    ],
    "address": "Pozarevac - hotel \"Dunav\""
-  },
-  "schedule": []
+  }
  },
  "1477467": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Chess club \"Rudar\" Kostolac",
    "system": "Round robin",
@@ -16200,8 +15813,7 @@
     "Rating international"
    ],
    "address": "Pozarevac - hotel \"Dunav\""
-  },
-  "schedule": []
+  }
  },
  "1477468": {
   "fetched": "2026-09-30T04:25:26+00:00",
@@ -16261,7 +15873,7 @@
   }
  },
  "1477476": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Chess club \"Rudar\" Kostolac",
    "system": "Round robin",
@@ -16269,11 +15881,10 @@
     "Rating international"
    ],
    "address": "Pozarevac - hotel \"Dunav\""
-  },
-  "schedule": []
+  }
  },
  "1477480": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Chess club \"Rudar\" Kostolac",
    "system": "Round robin",
@@ -16281,8 +15892,7 @@
     "Rating international"
    ],
    "address": "Pozarevac - hotel \"Dunav\""
-  },
-  "schedule": []
+  }
  },
  "1477481": {
   "fetched": "2026-09-30T04:25:26+00:00",
@@ -17702,7 +17312,7 @@
   }
  },
  "1480703": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "CSM Slatina; Asociația Club de Șah Gen Olt Slatina",
    "rounds": 7,
@@ -17712,40 +17322,10 @@
     "Rating international"
    ],
    "address": "Liceul cu Program Sportiv Slatina, Complex Comercial Profi, Str. Toamnei nr. 10"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-30"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-30"
-   }
-  ]
+  }
  },
  "1480718": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "CSM Slatina; Asociația Club de Șah Gen Olt Slatina",
    "rounds": 7,
@@ -17755,40 +17335,10 @@
     "Rating international"
    ],
    "address": "Liceul cu Program Sportiv Slatina, Complex Comercial Profi, Str. Toamnei nr. 10"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-30"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-30"
-   }
-  ]
+  }
  },
  "1480728": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "CSM Slatina; Asociația Club de Șah Gen Olt Slatina",
    "rounds": 6,
@@ -17992,7 +17542,7 @@
   ]
  },
  "1482339": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "СКШ \"Плевен XXI\"",
    "rounds": 7,
@@ -18002,40 +17552,10 @@
    ],
    "address": "Плевен, Хотел \"Балкан\"",
    "homepage": "https://pleven21.com/"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1482340": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "СКШ \"Плевен XXI\"",
    "rounds": 7,
@@ -18045,37 +17565,7 @@
    ],
    "address": "Плевен, Хотел \"Балкан\"",
    "homepage": "https://pleven21.com/"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1482428": {
   "fetched": "2026-10-01T04:32:54+00:00",
@@ -18383,7 +17873,7 @@
   }
  },
  "1482719": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "The Square Chess Club",
    "rounds": 7,
@@ -18394,11 +17884,10 @@
    "fideId": "494203",
    "address": "Soseaua Electronicii 19, Bucharest",
    "homepage": "http://thesquarechessclub.com"
-  },
-  "schedule": []
+  }
  },
  "1482731": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "The Square Chess Club",
    "rounds": 7,
@@ -18577,7 +18066,7 @@
   }
  },
  "1483032": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 11,
    "system": "Swiss-System",
@@ -18616,7 +18105,7 @@
   }
  },
  "1483218": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "CLUB DE AJEDREZ RUY LÓPEZ DE LUCENA",
    "rounds": 8,
@@ -19918,7 +19407,7 @@
   }
  },
  "1486403": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Svarta Hästen SK",
    "rounds": 6,
@@ -20054,7 +19543,7 @@
   }
  },
  "1486749": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ŠK Aer, Udruga BRANA, Partneri za šah",
    "rounds": 6,
@@ -20063,33 +19552,7 @@
     "Rating international"
    ],
    "address": "Zagreb, MO Janko Matko"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1486751": {
   "fetched": "2026-10-11T04:09:16+00:00",
@@ -20108,7 +19571,7 @@
   "details": {}
  },
  "1486757": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ŠK Aer, Udruga BRANA, Partneri za šah",
    "rounds": 9,
@@ -20120,7 +19583,7 @@
   }
  },
  "1486996": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Šachová škola pat a mat, z.s.",
    "rounds": 9,
@@ -20131,48 +19594,10 @@
    ],
    "address": "Hotel FitFun Harachov",
    "homepage": "https://sachovaskola.eu/turnaje/polofinale-2026/"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-10-24"
-   },
-   {
-    "round": 2,
-    "date": "2026-10-25"
-   },
-   {
-    "round": 3,
-    "date": "2026-10-26"
-   },
-   {
-    "round": 4,
-    "date": "2026-10-26"
-   },
-   {
-    "round": 5,
-    "date": "2026-10-27"
-   },
-   {
-    "round": 6,
-    "date": "2026-10-28"
-   },
-   {
-    "round": 7,
-    "date": "2026-10-29"
-   },
-   {
-    "round": 8,
-    "date": "2026-10-30"
-   },
-   {
-    "round": 9,
-    "date": "2026-10-31"
-   }
-  ]
+  }
  },
  "1486998": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Šachová škola pat a mat, z.s.",
    "rounds": 9,
@@ -20183,45 +19608,7 @@
    ],
    "address": "Hotel FitFun Harachov",
    "homepage": "https://sachovaskola.eu/turnaje/polofinale-2026/"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-10-24"
-   },
-   {
-    "round": 2,
-    "date": "2026-10-25"
-   },
-   {
-    "round": 3,
-    "date": "2026-10-26"
-   },
-   {
-    "round": 4,
-    "date": "2026-10-26"
-   },
-   {
-    "round": 5,
-    "date": "2026-10-27"
-   },
-   {
-    "round": 6,
-    "date": "2026-10-28"
-   },
-   {
-    "round": 7,
-    "date": "2026-10-29"
-   },
-   {
-    "round": 8,
-    "date": "2026-10-30"
-   },
-   {
-    "round": 9,
-    "date": "2026-10-31"
-   }
-  ]
+  }
  },
  "1487011": {
   "fetched": "2026-10-11T04:09:16+00:00",
@@ -20292,7 +19679,7 @@
   ]
  },
  "1487103": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Union-Eimsbuettel im ETV",
    "rounds": 9,
@@ -20516,7 +19903,7 @@
   ]
  },
  "1487181": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "William Phillips, David Llewellyn, Zane Alford, Richard Miles, Patrick Bourne",
    "rounds": 6,
@@ -22616,7 +22003,7 @@
   }
  },
  "1488861": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "English Chess Federation",
    "rounds": 15,
@@ -22631,7 +22018,7 @@
   }
  },
  "1488862": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "English Chess Federation",
    "rounds": 15,
@@ -22943,7 +22330,7 @@
   }
  },
  "1489249": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Tammer-Shakki ry",
    "rounds": 4,
@@ -23752,113 +23139,40 @@
   ]
  },
  "1489897": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "system": "Round robin",
    "rated": [
     "Rating international"
    ],
+   "fideId": "495825",
    "address": "hotel \"Putnik\", Ilije Ognjanovica 24, Novi Sad"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-16"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-17"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-17"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-18"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-18"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-19"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-19"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-20"
-   },
-   {
-    "round": 9,
-    "date": "2026-11-21"
-   }
-  ]
+  }
  },
  "1489898": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "system": "Round robin",
    "rated": [
     "Rating international"
    ],
+   "fideId": "495826",
    "address": "hotel \"Putnik\", Ilije Ognjanovica 24, Novi Sad"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-16"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-17"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-17"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-18"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-18"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-19"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-19"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-20"
-   },
-   {
-    "round": 9,
-    "date": "2026-11-21"
-   }
-  ]
+  }
  },
  "1489899": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "system": "Round robin",
    "rated": [
     "Rating international"
    ],
+   "fideId": "495827",
    "address": "hotel \"Putnik\", Ilije Ognjanovica 24, Novi Sad"
   }
  },
  "1489900": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SSNS",
    "rounds": 9,
@@ -23866,47 +23180,10 @@
    "rated": [
     "Rating international"
    ],
+   "fideId": "495824",
    "address": "hotel \"Putnik\", Ilije Ognjanovica 24, Novi Sad",
    "homepage": "http://www.sahovskisavezns.com"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-23"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-24"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-24"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-25"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-25"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-26"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 9,
-    "date": "2026-11-28"
-   }
-  ]
+  }
  },
  "1489934": {
   "fetched": "2026-10-06T05:03:35+00:00",
@@ -24455,7 +23732,7 @@
   }
  },
  "1491621": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen",
    "rounds": 5,
@@ -24468,7 +23745,7 @@
   }
  },
  "1491629": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen",
    "rounds": 5,
@@ -24481,7 +23758,7 @@
   }
  },
  "1491631": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen",
    "rounds": 5,
@@ -24494,7 +23771,7 @@
   }
  },
  "1491632": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen",
    "rounds": 5,
@@ -24711,7 +23988,7 @@
   }
  },
  "1492026": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24721,32 +23998,10 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492028": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24756,32 +24011,10 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492030": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24791,32 +24024,10 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492033": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24826,32 +24037,10 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492035": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24861,32 +24050,10 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492036": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24896,32 +24063,10 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492037": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24931,32 +24076,10 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492038": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK König Plauen / SC Reichenbach",
    "rounds": 5,
@@ -24966,29 +24089,7 @@
    ],
    "address": "Reichenbach, Goethe-Gymnasium (Schulteil Friedensschule), F.-Engels-Platz 7",
    "homepage": "http://www.koenig-plauen.de"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1492086": {
   "fetched": "2026-10-12T04:31:12+00:00",
@@ -25994,7 +25095,7 @@
   ]
  },
  "1493569": {
-  "fetched": "2026-09-26T09:48:38+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Club d'Échecs de Veigy-Foncenex",
    "rounds": 11,
@@ -27082,7 +26183,7 @@
   }
  },
  "1495664": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ŠK Aer, Partneri za šah",
    "rounds": 9,
@@ -27589,7 +26690,7 @@
   }
  },
  "1496331": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Veszprém Ezüst Huszár SE",
    "rounds": 9,
@@ -27602,7 +26703,7 @@
   }
  },
  "1496332": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Veszprém Ezüst Huszár SE",
    "rounds": 9,
@@ -27615,7 +26716,7 @@
   }
  },
  "1496333": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Veszprém Ezüst Huszár SE",
    "rounds": 9,
@@ -28053,7 +27154,7 @@
   }
  },
  "1496756": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Chess Academy Club, z.s.",
    "rounds": 7,
@@ -28068,7 +27169,7 @@
   }
  },
  "1496757": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Chess Academy Club, z.s.",
    "rounds": 7,
@@ -29417,6 +28518,17 @@
    "address": "Skolas 2, Dobele, LV-3701"
   }
  },
+ "1497550": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šachklub města Dobrovice, z.s.",
+   "system": "Round robin",
+   "rated": [
+    "Rating national"
+   ],
+   "homepage": "https://www.sachydobrovice.cz/"
+  }
+ },
  "1497567": {
   "fetched": "2026-10-07T04:29:03+00:00",
   "details": {
@@ -29483,7 +28595,7 @@
   }
  },
  "1497596": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Postsportverein Graz Sektion Schach",
    "rounds": 11,
@@ -30001,7 +29113,7 @@
   }
  },
  "1498154": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Pasvalio kultūros centras",
    "rounds": 9,
@@ -30072,7 +29184,7 @@
   ]
  },
  "1498168": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -30080,7 +29192,7 @@
   }
  },
  "1498173": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -30088,7 +29200,7 @@
   }
  },
  "1498174": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -30348,7 +29460,7 @@
   }
  },
  "1498599": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Pegas Cluj Chess Club",
    "rounds": 10,
@@ -30359,8 +29471,7 @@
    ],
    "address": "Cluj-Napoca, Grand Hotel Italia, 2 Vasile Conta street",
    "homepage": "http://tcf.pegascluj.ro"
-  },
-  "schedule": []
+  }
  },
  "1498607": {
   "fetched": "2026-10-05T04:13:48+00:00",
@@ -30560,7 +29671,7 @@
   }
  },
  "1499143": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Shropshire Chess Association",
    "rounds": 5,
@@ -31005,6 +30116,19 @@
     "Rating international"
    ],
    "address": "Eforie Nord - Complex Steaua de Mare"
+  }
+ },
+ "1499774": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Shropshire Chess Association",
+   "rounds": 5,
+   "system": "Swiss-System for teams",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Captain Webb Primary School, TF4 3DX",
+   "homepage": "https://www.shropshirechess.org/primary-team-chess-challenge/"
   }
  },
  "1499866": {
@@ -31729,7 +30853,7 @@
   }
  },
  "1501403": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Associação de Xadrez da Região Autónoma da Madeira (AXRAM)",
    "rounds": 9,
@@ -31739,45 +30863,7 @@
    ],
    "address": "Externato Princesa Dona Maria Amélia, Avenida do Infante nº12, Funchal",
    "homepage": "https://funchalchessopen.com/"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-26"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-27"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-30"
-   },
-   {
-    "round": 8,
-    "date": "2026-12-01"
-   },
-   {
-    "round": 9,
-    "date": "2026-12-02"
-   }
-  ]
+  }
  },
  "1501405": {
   "fetched": "2026-10-13T05:40:23+00:00",
@@ -31873,7 +30959,7 @@
   }
  },
  "1501487": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Comité Départemental du Jeu d'Échecs de Haute-Savoie - CDJE74",
    "rounds": 7,
@@ -31883,148 +30969,44 @@
   }
  },
  "1501488": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Comité Départemental du Jeu d'Échecs de Haute-Savoie - CDJE74",
    "rounds": 6,
    "system": "Swiss-System",
    "address": "Espace Grand-Bo, 217 Route de la Patinoire, 74450 Le Grand-Bornand",
    "homepage": "https://www.cdje74.fr"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1501489": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Comité Départemental du Jeu d'Échecs de Haute-Savoie - CDJE74",
    "rounds": 6,
    "system": "Swiss-System",
    "address": "Espace Grand-Bo, 217 Route de la Patinoire, 74450 Le Grand-Bornand",
    "homepage": "https://www.cdje74.fr"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1501490": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Comité Départemental du Jeu d'Échecs de Haute-Savoie - CDJE74",
    "rounds": 6,
    "system": "Swiss-System",
    "address": "Espace Grand-Bo, 217 Route de la Patinoire, 74450 Le Grand-Bornand",
    "homepage": "https://www.cdje74.fr"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1501491": {
-  "fetched": "2026-09-29T04:39:44+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Comité Départemental du Jeu d'Échecs de Haute-Savoie - CDJE74",
    "rounds": 6,
    "system": "Swiss-System",
    "address": "Espace Grand-Bo, 217 Route de la Patinoire, 74450 Le Grand-Bornand",
    "homepage": "https://www.cdje74.fr"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1501493": {
   "fetched": "2026-10-14T03:44:22+00:00",
@@ -32253,7 +31235,7 @@
   "details": {}
  },
  "1501687": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Josef Koblasa",
    "rounds": 7,
@@ -32338,7 +31320,7 @@
   }
  },
  "1501731": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Vilniaus šachmatų klubas",
    "rounds": 6,
@@ -32351,7 +31333,7 @@
   }
  },
  "1501946": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Wiener Schachverband",
    "rounds": 13,
@@ -32362,64 +31344,10 @@
    "address": "Schachhaus",
    "homepage": "http://chess-vienna.at",
    "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2027_03_14_Ausschreibung_Kinderliga_2026.pdf"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 6,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 7,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 8,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 9,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 10,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 11,
-    "date": "2027-03-14"
-   },
-   {
-    "round": 12,
-    "date": "2027-03-14"
-   },
-   {
-    "round": 13,
-    "date": "2027-03-14"
-   }
-  ]
+  }
  },
  "1501952": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Wiener Schachverband",
    "rounds": 13,
@@ -32430,61 +31358,7 @@
    "address": "Schachhaus",
    "homepage": "http://chess-vienna.at",
    "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2027_03_14_Ausschreibung_Jugendliga_2026.pdf"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 6,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 7,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 8,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 9,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 10,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 11,
-    "date": "2027-03-14"
-   },
-   {
-    "round": 12,
-    "date": "2027-03-14"
-   },
-   {
-    "round": 13,
-    "date": "2027-03-14"
-   }
-  ]
+  }
  },
  "1501979": {
   "fetched": "2026-09-26T09:48:38+00:00",
@@ -33340,15 +32214,15 @@
   }
  },
  "1502676": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
    "rated": [
     "Rating international"
-   ]
-  },
-  "schedule": []
+   ],
+   "fideId": "501908"
+  }
  },
  "1502689": {
   "fetched": "2026-10-11T04:09:16+00:00",
@@ -33627,7 +32501,7 @@
   }
  },
  "1503041": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Union SK Bad Sauerbrunn & BSV",
    "rounds": 9,
@@ -33638,7 +32512,7 @@
   }
  },
  "1503048": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "BSV & Union SK Bad Sauerbrunn",
    "rounds": 9,
@@ -33649,7 +32523,7 @@
   }
  },
  "1503050": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "BSV & Union SK Bad Sauerbrunn",
    "rounds": 9,
@@ -33845,50 +32719,55 @@
   }
  },
  "1503232": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
-   "organizer": "noch offen",
+   "organizer": "SK Telfs",
    "rounds": 6,
    "system": "Swiss-System",
    "rated": [
     "Rating national"
    ],
-   "address": "wird noch bekant gegeben",
-   "homepage": "http://tirol.chess.at"
+   "address": "BRG Telfs, Weißenbachgasse 37, 6410 Telfs",
+   "homepage": "http://tirol.chess.at",
+   "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2026_11_15_Ausschreibung-Schachrallye-Herbst2026.pdf"
   }
  },
  "1503233": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
-   "organizer": "noch offen",
+   "organizer": "SK Telfs",
    "rounds": 5,
    "system": "Swiss-System",
    "rated": [
     "Rating national"
    ],
-   "address": "wird noch bekant gegeben",
-   "homepage": "http://tirol.chess.at"
+   "address": "BRG Telfs, Weißenbachgasse 37, 6410 Telfs",
+   "homepage": "http://tirol.chess.at",
+   "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2026_11_15_Ausschreibung-Schachrallye-Herbst2026.pdf"
   }
  },
  "1503234": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
-   "organizer": "noch offen",
+   "organizer": "SK Telfs",
    "rounds": 5,
    "system": "Swiss-System",
    "rated": [
     "Rating national"
    ],
-   "address": "wird noch bekant gegeben",
-   "homepage": "http://tirol.chess.at"
+   "address": "BRG Telfs, Weißenbachgasse 37, 6410 Telfs",
+   "homepage": "http://tirol.chess.at",
+   "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2026_11_15_Ausschreibung-Schachrallye-Herbst2026.pdf"
   }
  },
  "1503235": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
+   "organizer": "SK Telfs",
    "system": "Round robin",
-   "address": "wird noch bekant gegeben",
-   "homepage": "http://tirol.chess.at"
+   "address": "BRG Telfs, Weißenbachgasse 37, 6410 Telfs",
+   "homepage": "http://tirol.chess.at",
+   "regulationsUrl": "https://chess-results.com/Download\\Kalender\\2026_11_15_Ausschreibung-Schachrallye-Herbst2026.pdf"
   }
  },
  "1503244": {
@@ -34327,7 +33206,7 @@
   }
  },
  "1503548": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "SK OAZA",
    "rounds": 7,
@@ -35020,7 +33899,7 @@
   }
  },
  "1504569": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Riga Chess federation and Latvian Chess federation",
    "rounds": 9,
@@ -35033,7 +33912,7 @@
   }
  },
  "1504571": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Šahovski klub Ploče",
    "rounds": 9,
@@ -35990,7 +34869,7 @@
   }
  },
  "1506718": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Schachbezirk Oberfranken",
    "rounds": 26,
@@ -36154,7 +35033,7 @@
   }
  },
  "1506988": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 9,
    "system": "Swiss-System",
@@ -36162,45 +35041,7 @@
     "Rating international"
    ],
    "address": "Campulung Moldovenesc"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-28"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 9,
-    "date": "2026-11-29"
-   }
-  ]
+  }
  },
  "1506989": {
   "fetched": "2026-09-28T04:03:30+00:00",
@@ -36438,7 +35279,7 @@
   }
  },
  "1507154": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 7,
    "system": "Swiss-System",
@@ -37420,7 +36261,7 @@
   }
  },
  "1507625": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 9,
    "system": "Swiss-System",
@@ -37596,7 +36437,7 @@
   }
  },
  "1507724": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ASV Gurten Bern",
    "rounds": 7,
@@ -38136,7 +36977,7 @@
   "details": {}
  },
  "1507956": {
-  "fetched": "2026-09-30T04:25:26+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ŠK Olympia České Budějovice",
    "rounds": 9,
@@ -38334,7 +37175,7 @@
   }
  },
  "1508248": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 5,
    "system": "Swiss-System",
@@ -38342,7 +37183,7 @@
   }
  },
  "1508249": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Dambovita Mall, Sah in Scoala",
    "rounds": 5,
@@ -38415,7 +37256,7 @@
   }
  },
  "1508264": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Afi Brasov, Sah in Scoala",
    "rounds": 5,
@@ -38443,7 +37284,7 @@
   "details": {}
  },
  "1508277": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "STK ÚKŠS",
    "rounds": 7,
@@ -38452,38 +37293,9 @@
     "Rating national",
     "Rating international"
    ],
-   "address": "Ústecký kraj"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-10-17"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-08"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-22"
-   },
-   {
-    "round": 4,
-    "date": "2026-12-06"
-   },
-   {
-    "round": 5,
-    "date": "2027-01-10"
-   },
-   {
-    "round": 6,
-    "date": "2027-01-24"
-   },
-   {
-    "round": 7,
-    "date": "2027-02-08"
-   }
-  ]
+   "address": "Ústecký kraj",
+   "homepage": "https://s3.chess-results.com/tnr1508277.aspx?lan=5"
+  }
  },
  "1508279": {
   "fetched": "2026-10-01T04:32:54+00:00",
@@ -38538,7 +37350,7 @@
   }
  },
  "1508284": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "MěŠS Ostrava",
    "rounds": 9,
@@ -38547,49 +37359,12 @@
     "Rating national",
     "Rating international"
    ],
-   "address": "Ostrava"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-10-20"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-10"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-24"
-   },
-   {
-    "round": 4,
-    "date": "2026-12-08"
-   },
-   {
-    "round": 5,
-    "date": "2027-01-05"
-   },
-   {
-    "round": 6,
-    "date": "2027-01-19"
-   },
-   {
-    "round": 7,
-    "date": "2027-02-02"
-   },
-   {
-    "round": 8,
-    "date": "2027-02-23"
-   },
-   {
-    "round": 9,
-    "date": "2027-03-09"
-   }
-  ]
+   "address": "Ostrava",
+   "homepage": "https://s3.chess-results.com/Tnr1508284.aspx?lan=5&SNode=S0"
+  }
  },
  "1508293": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "A.C.S.Napocensis Activ",
    "rounds": 7,
@@ -38601,7 +37376,7 @@
   }
  },
  "1508294": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "CMSeixal",
    "rounds": 6,
@@ -38668,10 +37443,14 @@
   "details": {}
  },
  "1508323": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {}
+ },
+ "1508324": {
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "CS Pegas Cluj",
-   "rounds": 9,
+   "rounds": 6,
    "system": "Swiss-System",
    "rated": [
     "Rating national",
@@ -38681,23 +37460,8 @@
    "homepage": "https://www.pegascluj.ro/shop/"
   }
  },
- "1508324": {
-  "fetched": "2026-10-01T04:32:54+00:00",
-  "details": {
-   "organizer": "CS Pegas Cluj",
-   "rounds": 6,
-   "system": "Swiss-System",
-   "rated": [
-    "Rating national",
-    "Rating international"
-   ],
-   "address": "Bosch Engineering Center Cluj-Napoca",
-   "homepage": "https://www.pegascluj.ro/shop/"
-  },
-  "schedule": []
- },
  "1508325": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "CS Pegas Cluj",
    "rounds": 6,
@@ -38708,8 +37472,7 @@
    ],
    "address": "Bosch Engineering Center Cluj-Napoca",
    "homepage": "https://www.pegascluj.ro/shop/"
-  },
-  "schedule": []
+  }
  },
  "1508360": {
   "fetched": "2026-10-06T05:03:35+00:00",
@@ -38765,7 +37528,7 @@
   "details": {}
  },
  "1508377": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ШК Гази Баба 1976 - Скопје",
    "rounds": 7,
@@ -38774,7 +37537,7 @@
   }
  },
  "1508378": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ШК Гази Баба 1976 - Скопје",
    "rounds": 7,
@@ -38783,7 +37546,7 @@
   }
  },
  "1508379": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "ШК Гази Баба 1976 - Скопје",
    "rounds": 9,
@@ -38792,48 +37555,10 @@
     "Rating international"
    ],
    "address": "ООУ „Наум Наумовски Борче“ - Гази Баба, Скопје"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 5,
-    "date": "2026-11-14"
-   },
-   {
-    "round": 6,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 7,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 8,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 9,
-    "date": "2026-11-15"
-   }
-  ]
+  }
  },
  "1508382": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Swieqi Chess Club",
    "rounds": 7,
@@ -38843,29 +37568,7 @@
    ],
    "address": "Swieqi Chess Club",
    "homepage": "http://www.swieqichessclub.com"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-04-10"
-   },
-   {
-    "round": 2,
-    "date": "2026-04-11"
-   },
-   {
-    "round": 3,
-    "date": "2026-04-11"
-   },
-   {
-    "round": 4,
-    "date": "2026-04-12"
-   },
-   {
-    "round": 5,
-    "date": "2026-04-12"
-   }
-  ]
+  }
  },
  "1508386": {
   "fetched": "2026-10-06T05:03:35+00:00",
@@ -38908,7 +37611,7 @@
   }
  },
  "1508416": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Domenico Napolitano",
    "rounds": 4,
@@ -38918,11 +37621,10 @@
     "Rating international"
    ],
    "address": "London"
-  },
-  "schedule": []
+  }
  },
  "1508419": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Domenico Napolitano",
    "rounds": 4,
@@ -38932,8 +37634,7 @@
     "Rating international"
    ],
    "address": "London"
-  },
-  "schedule": []
+  }
  },
  "1508420": {
   "fetched": "2026-10-01T04:32:54+00:00",
@@ -38962,7 +37663,7 @@
   }
  },
  "1508422": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Domenico Napolitano",
    "rounds": 4,
@@ -38972,8 +37673,7 @@
     "Rating international"
    ],
    "address": "London"
-  },
-  "schedule": []
+  }
  },
  "1508431": {
   "fetched": "2026-10-01T04:32:54+00:00",
@@ -39012,7 +37712,7 @@
   }
  },
  "1508442": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Dennis Feidt",
    "rounds": 7,
@@ -39025,7 +37725,7 @@
   "details": {}
  },
  "1508492": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "rounds": 6,
    "system": "Swiss-System",
@@ -39068,7 +37768,7 @@
   }
  },
  "1508546": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Vytauto Valiušio keramikos muziejus ir meno centras",
    "rounds": 9,
@@ -39407,11 +38107,8 @@
   ]
  },
  "1508602": {
-  "fetched": "2026-10-01T04:32:54+00:00",
-  "details": {
-   "rounds": 7,
-   "system": "Swiss-System"
-  }
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {}
  },
  "1508607": {
   "fetched": "2026-10-06T05:03:35+00:00",
@@ -39437,7 +38134,7 @@
   }
  },
  "1508638": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Jakob Thierauch",
    "rounds": 13,
@@ -39448,14 +38145,14 @@
   }
  },
  "1508646": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "system": "Round robin",
-   "address": "ZARAGOZA. ZARAGOZA CAMPING OCEANO ATLANTICO. PARKING GRATUITO."
+   "address": "ZARAGOZA. ZARAGOZA CAMPING OCEANO ATLANTICO."
   }
  },
  "1508655": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Tony Niccoli",
    "rounds": 6,
@@ -39467,7 +38164,7 @@
   }
  },
  "1508659": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Tony Niccoli",
    "rounds": 6,
@@ -39479,7 +38176,7 @@
   }
  },
  "1508660": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Tony Niccoli",
    "rounds": 6,
@@ -39506,7 +38203,7 @@
   }
  },
  "1508693": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "STK ÚKŠS",
    "rounds": 9,
@@ -39516,48 +38213,10 @@
     "Rating international"
    ],
    "address": "Ústecký kraj"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-10-11"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-01"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-12-13"
-   },
-   {
-    "round": 6,
-    "date": "2027-01-17"
-   },
-   {
-    "round": 7,
-    "date": "2027-01-31"
-   },
-   {
-    "round": 8,
-    "date": "2027-02-14"
-   },
-   {
-    "round": 9,
-    "date": "2027-02-28"
-   }
-  ]
+  }
  },
  "1508694": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Jihomoravský šachový svaz",
    "rounds": 9,
@@ -39566,46 +38225,8 @@
     "Rating national",
     "Rating international"
    ],
-   "homepage": "https://chess-results.com/tnr1016582.aspx?lan=5"
-  },
-  "schedule": [
-   {
-    "round": 1,
-    "date": "2026-10-11"
-   },
-   {
-    "round": 2,
-    "date": "2026-11-01"
-   },
-   {
-    "round": 3,
-    "date": "2026-11-15"
-   },
-   {
-    "round": 4,
-    "date": "2026-11-29"
-   },
-   {
-    "round": 5,
-    "date": "2026-12-13"
-   },
-   {
-    "round": 6,
-    "date": "2027-01-17"
-   },
-   {
-    "round": 7,
-    "date": "2027-01-31"
-   },
-   {
-    "round": 8,
-    "date": "2027-02-14"
-   },
-   {
-    "round": 9,
-    "date": "2027-02-28"
-   }
-  ]
+   "homepage": "https://jmsschess.cz/"
+  }
  },
  "1508697": {
   "fetched": "2026-10-01T04:32:54+00:00",
@@ -39684,16 +38305,8 @@
   }
  },
  "1508741": {
-  "fetched": "2026-10-01T04:32:54+00:00",
-  "details": {
-   "organizer": "Šahovski klub \"Dr.Dido\" Sanski Most, Pokrovitelj općina Sanski Moat",
-   "rounds": 7,
-   "system": "Swiss-System",
-   "rated": [
-    "Rating international"
-   ],
-   "address": "Sanski Most, Prostorije Mješovite srednje škole"
-  }
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {}
  },
  "1508742": {
   "fetched": "2026-10-01T04:32:54+00:00",
@@ -39722,7 +38335,7 @@
   }
  },
  "1508748": {
-  "fetched": "2026-10-01T04:32:54+00:00",
+  "fetched": "2026-10-16T03:19:08+00:00",
   "details": {
    "organizer": "Омладински шаховски клуб \"Београд\"",
    "rounds": 13,
@@ -52374,6 +50987,15 @@
    "address": "Ružomberok"
   }
  },
+ "1515088": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Սյունիքի մարզի շախմատի ֆեդերացիա",
+   "rounds": 8,
+   "system": "Swiss-System",
+   "address": "Գորիս"
+  }
+ },
  "1515094": {
   "fetched": "2026-10-10T04:31:48+00:00",
   "details": {
@@ -58869,6 +57491,19 @@
    "regulationsUrl": "https://www.sv-dinslaken.de/wp-content/uploads/2026/10/Rapid-Serie_2026-2027.pdf"
   }
  },
+ "1518529": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TJ Auto Škoda Mladá Boleslav",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "klubovna TJ Auto Škoda Mladá Boleslav - ustřední stadion",
+   "homepage": "http://www.sachy.unas.cz"
+  }
+ },
  "1518532": {
   "fetched": "2026-10-15T03:23:41+00:00",
   "details": {
@@ -58976,6 +57611,1579 @@
    ],
    "address": "MEHMET EMİN HOŞGÖR ORTAOKULU",
    "homepage": "http://www.usak.tsf.org.tr"
+  }
+ },
+ "1518715": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 9,
+   "system": "Round robin"
+  }
+ },
+ "1518716": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 9,
+   "system": "Round robin"
+  }
+ },
+ "1518745": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Շախմատի հայկական ասոցիացիա",
+   "rounds": 8,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "ք․ Երևան, Խանջյան 50"
+  }
+ },
+ "1518746": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Շախմատի հայկական ասոցիացիա",
+   "rounds": 8,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "ք․ Երևան, Խանջյան 50"
+  }
+ },
+ "1518793": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "KSK",
+   "rounds": 4,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ]
+  }
+ },
+ "1518802": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠD Piran",
+   "rounds": 5,
+   "system": "Round robin",
+   "address": "Lucija",
+   "homepage": "http://www.drustvo-sahpiran.si"
+  }
+ },
+ "1518812": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠD Piran",
+   "rounds": 11,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Lucija",
+   "homepage": "http://www.drustvo-sahpiran.si"
+  }
+ },
+ "1518815": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šahovski savez Koprivničko-križevačke županije",
+   "rounds": 5,
+   "system": "Swiss-System for teams",
+   "address": "Društveni dom Drenovica, Trg V. Jagarinca 2, Novo Virje"
+  }
+ },
+ "1518817": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠK Považské Podhradie",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Dom kultúry, Považské Podhradie 320, 017 04 Považská Bystrica",
+   "homepage": "http://www.skpp.sk"
+  }
+ },
+ "1518827": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Club d'Escacs Sunway Sitges y Penya d'Escacs Casino Prado Suburense",
+   "rounds": 10,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Hotel Sunway Playa Golf & Spa, Sitges (Barcelona)",
+   "homepage": "https://sunwaychessfestival.com"
+  }
+ },
+ "1518831": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Club d'Escacs Sunway Sitges y Penya d'Escacs Casino Prado Suburense",
+   "rounds": 10,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Hotel Sunway Playa Golf & Spa, Sitges (Barcelona)",
+   "homepage": "https://sunwaychessfestival.com"
+  }
+ },
+ "1518836": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Clubul Sportiv Brazi,Primaria Brazi si Consiliul Local Brazi",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Sala Polivalenta Brazi"
+  }
+ },
+ "1518854": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šahovki klub Brestje",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Barutanski Breg 5 Zagreb"
+  }
+ },
+ "1518856": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šahovki klub Brestje",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Barutanski Breg 5 Zagreb"
+  }
+ },
+ "1518857": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TFSE",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "1123. Budapest, Alkotás utca 48. Magyar Testnevelési és Sporttudományi Egyetem",
+   "homepage": "https://chess.hu/budapest-autumn/"
+  }
+ },
+ "1518862": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 9,
+   "system": "Round robin"
+  }
+ },
+ "1518863": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šahovki klub Brestje",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Barutanski Breg 5 Zagreb"
+  }
+ },
+ "1518873": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ACS Academia de Șah Văsâi",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Mun.Bacau, strada Cornisa Bistritei 25",
+   "homepage": "http://www.academiadesahvasai.ro"
+  }
+ },
+ "1518881": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TFSE",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "1123 Budapest, Alkotás utca 48. Magyar Testnevelési és Sporttudományi Egyetem",
+   "homepage": "https://chess.hu/tfse-u2000/"
+  }
+ },
+ "1518883": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Centrum voľného času, V jame 3, Trnava",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Centrum voľného času, V jame 3, Trnava"
+  }
+ },
+ "1518891": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ԿԳՄՍՆ, Սյունիքի մարզպետի աշխատակազմ",
+   "rounds": 5,
+   "system": "Swiss-System for teams",
+   "address": "Կապան"
+  }
+ },
+ "1518897": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Μικρό Ροκέ, Σκακιστική Κίνηση Μυτιλήνης",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Μυτιλήνη/Λέσβος, Χώρος προπονήσεων Μικρό Ροκέ",
+   "homepage": "https://mikroroke.gr/"
+  }
+ },
+ "1518901": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Мукачево"
+  }
+ },
+ "1518906": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Məmmədyarovlar Şahmat Mərkəzi"
+  }
+ },
+ "1518920": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "JÁ",
+   "rounds": 5,
+   "system": "Swiss-System"
+  }
+ },
+ "1518921": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Məmmədyarovlar Şahmat Mərkəzi"
+  }
+ },
+ "1518925": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "system": "Round robin",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "fideId": "505271",
+   "address": "Yerevan, Shevchenko 34"
+  }
+ },
+ "1518926": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "system": "Round robin",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "fideId": "505270",
+   "address": "Yerevan, Shevchenko 34"
+  }
+ },
+ "1518930": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "JÁ",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ]
+  }
+ },
+ "1518934": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Claudio Boschetti - Swiss CHess Tour",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Ex Amici Via delle Scuole 20, CH-6900 Lugano-Paradiso",
+   "homepage": "http://www.swisschesstour.com"
+  }
+ },
+ "1518964": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Stadtgemeinde Ansfelden, ASK Nettingsdorf - Schach",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Rathausfestsaal Haid/Ansfelden, Hauptplatz 40, 4053 Haid",
+   "homepage": "http://www.schach-nettingsdorf.at"
+  }
+ },
+ "1518978": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Apatinski šah klub \"Vulkan Protektor\" i udruženje \"Koreni\"",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Trg Nikola Tesle 7, Apatin",
+   "homepage": "http://www.sahklubapatin.com"
+  }
+ },
+ "1518979": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ՀՇԱ",
+   "rounds": 9,
+   "system": "Round robin",
+   "address": "Քաջարան"
+  }
+ },
+ "1518980": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠO TJ Jiskra Jaroměř",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ]
+  }
+ },
+ "1518981": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠO TJ Jiskra Jaroměř",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Jaroměř"
+  }
+ },
+ "1518982": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠO TJ Jiskra Jaroměř",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Jaroměř"
+  }
+ },
+ "1518983": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Helsingin Shakkiliitto (HSL)",
+   "rounds": 1,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Helsinki",
+   "homepage": "https://www.shakki.net/liitot/HSL/"
+  }
+ },
+ "1518998": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šiaulių šachmatų federacija",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Šiauliai, Vytauto 84"
+  }
+ },
+ "1519020": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TJ Sokol Postoupky",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Bezměrov",
+   "homepage": "http://postoupky.wz.cz:8080/"
+  }
+ },
+ "1519021": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "OŠ Smarje - Sap & SK En Passant",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Šmarje - Sap",
+   "homepage": "http://www.velemojstrica.si"
+  }
+ },
+ "1519027": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TJ Sokol Postoupky",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Bezměrov",
+   "homepage": "http://postoupky.wz.cz:8080/"
+  }
+ },
+ "1519035": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TJ Sokol Postoupky",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Bezměrov",
+   "homepage": "http://postoupky.wz.cz:8080/"
+  }
+ },
+ "1519040": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Boskovice"
+  }
+ },
+ "1519048": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Էջմիածնի Հայորդյաց տուն",
+   "rounds": 9,
+   "system": "Swiss-System"
+  }
+ },
+ "1519071": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠK Novi Pazar - Ina Dizajn Inženjering",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "fideId": "506438",
+   "address": "Hotel \"Atlas\", Novi Pazar"
+  }
+ },
+ "1519072": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠK Novi Pazar - Ina Dizajn Inženjering",
+   "rounds": 11,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "fideId": "506439",
+   "address": "Hotel \"Atlas\", Novi Pazar"
+  }
+ },
+ "1519079": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠK Novi Pazar - Ina Dizajn Inženjering",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "fideId": "506440",
+   "address": "Hotel \"Atlas\", Novi Pazar"
+  }
+ },
+ "1519081": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "GAS Cholargou",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Agamemnonos 4 (2nd floor), Cholargos, 155 61, Athens, Greece",
+   "homepage": "https://www.gas-holargos.gr/skaki.html"
+  }
+ },
+ "1519083": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ΣΚΑ.ΚΙ.ΤΡΙΚΑΛΩΝ",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Εντευκτήριο ΣΚΑ.ΚΙ.Τρικαλων"
+  }
+ },
+ "1519088": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šahovska sekcija Kozje",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Večnamenski center Kozje"
+  }
+ },
+ "1519096": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Chess Club Rijeka",
+   "rounds": 13,
+   "system": "Swiss-System",
+   "address": "Rijeka, Šahovski dom, Blaža Polića 2/2",
+   "homepage": "http://www.sah-rijeka.hr/home"
+  }
+ },
+ "1519105": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ШП\"ЕРУДИТ\" БДЮТ Заводського району м.Миколаєва , МГ№4 ім.Молчанова Б.І.",
+   "rounds": 7,
+   "system": "Swiss-System"
+  }
+ },
+ "1519115": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Club de ajedrez de Limpias, con la colaboración del Ayto de Limpias y la FCA.",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "address": "Colegio San Vicente de Paúl: https://goo.gl/maps/LaiEtQbdQAzd2d72A",
+   "homepage": "http://fcajedrez.es"
+  }
+ },
+ "1519117": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Club de ajedrez de Limpias, con la colaboración del Ayto de Limpias y la FCA.",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "address": "Colegio San Vicente de Paúl: https://goo.gl/maps/LaiEtQbdQAzd2d72A",
+   "homepage": "http://fcajedrez.es"
+  }
+ },
+ "1519118": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Bratislavsky sachovy zvaz, Bratislavska sachova akademia",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "SG MERCURY",
+   "homepage": "http://www.bsz.sk"
+  }
+ },
+ "1519120": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Club de ajedrez de Limpias, con la colaboración del Ayto de Limpias y la FCA.",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "address": "Colegio San Vicente de Paúl: https://goo.gl/maps/LaiEtQbdQAzd2d72A",
+   "homepage": "http://fcajedrez.es"
+  }
+ },
+ "1519121": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Club de ajedrez de Limpias, con la colaboración del Ayto de Limpias y la FCA.",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "address": "Colegio San Vicente de Paúl: https://goo.gl/maps/LaiEtQbdQAzd2d72A",
+   "homepage": "http://fcajedrez.es"
+  }
+ },
+ "1519123": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Domenico Napolitano",
+   "rounds": 4,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "fideId": "505773"
+  }
+ },
+ "1519128": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Anaitasuna-Kakute Xake Taldea",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "homepage": "https://www.anaitasuna-kakute.com/femenino-akxt"
+  }
+ },
+ "1519133": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "A64 Grygov",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "PřF UP",
+   "homepage": "http://a64.cz"
+  }
+ },
+ "1519134": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Armenak Chacatrian, Klaipedos sachmatu federacija, \"Klaipedos sporto projektai\"",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ]
+  }
+ },
+ "1519138": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Anaitasuna-Kakute Xake Taldea",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "homepage": "https://www.anaitasuna-kakute.com/vetaranos-akxt"
+  }
+ },
+ "1519139": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "SK Pelagon",
+   "rounds": 6,
+   "system": "Swiss-System"
+  }
+ },
+ "1519143": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠKOLSKI SPORTSKI SAVEZ BRODSKO-POSAVSKE ŽUPANIJE",
+   "rounds": 2,
+   "system": "Round robin for teams",
+   "address": "Osnovna škola \"Mato Lovrak\" Nova Gradiška"
+  }
+ },
+ "1519144": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Caissa Center Muenchen",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "fideId": "501936",
+   "address": "Muenchen",
+   "homepage": "http://caissa-center.de"
+  }
+ },
+ "1519145": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Šahovsko sportsko udruženje \"Crnogorac\" Lovćenac",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ]
+  }
+ },
+ "1519147": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "UCT Chess Club",
+   "rounds": 8,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Jankovcova 23, Praha 7",
+   "homepage": "https://www.facebook.com/groups/811840606284614"
+  }
+ },
+ "1519149": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "UCT Chess Club",
+   "rounds": 8,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Jankovcova 23, Praha 7",
+   "homepage": "https://www.facebook.com/groups/811840606284614"
+  }
+ },
+ "1519155": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 18,
+   "system": "Round robin"
+  }
+ },
+ "1519158": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 10,
+   "system": "Round robin"
+  }
+ },
+ "1519159": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 28,
+   "system": "Round robin"
+  }
+ },
+ "1519164": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "MERSİN GSİM & MERSİN SATRANÇ İL TEMSİLCİLİĞİ",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Mektebim Koleji Yemekhanesi Erdemli/MERSİN",
+   "homepage": "http://www.mersin.tsf.org.tr"
+  }
+ },
+ "1519168": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "MERSİN GSİM & MERSİN SATRANÇ İL TEMSİLCİLİĞİ",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Mektebim Koleji Yemekhanesi Erdemli/MERSİN",
+   "homepage": "http://www.mersin.tsf.org.tr"
+  }
+ },
+ "1519170": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "MERSİN GSİM & MERSİN SATRANÇ İL TEMSİLCİLİĞİ",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Mektebim Koleji Yemekhanesi Erdemli/MERSİN",
+   "homepage": "http://www.mersin.tsf.org.tr"
+  }
+ },
+ "1519178": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Chess Club oF Ano Liosia Triantafyllos Siaperas",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "“Melina Merkouri” Hall, Ano Liosia Town Hall, Municipality of Fyli,",
+   "homepage": "https://trsiaperaschessclub.blogspot.com"
+  }
+ },
+ "1519179": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "UCT CHESS CLUB",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Vysoká škola chemicko-technologická, Technická 5 Praha-Dejvice",
+   "homepage": "https://uctchessclub.wixsite.com/home/cs"
+  }
+ },
+ "1519180": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Trembácz László Sakk Alapítvány, NYESE, Nyíregyházi Kossuth Lajos Ev. Gimn.",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ]
+  }
+ },
+ "1519181": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Trembácz László Sakk Alapítvány, NYESE, Nyíregyházi Kossuth Lajos Ev. Gimn.",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ]
+  }
+ },
+ "1519183": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Trembácz László Sakk Alapítvány, NYESE, Nyíregyházi Kossuth Lajos Ev. Gimn.",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ]
+  }
+ },
+ "1519184": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Trembácz László Sakk Alapítvány, NYESE, Nyíregyházi Kossuth Lajos Ev. Gimn.",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ]
+  }
+ },
+ "1519185": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠD JESENICE",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "JESENICE"
+  }
+ },
+ "1519189": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ШК \"Оборище\", ШС\"Асарел-Медет\", Община Панагюрище, АСК",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Народно читалище св.св. Кирил и Методи 1912, село Оборище, община Панагюрище"
+  }
+ },
+ "1519191": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "SO ŠTART LEVOČA",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Levoča"
+  }
+ },
+ "1519197": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Burdur GSİM, Burdur Satranç İl Temsilciliği",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Bucak Gençlik Merkezi Salonu",
+   "homepage": "http://www.burdur.tsf.org.tr"
+  }
+ },
+ "1519201": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Burdur GSİM, Burdur Satranç İl Temsilciliği",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Bucak Gençlik Merkezi Salonu",
+   "homepage": "http://www.burdur.tsf.org.tr"
+  }
+ },
+ "1519204": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Burdur GSİM, Burdur Satranç İl Temsilciliği",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Bucak Gençlik Merkezi Salonu",
+   "homepage": "http://www.burdur.tsf.org.tr"
+  }
+ },
+ "1519207": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "METE DENİZ",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "BALIKESİR BKM OKULLARI",
+   "homepage": "http://balikesir.tsf.org.tr"
+  }
+ },
+ "1519208": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Vinaskákfélagið og Taflfélag Reykjavíkur",
+   "rounds": 9,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Faxafen 12, Reykjavík"
+  }
+ },
+ "1519210": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "METE DENİZ",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "BALIKESİR BKM OKULLARI",
+   "homepage": "http://balikesir.tsf.org.tr"
+  }
+ },
+ "1519211": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "METE DENİZ",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "BALIKESİR BKM OKULLARI",
+   "homepage": "http://balikesir.tsf.org.tr"
+  }
+ },
+ "1519213": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ვანის მერია, ვანის ჭადრაკის ფედერაცია, იმერეთის ჭადრაკის ფედერაცია",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ვანი"
+  }
+ },
+ "1519216": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "METE DENİZ",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "BALIKESİR BKM OKULLARI",
+   "homepage": "http://balikesir.tsf.org.tr"
+  }
+ },
+ "1519218": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Stiinta Bucuresti,Departamentul Educatie fizica si Sport",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "address": "Cantina rectorat UPB"
+  }
+ },
+ "1519219": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ვანის მერია, ვანის ჭადრაკის ფედერაცია, იმერეთის ჭადრაკის ფედერაცია",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ვანი"
+  }
+ },
+ "1519221": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ვანის მერია, ვანის ჭადრაკის ფედერაცია, იმერეთის ჭადრაკის ფედერაცია",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ვანი"
+  }
+ },
+ "1519223": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ŽSR GR, Klemensova 8"
+  }
+ },
+ "1519225": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ვანის მერია, ვანის ჭადრაკის ფედერაცია, იმერეთის ჭადრაკის ფედერაცია",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ვანი"
+  }
+ },
+ "1519228": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ვანის მერია, ვანის ჭადრაკის ფედერაცია, იმერეთის ჭადრაკის ფედერაცია",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ვანი"
+  }
+ },
+ "1519230": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ვანის მერია, ვანის ჭადრაკის ფედერაცია, იმერეთის ჭადრაკის ფედერაცია",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ვანი"
+  }
+ },
+ "1519231": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ვანის მერია, ვანის ჭადრაკის ფედერაცია, იმერეთის ჭადრაკის ფედერაცია",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "ვანი"
+  }
+ },
+ "1519236": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519237": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519238": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519239": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519242": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519243": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TJ Kobylisy, šachový oddíl",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "U Školské zahrady 9, Praha 8 - Kobylisy"
+  }
+ },
+ "1519244": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519245": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519246": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519247": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519248": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519249": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519250": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ÖSB - LV Kärnten",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Kunsthotel Fuchspalast, 9300 St. Veit",
+   "homepage": "https://www.chess.at/"
+  }
+ },
+ "1519252": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "TJ Kobylisy, šachový oddíl",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "U Školské zahrady 9, Praha 8 - Kobylisy"
+  }
+ },
+ "1519255": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Nesibe Aydın Okulları & TSF Mersin İl Temsilciliği",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Nesibe Aydın Okulları Mersin Kampüsü",
+   "homepage": "http://www.mersin.tsf.org.tr"
+  }
+ },
+ "1519262": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Nesibe Aydın Okulları & TSF Mersin İl Temsilciliği",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Nesibe Aydın Okulları Mersin Kampüsü",
+   "homepage": "http://www.mersin.tsf.org.tr"
+  }
+ },
+ "1519263": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ШК \"Гамбіт\"",
+   "rounds": 5,
+   "system": "Swiss-System"
+  }
+ },
+ "1519264": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ШК \"Гамбіт\"",
+   "rounds": 5,
+   "system": "Swiss-System"
+  }
+ },
+ "1519265": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Nesibe Aydın Okulları & TSF Mersin İl Temsilciliği",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Nesibe Aydın Okulları Mersin Kampüsü",
+   "homepage": "http://www.mersin.tsf.org.tr"
+  }
+ },
+ "1519266": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Federación Vizcaina de Ajedrez",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "address": "Ortuellako Xake Kluba (Mendi Alde, 9 lonja) - Ortuella"
+  }
+ },
+ "1519267": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Academia de Xadrez José Saraiva",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "address": "Av. marques de pombal, 42 2700-571 Amadora"
+  }
+ },
+ "1519269": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Bremen"
+  }
+ },
+ "1519270": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Aydın GSİM - Aydın Satranç İl Temsilciliği",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Aydın SKS Spor Salonu",
+   "homepage": "http://www.aydin.tsf.org.tr"
+  }
+ },
+ "1519271": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Aydın GSİM - Aydın Satranç İl Temsilciliği",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Aydın SKS Spor Salonu",
+   "homepage": "http://www.aydin.tsf.org.tr"
+  }
+ },
+ "1519272": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Aydın GSİM - Aydın Satranç İl Temsilciliği",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Aydın SKS Spor Salonu",
+   "homepage": "http://www.aydin.tsf.org.tr"
+  }
+ },
+ "1519274": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Aydın GSİM - Aydın Satranç İl Temsilciliği",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Aydın SKS Spor Salonu",
+   "homepage": "http://www.aydin.tsf.org.tr"
+  }
+ },
+ "1519293": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "AXPortugal / Fábrica da Pólvora de Barcarena",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "address": "Fábrica da Pólvora de Barcarena"
+  }
+ },
+ "1519296": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠKOLSKI SPORTSKI SAVEZ BRODSKO-POSAVSKE ŽUPANIJE",
+   "rounds": 5,
+   "system": "Round robin for teams",
+   "address": "Slavonski Brod, Klasična gimnazija"
+  }
+ },
+ "1519301": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sah Club Potaissa Turda si Rotary Club Turda",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "PTurdaensiunea Pusca si Cureaua Lata str.22 Decembrie nr.56"
+  }
+ },
+ "1519303": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Savez distrofičara Vojvodine",
+   "rounds": 5,
+   "system": "Swiss-System",
+   "address": "Novi Sad, prostorije Pokrajinskih invalidskih organizacija, Bulevar Oslobođenja"
+  }
+ },
+ "1519304": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "ŠKOLSKI SPORTSKI SAVEZ BRODSKO-POSAVSKE ŽUPANIJE",
+   "rounds": 3,
+   "system": "Round robin for teams",
+   "address": "Slavonski Brod, Klasična gimnazija"
+  }
+ },
+ "1519306": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sah Club Potaissa Turda si Rotary Club Turda",
+   "rounds": 7,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national",
+    "Rating international"
+   ],
+   "address": "Pensiunea Pusca si Cureaua Lata str.22 Decembrie nr.56"
+  }
+ },
+ "1519309": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sussex Junior Chess",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Worth",
+   "homepage": "https://sussexjuniorchess.org/"
+  }
+ },
+ "1519313": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sussex Junior Chess",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Worth",
+   "homepage": "https://sussexjuniorchess.org/"
+  }
+ },
+ "1519314": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sussex Junior Chess",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Worth",
+   "homepage": "https://sussexjuniorchess.org/"
+  }
+ },
+ "1519315": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sussex Junior Chess",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Worth",
+   "homepage": "https://sussexjuniorchess.org/"
+  }
+ },
+ "1519316": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sussex Junior Chess",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Worth",
+   "homepage": "https://sussexjuniorchess.org/"
+  }
+ },
+ "1519317": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Upsala Allmänna Schacksällskap",
+   "rounds": 5,
+   "system": "Swiss-System for teams",
+   "address": "Uppsala"
+  }
+ },
+ "1519321": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "SK \" Herceg Novi 1949 \", SSCG , Opstina HN i Porodica Manojlović",
+   "rounds": 13,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating international"
+   ],
+   "address": "Hotel \" Play \" - Igalo"
+  }
+ },
+ "1519325": {
+  "fetched": "2026-10-16T03:19:08+00:00",
+  "details": {
+   "organizer": "Sussex Junior Chess",
+   "rounds": 6,
+   "system": "Swiss-System",
+   "rated": [
+    "Rating national"
+   ],
+   "address": "Worth",
+   "homepage": "https://sussexjuniorchess.org/"
   }
  },
  "247960": {
