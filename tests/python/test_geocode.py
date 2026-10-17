@@ -281,8 +281,8 @@ class TestBeachfront:
 
     def make(self, answers, coastline) -> gt.Geocoder:
         cache = {"Gran Hotel Bali (Benidorm), ESP": {"lat": 38.54, "lng": -0.13, "q": "Benidorm"}}
-        return gt.Geocoder(cache, search=FakeNominatim(answers), sleep=lambda _s: None,
-                           now=NOW, coastline=coastline)
+        return gt.Geocoder(cache, search=FakeNominatim(answers), sleep=lambda _s: None, now=NOW,
+                           coastline=coastline, reverse=lambda _lat, _lng: "Benidorm")  # no live calls
 
     def test_metres_to_segment(self) -> None:
         # a point 0.001 deg (~111 m) north of an east-west segment
