@@ -90,9 +90,19 @@ export abstract class FilterFormPart extends KeyboardPart {
                 const mode = btn.dataset.mode ?? 'all';
                 this.setCheckbox('mediterraneanOnly', mode === 'seaside' || mode === 'both');
                 this.setCheckbox('seniorCategory', mode === 'senior' || mode === 'both');
+                if (mode === 'senior' || mode === 'both') this.setCheckbox('excludeSeniors', false);
                 this.handleFilterChange();
                 this.trackEvent('Mode Switch', { mode });
             });
+        });
+        const pairs = [['womenOnly', 'excludeWomen'], ['seniorCategory', 'excludeSeniors'], ['seniorS60', 'excludeSeniors']];
+        pairs.forEach(([only, exclude]) => {
+            if (!only || !exclude) return;
+            [only, exclude].forEach(id => document.getElementById(id)?.addEventListener('change', () => {
+                if (!(document.getElementById(id) as HTMLInputElement).checked) return;
+                this.setCheckbox(id === only ? exclude : only, false);
+                this.handleFilterChange();
+            }));
         });
         initSeaPicker(() => this.handleFilterChange());
     }
@@ -119,6 +129,8 @@ export abstract class FilterFormPart extends KeyboardPart {
             excludeYouth: document.getElementById('excludeYouth') as HTMLInputElement | null,
             mediterraneanOnly: document.getElementById('mediterraneanOnly') as HTMLInputElement | null,
             seniorCategory: document.getElementById('seniorCategory') as HTMLInputElement | null,
+            excludeWomen: document.getElementById('excludeWomen') as HTMLInputElement | null,
+            excludeSeniors: document.getElementById('excludeSeniors') as HTMLInputElement | null,
             womenOnly: document.getElementById('womenOnly') as HTMLInputElement | null,
             includeTeamTournaments: document.getElementById('includeTeamTournaments') as HTMLInputElement | null,
             includeLongEvents: document.getElementById('includeLongEvents') as HTMLInputElement | null,
@@ -146,6 +158,8 @@ export abstract class FilterFormPart extends KeyboardPart {
             mediterraneanOnly: elements.mediterraneanOnly?.checked ?? false,
             seas: checkedSeas(),
             seniorCategory: elements.seniorCategory?.checked ?? false,
+            excludeWomen: elements.excludeWomen?.checked ?? false,
+            excludeSeniors: elements.excludeSeniors?.checked ?? false,
             womenOnly: elements.womenOnly?.checked ?? false,
             includeTeamTournaments: elements.includeTeamTournaments?.checked ?? false,
             includeLongEvents: elements.includeLongEvents?.checked ?? false,
@@ -173,6 +187,8 @@ export abstract class FilterFormPart extends KeyboardPart {
         setCheckedSeas(DEFAULT_SEAS);
         if (el.seniorCategory)        el.seniorCategory.checked        = false;
         if (el.seniorS60)             el.seniorS60.checked             = false;
+        if (el.excludeWomen) el.excludeWomen.checked = false;
+        if (el.excludeSeniors) el.excludeSeniors.checked = false;
         if (el.womenOnly)             el.womenOnly.checked             = false;
         if (el.includeTeamTournaments) el.includeTeamTournaments.checked = false;
         if (el.includeLongEvents)     el.includeLongEvents.checked     = false;
@@ -220,6 +236,7 @@ export abstract class FilterFormPart extends KeyboardPart {
                 if (preset === 'month') end.setMonth(end.getMonth() + 1);
                 else if (preset === '3months') end.setMonth(end.getMonth() + 3);
                 else if (preset === '6months') end.setMonth(end.getMonth() + 6);
+                else if (preset === 'year') end.setFullYear(end.getFullYear() + 1);
                 else return;
 
                 startDateEl.valueAsDate = today;
@@ -229,3 +246,4 @@ export abstract class FilterFormPart extends KeyboardPart {
         });
     }
 }
+

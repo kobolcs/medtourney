@@ -9,6 +9,7 @@
  * - Country filtering
  */
 
+import { ratingCeilings } from '../utils/entryCategories';
 import { federationCode } from '../utils/countries';
 import { Tournament, FilterState } from '../types';
 import { DEFAULT_SEAS, SEA_LABELS, seaOf } from '../utils/seas';
@@ -111,9 +112,15 @@ export class FilterService extends OrderingPart {
             }
 
             // Rating category filter (e.g. 'U1800' shows only that rating ceiling)
-            if (filterState.ratingCategory && !this.matchesRatingCategory(tournament.name, tournament.category, filterState.ratingCategory)) {
+            const minimum = /^min:(\d{3,4})$/.exec(filterState.ratingCategory);
+            if (minimum && ratingCeilings(`${tournament.name} ${tournament.category}`).some(value => value < Number(minimum[1]))) return false;
+            if (filterState.ratingCategory && !minimum && !this.matchesRatingCategory(tournament.name, tournament.category, filterState.ratingCategory)) {
                 return false;
             }
+
+            if (filterState.excludeWomen && this.isWomenTournament(categoryLower, nameLower)) return false;
+            if (filterState.excludeSeniors && (this.isSeniorCategory(tournament.category, tournament.name)
+                || this.isSeniorS60Category(tournament.category, tournament.name))) return false;
 
             // Women's tournament filter
             if (filterState.womenOnly && !this.isWomenTournament(categoryLower, nameLower)) {
@@ -178,6 +185,8 @@ export class FilterService extends OrderingPart {
             med: filterState.mediterraneanOnly,
             seas: (filterState.seas ?? DEFAULT_SEAS).join(','),
             senior: filterState.seniorCategory,
+            excludeWomen: filterState.excludeWomen ?? false,
+            excludeSeniors: filterState.excludeSeniors ?? false,
             women: filterState.womenOnly,
             team: filterState.includeTeamTournaments,
             long: filterState.includeLongEvents ?? false,
@@ -268,3 +277,4 @@ export class FilterService extends OrderingPart {
     }
 
 }
+

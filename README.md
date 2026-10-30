@@ -20,18 +20,18 @@ Chess-Results already provides extensive tournament search and results. MedTourn
 
 **Search & filter**
 - Mediterranean seaside locations (Barcelona, Nice, Athens, Malta, Split, and more — matched by city, not just country, so "Rome" doesn't also catch a club in Lubartów)
-- Senior categories: S50+ and S60+
+- Visible eligibility filters include senior categories S50+ and S60+, plus explicit women-only and senior-only exclusions
 - Open category, women's tournaments, team tournaments, youth exclusion (or targeting a specific youth age group)
 - Time control: Classical, Rapid, Blitz — classified against the actual FIDE 60-move formula from each tournament's real clock settings, not just its name
 - Rating ceiling (U1400–U2200) and minimum duration (weekend trips to multi-week stays)
 - Multiple countries at once, with unavailable countries automatically hidden as other filters narrow the pool
 
 **Using results**
-- Results for the next 6 months load automatically — no click required to see something
+- Plan up to 12 months ahead with the date presets (newly extended coverage arrives after the next successful daily scrape). Results for the next 6 months load automatically — no click required to see something
 - Star tournaments into a shortlist that survives a page reload, then export it as one `.ics` file for Google/Apple/Outlook calendar
 - Click anywhere on a card to open its detail panel on MedTourney: dates, venue with map links, time control, format (rounds, Swiss / round robin), rating, organizer — chess-results.com is one link at the bottom for registration and results. Details come from chess-results.com's tournament pages, fetched politely (1 request/s, cached)
 - Hover or focus a card for single-tournament calendar export; share any search via the address bar (?t= links identify individual events)
-- A "Tournament of the Week" card highlights a qualifying Mediterranean event automatically, independent of your active filters
+- A collapsed seaside suggestion highlights a qualifying Mediterranean event automatically, independent of your active filters
 - Filter-within-results, sort by date/name/location/country, CSV export of whatever's currently visible
 - "Seaside" means within about 10 km of the sea (Natural Earth coastline), plus a list of well-known coastal towns. A sea picker chooses which seas count: Mediterranean and Atlantic (Spain, Portugal, France; incl. the Canaries, Madeira, Azores) by default, Black Sea (incl. Marmara) and Caspian on request; cards say which sea; venues found to be within 500 m of the sea (OpenStreetMap coastline) get a 🏖 Beachfront badge
 - Travel context on each card: the nearest airport with airline flights and its straight-line distance ("✈ Alicante ALC · 47 km", full name on hover), from OurAirports' public-domain data, checked weekly against current airline routes
@@ -77,7 +77,7 @@ See [`TESTING.md`](./TESTING.md) for what each suite actually covers and [`ARCHI
 
 ## How the data gets here
 
-`TournamentProcessor.py` + `scrape_tournaments.robot` (Robot Framework, Playwright-based) collect the next six months of events from the Chess-Results tournament search every day at 00:00 UTC via GitHub Actions, download the Excel export, keep European results, and write `tournaments_data.json`. Detail enrichment also reads Chess-Results event pages; it is the same provider, not a second discovery source. GitHub Pages serves the static JSON — the web app has no backend or database.
+`TournamentProcessor.py` + `scrape_tournaments.robot` (Robot Framework, Playwright-based) collect the next twelve months of events from the Chess-Results tournament search every day at 00:00 UTC via GitHub Actions, download the Excel export, keep European results, and write `tournaments_data.json`. Detail enrichment also reads Chess-Results event pages; it is the same provider, not a second discovery source. GitHub Pages serves the static JSON — the web app has no backend or database.
 
 Before publishing, `scripts/validate_scrape.py` refuses a scrape that looks broken (under 10 rows, a drop of more than 30% vs the last run, or time-control/link columns gone empty), so the site keeps yesterday's validated snapshot. Any failure opens a `data-update-failed` issue, which closes itself after the next good run; `data-health.yml` also checks the live site twice a day and opens the same issue if its data is more than 30 hours old. The app shows the last successful snapshot date in the footer.
 
@@ -98,3 +98,4 @@ Issues and pull requests are welcome. `CLAUDE.md` has the full architectural con
 ## License
 
 MIT
+

@@ -717,3 +717,6 @@ open coverage/index.html
 **Pass Rate**: 100%
 **Coverage**: JS ~88% of services/UI/utils
 **Status**: ✅ All tests passing
+
+
+Player feedback regressions: `npm run test:feedback` checks eligibility exclusions, filter cache isolation, rating ceiling thresholds, URL round trips and unconfirmed FIDE rating status.
