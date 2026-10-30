@@ -164,6 +164,7 @@
                     <button type="button" class="date-preset-btn" data-preset="month">Next Month</button>
                     <button type="button" class="date-preset-btn" data-preset="3months">3 Months</button>
                     <button type="button" class="date-preset-btn" data-preset="6months">6 Months</button>
+                    <button type="button" class="date-preset-btn" data-preset="year">12 Months</button>
                 </div>
 
                 <!-- Which seas the Seaside mode counts (src/utils/seaPicker.ts). Shown
@@ -201,6 +202,127 @@
                     </div>
                 </div>
 
+<details id="advancedFilters" class="eligibility-filters" open>
+                <summary class="advanced-summary">Who can play <span id="advancedFilterCount" class="advanced-filter-count" hidden>0</span></summary>
+                <h3 id="eligibility-heading" class="filter-section-title">Who can play</h3>
+                <div class="filter-grid">
+                    <div class="filter-group"><label><input type="checkbox" id="excludeWomen"><span class="checkbox-label">Exclude women-only</span></label></div>
+                    <div class="filter-group"><label><input type="checkbox" id="excludeSeniors"><span class="checkbox-label">Exclude senior-only</span></label></div>
+                </div>
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="openOnly" checked aria-describedby="open-only-desc">
+                            <span class="checkbox-label">Open to all</span>
+                        </label>
+                        <span id="open-only-desc" class="sr-only">Hide tournaments that are clearly not open to everyone: invitational or closed events, round robins and norm events, club championships</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="excludeYouth" checked aria-describedby="exclude-youth-desc">
+                            <span class="checkbox-label">Exclude Youth-Only Tournaments</span>
+                        </label>
+                        <span id="exclude-youth-desc" class="sr-only">Exclude tournaments for players under 18</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="womenOnly" aria-describedby="women-desc">
+                            <span class="checkbox-label">Women's Tournaments</span>
+                        </label>
+                        <span id="women-desc" class="sr-only">Show only women's tournaments</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="includeTeamTournaments" aria-describedby="team-desc">
+                            <span class="checkbox-label">Include Team Tournaments</span>
+                        </label>
+                        <span id="team-desc" class="sr-only">Include team tournaments (normally excluded)</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="includeLongEvents" aria-describedby="long-desc">
+                            <span class="checkbox-label">Weekly / season-long events</span>
+                        </label>
+                        <span id="long-desc" class="sr-only">Include events running over 3 weeks, such as weekly club leagues (normally excluded)</span>
+                    </div>
+                </div>
+
+                <h3 id="age-group-heading" class="filter-section-title">Age and rating</h3>
+                <div class="filter-grid" role="group" aria-labelledby="age-group-heading">
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="seniorCategory" aria-describedby="senior-desc">
+                            <span class="checkbox-label">S50+ (Senior) Category</span>
+                        </label>
+                        <span id="senior-desc" class="sr-only">Show only tournaments for players aged 50 and above</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="seniorS60" aria-describedby="senior60-desc">
+                            <span class="checkbox-label">S60+ / S65+ Categories</span>
+                        </label>
+                        <span id="senior60-desc" class="sr-only">Show senior cohorts from S60+ upward, including S65+; check the exact entry age</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="ratingCategory">Rating sections</label>
+                        <select id="ratingCategory" aria-label="Filter by rating ceiling" aria-describedby="rating-cat-desc">
+                            <option value="">Any rating class</option>
+                            <optgroup label="Exclude lower rating sections (unknown ceilings stay visible)">
+                                <option value="min:1600">Hide sections capped below 1600</option>
+                                <option value="min:1800">Hide sections capped below 1800</option>
+                                <option value="min:2000">Hide sections capped below 2000</option>
+                                <option value="min:2200">Hide sections capped below 2200</option>
+                            </optgroup>
+                            <option value="U1200">Under 1200 rating</option>
+                            <option value="U1400">Under 1400 rating</option>
+                            <option value="U1500">Under 1500 rating</option>
+                            <option value="U1600">Under 1600 rating</option>
+                            <option value="U1650">Under 1650 rating</option>
+                            <option value="U1700">Under 1700 rating</option>
+                            <option value="U1750">Under 1750 rating</option>
+                            <option value="U1800">Under 1800 rating</option>
+                            <option value="U1900">Under 1900 rating</option>
+                            <option value="U2000">Under 2000 rating</option>
+                            <option value="U2100">Under 2100 rating</option>
+                            <option value="U2200">Under 2200 rating</option>
+                            <option value="U2250">Under 2250 rating</option>
+                            <option value="U2400">Under 2400 rating</option>
+                        </select>
+                        <span id="rating-cat-desc" class="sr-only">Choose an exact published ceiling or hide sections capped below a threshold. Events without a known ceiling remain visible for threshold searches.</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="youthCategory">Youth age group</label>
+                        <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
+                            <option value="" title="Use the Exclude Youth-Only Tournaments filter above instead">None</option>
+                            <option value="U6">Under 6 years</option>
+                            <option value="U7">Under 7 years</option>
+                            <option value="U8">Under 8 years</option>
+                            <option value="U9">Under 9 years</option>
+                            <option value="U10">Under 10 years</option>
+                            <option value="U11">Under 11 years</option>
+                            <option value="U12">Under 12 years</option>
+                            <option value="U13">Under 13 years</option>
+                            <option value="U14">Under 14 years</option>
+                            <option value="U15">Under 15 years</option>
+                            <option value="U16">Under 16 years</option>
+                            <option value="U17">Under 17 years</option>
+                            <option value="U18">Under 18 years</option>
+                            <option value="U19">Under 19 years</option>
+                            <option value="U20">Under 20 years</option>
+                            <option value="U21">Under 21 years</option>
+                        </select>
+                        <span id="youth-cat-desc" class="sr-only">Selecting an age group overrides the exclude-youth filter and shows only that age group</span>
+                    </div>
+                </div>
+
+            </details>
                 <div class="country-filter-section">
                     <div class="country-filter-header">
                         <span class="country-filter-label">Country</span>
@@ -316,120 +438,7 @@
                     </div>
                 </div>
 
-            <details id="advancedFilters">
-                <summary class="advanced-summary">
-                    More filters
-                    <span id="advancedFilterCount" class="advanced-filter-count" hidden>0</span>
-                </summary>
 
-                <div class="filter-grid">
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="openOnly" checked aria-describedby="open-only-desc">
-                            <span class="checkbox-label">Open to all</span>
-                        </label>
-                        <span id="open-only-desc" class="sr-only">Hide tournaments that are clearly not open to everyone: invitational or closed events, round robins and norm events, club championships</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="excludeYouth" checked aria-describedby="exclude-youth-desc">
-                            <span class="checkbox-label">Exclude Youth-Only Tournaments</span>
-                        </label>
-                        <span id="exclude-youth-desc" class="sr-only">Exclude tournaments for players under 18</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="womenOnly" aria-describedby="women-desc">
-                            <span class="checkbox-label">Women's Tournaments</span>
-                        </label>
-                        <span id="women-desc" class="sr-only">Show only women's tournaments</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="includeTeamTournaments" aria-describedby="team-desc">
-                            <span class="checkbox-label">Include Team Tournaments</span>
-                        </label>
-                        <span id="team-desc" class="sr-only">Include team tournaments (normally excluded)</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="includeLongEvents" aria-describedby="long-desc">
-                            <span class="checkbox-label">Weekly / season-long events</span>
-                        </label>
-                        <span id="long-desc" class="sr-only">Include events running over 3 weeks, such as weekly club leagues (normally excluded)</span>
-                    </div>
-                </div>
-
-                <h3 id="age-group-heading" class="filter-section-title">Age Group</h3>
-                <div class="filter-grid" role="group" aria-labelledby="age-group-heading">
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="seniorCategory" aria-describedby="senior-desc">
-                            <span class="checkbox-label">S50+ (Senior) Category</span>
-                        </label>
-                        <span id="senior-desc" class="sr-only">Show only tournaments for players aged 50 and above</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>
-                            <input type="checkbox" id="seniorS60" aria-describedby="senior60-desc">
-                            <span class="checkbox-label">S60+ / S65+ Categories</span>
-                        </label>
-                        <span id="senior60-desc" class="sr-only">Show senior cohorts from S60+ upward, including S65+; check the exact entry age</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label for="ratingCategory">Rating ceiling</label>
-                        <select id="ratingCategory" aria-label="Filter by rating ceiling" aria-describedby="rating-cat-desc">
-                            <option value="">Any rating class</option>
-                            <option value="U1200">Under 1200 rating</option>
-                            <option value="U1400">Under 1400 rating</option>
-                            <option value="U1500">Under 1500 rating</option>
-                            <option value="U1600">Under 1600 rating</option>
-                            <option value="U1650">Under 1650 rating</option>
-                            <option value="U1700">Under 1700 rating</option>
-                            <option value="U1750">Under 1750 rating</option>
-                            <option value="U1800">Under 1800 rating</option>
-                            <option value="U1900">Under 1900 rating</option>
-                            <option value="U2000">Under 2000 rating</option>
-                            <option value="U2100">Under 2100 rating</option>
-                            <option value="U2200">Under 2200 rating</option>
-                            <option value="U2250">Under 2250 rating</option>
-                            <option value="U2400">Under 2400 rating</option>
-                        </select>
-                        <span id="rating-cat-desc" class="sr-only">Match the exact published rating ceiling, not your personal rating</span>
-                    </div>
-
-                    <div class="filter-group">
-                        <label for="youthCategory">Youth age group</label>
-                        <select id="youthCategory" aria-label="Filter by youth age category" aria-describedby="youth-cat-desc">
-                            <option value="" title="Use the Exclude Youth-Only Tournaments filter above instead">None</option>
-                            <option value="U6">Under 6 years</option>
-                            <option value="U7">Under 7 years</option>
-                            <option value="U8">Under 8 years</option>
-                            <option value="U9">Under 9 years</option>
-                            <option value="U10">Under 10 years</option>
-                            <option value="U11">Under 11 years</option>
-                            <option value="U12">Under 12 years</option>
-                            <option value="U13">Under 13 years</option>
-                            <option value="U14">Under 14 years</option>
-                            <option value="U15">Under 15 years</option>
-                            <option value="U16">Under 16 years</option>
-                            <option value="U17">Under 17 years</option>
-                            <option value="U18">Under 18 years</option>
-                            <option value="U19">Under 19 years</option>
-                            <option value="U20">Under 20 years</option>
-                            <option value="U21">Under 21 years</option>
-                        </select>
-                        <span id="youth-cat-desc" class="sr-only">Selecting an age group overrides the exclude-youth filter and shows only that age group</span>
-                    </div>
-                </div>
-
-            </details>
 
             <!-- Filtering is live, so there's no Search button. Below 1024px the
                  filters sit above the results; this jumps down to them and
@@ -454,7 +463,7 @@
             <p id="tempoHint" class="tempo-hint" aria-live="polite">Choose one or more. Clocks show minutes + seconds per move.</p>
         </fieldset>
 
-        <details class="featured-suggestion" open hidden><summary>Seaside suggestion · independent of your filters</summary><div id="featuredTournament" style="display: none;" aria-live="polite"></div></details>
+        <details class="featured-suggestion" hidden><summary>Seaside suggestion · independent of your filters</summary><div id="featuredTournament" style="display: none;" aria-live="polite"></div></details>
 
         <div id="loading" class="loading" style="display: none;" role="status" aria-live="polite" aria-busy="true">
             <div class="spinner" aria-hidden="true"></div>
@@ -631,3 +640,4 @@
     <script defer data-domain="kobolcs.github.io/medtourney" src="https://plausible.io/js/script.js"></script>
 </body>
 </html>
+

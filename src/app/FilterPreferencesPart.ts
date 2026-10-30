@@ -53,6 +53,12 @@ export abstract class FilterPreferencesPart extends DataFreshnessPart {
         if (preferences.seniorCategory !== undefined && filterElements.seniorCategory) {
             filterElements.seniorCategory.checked = preferences.seniorCategory;
         }
+        if (preferences.excludeWomen !== undefined && filterElements.excludeWomen) {
+            filterElements.excludeWomen.checked = preferences.excludeWomen;
+        }
+        if (preferences.excludeSeniors !== undefined && filterElements.excludeSeniors) {
+            filterElements.excludeSeniors.checked = preferences.excludeSeniors;
+        }
         if (preferences.womenOnly !== undefined && filterElements.womenOnly) {
             filterElements.womenOnly.checked = preferences.womenOnly;
         }
@@ -111,3 +117,4 @@ export abstract class FilterPreferencesPart extends DataFreshnessPart {
         history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
     }
 }
+

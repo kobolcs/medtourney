@@ -12,7 +12,7 @@ import { isDefaultSeas, parseSeas } from './seas';
 export const FILTER_PARAM_KEYS = [
     'open', 'excludeYouth', 'med', 'senior', 'senior60', 'women',
     'team', 'long', 'tc', 'country', 'dur', 'youthAge', 'rating', 'sea',
-    'from', 'to'
+        'excludeWomen',     'excludeSeniors', 'from', 'to'
 ] as const;
 
 /** ISO date string (YYYY-MM-DD) or null. */
@@ -37,6 +37,8 @@ export function filterStateToSearchParams(state: FilterState): URLSearchParams {
     if (state.mediterraneanOnly && state.seas && !isDefaultSeas(state.seas)) params.set('sea', state.seas.join(','));
     if (state.seniorCategory) params.set('senior', '1');
     if (state.seniorS60) params.set('senior60', '1');
+    if (state.excludeWomen) params.set('excludeWomen', '1');
+    if (state.excludeSeniors) params.set('excludeSeniors', '1');
     if (state.womenOnly) params.set('women', '1');
     if (state.includeTeamTournaments) params.set('team', '1');
     if (state.includeLongEvents) params.set('long', '1');
@@ -76,6 +78,8 @@ export function filterStateFromSearchParams(params: URLSearchParams): Partial<Fi
     }
     if (params.has('senior')) preferences.seniorCategory = params.get('senior') === '1';
     if (params.has('senior60')) preferences.seniorS60 = params.get('senior60') === '1';
+    if (params.has('excludeWomen')) preferences.excludeWomen = params.get('excludeWomen') === '1';
+    if (params.has('excludeSeniors')) preferences.excludeSeniors = params.get('excludeSeniors') === '1';
     if (params.has('women')) preferences.womenOnly = params.get('women') === '1';
     if (params.has('team')) preferences.includeTeamTournaments = params.get('team') === '1';
     if (params.has('long')) preferences.includeLongEvents = params.get('long') === '1';
@@ -110,3 +114,4 @@ export function filterStateFromSearchParams(params: URLSearchParams): Partial<Fi
 
     return preferences;
 }
+
