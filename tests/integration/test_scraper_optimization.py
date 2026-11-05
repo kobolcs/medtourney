@@ -48,13 +48,13 @@ class TestScraperOptimization:
         # Check for DATE_RANGE_MONTHS variable
         assert "${DATE_RANGE_MONTHS}" in content, "DATE_RANGE_MONTHS variable should exist"
 
-    def test_date_range_set_to_6_months(self):
-        """Test that date range is configured for 6 months"""
+    def test_date_range_set_to_12_months(self):
+        """Test that date range is configured for 12 months"""
         robot_file = self.get_robot_file_path()
         content = robot_file.read_text()
 
-        # Check for 6 month configuration
-        assert "${DATE_RANGE_MONTHS}    6" in content, "DATE_RANGE_MONTHS should be 6"
+        # Check the annual planning horizon
+        assert "${DATE_RANGE_MONTHS}    12" in content, "DATE_RANGE_MONTHS should be 12"
 
     def test_date_calculation_uses_variable(self):
         """Test that date calculation uses DATE_RANGE_MONTHS variable"""
@@ -216,3 +216,4 @@ class TestScraperIntegration:
 if __name__ == "__main__":
     import pytest
     pytest.main([__file__, "-v"])
+

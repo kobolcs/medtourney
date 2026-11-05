@@ -243,6 +243,8 @@ export abstract class CardPart extends UIState {
                 ${tournamentFormatHTML(tournament)}
                 ${travelTagsHTML}
                 <div class="tournament-actions">
+                    <a class="chess-results-link" href="${escapeHTML(tournament.url)}" target="_blank" rel="noopener noreferrer"
+                       aria-label="Chess-Results for ${escapeHTML(tournament.name)} (opens in a new tab)">Chess-Results ↗</a>
                     <button class="calendar-export-btn" aria-haspopup="menu" aria-expanded="false"
                             data-tournament-url="${escapeHTML(tournament.url)}"
                             aria-label="Add ${escapeHTML(tournament.name)} to calendar">
@@ -255,3 +257,4 @@ export abstract class CardPart extends UIState {
         return card;
     }
 }
+
