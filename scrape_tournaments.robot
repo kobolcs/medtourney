@@ -11,7 +11,7 @@ ${DOWNLOAD_DIR}   ${CURDIR}/downloads
 ${MAX_RESULTS}    5
 # Note: value=5 selects the "2000" option in the results-per-page dropdown.
 # chess-results.com allows 100/250/500/1000/1500/2000 (values 0-5).
-${DATE_RANGE_MONTHS}    6
+${DATE_RANGE_MONTHS}    12
 # Generous default timeout for slow Excel generation on chess-results.com
 ${BROWSER_TIMEOUT}    90s
 # How many times to attempt the Excel download before giving up
@@ -111,7 +111,9 @@ Fill Search Form    # robocop: off=too-long-keyword  known, see CLAUDE.md
     ${today_iso}=    Get Current Date    time_zone=UTC    result_format=%Y-%m-%d
     ${days}=    Evaluate    ${DATE_RANGE_MONTHS} * 30
     ${start_iso}=    Subtract Time From Date    ${today_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
-    ${end_iso}=    Add Time To Date    ${today_iso}    ${days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
+    # Cover the full calendar year, including leap years (12 * 30 misses several days).
+    ${forward_days}=    Evaluate    math.ceil(${DATE_RANGE_MONTHS} * 365.25 / 12)    modules=math
+    ${end_iso}=    Add Time To Date    ${today_iso}    ${forward_days} days    result_format=%Y-%m-%d    date_format=%Y-%m-%d
     Log    Date range: ${start_iso} to ${end_iso} (${DATE_RANGE_MONTHS} months), fed=${fed}
     Set Browser Timeout    10s
     Run Keyword And Return Status    Fill Text    input[type="date"] >> nth=0    ${start_iso}
@@ -186,3 +188,4 @@ Export Tournament Metadata
     [Documentation]    Write a metadata sidecar (provenance + filtering stats)
     Export Metadata    ${CURDIR}/tournaments_data_meta.json
     Log    Exported scrape metadata to tournaments_data_meta.json
+

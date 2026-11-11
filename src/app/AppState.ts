@@ -22,6 +22,8 @@ export interface FilterElements {
     excludeYouth: HTMLInputElement | null;
     mediterraneanOnly: HTMLInputElement | null;
     seniorCategory: HTMLInputElement | null;
+    excludeWomen: HTMLInputElement | null;
+    excludeSeniors: HTMLInputElement | null;
     womenOnly: HTMLInputElement | null;
     includeTeamTournaments: HTMLInputElement | null;
     includeLongEvents: HTMLInputElement | null;
@@ -121,3 +123,4 @@ export abstract class AppState {
     protected abstract exportToCSV(): void;
     protected abstract preloadTournamentData(): Promise<void>;
 }
+

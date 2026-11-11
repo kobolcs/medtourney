@@ -35,6 +35,8 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         }
         if (s.seniorCategory) chips.push({ label: 'Senior 50+', clear: () => this.setCheckbox('seniorCategory', false) });
         if (s.seniorS60) chips.push({ label: 'Senior 60+', clear: () => this.setCheckbox('seniorS60', false) });
+        if (s.excludeWomen) chips.push({ label: 'Exclude women-only', clear: () => this.setCheckbox('excludeWomen', false) });
+        if (s.excludeSeniors) chips.push({ label: 'Exclude senior-only', clear: () => this.setCheckbox('excludeSeniors', false) });
         if (s.womenOnly) chips.push({ label: "Women's", clear: () => this.setCheckbox('womenOnly', false) });
         if (s.includeTeamTournaments) chips.push({ label: 'Team tournaments', clear: () => this.setCheckbox('includeTeamTournaments', false) });
         if (s.includeLongEvents) chips.push({ label: 'Season-long events', clear: () => this.setCheckbox('includeLongEvents', false) });
@@ -69,7 +71,7 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
             chips.push({ label: this.minDaysChipLabel(s.minDays), clear: () => this.setSelectValue('minDays', '0') });
         }
         if (s.youthCategory) chips.push({ label: s.youthCategory, clear: () => this.setSelectValue('youthCategory', '') });
-        if (s.ratingCategory) chips.push({ label: s.ratingCategory, clear: () => this.setSelectValue('ratingCategory', '') });
+        if (s.ratingCategory) chips.push({ label: s.ratingCategory.startsWith('min:') ? `Hide ceilings below ${s.ratingCategory.slice(4)}` : s.ratingCategory, clear: () => this.setSelectValue('ratingCategory', '') });
 
         return chips;
     }
@@ -119,6 +121,8 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         if (el.openOnly && !el.openOnly.checked) count++;
         if (el.excludeYouth && !el.excludeYouth.checked) count++;
         if (el.womenOnly?.checked) count++;
+        if (el.excludeWomen?.checked) count++;
+        if (el.excludeSeniors?.checked) count++;
         if (el.includeTeamTournaments?.checked) count++;
         if (el.includeLongEvents?.checked) count++;
         if (el.seniorCategory?.checked) count++;
@@ -146,6 +150,8 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         if (s.mediterraneanOnly) parts.push('mediterranean');
         if (s.seniorCategory) parts.push('senior50');
         if (s.seniorS60) parts.push('senior60');
+        if (s.excludeWomen) chips.push({ label: 'Exclude women-only', clear: () => this.setCheckbox('excludeWomen', false) });
+        if (s.excludeSeniors) chips.push({ label: 'Exclude senior-only', clear: () => this.setCheckbox('excludeSeniors', false) });
         if (s.womenOnly) parts.push('women');
         if (s.youthCategory) parts.push(`youth_${s.youthCategory}`);
         if (s.countryFilter.length > 0) parts.push(`country_${s.countryFilter.join('+')}`);
@@ -153,3 +159,4 @@ export abstract class ActiveFilterChipsPart extends FilterPreferencesPart {
         return parts.join(',') || 'none';
     }
 }
+
