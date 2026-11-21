@@ -66,6 +66,8 @@ export interface FilterState {
     /** Seas the Seaside mode (mediterraneanOnly) counts; missing = src/utils/seas.ts DEFAULT_SEAS */
     seas?: Sea[];
     seniorCategory: boolean;
+    excludeWomen?: boolean;
+    excludeSeniors?: boolean;
     womenOnly: boolean;
     includeTeamTournaments: boolean;
     /** Show weekly / season-long events (over FilterService.MAX_EVENT_DAYS); missing = false */
@@ -95,3 +97,4 @@ export interface CountryCode {
 }
 
 export type SortOption = 'date-asc' | 'date-desc' | 'name' | 'location' | 'country';
+

@@ -369,6 +369,7 @@ header h1 {
 /* ─────────────────────────────────────────
    FILTERS PANEL
 ────────────────────────────────────────── */
+.filters-card.collapsed .eligibility-filters,
 .filters-card.collapsed .filter-grid,
 .filters-card.collapsed .filter-section-title,
 .filters-card.collapsed .date-range,
@@ -3368,3 +3369,24 @@ body.dark-theme .map-cluster {
     flex: 1 1 100%;
   }
 }
+
+
+/* Distinct groups help players scan eligibility without reading every label. */
+.eligibility-filters {
+  margin-block: var(--sp-5);
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.eligibility-filters .filter-section-title { margin-top: var(--sp-4); }
+.chess-results-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--sp-3);
+  color: var(--sea);
+  text-decoration: underline;
+  font-weight: 600;
+}
+.chess-results-link:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
