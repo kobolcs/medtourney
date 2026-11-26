@@ -17,11 +17,11 @@ test.describe('Results-First Layout', () => {
     await expect(page.locator('#resultsCount')).toBeVisible();
   });
 
-  test('the advanced drawer starts collapsed while primary controls stay visible', async ({ page }) => {
+  test('eligibility starts expanded while primary controls stay visible', async ({ page }) => {
     await page.goto('/');
 
     const details = page.locator('#advancedFilters');
-    await expect(details).toHaveJSProperty('open', false);
+    await expect(details).toHaveJSProperty('open', true);
     await expect(page.getByLabel('Classical', { exact: true })).toBeVisible();
     await openFilters(page); // phones: the remaining filters live in a bottom sheet
 
@@ -38,7 +38,7 @@ test.describe('Results-First Layout', () => {
     // Advanced-only controls are not visible until the drawer opens (the
     // phone sheet expands the drawer itself when it opens).
     if (!(await page.locator('#openFiltersBtn').isVisible())) {
-      await expect(page.getByLabel('Open to all', { exact: true })).toBeHidden();
+      await expect(page.getByLabel('Open to all', { exact: true })).toBeVisible();
     }
   });
 
@@ -148,3 +148,4 @@ for (const width of [1440, 390, 320]) {
     await testInfo.attach(`workspace-${width}`, { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
   });
 }
+

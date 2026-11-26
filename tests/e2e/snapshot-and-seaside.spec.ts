@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { stubTournaments, defaultFixtures, isoInDays } from './_fixtures';
 
 for (const width of [1440, 390]) {
-  test(`seaside suggestion needs no opening click and date is in footer at ${width}px`, async ({ page }, testInfo) => {
+  test(`seaside suggestion starts collapsed and date is in footer at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     const fixtures = [{ name: 'Barcelona Seaside Open', location: 'Barcelona, ESP', category: 'Open, Classical',
       timeControl: '90+30', coast: 'med' as const, seaM: 100, date: isoInDays(14), dateTo: isoInDays(20),
@@ -15,7 +15,9 @@ for (const width of [1440, 390]) {
     await expect(page.locator('#resultsCount')).toHaveText('1 tournament found');
     await expect(page.locator('#headerLiveStatus')).not.toContainText(/updated|snapshot|Oct 2026/i);
     await expect(page.locator('footer #dataFreshness')).toHaveText('Data updated 4 Oct 2026');
-    await expect(page.locator('.featured-suggestion')).toHaveJSProperty('open', true);
+    await expect(page.locator('.featured-suggestion')).toHaveJSProperty('open', false);
+    await expect(page.locator('.featured-name-btn')).toBeHidden();
+    await page.locator('.featured-suggestion > summary').click();
     await expect(page.locator('.featured-name-btn')).toBeVisible();
     await expect(page.locator('.featured-external-link')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
@@ -38,3 +40,4 @@ test('no suggestion means no empty accordion; unmatched metadata cannot date loa
   await expect(page.locator('#staleness-banner')).toHaveCount(0);
   await expect(page.locator('footer .data-credit')).toContainText('chess-results.com');
 });
+
