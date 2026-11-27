@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-11-26T00:34:16.327914+00:00",
+  "generatedAt": "2026-11-27T00:34:36.755591+00:00",
   "source": "chess-results.com",
   "rangeMonths": 6,
-  "rawRows": 21667,
-  "keptRows": 3777,
-  "excludedPast": 17890,
+  "rawRows": 21560,
+  "keptRows": 3880,
+  "excludedPast": 17680,
   "excludedNonEuropean": 0,
   "excludedInvalid": 0
 }
